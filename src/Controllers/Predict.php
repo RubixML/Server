@@ -5,8 +5,8 @@ namespace Rubix\Server\Controllers;
 use Rubix\ML\Estimator;
 use Rubix\ML\Datasets\Unlabeled;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface;
-use React\Http\Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use React\Http\Response as ReactResponse;
 use Exception;
 
 class Predict implements Controller
@@ -32,14 +32,14 @@ class Predict implements Controller
      * 
      * @param  Request  $request
      * @param  array  $params
-     * @return ResponseInterface
+     * @return Response
      */
-    public function handle(Request $request, array $params) : ResponseInterface
+    public function handle(Request $request, array $params) : Response
     {
         $json = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($json['sample'])) {
-            return new Response(400, self::HEADERS, [
+            return new ReactResponse(400, self::HEADERS, [
                 'error' => 'Missing sample field in request body.',
             ]);
         }
@@ -49,12 +49,12 @@ class Predict implements Controller
         try {
             $predictions = $this->estimator->predict($dataset);
         } catch (Exception $e) {
-            return new Response(500, self::HEADERS, [
+            return new ReactResponse(500, self::HEADERS, [
                 'error' => $e->getMessage(),
             ]);
         }
 
-        return new Response(200, self::HEADERS, json_encode([
+        return new ReactResponse(200, self::HEADERS, json_encode([
             'prediction' => $predictions[0],
         ]));
     }

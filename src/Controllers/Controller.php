@@ -3,7 +3,7 @@
 namespace Rubix\Server\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface as Response;
 
 interface Controller
 {
@@ -16,7 +16,7 @@ interface Controller
      * 
      * @param  Request  $request
      * @param  array  $params
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Response
      */
-    public function handle(Request $request, array $params) : ResponseInterface;
+    public function handle(Request $request, array $params) : Response;
 }

@@ -2,19 +2,20 @@
 
 namespace Rubix\Server;
 
-use Rubix\ML\Wrapper;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\Server\Controllers\Proba;
-use Rubix\Server\Controllers\Predict;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std as Parser;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as Dispatcher;
+use Rubix\Server\Controllers\Proba;
+use Rubix\Server\Controllers\Predict;
 use React\Http\Server as ReactServer;
 use React\Socket\Server as Socket;
 use React\EventLoop\Factory as Loop;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+use React\Http\Response as ReactResponse;
 use InvalidArgumentException;
 
 class HTTPServer implements Server
@@ -59,7 +60,7 @@ class HTTPServer implements Server
 
             if (!$estimator instanceof Estimator) {
                 throw new InvalidArgumentException('Route must point to'
-                    . ' an Estimator instance, ' . gettype($estimator)
+                    . ' an Estimator instance, ' . get_class($estimator)
                     . ' found.');
             }
 
@@ -93,17 +94,34 @@ class HTTPServer implements Server
 
         $socket = new Socket("$this->host:$this->port", $loop);
 
-        $server = new ReactServer(function (Request $request) {
-            $uri = $request->getUri()->getPath();
-            $method = $request->getMethod();
-
-            list($status, $controller, $params) = $this->router->dispatch($method, $uri);
-
-            return $controller->handle($request, $params);
-        });
+        $server = new ReactServer([$this, 'handle']);
 
         $server->listen($socket);
 
         $loop->run();
+    }
+
+    /**
+     * Handle an incoming request.
+     * 
+     * @param  Request  $request
+     * @return Response
+     */
+    public function handle(Request $request) : Response
+    {
+        $uri = $request->getUri()->getPath();
+        $method = $request->getMethod();
+
+        list($status, $controller, $params) = $this->router->dispatch($method, $uri);
+
+        switch ($status) {
+            case Dispatcher::NOT_FOUND:
+                return new ReactResponse(404);
+
+            case Dispatcher::METHOD_NOT_ALLOWED:
+                return new ReactResponse(405);
+        }
+
+        return $controller->handle($request, $params);
     }
 }
