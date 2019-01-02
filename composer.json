@@ -1,0 +1,53 @@
+{
+    "name": "rubix/server",
+    "type": "library",
+    "description": "Real-time model server that allows you to serve your trained models in production.",
+    "homepage": "https://github.com/RubixML/Server",
+    "license": "MIT",
+    "keywords": [
+        "php", "machine-learning", "data-science"
+    ],
+    "authors": [
+        {
+            "name": "Andrew DalPino",
+            "email": "me@andrewdalpino.com",
+            "homepage": "https://andrewdalpino.com",
+            "role": "Lead Engineer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "nikic/fast-route": "^1.3",
+        "psr/http-message": "^1.0",
+        "react/event-loop": "^1.0",
+        "react/http": "^0.8.1",
+        "rubix/ml": "dev-master"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.10.0",
+        "phpstan/phpstan-phpunit": "^0.10.0",
+        "phpunit/phpunit": "7.2.*"
+    },
+    "suggest": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Rubix\\Server\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rubix\\Server\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "analyze": "phpstan analyse -c phpstan.neon",
+        "test": "phpunit"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
