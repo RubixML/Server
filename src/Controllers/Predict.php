@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Response as ReactResponse;
 use Exception;
 
-class Predict implements Controller
+class Predict extends Controller
 {
     /**
      * The estimator instance.
@@ -39,7 +39,7 @@ class Predict implements Controller
         $json = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($json['sample'])) {
-            return new ReactResponse(400, self::HEADERS, [
+            return new ReactResponse(400, self::DEFAULT_HEADERS, [
                 'error' => 'Missing sample field in request body.',
             ]);
         }
@@ -49,12 +49,12 @@ class Predict implements Controller
         try {
             $predictions = $this->estimator->predict($dataset);
         } catch (Exception $e) {
-            return new ReactResponse(500, self::HEADERS, [
+            return new ReactResponse(500, self::DEFAULT_HEADERS, [
                 'error' => $e->getMessage(),
             ]);
         }
 
-        return new ReactResponse(200, self::HEADERS, json_encode([
+        return new ReactResponse(200, self::DEFAULT_HEADERS, json_encode([
             'prediction' => $predictions[0],
         ]));
     }

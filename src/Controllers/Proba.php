@@ -12,7 +12,7 @@ use React\Http\Response as ReactResponse;
 use RuntimeException;
 use Exception;
 
-class Proba implements Controller
+class Proba extends Controller
 {
     /**
      * The probabilistic estimator instance.
@@ -42,7 +42,7 @@ class Proba implements Controller
         $json = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($json['sample'])) {
-            return new ReactResponse(400, self::HEADERS, [
+            return new ReactResponse(400, self::DEFAULT_HEADERS, [
                 'error' => 'Missing sample field in request body.',
             ]);
         }
@@ -58,12 +58,12 @@ class Proba implements Controller
                     . ' request.');
             }
         } catch (Exception $e) {
-            return new ReactResponse(500, self::HEADERS, [
+            return new ReactResponse(500, self::DEFAULT_HEADERS, [
                 'error' => $e->getMessage(),
             ]);
         }
 
-        return new ReactResponse(200, self::HEADERS, json_encode([
+        return new ReactResponse(200, self::DEFAULT_HEADERS, json_encode([
             'probabilities' => $probabilities[0],
         ]));
     }

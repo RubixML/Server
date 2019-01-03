@@ -23,6 +23,10 @@ use InvalidArgumentException;
 
 class HTTPServer implements Server, LoggerAwareInterface
 {
+    const DEFAULT_HEADERS = [
+        'Content-Type' => 'text/json',
+    ];
+
     const ROUTER_STATUS = [
         0 => '404',
         1 => '200',
@@ -63,6 +67,21 @@ class HTTPServer implements Server, LoggerAwareInterface
      * @var \Psr\Log\LoggerInterface|null
      */
     protected $logger;
+
+    /**
+     * The time that the server went up.
+     * 
+     * @var float|null
+     */
+    protected $start;
+
+    /**
+     * The number of requests that have been handled during this
+     * run.
+     * 
+     * @var int
+     */
+    protected $n;
 
     /**
      * @param  array  $routes
@@ -111,6 +130,17 @@ class HTTPServer implements Server, LoggerAwareInterface
                 . " positive, $port given.");
         }
 
+        $collector->addRoute('GET', '/status', function (Request $request, array $params) {
+            $uptime = time() - $this->start;
+
+            return new ReactResponse(200, self::DEFAULT_HEADERS, json_encode([
+                'uptime' => $uptime,
+                'requests' => $this->n,
+                'requests_sec' => $this->n / $uptime,
+                'requests_min' => $this->n / ($uptime / 60),
+            ]));
+        });
+
         $this->host = $host;
         $this->port = $port;
         $this->router = new Dispatcher($collector->getData());
@@ -148,6 +178,9 @@ class HTTPServer implements Server, LoggerAwareInterface
         if ($this->logger) $this->logger->info('Server running at'
             . " $this->host on port $this->port");
 
+        $this->start = time();
+        $this->n = 1;
+
         $loop->run();
     }
 
@@ -181,7 +214,9 @@ class HTTPServer implements Server, LoggerAwareInterface
                 return new ReactResponse(405);
         }
 
-        $response = $controller->handle($request, $params);
+        $response = $controller($request, $params);
+
+        $this->n++;
 
         return $response;
     }
