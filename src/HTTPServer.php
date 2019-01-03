@@ -8,6 +8,7 @@ use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std as Parser;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as Dispatcher;
+use Rubix\Server\Middleware\Middleware;
 use Rubix\Server\Controllers\Proba;
 use Rubix\Server\Controllers\Predict;
 use React\Http\Server as ReactServer;
@@ -50,6 +51,13 @@ class HTTPServer implements Server, LoggerAwareInterface
     protected $router;
 
     /**
+     * The middleware stack.
+     * 
+     * @var \Rubix\Server\Middleware\Middleware[]
+     */
+    protected $middleware;
+
+    /**
      * The logger instance.
      *
      * @var \Psr\Log\LoggerInterface|null
@@ -58,12 +66,13 @@ class HTTPServer implements Server, LoggerAwareInterface
 
     /**
      * @param  array  $routes
+     * @param  array  $middleware
      * @param  string  $host
      * @param  int  $port
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $routes, string $host = '127.0.0.1', int $port = 8888)
+    public function __construct(array $routes, array $middleware = [], string $host = '127.0.0.1', int $port = 8888)
     {
         $collector = new RouteCollector(new Parser(), new DataGenerator());
 
@@ -88,6 +97,15 @@ class HTTPServer implements Server, LoggerAwareInterface
             });
         }
 
+        $middleware = array_values($middleware);
+
+        foreach ($middleware as $mw) {
+            if (!$mw instanceof Middleware) {
+                throw new InvalidArgumentException('Middleware must implement'
+                . ' the middleware interface, ' . get_class($mw) . ' found.');
+            }
+        }
+
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
                 . " positive, $port given.");
@@ -96,6 +114,7 @@ class HTTPServer implements Server, LoggerAwareInterface
         $this->host = $host;
         $this->port = $port;
         $this->router = new Dispatcher($collector->getData());
+        $this->middleware = $middleware;
     }
 
     /**
@@ -120,7 +139,9 @@ class HTTPServer implements Server, LoggerAwareInterface
 
         $socket = new Socket("$this->host:$this->port", $loop);
 
-        $server = new ReactServer([$this, 'handle']);
+        $stack = array_merge($this->middleware, [[$this, 'handle']]);
+
+        $server = new ReactServer($stack);
 
         $server->listen($socket);
 
@@ -160,6 +181,8 @@ class HTTPServer implements Server, LoggerAwareInterface
                 return new ReactResponse(405);
         }
 
-        return $controller->handle($request, $params);
+        $response = $controller->handle($request, $params);
+
+        return $response;
     }
 }

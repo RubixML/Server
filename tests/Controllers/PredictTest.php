@@ -6,8 +6,6 @@ use Rubix\Server\Controllers\Predict;
 use Rubix\Server\Controllers\Controller;
 use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
-use InvalidArgumentException;
-use RuntimeException;
 
 class PredictTest extends TestCase
 {

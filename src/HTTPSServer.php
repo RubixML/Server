@@ -21,16 +21,17 @@ class HTTPSServer extends HTTPServer
 
     /**
      * @param  array  $routes
+     * @param  array  $middleware
      * @param  string  $host
      * @param  int  $port
      * @param  string  $cert
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $routes, string $host = '127.0.0.1', int $port = 8888,
-                                string $cert = 'localhost.pem')
+    public function __construct(array $routes, array $middleware = [], string $host = '127.0.0.1',
+                                int $port = 8888, string $cert = 'localhost.pem')
     {
-        parent::__construct($routes, $host, $port);
+        parent::__construct($routes, $middleware, $host, $port);
 
         if (empty($cert)) {
             throw new InvalidArgumentException('Certificate cannot be'
@@ -54,8 +55,10 @@ class HTTPSServer extends HTTPServer
         $socket = new SecureSocket($socket, $loop, [
             'local_cert' => $this->cert,
         ]);
+        
+        $stack = array_merge($this->middleware, [[$this, 'handle']]);
 
-        $server = new ReactServer([$this, 'handle']);
+        $server = new ReactServer($stack);
 
         $server->listen($socket);
 

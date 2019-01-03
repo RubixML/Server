@@ -18,7 +18,7 @@ class HTTPServerTest extends TestCase
     {
         $this->server = new HTTPServer([
             '/sentiment' => new DummyClassifier(),
-        ], '127.0.0.1', 8888);
+        ], [], '127.0.0.1', 8888);
     }
 
     public function test_build_http_server()
