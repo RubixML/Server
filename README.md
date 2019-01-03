@@ -1,6 +1,6 @@
 # Rubix Model Server
 
-Real-time model server that serves Rubix estimators in production.
+A real-time model server that serves Rubix estimators in production.
 
 ## Installation
 Install Rubix ML using Composer:

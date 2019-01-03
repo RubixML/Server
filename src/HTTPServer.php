@@ -13,13 +13,21 @@ use Rubix\Server\Controllers\Predict;
 use React\Http\Server as ReactServer;
 use React\Socket\Server as Socket;
 use React\EventLoop\Factory as Loop;
+use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Response as ReactResponse;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use InvalidArgumentException;
 
-class HTTPServer implements Server
+class HTTPServer implements Server, LoggerAwareInterface
 {
+    const ROUTER_STATUS = [
+        0 => '404',
+        1 => '200',
+        2 => '405',
+    ];
+
     /**
      * The host to bind the server to.
      * 
@@ -40,6 +48,13 @@ class HTTPServer implements Server
      * @var Dispatcher
      */
     protected $router;
+
+    /**
+     * The logger instance.
+     *
+     * @var \Psr\Log\LoggerInterface|null
+     */
+    protected $logger;
 
     /**
      * @param  array  $routes
@@ -84,6 +99,17 @@ class HTTPServer implements Server
     }
 
     /**
+     * Sets a logger.
+     *
+     * @param \Psr\Log\LoggerInterface|null  $logger
+     * @return void
+     */
+    public function setLogger(?LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * Boot up the server.
      * 
      * @return void
@@ -97,6 +123,9 @@ class HTTPServer implements Server
         $server = new ReactServer([$this, 'handle']);
 
         $server->listen($socket);
+
+        if ($this->logger) $this->logger->info('Server running at'
+            . " $this->host on port $this->port");
 
         $loop->run();
     }
@@ -113,6 +142,15 @@ class HTTPServer implements Server
         $method = $request->getMethod();
 
         list($status, $controller, $params) = $this->router->dispatch($method, $uri);
+
+        if ($this->logger) {
+            $server = $request->getServerParams();
+
+            $ip = $server['REMOTE_ADDR'] ?? '0.0.0.0';
+            
+            $this->logger->info(self::ROUTER_STATUS[$status]
+            . " $method $uri from $ip");
+        }
 
         switch ($status) {
             case Dispatcher::NOT_FOUND:

@@ -59,6 +59,9 @@ class HTTPSServer extends HTTPServer
 
         $server->listen($socket);
 
+        if ($this->logger) $this->logger->info('Server running at'
+            . " $this->host on port $this->port");
+
         $loop->run();
     }
 }

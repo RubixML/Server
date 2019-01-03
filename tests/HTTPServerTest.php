@@ -5,6 +5,7 @@ namespace Rubix\Server\Tests;
 use Rubix\Server\Server;
 use Rubix\Server\HTTPServer;
 use Rubix\ML\Classifiers\DummyClassifier;
+use Psr\Log\LoggerAwareInterface;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
 use RuntimeException;
@@ -24,5 +25,6 @@ class HTTPServerTest extends TestCase
     {
         $this->assertInstanceOf(HTTPServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
+        $this->assertInstanceOf(LoggerAwareInterface::class, $this->server);
     }
 }

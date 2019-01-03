@@ -1,7 +1,7 @@
 {
     "name": "rubix/server",
     "type": "library",
-    "description": "Real-time model server that allows you to serve your trained models in production.",
+    "description": "A real-time model server that serves Rubix estimators in production.",
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
     "keywords": [
@@ -19,6 +19,7 @@
         "php": ">=7.1.3",
         "nikic/fast-route": "^1.3",
         "psr/http-message": "^1.0",
+        "psr/log": "^1.1",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
         "rubix/ml": "dev-master"
