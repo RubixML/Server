@@ -85,13 +85,13 @@ class HTTPServer implements Server, LoggerAwareInterface
 
     /**
      * @param  array  $routes
-     * @param  array  $middleware
+     * @param  array  $middlewares
      * @param  string  $host
      * @param  int  $port
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $routes, array $middleware = [], string $host = '127.0.0.1', int $port = 8888)
+    public function __construct(array $routes, array $middlewares = [], string $host = '127.0.0.1', int $port = 8888)
     {
         $collector = new RouteCollector(new Parser(), new DataGenerator());
 
@@ -116,12 +116,13 @@ class HTTPServer implements Server, LoggerAwareInterface
             });
         }
 
-        $middleware = array_values($middleware);
+        $middlewares = array_values($middlewares);
 
-        foreach ($middleware as $mw) {
-            if (!$mw instanceof Middleware) {
+        foreach ($middlewares as $middleware) {
+            if (!$middleware instanceof Middleware) {
                 throw new InvalidArgumentException('Middleware must implement'
-                . ' the middleware interface, ' . get_class($mw) . ' found.');
+                . ' the middleware interface, ' . get_class($middleware)
+                . ' found.');
             }
         }
 
@@ -136,15 +137,15 @@ class HTTPServer implements Server, LoggerAwareInterface
             return new ReactResponse(200, self::DEFAULT_HEADERS, json_encode([
                 'uptime' => $uptime,
                 'requests' => $this->n,
-                'requests_sec' => $this->n / $uptime,
                 'requests_min' => $this->n / ($uptime / 60),
+                'requests_sec' => $this->n / $uptime,
             ]));
         });
 
         $this->host = $host;
         $this->port = $port;
         $this->router = new Dispatcher($collector->getData());
-        $this->middleware = $middleware;
+        $this->middleware = $middlewares;
     }
 
     /**

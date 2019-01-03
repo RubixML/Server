@@ -21,17 +21,17 @@ class HTTPSServer extends HTTPServer
 
     /**
      * @param  array  $routes
-     * @param  array  $middleware
+     * @param  array  $middlewares
      * @param  string  $host
      * @param  int  $port
      * @param  string  $cert
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $routes, array $middleware = [], string $host = '127.0.0.1',
-                                int $port = 8888, string $cert = 'localhost.pem')
+    public function __construct(array $routes, array $middlewares = [], string $host = '127.0.0.1',
+                                int $port = 4443, string $cert = 'localhost.pem')
     {
-        parent::__construct($routes, $middleware, $host, $port);
+        parent::__construct($routes, $middlewares, $host, $port);
 
         if (empty($cert)) {
             throw new InvalidArgumentException('Certificate cannot be'

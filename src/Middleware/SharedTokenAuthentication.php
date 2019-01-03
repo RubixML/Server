@@ -41,7 +41,7 @@ class SharedTokenAuthentication extends Middleware
      */
     public function handle(Request $request, callable $next) : Response
     {
-        $token = strtolower($request->getHeaderLine(self::AUTH_HEADER));
+        $token = $request->getHeaderLine(self::AUTH_HEADER);
 
         if ($token !== $this->token) {
             return new ReactResponse(401);
