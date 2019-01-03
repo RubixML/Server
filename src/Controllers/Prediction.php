@@ -4,13 +4,17 @@ namespace Rubix\Server\Controllers;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Datasets\Unlabeled;
+use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Response as ReactResponse;
 use Exception;
 
-class Predict extends Controller
+class Prediction extends Controller
 {
+    const HEADERS = [
+        'Content-Type' => 'text/json',
+    ];
+
     /**
      * The estimator instance.
      * 
@@ -39,22 +43,22 @@ class Predict extends Controller
         $json = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($json['sample'])) {
-            return new ReactResponse(400, self::DEFAULT_HEADERS, [
+            return new ReactResponse(400, self::HEADERS, json_encode([
                 'error' => 'Missing sample field in request body.',
-            ]);
+            ]));
         }
-
-        $dataset = Unlabeled::build($json['sample'] ?? []);
 
         try {
+            $dataset = Unlabeled::build($json['sample']);
+
             $predictions = $this->estimator->predict($dataset);
         } catch (Exception $e) {
-            return new ReactResponse(500, self::DEFAULT_HEADERS, [
+            return new ReactResponse(500, self::HEADERS, json_encode([
                 'error' => $e->getMessage(),
-            ]);
+            ]));
         }
 
-        return new ReactResponse(200, self::DEFAULT_HEADERS, json_encode([
+        return new ReactResponse(200, self::HEADERS, json_encode([
             'prediction' => $predictions[0],
         ]));
     }

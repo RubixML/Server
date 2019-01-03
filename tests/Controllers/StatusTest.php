@@ -2,23 +2,25 @@
 
 namespace Rubix\Server\Tests\Controllers;
 
-use Rubix\Server\Controllers\Proba;
+use Rubix\Server\RESTServer;
+use Rubix\Server\Controllers\Status;
 use Rubix\Server\Controllers\Controller;
-use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
 
-class ProbaTest extends TestCase
+class StatusTest extends TestCase
 {
     protected $controller;
 
     public function setUp()
     {
-        $this->controller = new Proba(new DummyClassifier());
+        $server = $this->createMock(RESTServer::class);
+        
+        $this->controller = new Status($server);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(Proba::class, $this->controller);
+        $this->assertInstanceOf(Status::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 }

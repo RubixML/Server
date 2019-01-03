@@ -1,6 +1,5 @@
 # Rubix Model Server
-
-A real-time model server that serves Rubix estimators in production.
+Put your Rubix ML models into production fast and effortlessly using real-time model servers based on React PHP.
 
 ## Installation
 Install Rubix ML using Composer:

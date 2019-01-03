@@ -6,11 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 abstract class Controller
-{
-    const DEFAULT_HEADERS = [
-        'Content-Type' => 'text/json',
-    ];
-    
+{    
     /**
      * Handle the request.
      * 
