@@ -6,7 +6,7 @@ use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\Server\Middleware\Middleware;
 use Rubix\Server\Controllers\Status;
-use Rubix\Server\Controllers\Prediction;
+use Rubix\Server\Controllers\Predictions;
 use Rubix\Server\Controllers\Probabilities;
 use FastRoute\RouteCollector as Collector;
 use FastRoute\RouteParser\Std as Parser;
@@ -23,6 +23,16 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use InvalidArgumentException;
 
+/**
+ * REST Server
+ *
+ * Representational State Transfer (REST) server over HTTP and HTTPS where
+ * each model (*resource*) is given a unique user-specified URI prefix.
+ *
+ * @category    Machine Learning
+ * @package     Rubix/ML
+ * @author      Andrew DalPino
+ */
 class RESTServer implements Server, LoggerAwareInterface
 {
     const PREDICTION_ENDPOINT = '/predictions';
@@ -40,7 +50,7 @@ class RESTServer implements Server, LoggerAwareInterface
     ];
 
     /**
-     * The host to bind the server to.
+     * The host address to bind the server to.
      * 
      * @var string
      */
@@ -157,7 +167,7 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Return the uptime of the server.
+     * Return the uptime of the server in seconds.
      * 
      * @return int
      */
@@ -190,7 +200,7 @@ class RESTServer implements Server, LoggerAwareInterface
             }
 
             $collector->addGroup($prefix, function (Collector $r) use ($estimator) {
-                $r->addRoute('POST', self::PREDICTION_ENDPOINT, new Prediction($estimator));
+                $r->addRoute('POST', self::PREDICTION_ENDPOINT, new Predictions($estimator));
 
                 if ($estimator instanceof Probabilistic) {
                     $r->addRoute('POST', self::PROBA_ENDPOINT, new Probabilities($estimator));

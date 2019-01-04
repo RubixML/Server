@@ -47,8 +47,8 @@ class Status extends Controller
         return new ReactResponse(200, self::HEADERS, json_encode([
             'requests' => [
                 'count' => $n,
-                'requests_min' => $n / ($uptime / 60),
-                'requests_sec' => $n / $uptime,
+                'requests_min' => round($n / ($uptime / 60), 2),
+                'requests_sec' => round($n / $uptime, 2),
             ],
             'memory' => [
                 'current' => round($current / (1024 ** 2), 1),

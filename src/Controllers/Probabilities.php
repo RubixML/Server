@@ -40,16 +40,16 @@ class Probabilities extends Controller
      */
     public function handle(Request $request, array $params) : Response
     {
-        $json = json_decode($request->getBody()->getContents(), true);
+        $json = json_decode($request->getBody()->getContents());
 
-        if (!isset($json['sample'])) {
+        if (!isset($json->samples)) {
             return new ReactResponse(400, self::HEADERS, json_encode([
-                'error' => 'Missing sample field in request body.',
+                'error' => 'Missing the samples field in request body.',
             ]));
         }
 
         try {
-            $dataset = Unlabeled::build($json['sample']);
+            $dataset = Unlabeled::build($json->samples);
             
             $probabilities = $this->estimator->proba($dataset);
         } catch (Exception $e) {
@@ -58,8 +58,6 @@ class Probabilities extends Controller
             ]));
         }
 
-        return new ReactResponse(200, self::HEADERS, json_encode([
-            'probabilities' => $probabilities[0],
-        ]));
+        return new ReactResponse(200, self::HEADERS, json_encode($probabilities));
     }
 }

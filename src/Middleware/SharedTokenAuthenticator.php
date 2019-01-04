@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
 
-class SharedTokenAuthentication extends Middleware
+class SharedTokenAuthenticator extends Middleware
 {
     const AUTH_HEADER = 'Authorization';
 

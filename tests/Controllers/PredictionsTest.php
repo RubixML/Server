@@ -2,34 +2,29 @@
 
 namespace Rubix\Server\Tests\Controllers;
 
-use Rubix\Server\Controllers\Probabilities;
+use Rubix\Server\Controllers\Predictions;
 use Rubix\Server\Controllers\Controller;
-use Rubix\ML\Classifiers\GaussianNB;
+use Rubix\ML\Classifiers\DummyClassifier;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class ProbabilitiesTest extends TestCase
+class PredictionsTest extends TestCase
 {
     protected $controller;
 
     public function setUp()
     {
-        $estimator = $this->createMock(GaussianNB::class);
+        $estimator = $this->createMock(DummyClassifier::class);
 
-        $estimator->method('proba')->willReturn([
-            [
-                'positive' => 0.8,
-                'negative' => 0.2,
-            ],
-        ]);
+        $estimator->method('predict')->willReturn(['positive']);
 
-        $this->controller = new Probabilities($estimator);
+        $this->controller = new Predictions($estimator);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(Probabilities::class, $this->controller);
+        $this->assertInstanceOf(Predictions::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
@@ -46,11 +41,8 @@ class ProbabilitiesTest extends TestCase
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $probabilities = json_decode($response->getBody()->getContents(), true);
+        $prediction = json_decode($response->getBody()->getContents());
 
-        $this->assertEquals([
-            'positive' => 0.8,
-            'negative' => 0.2,
-        ], $probabilities[0]);
+        $this->assertEquals('positive', $prediction[0]);
     }
 }
