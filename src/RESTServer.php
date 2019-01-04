@@ -107,7 +107,7 @@ class RESTServer implements Server, LoggerAwareInterface
      * 
      * @var int
      */
-    protected $n;
+    protected $requests;
 
     /**
      * @param  array  $mapping
@@ -121,8 +121,6 @@ class RESTServer implements Server, LoggerAwareInterface
     public function __construct(array $mapping, array $middleware = [], string $host = '127.0.0.1',
                                 int $port = 8888, ?string $cert = null)
     {
-        $this->registerRoutes($mapping);
-
         foreach ($middleware as $mw) {
             if (!$mw instanceof Middleware) {
                 throw new InvalidArgumentException('Middleware must implement'
@@ -130,9 +128,13 @@ class RESTServer implements Server, LoggerAwareInterface
             }
         }
 
+        if (empty($host)) {
+            throw new InvalidArgumentException('Host cannot be empty.');
+        }
+
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
-                . " positive, $port given.");
+                . " a positive integer, $port given.");
         }
 
         if (isset($cert) and empty($cert)) {
@@ -140,11 +142,20 @@ class RESTServer implements Server, LoggerAwareInterface
                 . ' empty.');
         }
 
-        $this->middleware = array_values($middleware);
+        $collector = new Collector(new Parser(), new DataGenerator());
+
+        $collector = $this->collectModelRoutes($collector, $mapping);
+
+        $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) {
+            $r->addRoute('GET', self::STATUS_ENDPOINT, new Status($this));
+        });
 
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
+
+        $this->router = new Dispatcher($collector->getData());
+        $this->middleware = array_values($middleware);
     }
 
     /**
@@ -159,13 +170,13 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Return the number of request served.
+     * Return the number of requests that have been received.
      * 
      * @var int
      */
     public function requests() : int
     {
-        return $this->n;
+        return $this->requests;
     }
 
     /**
@@ -179,20 +190,20 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Register the routes for the server.
+     * Collect the routes to be served by a model.
      * 
+     * @param  Collector  $collector
      * @param  array  $mapping
      * @throws \InvalidArgumentException
-     * @return void
+     * @return Collector
      */
-    protected function registerRoutes(array $mapping) : void
+    protected function collectModelRoutes(Collector $collector, array $mapping) : Collector
     {
-        $collector = new Collector(new Parser(), new DataGenerator());
-
         foreach ($mapping as $prefix => $estimator) {
             if (!is_string($prefix) or empty($prefix)) {
                 throw new InvalidArgumentException('Prefix must be a non'
-                    . ' empty string ' . gettype($prefix) . ' found.');
+                    . ' empty string, ' . empty($prefix) ? 'empty ' : ''
+                    . gettype($prefix) . ' found.');
             }
 
             if ($prefix === self::SERVER_PREFIX) {
@@ -215,13 +226,7 @@ class RESTServer implements Server, LoggerAwareInterface
             });
         }
 
-        $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) {
-            $r->addRoute('GET', self::STATUS_ENDPOINT, new Status($this));
-        });
-
-        $router = new Dispatcher($collector->getData());
-
-        $this->router = $router;
+        return $collector;
     }
 
     /**
@@ -251,7 +256,7 @@ class RESTServer implements Server, LoggerAwareInterface
             . " $this->host on port $this->port");
 
         $this->start = time();
-        $this->n = 0;
+        $this->requests = 0;
 
         $loop->run();
     }
@@ -280,7 +285,7 @@ class RESTServer implements Server, LoggerAwareInterface
             . " $method $uri from $ip");
         }
 
-        $this->n++;
+        $this->requests++;
 
         switch ($status) {
             case Dispatcher::FOUND:
