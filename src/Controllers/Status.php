@@ -50,7 +50,7 @@ class Status extends Controller
                 'requests_min' => round($n / ($uptime / 60), 2),
                 'requests_sec' => round($n / $uptime, 2),
             ],
-            'memory' => [
+            'memory_usage' => [
                 'current' => round($current / (1024 ** 2), 1),
                 'peak' => round($peak / (1024 ** 2), 1),
             ],

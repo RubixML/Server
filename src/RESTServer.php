@@ -35,6 +35,8 @@ use InvalidArgumentException;
  */
 class RESTServer implements Server, LoggerAwareInterface
 {
+    const SERVER_PREFIX = '/server';
+
     const PREDICTION_ENDPOINT = '/predictions';
     const PROBA_ENDPOINT = '/probabilities';
     const STATUS_ENDPOINT = '/status';
@@ -101,7 +103,7 @@ class RESTServer implements Server, LoggerAwareInterface
 
     /**
      * The number of requests that have been handled during this
-     * run.
+     * run of the server.
      * 
      * @var int
      */
@@ -193,6 +195,11 @@ class RESTServer implements Server, LoggerAwareInterface
                     . ' empty string ' . gettype($prefix) . ' found.');
             }
 
+            if ($prefix === self::SERVER_PREFIX) {
+                throw new InvalidArgumentException('The /server prefix is'
+                    . ' a reserved resource.');
+            }
+
             if (!$estimator instanceof Estimator) {
                 throw new InvalidArgumentException('Route must point to'
                     . ' an Estimator instance, ' . get_class($estimator)
@@ -208,14 +215,16 @@ class RESTServer implements Server, LoggerAwareInterface
             });
         }
 
-        $collector->addRoute('GET', self::STATUS_ENDPOINT, new Status($this));
+        $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) {
+            $r->addRoute('GET', self::STATUS_ENDPOINT, new Status($this));
+        });
 
         $router = new Dispatcher($collector->getData());
 
         $this->router = $router;
     }
 
-        /**
+    /**
      * Boot up the server.
      * 
      * @return void
@@ -238,11 +247,11 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $server->listen($socket);
 
-        $this->start = time();
-        $this->n = 0;
-
         if ($this->logger) $this->logger->info('Server running at'
             . " $this->host on port $this->port");
+
+        $this->start = time();
+        $this->n = 0;
 
         $loop->run();
     }
@@ -258,7 +267,9 @@ class RESTServer implements Server, LoggerAwareInterface
         $uri = $request->getUri()->getPath();
         $method = $request->getMethod();
 
-        list($status, $controller, $params) = $this->router->dispatch($method, $uri);
+        $route = $this->router->dispatch($method, $uri);
+
+        list($status, $controller, $params) = array_pad($route, 3, null);
 
         if ($this->logger) {
             $server = $request->getServerParams();
