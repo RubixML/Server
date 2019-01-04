@@ -19,8 +19,8 @@ use React\EventLoop\Factory as Loop;
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface as LoggerAware;
+use Psr\Log\LoggerInterface as Logger;
 use InvalidArgumentException;
 
 /**
@@ -30,20 +30,16 @@ use InvalidArgumentException;
  * each model (*resource*) is given a unique user-specified URI prefix.
  *
  * @category    Machine Learning
- * @package     Rubix/ML
+ * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RESTServer implements Server, LoggerAwareInterface
+class RESTServer implements Server, LoggerAware
 {
     const SERVER_PREFIX = '/server';
 
     const PREDICTION_ENDPOINT = '/predictions';
     const PROBA_ENDPOINT = '/probabilities';
     const STATUS_ENDPOINT = '/status';
-
-    const HEADERS = [
-        'Content-Type' => 'text/json',
-    ];
 
     const ROUTER_STATUS = [
         0 => '404',
@@ -59,7 +55,7 @@ class RESTServer implements Server, LoggerAwareInterface
     protected $host;
 
     /**
-     * The port to run the http services on.
+     * The network port to run the http services on.
      * 
      * @var int
      */
@@ -90,16 +86,9 @@ class RESTServer implements Server, LoggerAwareInterface
     /**
      * The logger instance.
      *
-     * @var \Psr\Log\LoggerInterface|null
+     * @var Logger|null
      */
     protected $logger;
-
-    /**
-     * The time that the server went up.
-     * 
-     * @var float|null
-     */
-    protected $start;
 
     /**
      * The number of requests that have been handled during this
@@ -108,6 +97,13 @@ class RESTServer implements Server, LoggerAwareInterface
      * @var int
      */
     protected $requests;
+
+    /**
+     * The time that the server went up.
+     * 
+     * @var int|null
+     */
+    protected $start;
 
     /**
      * @param  array  $mapping
@@ -147,7 +143,7 @@ class RESTServer implements Server, LoggerAwareInterface
         $collector = $this->collectModelRoutes($collector, $mapping);
 
         $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) {
-            $r->addRoute('GET', self::STATUS_ENDPOINT, new Status($this));
+            $r->get(self::STATUS_ENDPOINT, new Status($this));
         });
 
         $this->host = $host;
@@ -156,15 +152,16 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $this->router = new Dispatcher($collector->getData());
         $this->middleware = array_values($middleware);
+        $this->requests = 0;
     }
 
     /**
      * Sets a logger.
      *
-     * @param \Psr\Log\LoggerInterface|null  $logger
+     * @param Logger|null  $logger
      * @return void
      */
-    public function setLogger(?LoggerInterface $logger = null)
+    public function setLogger(?Logger $logger = null)
     {
         $this->logger = $logger;
     }
@@ -186,7 +183,7 @@ class RESTServer implements Server, LoggerAwareInterface
      */
     public function uptime() : int
     {
-        return (int) (time() - $this->start) ?: 1;
+        return $this->start ? (time() - $this->start) ?: 1 : 0;
     }
 
     /**
@@ -218,10 +215,10 @@ class RESTServer implements Server, LoggerAwareInterface
             }
 
             $collector->addGroup($prefix, function (Collector $r) use ($estimator) {
-                $r->addRoute('POST', self::PREDICTION_ENDPOINT, new Predictions($estimator));
+                $r->post(self::PREDICTION_ENDPOINT, new Predictions($estimator));
 
                 if ($estimator instanceof Probabilistic) {
-                    $r->addRoute('POST', self::PROBA_ENDPOINT, new Probabilities($estimator));
+                    $r->post(self::PROBA_ENDPOINT, new Probabilities($estimator));
                 }
             });
         }
@@ -255,8 +252,8 @@ class RESTServer implements Server, LoggerAwareInterface
         if ($this->logger) $this->logger->info('Server running at'
             . " $this->host on port $this->port");
 
-        $this->start = time();
         $this->requests = 0;
+        $this->start = time();
 
         $loop->run();
     }
@@ -282,14 +279,14 @@ class RESTServer implements Server, LoggerAwareInterface
             $ip = $server['REMOTE_ADDR'] ?? 'unknown';
             
             $this->logger->info(self::ROUTER_STATUS[$status]
-            . " $method $uri from $ip");
+                . " $method $uri from $ip");
         }
 
         $this->requests++;
 
         switch ($status) {
             case Dispatcher::FOUND:
-                return $controller($request, $params);
+                return $controller->handle($request, $params);
 
             case Dispatcher::NOT_FOUND:
                 return new ReactResponse(404);

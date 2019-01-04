@@ -1,5 +1,5 @@
 # Rubix Model Server
-Put your [Rubix ML](https://github.com/RubixML/RubixML) models live into production fast and effortlessly using real-time standalone model servers based on [React PHP](https://reactphp.org/).
+High-performance standalone model servers bring your [Rubix ML](https://github.com/RubixML/RubixML) models live into production quick and effortlessly.
 
 ## Installation
 Install Rubix Server using Composer:
@@ -71,13 +71,12 @@ The server will stay running until the process is terminated.
 Representational State Transfer (REST) server over HTTP and HTTPS where each model (*resource*) is given a unique user-specified URI prefix.
 
 #### Parameters:
-
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | mapping | | array | The mapping of URI prefix (array key) to estimator instance using an associative array. |
 | 2 | middleware | None| array | The HTTP middleware stack to run on each request. |
 | 3 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 4 | port | 8888 | int | The port to run the HTTP services on. |
+| 4 | port | 8888 | int | The network port to run the HTTP services on. |
 | 5 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 
 #### Example
@@ -96,8 +95,21 @@ $server = new RESTServer([
 
 ---
 ### Middleware
-On the map ...
+HTTP middleware are objects that process incoming requests before they are handled. 
 
 ### Shared Token Authenticator
+Authenticates incoming requests using a shared key that is kept secret between the client and server.
 
-On the map ...
+> **Note**: This strategy is only secure over an encrypted channel such as HTTPS with SSL or TLS.
+
+#### Parameters:
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | token | | string | The shared secret key (token) required to authenticate every request. |
+
+#### Example
+```php
+use Rubix\Server\Middleware\SharedTokenAuthenticator;
+
+$middleware = new SharedTokenAuthenticator('secret');
+```

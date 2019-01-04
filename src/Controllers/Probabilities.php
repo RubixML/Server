@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Exception;
 
-class Probabilities extends Controller
+class Probabilities implements Controller
 {
     const HEADERS = [
         'Content-Type' => 'text/json',

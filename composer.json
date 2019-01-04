@@ -1,11 +1,11 @@
 {
     "name": "rubix/server",
     "type": "library",
-    "description": "Put your Rubix models live into production fast and effortlessly using real-time standalone model servers based on React PHP.",
+    "description": "High-performance standalone model servers bring your Rubix ML models live into production quick and effortlessly.",
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
     "keywords": [
-        "php", "machine-learning", "data-science"
+        "php", "machine-learning", "data-science", "model-serving"
     ],
     "authors": [
         {

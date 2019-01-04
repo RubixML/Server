@@ -7,12 +7,26 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
 
+/**
+ * Shared Token Authenticator
+ *
+ * Authenticates incoming requests using a shared key that is kept
+ * secret between the client and server.
+ * 
+ * > **Note**: This strategy is only secure over an encrypted channel
+ * such as HTTPS with SSL or TLS.
+ *
+ * @category    Machine Learning
+ * @package     Rubix/Server
+ * @author      Andrew DalPino
+ */
 class SharedTokenAuthenticator extends Middleware
 {
     const AUTH_HEADER = 'Authorization';
 
     /**
-     * The shared secret or token required to authenticate.
+     * The shared secret key (token) required to authenticate every
+     * request.
      * 
      * @var string
      */

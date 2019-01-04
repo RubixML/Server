@@ -7,7 +7,7 @@ use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class Status extends Controller
+class Status implements Controller
 {
     const HEADERS = [
         'Content-Type' => 'text/json',
