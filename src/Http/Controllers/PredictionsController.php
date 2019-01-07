@@ -1,34 +1,34 @@
 <?php
 
-namespace Rubix\Server\Controllers;
+namespace Rubix\Server\Http\Controllers;
 
-use Rubix\ML\Estimator;
-use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\CommandBus;
+use Rubix\Server\Commands\Predict;
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Exception;
 
-class Predictions implements Controller
+class PredictionsController implements Controller
 {
     const HEADERS = [
         'Content-Type' => 'text/json',
     ];
 
     /**
-     * The estimator instance.
+     * The command bus.
      * 
-     * @var \Rubix\ML\Estimator
+     * @var \Rubix\Server\CommandBus
      */
-    protected $estimator;
+    protected $commandBus;
 
     /**
-     * @param  \Rubix\ML\Estimator  $estimator
+     * @param  \Rubix\Server\CommandBus  $commandBus
      * @return void
      */
-    public function __construct(Estimator $estimator)
+    public function __construct(CommandBus $commandBus)
     {
-        $this->estimator = $estimator;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -42,22 +42,16 @@ class Predictions implements Controller
     {
         $json = json_decode($request->getBody()->getContents());
 
-        if (!isset($json->samples)) {
-            return new ReactResponse(400, self::HEADERS, json_encode([
-                'error' => 'Missing the samples field in request body.',
-            ]));
-        }
-
         try {
-            $dataset = Unlabeled::build($json->samples);
+            $command = new Predict($params['model'], $json->samples);
 
-            $predictions = $this->estimator->predict($dataset);
+            $result = $this->commandBus->dispatch($command);
         } catch (Exception $e) {
             return new ReactResponse(500, self::HEADERS, json_encode([
                 'error' => $e->getMessage(),
             ]));
         }
 
-        return new ReactResponse(200, self::HEADERS, json_encode($predictions));
+        return new ReactResponse(200, self::HEADERS, json_encode($result));
     }
 }

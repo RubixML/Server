@@ -12,11 +12,8 @@
         <testsuite name="Base">
             <directory>tests</directory>
         </testsuite>
-        <testsuite name="Controllers">
-            <directory>tests/Controllers</directory>
-        </testsuite>
-        <testsuite name="Middleware">
-            <directory>tests/Middleware</directory>
+        <testsuite name="Http">
+            <directory>tests/Http</directory>
         </testsuite>
     </testsuites>
     <filter>

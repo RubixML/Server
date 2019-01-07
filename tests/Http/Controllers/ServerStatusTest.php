@@ -1,31 +1,41 @@
 <?php
 
-namespace Rubix\Server\Tests\Controllers;
+namespace Rubix\Server\Tests\Http\Controllers;
 
-use Rubix\Server\RESTServer;
-use Rubix\Server\Controllers\Status;
-use Rubix\Server\Controllers\Controller;
+use Rubix\Server\CommandBus;
+use Rubix\Server\Http\Controllers\ServerStatusController;
+use Rubix\Server\Http\Controllers\Controller;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class StatusTest extends TestCase
+class ServerStatusTest extends TestCase
 {
     protected $controller;
 
     public function setUp()
     {
-        $server = $this->createMock(RESTServer::class);
+        $commandBus = $this->createMock(CommandBus::class);
 
-        $server->method('requests')->willReturn(350);
-        $server->method('uptime')->willReturn(500);
+        $commandBus->method('dispatch')->willReturn([
+            'requests' => [
+                'count' => 350,
+                'requests_min' => 42,
+                'requests_sec' => 0.7,
+            ],
+            'memory_usage' => [
+                'current' => 250,
+                'peak' => 500,
+            ],
+            'uptime' => 7000,
+        ]);
         
-        $this->controller = new Status($server);
+        $this->controller = new ServerStatusController($commandBus);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(Status::class, $this->controller);
+        $this->assertInstanceOf(ServerStatusController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
@@ -40,7 +50,7 @@ class StatusTest extends TestCase
 
         $status = json_decode($response->getBody()->getContents());
 
-        $this->assertEquals(500, $status->uptime);
+        $this->assertEquals(7000, $status->uptime);
         $this->assertEquals(350, $status->requests->count);
         $this->assertEquals(42, $status->requests->requests_min);
         $this->assertEquals(0.7, $status->requests->requests_sec);

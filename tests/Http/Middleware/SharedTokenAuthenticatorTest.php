@@ -1,9 +1,9 @@
 <?php
 
-namespace Rubix\Server\Tests\Middleware;
+namespace Rubix\Server\Tests\Http\Middleware;
 
-use Rubix\Server\Middleware\Middleware;
-use Rubix\Server\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 use PHPUnit\Framework\TestCase;
 
 class SharedTokenAuthenticatorTest extends TestCase

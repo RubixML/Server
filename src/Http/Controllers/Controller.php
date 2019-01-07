@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Controllers;
+namespace Rubix\Server\Http\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;

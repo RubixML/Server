@@ -1,5 +1,5 @@
 # Rubix Model Server
-High-performance standalone model servers bring your [Rubix ML](https://github.com/RubixML/RubixML) models live into production quick and effortlessly.
+High-performance standalone model servers bring your [Rubix ML](https://github.com/RubixML/RubixML) models live into production quickly and effortlessly.
 
 ## Installation
 Install Rubix Server using Composer:
@@ -22,7 +22,7 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you have trained and fine-tuned a machine learning model for a live system, the next step is to put it into production. Rubix model servers expose your trained models as standalone services (such as REST) that can be queried in a live production environment. 
+Once you have trained and fine-tuned a machine learning model for a live system, the next step is to put it into production. Rubix model servers expose your trained models as standalone services (such as REST) that can be queried in a live environment.
 
 #### Example
 ```php
@@ -34,7 +34,7 @@ $estimator = new KNearestNeighbors(5);
 // Train estimator
 
 $server = new RESTServer([
-    '/example' => $estimator,
+    'example' => $estimator,
 ]);
 
 $server->run();
@@ -48,7 +48,7 @@ use Rubix\ML\Persisters\Filesystem;
 $estimator = PersistentModel::load(new  Filesystem('sentiment.model'));
 
 $server = new RESTServer([
-    '/sentiment' => $estimator,
+    'sentiment' => $estimator,
 ]);
 
 $server->run();
@@ -56,7 +56,7 @@ $server->run();
 
 ---
 ### Servers
-Server objects are standalone server implementations built on React PHP, an event-driven system that makes it possible to serve concurrent requests to the same model in memory. Each server implements its own network stack (TCP, HTTP, etc.) such that they can be run from without the need for additional components such as Nginx or Apache.
+Server objects are standalone server implementations built on top of React PHP, an event-driven system that makes it possible to serve thousands concurrent requests. Each server implements its own network stack (TCP, HTTP, etc.) such that they can be run from without the need for additional infrastructure components such as Nginx or Apache.
 
 To boot up a server, simply call the `run()` method on the instance.
 ```php
@@ -73,7 +73,7 @@ Representational State Transfer (REST) server over HTTP and HTTPS where each mod
 #### Parameters:
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | mapping | | array | The mapping of URI prefix (array key) to estimator instance using an associative array. |
+| 1 | models | | array | The models to served keyed by their names. Each name will be used as the model's route prefix. |
 | 2 | middleware | None| array | The HTTP middleware stack to run on each request. |
 | 3 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 4 | port | 8888 | int | The network port to run the HTTP services on. |
@@ -85,9 +85,9 @@ use Rubix\Server\RESTServer;
 use Rubix\Server\Middleware\SharedTokenAuthenticator;
 
 $server = new RESTServer([
-    '/sentiment' => $sentiment,
-    '/credit' => $credit,
-    '/housing' => $housing,
+    'sentiment' => $sentiment,
+    'credit' => $credit,
+    'housing' => $housing,
 ], [
     new SharedTokenAuthenticator('secret'),
 ], '127.0.0.1', 4443, '/cert.pem');

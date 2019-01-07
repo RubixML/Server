@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Middleware;
+namespace Rubix\Server\Http\Middleware;
 
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;

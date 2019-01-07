@@ -4,10 +4,17 @@ namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\Server\Middleware\Middleware;
-use Rubix\Server\Controllers\Status;
-use Rubix\Server\Controllers\Predictions;
-use Rubix\Server\Controllers\Probabilities;
+use Rubix\Server\CommandBus;
+use Rubix\Server\Commands\Predict;
+use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\ServerStatus;
+use Rubix\Server\Handlers\PredictHandler;
+use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\ServerStatusHandler;
+use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Controllers\ServerStatusController;
+use Rubix\Server\Http\Controllers\PredictionsController;
+use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use FastRoute\RouteCollector as Collector;
 use FastRoute\RouteParser\Std as Parser;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
@@ -39,7 +46,7 @@ class RESTServer implements Server, LoggerAware
 
     const PREDICTION_ENDPOINT = '/predictions';
     const PROBA_ENDPOINT = '/probabilities';
-    const STATUS_ENDPOINT = '/status';
+    const SERVER_STATUS_ENDPOINT = '/status';
 
     const ROUTER_STATUS = [
         0 => '404',
@@ -72,7 +79,7 @@ class RESTServer implements Server, LoggerAware
     /**
      * The middleware stack.
      * 
-     * @var \Rubix\Server\Middleware\Middleware[]
+     * @var \Rubix\Server\Http\Middleware\Middleware[]
      */
     protected $middleware;
 
@@ -106,7 +113,7 @@ class RESTServer implements Server, LoggerAware
     protected $start;
 
     /**
-     * @param  array  $mapping
+     * @param  array  $models
      * @param  array  $middleware
      * @param  string  $host
      * @param  int  $port
@@ -114,13 +121,26 @@ class RESTServer implements Server, LoggerAware
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $mapping, array $middleware = [], string $host = '127.0.0.1',
+    public function __construct(array $models, array $middleware = [], string $host = '127.0.0.1',
                                 int $port = 8888, ?string $cert = null)
     {
+        foreach ($models as $name => $estimator) {
+            if (!is_string($name) or empty($name)) {
+                throw new InvalidArgumentException('Model name must be'
+                    . " a non empty string, '$name' given.");
+            }
+
+            if (!$estimator instanceof $estimator) {
+                throw new InvalidArgumentException('Model must implement'
+                    . ' the estimator interface, ' . get_class($estimator)
+                    . ' given.');
+            }
+        }
+
         foreach ($middleware as $mw) {
             if (!$mw instanceof Middleware) {
                 throw new InvalidArgumentException('Middleware must implement'
-                . ' the middleware interface, ' . get_class($mw) . ' found.');
+                . ' the middleware interface, ' . get_class($mw) . ' given.');
             }
         }
 
@@ -138,20 +158,27 @@ class RESTServer implements Server, LoggerAware
                 . ' empty.');
         }
 
+        $commandBus = new CommandBus([
+            Predict::class => new PredictHandler($models),
+            Proba::class => new ProbaHandler($models),
+            ServerStatus::class => new ServerStatusHandler($this),
+        ]);
+
         $collector = new Collector(new Parser(), new DataGenerator());
 
-        $collector = $this->collectModelRoutes($collector, $mapping);
+        $collector->post('/{model}' . self::PREDICTION_ENDPOINT, new PredictionsController($commandBus));
+        $collector->post('/{model}' . self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
 
-        $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) {
-            $r->get(self::STATUS_ENDPOINT, new Status($this));
+        $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) use ($commandBus) {
+            $r->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
         });
 
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
 
-        $this->router = new Dispatcher($collector->getData());
         $this->middleware = array_values($middleware);
+        $this->router = new Dispatcher($collector->getData());
         $this->requests = 0;
     }
 
@@ -184,46 +211,6 @@ class RESTServer implements Server, LoggerAware
     public function uptime() : int
     {
         return $this->start ? (time() - $this->start) ?: 1 : 0;
-    }
-
-    /**
-     * Collect the routes to be served by a model.
-     * 
-     * @param  Collector  $collector
-     * @param  array  $mapping
-     * @throws \InvalidArgumentException
-     * @return Collector
-     */
-    protected function collectModelRoutes(Collector $collector, array $mapping) : Collector
-    {
-        foreach ($mapping as $prefix => $estimator) {
-            if (!is_string($prefix) or empty($prefix)) {
-                throw new InvalidArgumentException('Prefix must be a non'
-                    . ' empty string, ' . empty($prefix) ? 'empty ' : ''
-                    . gettype($prefix) . ' found.');
-            }
-
-            if ($prefix === self::SERVER_PREFIX) {
-                throw new InvalidArgumentException('The /server prefix is'
-                    . ' a reserved resource.');
-            }
-
-            if (!$estimator instanceof Estimator) {
-                throw new InvalidArgumentException('Route must point to'
-                    . ' an Estimator instance, ' . get_class($estimator)
-                    . ' found.');
-            }
-
-            $collector->addGroup($prefix, function (Collector $r) use ($estimator) {
-                $r->post(self::PREDICTION_ENDPOINT, new Predictions($estimator));
-
-                if ($estimator instanceof Probabilistic) {
-                    $r->post(self::PROBA_ENDPOINT, new Probabilities($estimator));
-                }
-            });
-        }
-
-        return $collector;
     }
 
     /**
