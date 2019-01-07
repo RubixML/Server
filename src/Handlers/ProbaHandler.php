@@ -9,7 +9,7 @@ use Rubix\Server\Commands\Proba;
 use InvalidArgumentException;
 use RuntimeException;
 
-class ProbaHandler
+class ProbaHandler implements Handler
 {
     /**
      * The mapping of model names to their estimator instance.
@@ -50,8 +50,15 @@ class ProbaHandler
     public function handle(Proba $command) : array
     {
         $payload = $command->payload();
+
+        $name = $payload['name'];
         
-        $estimator = $this->models[$payload['name']];
+        if (!isset($this->models[$name])) {
+            throw new RuntimeException("Model named '$name'"
+                . ' does not exist.');
+        }
+        
+        $estimator = $this->models[$name];
 
         if (!$estimator instanceof Probabilistic) {
             throw new RuntimeException('Estimator must implment'

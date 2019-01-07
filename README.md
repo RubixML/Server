@@ -82,7 +82,7 @@ Representational State Transfer (REST) server over HTTP and HTTPS where each mod
 #### Example
 ```php
 use Rubix\Server\RESTServer;
-use Rubix\Server\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
 $server = new RESTServer([
     'sentiment' => $sentiment,
@@ -109,7 +109,7 @@ Authenticates incoming requests using a shared key that is kept secret between t
 
 #### Example
 ```php
-use Rubix\Server\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator('secret');
 ```

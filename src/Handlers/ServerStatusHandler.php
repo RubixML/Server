@@ -5,7 +5,7 @@ namespace Rubix\Server\Handlers;
 use Rubix\Server\Server;
 use Rubix\Server\Commands\ServerStatus;
 
-class ServerStatusHandler
+class ServerStatusHandler implements Handler
 {
     /**
      * The server instance.

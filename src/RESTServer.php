@@ -7,14 +7,17 @@ use Rubix\ML\Probabilistic;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
+use Rubix\Server\Http\Controllers\QueryModelController;
+use Rubix\Server\Http\Controllers\ServerStatusController;
 use FastRoute\RouteCollector as Collector;
 use FastRoute\RouteParser\Std as Parser;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
@@ -42,8 +45,10 @@ use InvalidArgumentException;
  */
 class RESTServer implements Server, LoggerAware
 {
+    const MODEL_PREFIX = '/models';
     const SERVER_PREFIX = '/server';
 
+    const MODEL_ENDPOINT = '/{model}';
     const PREDICTION_ENDPOINT = '/predictions';
     const PROBA_ENDPOINT = '/probabilities';
     const SERVER_STATUS_ENDPOINT = '/status';
@@ -161,16 +166,23 @@ class RESTServer implements Server, LoggerAware
         $commandBus = new CommandBus([
             Predict::class => new PredictHandler($models),
             Proba::class => new ProbaHandler($models),
+            QueryModel::class => new QueryModelHandler($models),
             ServerStatus::class => new ServerStatusHandler($this),
         ]);
 
         $collector = new Collector(new Parser(), new DataGenerator());
 
-        $collector->post('/{model}' . self::PREDICTION_ENDPOINT, new PredictionsController($commandBus));
-        $collector->post('/{model}' . self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
+        $collector->addGroup(self::MODEL_PREFIX, function (Collector $group) use ($commandBus) {
+            $group->get(self::MODEL_ENDPOINT, new QueryModelController($commandBus));
 
-        $collector->addGroup(self::SERVER_PREFIX, function (Collector $r) use ($commandBus) {
-            $r->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
+            $group->addGroup(self::MODEL_ENDPOINT, function (Collector $g) use ($commandBus) {
+                $g->post(self::PREDICTION_ENDPOINT, new PredictionsController($commandBus));
+                $g->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
+            });
+        });
+
+        $collector->addGroup(self::SERVER_PREFIX, function (Collector $group) use ($commandBus) {
+            $group->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
         });
 
         $this->host = $host;

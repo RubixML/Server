@@ -3,12 +3,12 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Estimator;
-use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Predict;
+use Rubix\ML\Probabilistic;
+use Rubix\Server\Commands\QueryModel;
 use InvalidArgumentException;
 use RuntimeException;
 
-class PredictHandler implements Handler
+class QueryModelHandler implements Handler
 {
     /**
      * The mapping of model names to their estimator instance.
@@ -42,28 +42,27 @@ class PredictHandler implements Handler
     /**
      * Handle the command.
      * 
-     * @param  \Rubix\Server\Commands\Predict  $command
+     * @param  \Rubix\Server\Commands\QueryModel  $command
+     * @throws \RuntimeException
      * @return array
      */
-    public function handle(Predict $command) : array
+    public function handle(QueryModel $command) : array
     {
         $payload = $command->payload();
 
         $name = $payload['name'];
-        
+
         if (!isset($this->models[$name])) {
             throw new RuntimeException("Model named '$name'"
                 . ' does not exist.');
         }
         
         $estimator = $this->models[$name];
-        
-        $dataset = Unlabeled::build($payload['samples']);
-
-        $predictions = $estimator->predict($dataset);
 
         return [
-            'predictions' => $predictions,
+            'name' => $name,
+            'type' => Estimator::TYPES[$estimator->type()],
+            'probabilistic' => $estimator instanceof Probabilistic,
         ];
     }
 }
