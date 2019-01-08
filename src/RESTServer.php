@@ -3,7 +3,6 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
-use Rubix\ML\Probabilistic;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
@@ -49,7 +48,7 @@ class RESTServer implements Server, LoggerAware
     const SERVER_PREFIX = '/server';
 
     const MODEL_ENDPOINT = '/{model}';
-    const PREDICTION_ENDPOINT = '/predictions';
+    const PREDICT_ENDPOINT = '/predictions';
     const PROBA_ENDPOINT = '/probabilities';
     const SERVER_STATUS_ENDPOINT = '/status';
 
@@ -67,7 +66,7 @@ class RESTServer implements Server, LoggerAware
     protected $host;
 
     /**
-     * The network port to run the http services on.
+     * The network port to run the HTTP services on.
      * 
      * @var int
      */
@@ -82,7 +81,7 @@ class RESTServer implements Server, LoggerAware
     protected $cert;
 
     /**
-     * The middleware stack.
+     * The HTTP middleware stack.
      * 
      * @var \Rubix\Server\Http\Middleware\Middleware[]
      */
@@ -111,7 +110,7 @@ class RESTServer implements Server, LoggerAware
     protected $requests;
 
     /**
-     * The time that the server went up.
+     * The timestamp from when the server went up.
      * 
      * @var int|null
      */
@@ -164,9 +163,9 @@ class RESTServer implements Server, LoggerAware
         }
 
         $commandBus = new CommandBus([
+            QueryModel::class => new QueryModelHandler($models),
             Predict::class => new PredictHandler($models),
             Proba::class => new ProbaHandler($models),
-            QueryModel::class => new QueryModelHandler($models),
             ServerStatus::class => new ServerStatusHandler($this),
         ]);
 
@@ -176,7 +175,7 @@ class RESTServer implements Server, LoggerAware
             $group->get(self::MODEL_ENDPOINT, new QueryModelController($commandBus));
 
             $group->addGroup(self::MODEL_ENDPOINT, function (Collector $g) use ($commandBus) {
-                $g->post(self::PREDICTION_ENDPOINT, new PredictionsController($commandBus));
+                $g->post(self::PREDICT_ENDPOINT, new PredictionsController($commandBus));
                 $g->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
             });
         });
@@ -185,12 +184,12 @@ class RESTServer implements Server, LoggerAware
             $group->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
         });
 
+        $this->router = new Dispatcher($collector->getData());
+        $this->middleware = array_values($middleware);
+
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
-
-        $this->middleware = array_values($middleware);
-        $this->router = new Dispatcher($collector->getData());
         $this->requests = 0;
     }
 

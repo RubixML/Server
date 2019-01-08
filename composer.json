@@ -5,7 +5,8 @@
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
     "keywords": [
-        "php", "machine-learning", "data-science", "model-serving"
+        "php", "machine-learning", "data-science", "model-serving", "server", "microservice",
+        "json-api", "api", "rest-api"
     ],
     "authors": [
         {

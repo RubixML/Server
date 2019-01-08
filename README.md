@@ -79,6 +79,14 @@ Representational State Transfer (REST) server over HTTP and HTTPS where each mod
 | 4 | port | 8888 | int | The network port to run the HTTP services on. |
 | 5 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 
+#### Routes:
+| Method | URI | JSON Params | Description |
+|--|--|--|--|
+| GET | /{model} | | Query information about the model. |
+| POST | /{model}/predictions | `samples` | Return the predictions given by the model. |
+| POST | /{model}/probabilities | `samples` | Predict the probabilities of each possible outcome. |
+| GET | /server/status | | Query the status of the server. |
+
 #### Example
 ```php
 use Rubix\Server\RESTServer;
@@ -113,3 +121,21 @@ use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator('secret');
 ```
+
+---
+## Testing
+Rubix utilizes a combination of static analysis and unit tests for quality assurance and to reduce the number of bugs. Rubix provides two [Composer](https://getcomposer.org/) scripts that can be run from the root directory to automate the testing process.
+
+To run static analysis:
+```sh
+composer analyze
+```
+
+To run the unit tests:
+```sh
+composer test
+```
+
+---
+## License
+[MIT](https://github.com/RubixML/Server/blob/master/LICENSE.md)
