@@ -6,7 +6,6 @@ php:
     - '7.3'
 
 before_install:
-    - pecl install -f zmq
     - pecl install -f igbinary
 
 install:
