@@ -6,6 +6,7 @@ php:
     - '7.3'
 
 before_install:
+    - echo "extension = zmq.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
     - pecl install -f igbinary
 
 install:
