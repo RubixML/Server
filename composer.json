@@ -24,9 +24,12 @@
         "psr/log": "^1.1",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
+        "react/zmq": "^0.4.0",
         "rubix/ml": "dev-master"
     },
     "require-dev": {
+        "ext-igbinary": "*",
+        "ext-zmq": "*",
         "phpstan/phpstan": "^0.10.0",
         "phpstan/phpstan-phpunit": "^0.10.0",
         "phpunit/phpunit": "7.2.*"

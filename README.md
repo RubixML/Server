@@ -11,20 +11,26 @@ $ composer require rubix/server
 ## Requirements
 -  [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
 
+#### Optional
+	- [Zero MQ extension](https://pecl.php.net/package/zmq) for lightweight messaging
+	- [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
+
 ## Documentation
 
 ### Table of Contents
 - [Getting Started](#getting-started)
 - [Servers](#servers)
 	- [REST Server](#rest-server)
+	- [Zero MQ Server](#zero-mq-server)
 - [Clients](#clients)
 	- [REST Client](#rest-client)
+	- [ZeroMQ Client](#zeromq-client)
 - [Http Middleware](#http-middeware)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 
 ---
 ### Getting Started
-Once you have trained a machine learning model for a live system, the next step is to put it into production with one of the model servers. Rubix model servers expose your trained models as standalone services (such as REST) that can be queried in a live environment.
+Once you have trained a machine learning model for a live system, the next step is to put it into production with one of the model servers. Rubix model servers expose your trained models as standalone services (such as REST, ZeroMQ, etc.) that can be queried in a live production environment.
 
 ---
 ### Servers
@@ -62,7 +68,7 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | estimator | | object | The estimator instance that you want to serve. |
-| 2 | middleware | None| array | The HTTP middleware stack to run on each request. |
+| 2 | middleware | None | array | The HTTP middleware stack to run on each request. |
 | 3 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 4 | port | 8888 | int | The network port to run the HTTP services on. |
 | 5 | cert | null | ?string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
@@ -79,15 +85,32 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 ```php
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
-use Rubix\ML\Classifiers\KNearestNeighbors;
-
-$estimator = new KNearestNeighbors(3);
-
-// Train the estimator
 
 $server = new RESTServer($estimator, [
     new SharedTokenAuthenticator('secret'),
 ], '127.0.0.1', 4443, '/cert.pem');
+```
+
+### ZeroMQ Server
+Fast and lightweight background messaging server that doesn't require a separate message broker.
+
+> **Note**: This server requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
+
+#### Parameters:
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | estimator | | object | The estimator instance that you want to serve. |
+| 2 | host | '127.0.0.1' | string | The host address to bind the server to. |
+| 3 | port | 5555 | int | The network port to run the server to. |
+| 4 | protocol | 'tcp' | string | The transport protocol to use. |
+| 5 | serializer | Native | object | The message serializer/unserializer. |
+
+#### Example
+```php
+use Rubix\Server\ZeroMQServer;
+use Rubix\Server\Serializers\Binary;
+
+$server = new ZeroMQServer($estimator, '127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---
@@ -127,6 +150,27 @@ use Rubix\Server\RESTClient;
 $client = new RESTClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
 ]);
+```
+
+### ZeroMQ Client
+Client for the [ZeroMQ Server](#zeromq-server) which uses lightweight background messaging for fast service to service communication.
+
+> **Note**: This client requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
+
+#### Parameters:
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | host | '127.0.0.1' | string | The address that the server is running on. |
+| 2 | port | 5555 | int | The network port the server is binded to. |
+| 3 | protocol | 'tcp' | string | The transport protocol to use. |
+| 4 | serializer | Native | object | The message serializer/unserializer. |
+
+#### Example:
+```php
+use Rubix\Server\ZeroMQClient;
+use Rubix\Server\Serializers\Binary;
+
+$client = new ZeroMQClient('127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---

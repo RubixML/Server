@@ -8,7 +8,18 @@ use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use GuzzleHttp\Client as Guzzle;
+use InvalidArgumentException;
 
+/**
+ * REST Client
+ *
+ * The REST Client is made to communicate with a REST Server over HTTP or
+ * Secure HTTP (HTTPS).
+ *
+ * @category    Machine Learning
+ * @package     Rubix/Server
+ * @author      Andrew DalPino
+ */
 class RESTClient implements Client
 {
     const ROUTES = [
@@ -30,11 +41,17 @@ class RESTClient implements Client
      * @param  int  $port
      * @param  bool  $secure
      * @param  array  $headers
+     * @throws \InvalidArgumentException
      * @return void
      */
     public function __construct(string $host = '127.0.0.1', int $port = 8888, bool $secure = false,
                                 array $headers = [])
     {
+        if ($port < 0) {
+            throw new InvalidArgumentException('Port number must be'
+                . " a positive integer, $port given.");
+        }
+
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",
             'headers' => $headers,
