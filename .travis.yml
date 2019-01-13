@@ -5,8 +5,13 @@ php:
     - '7.2'
     - '7.3'
 
+addons:
+    apt:
+        packages:
+            - libzmq-dev
+
 before_install:
-    - echo "extension = zmq.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+    - echo "yes" | pecl -d install zmq
     - pecl install -f igbinary
 
 install:

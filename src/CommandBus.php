@@ -60,15 +60,15 @@ class CommandBus
      */
     public function dispatch(Command $command)
     {
-        $className = get_class($command);
+        $classname = get_class($command);
 
-        $handler = $this->mapping[$className] ?? null;
+        $handler = $this->mapping[$classname] ?? null;
 
         if ($handler) {
             return $handler->handle($command);
         }
 
         throw new RuntimeException('An appropriate handler could'
-            . " not be located for $className.");
+            . " not be located for $classname.");
     }
 }

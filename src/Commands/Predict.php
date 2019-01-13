@@ -4,6 +4,15 @@ namespace Rubix\Server\Commands;
 
 use InvalidArgumentException;
 
+/**
+ * Predict
+ *
+ * Make predictions on unknown samples and return them in an array.
+ *
+ * @category    Machine Learning
+ * @package     Rubix/Server
+ * @author      Andrew DalPino
+ */
 class Predict implements Command
 {
     /**

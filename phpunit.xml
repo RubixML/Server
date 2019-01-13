@@ -12,6 +12,12 @@
         <testsuite name="Base">
             <directory>tests</directory>
         </testsuite>
+        <testsuite name="Commands">
+            <directory>tests/Commands</directory>
+        </testsuite>
+        <testsuite name="Handlers">
+            <directory>tests/Handlers</directory>
+        </testsuite>
         <testsuite name="Http">
             <directory>tests/Http</directory>
         </testsuite>

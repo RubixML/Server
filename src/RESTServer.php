@@ -118,23 +118,16 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * @param  \Rubix\ML\Estimator  $estimator
-     * @param  array  $middleware
      * @param  string  $host
      * @param  int  $port
+     * @param  array  $middleware
      * @param  string|null  $cert
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(Estimator $estimator, array $middleware = [], string $host = '127.0.0.1',
-                                int $port = 8888, ?string $cert = null)
+    public function __construct(Estimator $estimator, string $host = '127.0.0.1', int $port = 8888,
+                                array $middleware = [], ?string $cert = null)
     {
-        foreach ($middleware as $mw) {
-            if (!$mw instanceof Middleware) {
-                throw new InvalidArgumentException('Middleware must implement'
-                . ' the middleware interface, ' . get_class($mw) . ' given.');
-            }
-        }
-
         if (empty($host)) {
             throw new InvalidArgumentException('Host cannot be empty.');
         }
@@ -142,6 +135,13 @@ class RESTServer implements Server, LoggerAware
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
                 . " a positive integer, $port given.");
+        }
+
+        foreach ($middleware as $mw) {
+            if (!$mw instanceof Middleware) {
+                throw new InvalidArgumentException('Middleware must implement'
+                . ' the middleware interface, ' . get_class($mw) . ' given.');
+            }
         }
 
         if (isset($cert) and empty($cert)) {

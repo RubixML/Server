@@ -1,12 +1,12 @@
 {
     "name": "rubix/server",
     "type": "library",
-    "description": "High-performance standalone model servers bring your Rubix ML models live into production quickly and effortlessly.",
+    "description": "High-performance standalone model servers bring your Rubix ML estimators live into production quickly and effortlessly.",
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
     "keywords": [
         "php", "machine-learning", "data-science", "model-serving", "server", "microservice",
-        "json-api", "api", "rest-api"
+        "json-api", "api", "rest-api", "zeromq", "soa"
     ],
     "authors": [
         {
@@ -35,6 +35,8 @@
         "phpunit/phpunit": "7.2.*"
     },
     "suggest": {
+        "ext-zmq": "For lightweight messaging",
+        "ext-igbinary": "For fast binary message serialization"
     },
     "autoload": {
         "psr-4": {

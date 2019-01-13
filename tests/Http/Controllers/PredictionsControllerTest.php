@@ -9,7 +9,7 @@ use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class PredictionsTest extends TestCase
+class PredictionsControllerTest extends TestCase
 {
     protected $controller;
 

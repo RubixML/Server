@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\ML\Persisters\Serializers;
+namespace Rubix\Server\Serializers;
 
 use Rubix\Server\Commands\Command;
 use RuntimeException;

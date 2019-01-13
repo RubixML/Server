@@ -12,8 +12,8 @@ $ composer require rubix/server
 -  [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
 
 #### Optional
-	- [Zero MQ extension](https://pecl.php.net/package/zmq) for lightweight messaging
-	- [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
+- [Zero MQ extension](https://pecl.php.net/package/zmq) for lightweight messaging
+- [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
 
 ## Documentation
 
@@ -50,7 +50,7 @@ $estimator = new KNearestNeighbors(3);
 
 // Train estimator
 
-$server = new RESTServer($estimator);
+$server = new RESTServer($estimator, '127.0.0.1', 8888);
 
 $server->run();
 ```
@@ -68,9 +68,9 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | estimator | | object | The estimator instance that you want to serve. |
-| 2 | middleware | None | array | The HTTP middleware stack to run on each request. |
-| 3 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 4 | port | 8888 | int | The network port to run the HTTP services on. |
+| 2 | host | '127.0.0.1' | string | The host address to bind the server to. |
+| 3 | port | 8888 | int | The network port to run the HTTP services on. |
+| 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
 | 5 | cert | null | ?string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 
 #### Routes:
@@ -86,9 +86,9 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
-$server = new RESTServer($estimator, [
+$server = new RESTServer($estimator, '127.0.0.1', 4443, [
     new SharedTokenAuthenticator('secret'),
-], '127.0.0.1', 4443, '/cert.pem');
+], '/cert.pem');
 ```
 
 ### ZeroMQ Server
@@ -102,7 +102,7 @@ Fast and lightweight background messaging server that doesn't require a separate
 | 1 | estimator | | object | The estimator instance that you want to serve. |
 | 2 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 3 | port | 5555 | int | The network port to run the server to. |
-| 4 | protocol | 'tcp' | string | The transport protocol to use. |
+| 4 | protocol | 'tcp' | string | The transport protocol to use (tcp, inproc, ipc, pgm, or ipgm). |
 | 5 | serializer | Native | object | The message serializer/unserializer. |
 
 #### Example
@@ -129,7 +129,7 @@ use Rubix\Server\Commands\Predict;
 
 $client = new RESTClient('127.0.0.1', 8888);
 
-$result = $client->send(new Predict($samples));
+$predictions = $client->send(new Predict($samples));
 ```
 
 ### REST Client
@@ -140,7 +140,7 @@ The REST Client is made to communicate with a [REST Server](#rest-server) over H
 |--|--|--|--|--|
 | 1 | host | '127.0.0.1' | string | The address of the server. |
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
-| 3 | secure | false | bool | Should we use HTTPS?. |
+| 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
 | 4 | headers | None| array | Any additional HTTP headers to send along with each request. |
 
 #### Example:
@@ -162,7 +162,7 @@ Client for the [ZeroMQ Server](#zeromq-server) which uses lightweight background
 |--|--|--|--|--|
 | 1 | host | '127.0.0.1' | string | The address that the server is running on. |
 | 2 | port | 5555 | int | The network port the server is binded to. |
-| 3 | protocol | 'tcp' | string | The transport protocol to use. |
+| 3 | protocol | 'tcp' | string | The transport protocol to use (tcp, inproc, ipc, pgm, or ipgm). |
 | 4 | serializer | Native | object | The message serializer/unserializer. |
 
 #### Example:

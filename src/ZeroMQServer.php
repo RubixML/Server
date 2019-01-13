@@ -28,7 +28,8 @@ use ZMQ;
 /**
  * Zero MQ Server
  * 
- * Fast and lightweight background messaging server that doesn't require a separate message broker.
+ * Fast and lightweight background messaging server that doesn't require a
+ * separate message broker.
  * 
  * > **Note**: This server requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
  *
@@ -38,7 +39,7 @@ use ZMQ;
  */
 class ZeroMQServer implements Server, LoggerAware
 {
-    const TRANSPORT_PROTOCOLS = [
+    const PROTOCOLS = [
         'tcp', 'inproc', 'ipc', 'pgm', 'epgm',
     ];
 
@@ -127,7 +128,7 @@ class ZeroMQServer implements Server, LoggerAware
                 . " a positive integer, $port given.");
         }
 
-        if (!in_array($protocol, self::TRANSPORT_PROTOCOLS)) {
+        if (!in_array($protocol, self::PROTOCOLS)) {
             throw new InvalidArgumentException("'$protocol' is an invalid"
                 . ' protocol.');
         }
@@ -208,14 +209,14 @@ class ZeroMQServer implements Server, LoggerAware
                 $result = $this->commandBus->dispatch($command);
             } catch (Exception $e) {
                 $result = [
-                    'error' => 'Command could not be handled properly.',
+                    'error' => $e->getMessage(),
                 ];
             }
 
+            $this->requests++;
+
             if ($this->logger) $this->logger->info('Handled '
                 . Params::shortName($command) . ' command');
-
-            $this->requests++;
 
             $server->send(json_encode($result) ?: '');
         });

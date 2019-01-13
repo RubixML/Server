@@ -4,6 +4,15 @@ namespace Rubix\Server\Commands;
 
 use InvalidArgumentException;
 
+/**
+ * Predict
+ *
+ * Return the probabilistic predictions of an array of unknown samples.
+ *
+ * @category    Machine Learning
+ * @package     Rubix/Server
+ * @author      Andrew DalPino
+ */
 class Proba implements Command
 {
     /**

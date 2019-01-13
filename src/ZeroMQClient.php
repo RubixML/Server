@@ -62,7 +62,7 @@ class ZeroMQClient implements Client
                 . " a positive integer, $port given.");
         }
 
-        if (!in_array($protocol, ZeroMQServer::TRANSPORT_PROTOCOLS)) {
+        if (!in_array($protocol, ZeroMQServer::PROTOCOLS)) {
             throw new InvalidArgumentException("'$protocol' is an invalid"
                 . ' protocol.');
         }
