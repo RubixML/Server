@@ -5,64 +5,37 @@ namespace Rubix\Server\Handlers;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\QueryModel;
-use InvalidArgumentException;
-use RuntimeException;
 
 class QueryModelHandler implements Handler
 {
     /**
-     * The mapping of model names to their estimator instance.
+     * The model being served.
      * 
-     * @var \Rubix\ML\Estimator[]
+     * @var \Rubix\ML\Estimator
      */
-    protected $models;
+    protected $estimator;
 
     /**
-     * @param  array  $models
-     * @throws \InvalidArgumentException
+     * @param  \Rubix\ML\Estimator  $estimator
      * @return void
      */
-    public function __construct(array $models)
+    public function __construct(Estimator $estimator)
     {
-        foreach ($models as $name => $estimator) {
-            if (!is_string($name) or empty($name)) {
-                throw new InvalidArgumentException('Model name must be'
-                    . ' a non empty string.');
-            }
-
-            if (!$estimator instanceof $estimator) {
-                throw new InvalidArgumentException('Model must implement'
-                    . ' the estimator interface.');
-            }
-        }
-
-        $this->models = $models;
+        $this->estimator = $estimator;
     }
 
     /**
      * Handle the command.
      * 
      * @param  \Rubix\Server\Commands\QueryModel  $command
-     * @throws \RuntimeException
      * @return array
      */
     public function handle(QueryModel $command) : array
     {
-        $payload = $command->payload();
-
-        $name = $payload['name'];
-
-        if (!isset($this->models[$name])) {
-            throw new RuntimeException("Model named '$name'"
-                . ' does not exist.');
-        }
-        
-        $estimator = $this->models[$name];
-
         return [
-            'name' => $name,
-            'type' => Estimator::TYPES[$estimator->type()],
-            'probabilistic' => $estimator instanceof Probabilistic,
+            'name' => get_class($this->estimator),
+            'type' => Estimator::TYPES[$this->estimator->type()],
+            'probabilistic' => $this->estimator instanceof Probabilistic,
         ];
     }
 }

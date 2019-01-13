@@ -15,10 +15,7 @@ class RESTServerTest extends TestCase
 
     public function setUp()
     {
-        $this->server = new RESTServer([
-            '/sentiment' => new DummyClassifier(),
-            '/price' => new DummyRegressor(),
-        ], [], '127.0.0.1', 8888, null);
+        $this->server = new RESTServer(new DummyClassifier(), [], '127.0.0.1', 8888, null);
     }
 
     public function test_build_server()

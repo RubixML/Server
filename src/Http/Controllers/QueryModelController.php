@@ -41,7 +41,7 @@ class QueryModelController implements Controller
     public function handle(Request $request, array $params) : Response
     {
         try {
-            $command = new QueryModel($params['model']);
+            $command = new QueryModel();
 
             $result = $this->commandBus->dispatch($command);
         } catch (Exception $e) {

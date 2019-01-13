@@ -2,75 +2,40 @@
 
 namespace Rubix\Server\Handlers;
 
-use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Proba;
-use InvalidArgumentException;
-use RuntimeException;
 
 class ProbaHandler implements Handler
 {
     /**
-     * The mapping of model names to their estimator instance.
+     * The probabilistic model that is being served.
      * 
-     * @var \Rubix\ML\Estimator[]
+     * @var \Rubix\ML\Probabilistic
      */
-    protected $models;
+    protected $estimator;
 
     /**
-     * @param  array  $models
-     * @throws \InvalidArgumentException
+     * @param  \Rubix\ML\Probabilistic  $estimator
      * @return void
      */
-    public function __construct(array $models)
+    public function __construct(Probabilistic $estimator)
     {
-        foreach ($models as $name => $estimator) {
-            if (!is_string($name) or empty($name)) {
-                throw new InvalidArgumentException('Model name must be'
-                    . ' a non empty string.');
-            }
-
-            if (!$estimator instanceof $estimator) {
-                throw new InvalidArgumentException('Model must implement'
-                    . ' the estimator interface.');
-            }
-        }
-
-        $this->models = $models;
+        $this->estimator = $estimator;
     }
 
     /**
      * Handle the command.
      * 
      * @param  \Rubix\Server\Commands\Proba  $command
-     * @throws \RuntimeException
      * @return array
      */
     public function handle(Proba $command) : array
-    {
-        $payload = $command->payload();
+    {        
+        $dataset = Unlabeled::build($command->samples());
 
-        $name = $payload['name'];
-        
-        if (!isset($this->models[$name])) {
-            throw new RuntimeException("Model named '$name'"
-                . ' does not exist.');
-        }
-        
-        $estimator = $this->models[$name];
+        $probabilities = $this->estimator->proba($dataset);
 
-        if (!$estimator instanceof Probabilistic) {
-            throw new RuntimeException('Estimator must implment'
-                . ' the probabilistic interface.');
-        }
-        
-        $dataset = Unlabeled::build($payload['samples']);
-
-        $probabilities = $estimator->proba($dataset);
-
-        return [
-            'probabilities' => $probabilities,
-        ];
+        return $probabilities;
     }
 }

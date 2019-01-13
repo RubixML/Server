@@ -5,38 +5,23 @@ namespace Rubix\Server\Handlers;
 use Rubix\ML\Estimator;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Predict;
-use InvalidArgumentException;
-use RuntimeException;
 
 class PredictHandler implements Handler
 {
     /**
-     * The mapping of model names to their estimator instance.
+     * The model that is being served.
      * 
-     * @var \Rubix\ML\Estimator[]
+     * @var \Rubix\ML\Estimator
      */
-    protected $models;
+    protected $estimator;
 
     /**
-     * @param  array  $models
-     * @throws \InvalidArgumentException
+     * @param  \Rubix\ML\Estimator  $estimator
      * @return void
      */
-    public function __construct(array $models)
+    public function __construct(Estimator $estimator)
     {
-        foreach ($models as $name => $estimator) {
-            if (!is_string($name) or empty($name)) {
-                throw new InvalidArgumentException('Model name must be'
-                    . ' a non empty string.');
-            }
-
-            if (!$estimator instanceof $estimator) {
-                throw new InvalidArgumentException('Model must implement'
-                    . ' the estimator interface.');
-            }
-        }
-
-        $this->models = $models;
+        $this->estimator = $estimator;
     }
 
     /**
@@ -46,24 +31,11 @@ class PredictHandler implements Handler
      * @return array
      */
     public function handle(Predict $command) : array
-    {
-        $payload = $command->payload();
+    {        
+        $dataset = Unlabeled::build($command->samples());
 
-        $name = $payload['name'];
-        
-        if (!isset($this->models[$name])) {
-            throw new RuntimeException("Model named '$name'"
-                . ' does not exist.');
-        }
-        
-        $estimator = $this->models[$name];
-        
-        $dataset = Unlabeled::build($payload['samples']);
+        $predictions = $this->estimator->predict($dataset);
 
-        $predictions = $estimator->predict($dataset);
-
-        return [
-            'predictions' => $predictions,
-        ];
+        return $predictions;
     }
 }

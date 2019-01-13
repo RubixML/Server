@@ -43,7 +43,7 @@ class PredictionsController implements Controller
         $json = json_decode($request->getBody()->getContents());
 
         try {
-            $command = new Predict($params['model'], $json->samples);
+            $command = new Predict($json->samples);
 
             $result = $this->commandBus->dispatch($command);
         } catch (Exception $e) {

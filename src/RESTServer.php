@@ -3,6 +3,7 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
+use Rubix\ML\Probabilistic;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
@@ -44,10 +45,9 @@ use InvalidArgumentException;
  */
 class RESTServer implements Server, LoggerAware
 {
-    const MODEL_PREFIX = '/models';
+    const MODEL_PREFIX = '/model';
     const SERVER_PREFIX = '/server';
 
-    const MODEL_ENDPOINT = '/{model}';
     const PREDICT_ENDPOINT = '/predictions';
     const PROBA_ENDPOINT = '/probabilities';
     const SERVER_STATUS_ENDPOINT = '/status';
@@ -117,7 +117,7 @@ class RESTServer implements Server, LoggerAware
     protected $start;
 
     /**
-     * @param  array  $models
+     * @param  \Rubix\ML\Estimator  $estimator
      * @param  array  $middleware
      * @param  string  $host
      * @param  int  $port
@@ -125,22 +125,9 @@ class RESTServer implements Server, LoggerAware
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $models, array $middleware = [], string $host = '127.0.0.1',
+    public function __construct(Estimator $estimator, array $middleware = [], string $host = '127.0.0.1',
                                 int $port = 8888, ?string $cert = null)
     {
-        foreach ($models as $name => $estimator) {
-            if (!is_string($name) or empty($name)) {
-                throw new InvalidArgumentException('Model name must be'
-                    . " a non empty string, '$name' given.");
-            }
-
-            if (!$estimator instanceof $estimator) {
-                throw new InvalidArgumentException('Model must implement'
-                    . ' the estimator interface, ' . get_class($estimator)
-                    . ' given.');
-            }
-        }
-
         foreach ($middleware as $mw) {
             if (!$mw instanceof Middleware) {
                 throw new InvalidArgumentException('Middleware must implement'
@@ -162,22 +149,28 @@ class RESTServer implements Server, LoggerAware
                 . ' empty.');
         }
 
-        $commandBus = new CommandBus([
-            QueryModel::class => new QueryModelHandler($models),
-            Predict::class => new PredictHandler($models),
-            Proba::class => new ProbaHandler($models),
+        $commands = [
+            QueryModel::class => new QueryModelHandler($estimator),
+            Predict::class => new PredictHandler($estimator),
             ServerStatus::class => new ServerStatusHandler($this),
-        ]);
+        ];
+
+        if ($estimator instanceof Probabilistic) {
+            $commands[Proba::class] = new ProbaHandler($estimator);
+        }
+
+        $commandBus = new CommandBus($commands);
 
         $collector = new Collector(new Parser(), new DataGenerator());
 
-        $collector->addGroup(self::MODEL_PREFIX, function (Collector $group) use ($commandBus) {
-            $group->get(self::MODEL_ENDPOINT, new QueryModelController($commandBus));
+        $collector->get(self::MODEL_PREFIX, new QueryModelController($commandBus));
 
-            $group->addGroup(self::MODEL_ENDPOINT, function (Collector $g) use ($commandBus) {
-                $g->post(self::PREDICT_ENDPOINT, new PredictionsController($commandBus));
-                $g->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
-            });
+        $collector->addGroup(self::MODEL_PREFIX, function (Collector $group) use ($commandBus, $estimator) {
+            $group->post(self::PREDICT_ENDPOINT, new PredictionsController($commandBus));
+            
+            if ($estimator instanceof Probabilistic) {
+                $group->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
+            }
         });
 
         $collector->addGroup(self::SERVER_PREFIX, function (Collector $group) use ($commandBus) {

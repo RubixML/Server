@@ -7,13 +7,6 @@ use InvalidArgumentException;
 class Predict implements Command
 {
     /**
-     * The name of the model.
-     * 
-     * @var string
-     */
-    protected $name;
-
-    /**
      * The samples to predict.
      * 
      * @var array[]
@@ -21,20 +14,23 @@ class Predict implements Command
     protected $samples;
 
     /**
-     * @param  string  $name
      * @param  array  $samples
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(string $name, array $samples) 
+    public function __construct(array $samples) 
     {
-        if (empty($name)) {
-            throw new InvalidArgumentException('Model name cannot be'
-                . ' empty.');
-        }
-
-        $this->name = $name;
         $this->samples = $samples;
+    }
+
+    /**
+     * Return the samples to rpedict.
+     * 
+     * @return array
+     */
+    public function samples() : array
+    {
+        return $this->samples;
     }
 
     /**
@@ -45,7 +41,6 @@ class Predict implements Command
     public function payload() : array
     {
         return [
-            'name' => $this->name,
             'samples' => $this->samples,
         ];
     }

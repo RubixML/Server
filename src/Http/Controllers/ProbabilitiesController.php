@@ -43,7 +43,7 @@ class ProbabilitiesController implements Controller
         $json = json_decode($request->getBody()->getContents());
 
         try {
-            $command = new Proba($params['model'], $json->samples);
+            $command = new Proba($json->samples);
 
             $result = $this->commandBus->dispatch($command);
         } catch (Exception $e) {
