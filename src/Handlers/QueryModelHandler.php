@@ -33,7 +33,6 @@ class QueryModelHandler implements Handler
     public function handle(QueryModel $command) : array
     {
         return [
-            'name' => get_class($this->estimator),
             'type' => Estimator::TYPES[$this->estimator->type()],
             'probabilistic' => $this->estimator instanceof Probabilistic,
         ];

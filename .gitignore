@@ -1,5 +1,5 @@
 /vendor
+/example.php
+/client.php
 composer.lock
-example.php
-client.php
 *.model
