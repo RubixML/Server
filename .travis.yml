@@ -11,7 +11,7 @@ addons:
             - libzmq-dev
 
 before_install:
-    - echo "yes" | pecl install zmq
+    - echo "yes" | pecl -d preferred_state=beta install zmq
     - pecl install -f igbinary
 
 install:
