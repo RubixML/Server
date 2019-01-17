@@ -2,12 +2,9 @@
 
 namespace Rubix\Server\Commands;
 
-interface Command
+use Rubix\Server\Message;
+
+abstract class Command extends Message
 {
-    /**
-     * Return the payload.
-     * 
-     * @return array
-     */
-    public function payload() : array;
+    //
 }

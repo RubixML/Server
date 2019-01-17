@@ -5,6 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\Controller;
+use Rubix\Server\Responses\ProbaResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -17,14 +18,7 @@ class ProbabilitiesControllerTest extends TestCase
     {
         $commandBus = $this->createMock(CommandBus::class);
 
-        $commandBus->method('dispatch')->willReturn([
-            'probabilities' => [
-                [
-                    'positive' => 0.8,
-                    'negative' => 0.2,
-                ],
-            ],
-        ]);
+        $commandBus->method('dispatch')->willReturn(new ProbaResponse([]));
 
         $this->controller = new ProbabilitiesController($commandBus);
     }
@@ -47,12 +41,5 @@ class ProbabilitiesControllerTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-
-        $probabilities = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertEquals([
-            'positive' => 0.8,
-            'negative' => 0.2,
-        ], $probabilities['probabilities'][0]);
     }
 }

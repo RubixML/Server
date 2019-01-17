@@ -9,12 +9,14 @@ use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
+use Rubix\Server\Commands\Command;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
+use Rubix\Server\Responses\ErrorResponse;
 use Rubix\Server\Serializers\Serializer;
-use Rubix\Server\Serializers\Native;
+use Rubix\Server\Serializers\Json;
 use Rubix\ML\Other\Helpers\Params;
 use React\EventLoop\Factory as Loop;
 use React\ZMQ\Context;
@@ -134,7 +136,7 @@ class ZeroMQServer implements Server, LoggerAware
         }
 
         if (is_null($serializer)) {
-            $serializer = new Native();
+            $serializer = new Json();
         }
 
         $commands = [
@@ -203,26 +205,31 @@ class ZeroMQServer implements Server, LoggerAware
             ->bind("$this->protocol://$this->host:$this->port");
 
         $server->on('message', function (string $message) use ($server) {
-            $command = $this->serializer->unserialize($message);
-
             try {
-                $result = $this->commandBus->dispatch($command);
+                $command = $this->serializer->unserialize($message);
+
+                if (!$command instanceof Command) {
+                    throw new RuntimeException('Command could not'
+                        . ' be reconstituted.');
+                }
+
+                $response = $this->commandBus->dispatch($command);
+
+                if ($this->logger) $this->logger->info('Handled '
+                    . Params::shortName($command) . ' command');
             } catch (Exception $e) {
-                $result = [
-                    'error' => $e->getMessage(),
-                ];
+                $response = new ErrorResponse($e->getMessage());
             }
 
             $this->requests++;
 
-            if ($this->logger) $this->logger->info('Handled '
-                . Params::shortName($command) . ' command');
+            $message = $this->serializer->serialize($response);
 
-            $server->send(json_encode($result) ?: '');
+            $server->send($message);
         });
 
         if ($this->logger) $this->logger->info('Server running at'
-            . " $this->host on $this->protocol port $this->port");
+            . " $this->host on port $this->port");
 
         $this->requests = 0;
         $this->start = time();

@@ -1,24 +1,22 @@
 <?php
 
-namespace Rubix\Server\Commands;
+namespace Rubix\Server\Responses;
 
 /**
- * Predict
- *
- * Make predictions on unknown samples and return them in an array.
+ * Proba Response
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class Predict extends Command
+class ProbaResponse extends Response
 {
     /**
-     * The samples to predict.
+     * The probabilities returned from the model.
      * 
-     * @var array[]
+     * @var array
      */
-    protected $samples;
+    protected $probabilities;
 
     /**
      * Build the command from an associative array of data.
@@ -28,26 +26,26 @@ class Predict extends Command
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['samples'] ?? []);
+        return new self($data['probabilities'] ?? []);
     }
 
     /**
-     * @param  array  $samples
+     * @param  array  $probabilities
      * @return void
      */
-    public function __construct(array $samples) 
+    public function __construct(array $probabilities) 
     {
-        $this->samples = $samples;
+        $this->probabilities = $probabilities;
     }
 
     /**
-     * Return the samples to predict.
+     * Return the probabilities.
      * 
      * @return array
      */
-    public function samples() : array
+    public function probabilities() : array
     {
-        return $this->samples;
+        return $this->probabilities;
     }
 
     /**
@@ -58,7 +56,7 @@ class Predict extends Command
     public function asArray() : array
     {
         return [
-            'samples' => $this->samples,
+            'probabilities' => $this->probabilities,
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace Rubix\Server\Handlers;
 use Rubix\ML\Estimator;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Predict;
+use Rubix\Server\Responses\PredictResponse;
 
 class PredictHandler implements Handler
 {
@@ -28,14 +29,14 @@ class PredictHandler implements Handler
      * Handle the command.
      * 
      * @param  \Rubix\Server\Commands\Predict  $command
-     * @return array
+     * @return \Rubix\Server\Responses\PredictResponse
      */
-    public function handle(Predict $command) : array
+    public function handle(Predict $command) : PredictResponse
     {        
         $dataset = Unlabeled::build($command->samples());
 
         $predictions = $this->estimator->predict($dataset);
 
-        return $predictions;
+        return new PredictResponse($predictions);
     }
 }

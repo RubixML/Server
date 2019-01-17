@@ -2,8 +2,6 @@
 
 namespace Rubix\Server\Commands;
 
-use InvalidArgumentException;
-
 /**
  * Predict
  *
@@ -13,7 +11,7 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class Proba implements Command
+class Proba extends Command
 {
     /**
      * The samples to predict.
@@ -21,6 +19,17 @@ class Proba implements Command
      * @var array[]
      */
     protected $samples;
+
+    /**
+     * Build the command from an associative array of data.
+     * 
+     * @param  array  $data
+     * @return self
+     */
+    public static function fromArray(array $data) : self
+    {
+        return new self($data['samples'] ?? []);
+    }
 
     /**
      * @param  array  $samples
@@ -43,11 +52,11 @@ class Proba implements Command
     }
 
     /**
-     * Return the payload.
-     * 
+     * Return the message as an array.
+     *
      * @return array
      */
-    public function payload() : array
+    public function asArray() : array
     {
         return [
             'samples' => $this->samples,

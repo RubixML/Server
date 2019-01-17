@@ -4,6 +4,8 @@ namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
+use Rubix\Server\Responses\ErrorResponse;
+use Rubix\Server\Serializers\Json;
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -23,12 +25,20 @@ class PredictionsController implements Controller
     protected $commandBus;
 
     /**
+     * The JSON message serializer.
+     * 
+     * @var \Rubix\Server\Serializers\Json
+     */
+    protected $serializer;
+
+    /**
      * @param  \Rubix\Server\CommandBus  $commandBus
      * @return void
      */
     public function __construct(CommandBus $commandBus)
     {
         $this->commandBus = $commandBus;
+        $this->serializer = new Json();
     }
 
     /**
@@ -40,18 +50,22 @@ class PredictionsController implements Controller
      */
     public function handle(Request $request, array $params) : Response
     {
-        $json = json_decode($request->getBody()->getContents());
-
         try {
-            $command = new Predict($json->samples);
+            $json = json_decode($request->getBody()->getContents(), true);
 
-            $result = $this->commandBus->dispatch($command);
+            $command = new Predict($json['data']['samples'] ?? []);
+
+            $response = $this->commandBus->dispatch($command);
+
+            $status = 200;
         } catch (Exception $e) {
-            return new ReactResponse(500, self::HEADERS, json_encode([
-                'error' => $e->getMessage(),
-            ]));
+            $response = new ErrorResponse($e->getMessage());
+
+            $status = 500;
         }
 
-        return new ReactResponse(200, self::HEADERS, json_encode($result));
+        $data = $this->serializer->serialize($response);
+
+        return new ReactResponse($status, self::HEADERS, $data);
     }
 }

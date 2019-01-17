@@ -7,8 +7,11 @@ use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
+use Rubix\Server\Responses\Response;
+use Rubix\Server\Serializers\Json;
 use GuzzleHttp\Client as Guzzle;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * REST Client
@@ -37,6 +40,14 @@ class RESTClient implements Client
     protected $client;
 
     /**
+     * The serializer used to serialize/unserialize messages before
+     * and after transit.
+     * 
+     * @var \Rubix\Server\Serializers\Serializer
+     */
+    protected $serializer;
+
+    /**
      * @param  string  $host
      * @param  int  $port
      * @param  bool  $secure
@@ -56,22 +67,32 @@ class RESTClient implements Client
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",
             'headers' => $headers,
         ]);
+
+        $this->serializer = new Json();
     }
 
     /**
      * Send a command to the server and return the results.
      * 
      * @param  \Rubix\Server\Commands\Command  $command
-     * @return array
+     * @throws \RuntimeException
+     * @return \Rubix\Server\Responses\Response
      */
-    public function send(Command $command) : array
+    public function send(Command $command) : Response
     {
         list($method, $uri) = self::ROUTES[get_class($command)];
 
-        $response = $this->client->request($method, $uri, [
-            'json' => $command->payload(),
-        ]);
+        $data = $this->client->request($method, $uri, [
+            'json' => $command,
+        ])->getBody();
 
-        return json_decode($response->getBody(), true);
+        $response = $this->serializer->unserialize($data);
+
+        if (!$response instanceof Response) {
+            throw new RuntimeException('Response could not'
+                . ' be reconstituted.');
+        }
+
+        return $response;
     }
 }

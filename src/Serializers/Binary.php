@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Serializers;
 
-use Rubix\Server\Commands\Command;
+use Rubix\Server\Message;
 use RuntimeException;
 
 /**
@@ -30,23 +30,23 @@ class Binary implements Serializer
     }
 
     /**
-     * Serialize a command.
+     * Serialize a Message.
      * 
-     * @param  \Rubix\Server\Commands\Command  $command
+     * @param  \Rubix\Server\Message  $message
      * @return string
      */
-    public function serialize(Command $command) : string
+    public function serialize(Message $message) : string
     {
-        return igbinary_serialize($command) ?: '';
+        return igbinary_serialize($message) ?: '';
     }
 
     /**
-     * Unserialize a command.
+     * Unserialize a Message.
      * 
      * @param string  $data
-     * @return \Rubix\Server\Commands\Command;
+     * @return \Rubix\Server\Message;
      */
-    public function unserialize(string $data) : Command
+    public function unserialize(string $data) : Message
     {
         return igbinary_unserialize($data);
     }

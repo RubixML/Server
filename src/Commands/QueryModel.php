@@ -2,8 +2,6 @@
 
 namespace Rubix\Server\Commands;
 
-use InvalidArgumentException;
-
 /**
  * Query Model
  *
@@ -13,14 +11,25 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class QueryModel implements Command
+class QueryModel extends Command
 {
     /**
-     * Return the payload.
+     * Build the command from an associative array of data.
      * 
+     * @param  array  $data
+     * @return self
+     */
+    public static function fromArray(array $data) : self
+    {
+        return new self();
+    }
+
+    /**
+     * Return the message as an array.
+     *
      * @return array
      */
-    public function payload() : array
+    public function asArray() : array
     {
         return [
             //

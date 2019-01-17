@@ -4,6 +4,7 @@ namespace Rubix\Server\Handlers;
 
 use Rubix\Server\Server;
 use Rubix\Server\Commands\ServerStatus;
+use Rubix\Server\Responses\ServerStatusResponse;
 
 class ServerStatusHandler implements Handler
 {
@@ -27,27 +28,23 @@ class ServerStatusHandler implements Handler
      * Handle the command.
      * 
      * @param  \Rubix\Server\Commands\ServerStatus  $command
-     * @return array
+     * @return \Rubix\Server\Responses\ServerStatusResponse
      */
-    public function handle(ServerStatus $command) : array
+    public function handle(ServerStatus $command) : ServerStatusResponse
     {
-        $n = $this->server->requests();
         $uptime = $this->server->uptime();
-        
-        $current = memory_get_usage();
-        $peak = memory_get_peak_usage();
+        $n = $this->server->requests();
 
-        return [
-            'requests' => [
-                'count' => $n,
-                'requests_min' => round($n / ($uptime / 60), 2),
-                'requests_sec' => round($n / $uptime, 2),
-            ],
-            'memory_usage' => [
-                'current' => round($current / (1024 ** 2), 1),
-                'peak' => round($peak / (1024 ** 2), 1),
-            ],
-            'uptime' => $uptime,
+        $requests = [
+            'count' => $n,
+            'requestsMin' => round($n / ($uptime / 60), 2),
         ];
+        
+        $memoryUsage = [
+            'current' => round(memory_get_usage() / (1024 ** 2), 1),
+            'peak' => round(memory_get_peak_usage() / (1024 ** 2), 1),
+        ];
+
+        return new ServerStatusResponse($requests, $memoryUsage, $uptime);
     }
 }

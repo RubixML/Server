@@ -4,6 +4,7 @@ namespace Rubix\Server;
 
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Handlers\Handler;
+use Rubix\Server\Responses\Response;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -56,9 +57,9 @@ class CommandBus
      * 
      * @param  \Rubix\Server\Commands\Command  $command
      * @throws \RuntimeException
-     * @return mixed
+     * @return \Rubix\Server\Responses\Response
      */
-    public function dispatch(Command $command)
+    public function dispatch(Command $command) : Response
     {
         $classname = get_class($command);
 

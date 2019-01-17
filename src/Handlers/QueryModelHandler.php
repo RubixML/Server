@@ -5,6 +5,7 @@ namespace Rubix\Server\Handlers;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\QueryModel;
+use Rubix\Server\Responses\QueryModelResponse;
 
 class QueryModelHandler implements Handler
 {
@@ -28,13 +29,13 @@ class QueryModelHandler implements Handler
      * Handle the command.
      * 
      * @param  \Rubix\Server\Commands\QueryModel  $command
-     * @return array
+     * @return \Rubix\Server\Responses\QueryModelResponse
      */
-    public function handle(QueryModel $command) : array
+    public function handle(QueryModel $command) : QueryModelResponse
     {
-        return [
-            'type' => Estimator::TYPES[$this->estimator->type()],
-            'probabilistic' => $this->estimator instanceof Probabilistic,
-        ];
+        $type = Estimator::TYPES[$this->estimator->type()];
+        $probabilistic = $this->estimator instanceof Probabilistic;
+
+        return new QueryModelResponse($type, $probabilistic);
     }
 }

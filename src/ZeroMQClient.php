@@ -3,8 +3,9 @@
 namespace Rubix\Server;
 
 use Rubix\Server\Commands\Command;
+use Rubix\Server\Responses\Response;
 use Rubix\Server\Serializers\Serializer;
-use Rubix\Server\Serializers\Native;
+use Rubix\Server\Serializers\Json;
 use InvalidArgumentException;
 use RuntimeException;
 use ZMQContext;
@@ -68,7 +69,7 @@ class ZeroMQClient implements Client
         }
 
         if (is_null($serializer)) {
-            $serializer = new Native();
+            $serializer = new Json();
         }
 
         $this->client = new ZMQSocket(new ZMQContext(), ZMQ::SOCKET_REQ);
@@ -82,14 +83,22 @@ class ZeroMQClient implements Client
      * Send a command to the server and return the results.
      * 
      * @param  \Rubix\Server\Commands\Command  $command
-     * @return array
+     * @throws \RuntimeException
+     * @return \Rubix\Server\Responses\Response
      */
-    public function send(Command $command) : array
+    public function send(Command $command) : Response
     {
         $data = $this->serializer->serialize($command);
 
-        $result = $this->client->send($data)->recv();
+        $message = $this->client->send($data)->recv();
 
-        return json_decode($result, true);
+        $response = $this->serializer->unserialize($message);
+
+        if (!$response instanceof Response) {
+            throw new RuntimeException('Response could not'
+                . ' be reconstituted.');
+        }
+
+        return $response;
     }
 }

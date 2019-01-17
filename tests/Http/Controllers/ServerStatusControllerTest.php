@@ -5,6 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Http\Controllers\Controller;
+use Rubix\Server\Responses\ServerStatusResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -17,18 +18,7 @@ class ServerStatusControllerTest extends TestCase
     {
         $commandBus = $this->createMock(CommandBus::class);
 
-        $commandBus->method('dispatch')->willReturn([
-            'requests' => [
-                'count' => 350,
-                'requests_min' => 42,
-                'requests_sec' => 0.7,
-            ],
-            'memory_usage' => [
-                'current' => 250,
-                'peak' => 500,
-            ],
-            'uptime' => 7000,
-        ]);
+        $commandBus->method('dispatch')->willReturn(new ServerStatusResponse([], [], 2));
         
         $this->controller = new ServerStatusController($commandBus);
     }
@@ -47,12 +37,5 @@ class ServerStatusControllerTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-
-        $status = json_decode($response->getBody()->getContents());
-
-        $this->assertEquals(7000, $status->uptime);
-        $this->assertEquals(350, $status->requests->count);
-        $this->assertEquals(42, $status->requests->requests_min);
-        $this->assertEquals(0.7, $status->requests->requests_sec);
     }
 }

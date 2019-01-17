@@ -5,6 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\Controller;
+use Rubix\Server\Responses\PredictResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -17,11 +18,7 @@ class PredictionsControllerTest extends TestCase
     {
         $commandBus = $this->createMock(CommandBus::class);
 
-        $commandBus->method('dispatch')->willReturn([
-            'predictions' => [
-                'positive',
-            ],
-        ]);
+        $commandBus->method('dispatch')->willReturn(new PredictResponse([]));
 
         $this->controller = new PredictionsController($commandBus);
     }
@@ -44,9 +41,5 @@ class PredictionsControllerTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-
-        $predictions = json_decode($response->getBody()->getContents());
-
-        $this->assertEquals('positive', $predictions->predictions[0]);
     }
 }
