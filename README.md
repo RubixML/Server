@@ -9,10 +9,10 @@ $ composer require rubix/server
 ```
 
 ## Requirements
--  [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
+- [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
+- [Zero MQ extension](https://pecl.php.net/package/zmq) for lightweight messaging
 
 #### Optional
-- [Zero MQ extension](https://pecl.php.net/package/zmq) for lightweight messaging
 - [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
 
 ## Documentation
@@ -25,6 +25,11 @@ $ composer require rubix/server
 - [Clients](#clients)
 	- [REST Client](#rest-client)
 	- [ZeroMQ Client](#zeromq-client)
+- [Commands](#commands)
+	- [Predict](#predict)
+	- [Proba](#proba)
+	- [Query Model](#query-model)
+	- [Server Status](#server-status)
 - [Http Middleware](#http-middeware)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 
@@ -171,6 +176,66 @@ use Rubix\Server\ZeroMQClient;
 use Rubix\Server\Serializers\Binary;
 
 $client = new ZeroMQClient('127.0.0.1', 5555, 'tcp', new Binary());
+```
+
+---
+### Commands
+Commands are sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. The result of a command is a Response object that contains the data sent back from the server.
+
+### Predict
+Executes the predict method on the model being servered with the supplied sample array.
+
+#### Parameters:
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | samples | | array | The unknown samples to predict. |
+
+#### Example:
+```php
+use Rubix\Server\Commands\Predict;
+
+$command = new Predict($samples);
+```
+
+### Proba
+Return the probabilistic predictions from an underlying probabilistic model.
+
+#### Parameters:
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | samples | | array | The unknown samples to predict. |
+
+#### Example:
+```php
+use Rubix\Server\Commands\Proba;
+
+$command = new Proba($samples);
+```
+
+### Query Model
+Query the status of the model being served.
+
+#### Parameters:
+This command does not have any parameters.
+
+#### Example:
+```php
+use Rubix\Server\Commands\QueryModel;
+
+$command = new QueryModel();
+```
+
+### Server Status
+Return statistics regarding the server status such as uptime, requests per minute, and memory usage.
+
+#### Parameters:
+This command does not have any parameters.
+
+#### Example:
+```php
+use Rubix\Server\Commands\ServerStatus;
+
+$command = new ServerStatus();
 ```
 
 ---

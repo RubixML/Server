@@ -25,6 +25,11 @@ use RuntimeException;
  */
 class RESTClient implements Client
 {
+    const DEFAULT_HEADERS = [
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
+    ];
+
     const ROUTES = [
         QueryModel::class => ['GET', RESTServer::MODEL_PREFIX],
         Predict::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::PREDICT_ENDPOINT],
@@ -62,6 +67,8 @@ class RESTClient implements Client
             throw new InvalidArgumentException('Port number must be'
                 . " a positive integer, $port given.");
         }
+
+        $headers = array_replace(self::DEFAULT_HEADERS, $headers);
 
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",

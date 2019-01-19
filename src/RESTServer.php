@@ -139,8 +139,9 @@ class RESTServer implements Server, LoggerAware
 
         foreach ($middleware as $mw) {
             if (!$mw instanceof Middleware) {
-                throw new InvalidArgumentException('Middleware must implement'
-                . ' the middleware interface, ' . get_class($mw) . ' given.');
+                throw new InvalidArgumentException('Class must implement'
+                . ' the middleware interface, ' . get_class($mw)
+                . ' given.');
             }
         }
 

@@ -216,7 +216,7 @@ class ZeroMQServer implements Server, LoggerAware
                 $response = $this->commandBus->dispatch($command);
 
                 if ($this->logger) $this->logger->info('Handled '
-                    . Params::shortName($command) . ' command');
+                    . Params::shortName($command));
             } catch (Exception $e) {
                 $response = new ErrorResponse($e->getMessage());
             }
@@ -229,7 +229,8 @@ class ZeroMQServer implements Server, LoggerAware
         });
 
         if ($this->logger) $this->logger->info('Server running at'
-            . " $this->host on port $this->port");
+            . " $this->host on port $this->port using $this->protocol"
+            . " protocol.");
 
         $this->requests = 0;
         $this->start = time();
