@@ -274,10 +274,10 @@ class RESTServer implements Server, LoggerAware
                 . " $method $uri from $ip");
         }
 
-        $this->requests++;
-
         switch ($status) {
             case Dispatcher::FOUND:
+                $this->requests++;
+                
                 return $controller->handle($request, $params);
 
             case Dispatcher::NOT_FOUND:

@@ -24,7 +24,7 @@ use ZMQ;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ZeroMQClient implements Client
+class ZMQClient implements Client
 {
     /**
      * The ZeroMQ client.
@@ -63,7 +63,7 @@ class ZeroMQClient implements Client
                 . " a positive integer, $port given.");
         }
 
-        if (!in_array($protocol, ZeroMQServer::PROTOCOLS)) {
+        if (!in_array($protocol, ZMQServer::PROTOCOLS)) {
             throw new InvalidArgumentException("'$protocol' is an invalid"
                 . ' protocol.');
         }

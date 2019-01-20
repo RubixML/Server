@@ -90,7 +90,7 @@ class RESTClient implements Client
         list($method, $uri) = self::ROUTES[get_class($command)];
 
         $data = $this->client->request($method, $uri, [
-            'json' => $command,
+            'json' => $command->asArray(),
         ])->getBody();
 
         $response = $this->serializer->unserialize($data);

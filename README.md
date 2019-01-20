@@ -112,10 +112,10 @@ Fast and lightweight background messaging server that doesn't require a separate
 
 #### Example
 ```php
-use Rubix\Server\ZeroMQServer;
+use Rubix\Server\ZMQServer;
 use Rubix\Server\Serializers\Binary;
 
-$server = new ZeroMQServer($estimator, '127.0.0.1', 5555, 'tcp', new Binary());
+$server = new ZMQServer($estimator, '127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---
@@ -172,10 +172,10 @@ Client for the [ZeroMQ Server](#zeromq-server) which uses lightweight background
 
 #### Example:
 ```php
-use Rubix\Server\ZeroMQClient;
+use Rubix\Server\ZMQClient;
 use Rubix\Server\Serializers\Binary;
 
-$client = new ZeroMQClient('127.0.0.1', 5555, 'tcp', new Binary());
+$client = new ZMQClient('127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---

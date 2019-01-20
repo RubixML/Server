@@ -39,7 +39,7 @@ use ZMQ;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ZeroMQServer implements Server, LoggerAware
+class ZMQServer implements Server, LoggerAware
 {
     const PROTOCOLS = [
         'tcp', 'inproc', 'ipc', 'pgm', 'epgm',
@@ -80,6 +80,13 @@ class ZeroMQServer implements Server, LoggerAware
      * @var \Rubix\Server\CommandBus
      */
     protected $commandBus;
+
+    /**
+     * The Zero MQ socket.
+     * 
+     * @var \React\ZMQ\SocketWrapper
+     */
+    protected $server;
 
     /**
      * The logger instance.
@@ -132,7 +139,8 @@ class ZeroMQServer implements Server, LoggerAware
 
         if (!in_array($protocol, self::PROTOCOLS)) {
             throw new InvalidArgumentException("'$protocol' is an invalid"
-                . ' protocol.');
+                . ' protocol, only allowed '
+                . implode(', ', self::PROTOCOLS) . '.');
         }
 
         if (is_null($serializer)) {
@@ -204,29 +212,9 @@ class ZeroMQServer implements Server, LoggerAware
         $server->getWrappedSocket()
             ->bind("$this->protocol://$this->host:$this->port");
 
-        $server->on('message', function (string $message) use ($server) {
-            try {
-                $command = $this->serializer->unserialize($message);
+        $server->on('message', [$this, 'handle']);
 
-                if (!$command instanceof Command) {
-                    throw new RuntimeException('Command could not'
-                        . ' be reconstituted.');
-                }
-
-                $response = $this->commandBus->dispatch($command);
-
-                if ($this->logger) $this->logger->info('Handled '
-                    . Params::shortName($command));
-            } catch (Exception $e) {
-                $response = new ErrorResponse($e->getMessage());
-            }
-
-            $this->requests++;
-
-            $message = $this->serializer->serialize($response);
-
-            $server->send($message);
-        });
+        $this->server = $server;
 
         if ($this->logger) $this->logger->info('Server running at'
             . " $this->host on port $this->port using $this->protocol"
@@ -236,5 +224,37 @@ class ZeroMQServer implements Server, LoggerAware
         $this->start = time();
 
         $loop->run();
+    }
+
+    /**
+     * Handle a request.
+     * 
+     * @param  string  $message
+     * @throws \RuntimeException
+     * @return void
+     */
+    public function handle(string $message) : void
+    {
+        try {
+            $command = $this->serializer->unserialize($message);
+
+            if (!$command instanceof Command) {
+                throw new RuntimeException('Command could not'
+                    . ' be reconstituted.');
+            }
+
+            $response = $this->commandBus->dispatch($command);
+
+            if ($this->logger) $this->logger->info('Handled '
+                . Params::shortName($command));
+
+            $this->requests++;
+        } catch (Exception $e) {
+            $response = new ErrorResponse($e->getMessage());
+        }
+
+        $message = $this->serializer->serialize($response);
+
+        $this->server->send($message);
     }
 }
