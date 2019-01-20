@@ -25,11 +25,13 @@ $ composer require rubix/server
 - [Clients](#clients)
 	- [REST Client](#rest-client)
 	- [ZeroMQ Client](#zeromq-client)
-- [Commands](#commands)
-	- [Predict](#predict)
-	- [Proba](#proba)
-	- [Query Model](#query-model)
-	- [Server Status](#server-status)
+- [Messages](#messages)
+	- [Commands](#commands)
+		- [Predict](#predict)
+		- [Proba](#proba)
+		- [Query Model](#query-model)
+		- [Server Status](#server-status)
+	- [Responses](#responses)
 - [Http Middleware](#http-middeware)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 
@@ -179,8 +181,23 @@ $client = new ZMQClient('127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---
+### Messages
+Messages are containers for the data that flow accross the network. They provide an object oriented interface to making requests and receiving responses through client/server interaction.
+
+To build a Message from an associative array:
+```php
+public static function fromArray() : self
+```
+
+To return the Message as an associative array:
+```php
+public function asArray() : array
+```
+
+> **Note**: Message objects use magic getters that allow you to access the payload data as if they were public properties of the message instance.
+
 ### Commands
-Commands are sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. The result of a command is a Response object that contains the data sent back from the server.
+Commands are messages sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. The result of a command is a [Response](#responses) object that contains the data sent back from the server.
 
 ### Predict
 Executes the predict method on the model being servered with the supplied sample array.
@@ -237,6 +254,9 @@ use Rubix\Server\Commands\ServerStatus;
 
 $command = new ServerStatus();
 ```
+
+### Responses
+Response objects are those returned as a result of an executed [Command](#commands). They contain all the data being sent back from the server.
 
 ---
 ### HTTP Middleware

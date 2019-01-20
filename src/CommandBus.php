@@ -45,7 +45,7 @@ class CommandBus
             if (!$handler instanceof Handler) {
                 throw new InvalidArgumentException('Command must map'
                     . ' to a handler, ' . get_class($handler)
-                    . ' found.');
+                    . ' given.');
             }
         }
 
@@ -65,11 +65,11 @@ class CommandBus
 
         $handler = $this->mapping[$classname] ?? null;
 
-        if ($handler) {
-            return $handler->handle($command);
+        if (!$handler) {
+            throw new RuntimeException('An appropriate handler could'
+                . " not be located for $classname.");
         }
 
-        throw new RuntimeException('An appropriate handler could'
-            . " not be located for $classname.");
+        return $handler->handle($command);
     }
 }
