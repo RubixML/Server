@@ -3,14 +3,14 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Http\Controllers\ServerStatusController;
+use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\ServerStatusResponse;
+use Rubix\Server\Responses\QueryModelResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class ServerStatusControllerTest extends TestCase
+class QueryModelControllerTest extends TestCase
 {
     protected $controller;
 
@@ -19,14 +19,14 @@ class ServerStatusControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new ServerStatusResponse([], [], 2));
+            ->willReturn(new QueryModelResponse('Classifier', true));
         
-        $this->controller = new ServerStatusController($commandBus);
+        $this->controller = new QueryModelController($commandBus);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(ServerStatusController::class, $this->controller);
+        $this->assertInstanceOf(QueryModelController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 

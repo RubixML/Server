@@ -22,4 +22,18 @@ class PredictResponseTest extends TestCase
         $this->assertInstanceOf(PredictResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
+
+    public function test_as_array()
+    {
+        $expected = [
+            'predictions' => [
+                'not monster',
+            ],
+        ];
+        
+        $payload = $this->response->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
+    }
 }

@@ -21,7 +21,7 @@ $ composer require rubix/server
 - [Getting Started](#getting-started)
 - [Servers](#servers)
 	- [REST Server](#rest-server)
-	- [Zero MQ Server](#zero-mq-server)
+	- [ZeroMQ Server](#zero-mq-server)
 - [Clients](#clients)
 	- [REST Client](#rest-client)
 	- [ZeroMQ Client](#zeromq-client)
@@ -37,7 +37,7 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you have trained a machine learning model for a live system, the next step is to put it into production with one of the model servers. Rubix model servers expose your trained models as standalone services (such as REST, ZeroMQ, etc.) that can be queried in a live production environment.
+Once you've trained an estimator in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix model servers expose your Rubix ML estimators as standalone services (such as REST, ZeroMQ, etc.) that can be queried in a live production environment. The library also provides an object oriented client API for executing *commands* on the server from your applications.
 
 ---
 ### Servers
@@ -69,8 +69,6 @@ The server will stay running until the process is terminated.
 ### REST Server
 JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 
-> **Note**: This server implements its own networking stack (TCP, HTTP, etc.) so that it can be run without the need for additional networking components such as Nginx or Apache.
-
 #### Parameters:
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
@@ -80,7 +78,7 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
 | 5 | cert | null | ?string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 
-#### Routes:
+#### HTTP Routes:
 | Method | URI | JSON Params | Description |
 |--|--|--|--|
 | GET | /model | | Query information about the model. |
@@ -99,7 +97,7 @@ $server = new RESTServer($estimator, '127.0.0.1', 4443, [
 ```
 
 ### ZeroMQ Server
-Fast and lightweight background messaging server that doesn't require a separate message broker.
+Server that communicates using the lightweight background messaging protocol ZeroMQ.
 
 > **Note**: This server requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
 
@@ -124,9 +122,9 @@ $server = new ZMQServer($estimator, '127.0.0.1', 5555, 'tcp', new Binary());
 ### Clients
 Clients allow you to communicate with a server over the wire using a user friendly object-oriented interface. Each client is capable of sending *commands* to the backend server with the `send()` method while handling all of the networking under the hood.
 
-To send a Command and return its results:
+To send a Command and return a Response object:
 ```php
-public send(Command $command) : array
+public send(Command $command) : Response
 ```
 
 #### Example:
@@ -182,14 +180,14 @@ $client = new ZMQClient('127.0.0.1', 5555, 'tcp', new Binary());
 
 ---
 ### Messages
-Messages are containers for the data that flow accross the network. They provide an object oriented interface to making requests and receiving responses through client/server interaction.
+Messages are containers for the data that flow accross the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - *commands* and *responses*. Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
 
 To build a Message from an associative array:
 ```php
 public static function fromArray() : self
 ```
 
-To return the Message as an associative array:
+To return the Message payload as an associative array:
 ```php
 public function asArray() : array
 ```
@@ -197,10 +195,10 @@ public function asArray() : array
 > **Note**: Message objects use magic getters that allow you to access the payload data as if they were public properties of the message instance.
 
 ### Commands
-Commands are messages sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. The result of a command is a [Response](#responses) object that contains the data sent back from the server.
+Commands are messages sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. They should contain all the data needed by the server to execute the request. The result of a command is a [Response](#responses) object that contains the data sent back from the server.
 
 ### Predict
-Executes the predict method on the model being servered with the supplied sample array.
+Return the predictions of the samples provided from the model running on the server.
 
 #### Parameters:
 | # | Param | Default | Type | Description |
@@ -230,7 +228,7 @@ $command = new Proba($samples);
 ```
 
 ### Query Model
-Query the status of the model being served.
+Query the status of the current model being served.
 
 #### Parameters:
 This command does not have any parameters.
@@ -260,7 +258,7 @@ Response objects are those returned as a result of an executed [Command](#comman
 
 ---
 ### HTTP Middleware
-HTTP middleware are objects that process incoming HTTP requests before they are handled. 
+HTTP middleware are objects that process incoming HTTP requests before they are handled by a controller.
 
 ### Shared Token Authenticator
 Authenticates incoming requests using a shared key that is kept secret between the client and server.

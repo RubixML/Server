@@ -20,4 +20,14 @@ class ServerStatusTest extends TestCase
         $this->assertInstanceOf(ServerStatus::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
+
+    public function test_as_array()
+    {
+        $expected = [];
+        
+        $payload = $this->command->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
+    }
 }

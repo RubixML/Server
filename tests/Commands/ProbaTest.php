@@ -13,8 +13,7 @@ class ProbaTest extends TestCase
     public function setUp()
     {
         $this->command = new Proba([
-            [1.0, 3.2, -1.5],
-            [0.5, -6.0, 2.9],
+            ['mean', 'furry', 'friendly'],
         ]);
     }
 
@@ -22,5 +21,19 @@ class ProbaTest extends TestCase
     {
         $this->assertInstanceOf(Proba::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
+    }
+
+    public function test_as_array()
+    {
+        $expected = [
+            'samples' => [
+                ['mean', 'furry', 'friendly'],
+            ],
+        ];
+        
+        $payload = $this->command->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
     }
 }

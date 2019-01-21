@@ -124,7 +124,7 @@ class ZMQServer implements Server, LoggerAware
                                 string $protocol = 'tcp', ?Serializer $serializer = null)
     {
         if (!extension_loaded('zmq')) {
-            throw new RuntimeException('Zero MQ extension is not loaded,'
+            throw new RuntimeException('ZeroMQ extension is not loaded,'
                 . ' check PHP configuration.');
         }
 
@@ -235,6 +235,8 @@ class ZMQServer implements Server, LoggerAware
      */
     public function handle(string $message) : void
     {
+        $success = true;
+        
         try {
             $command = $this->serializer->unserialize($message);
 
@@ -245,16 +247,25 @@ class ZMQServer implements Server, LoggerAware
 
             $response = $this->commandBus->dispatch($command);
 
-            if ($this->logger) $this->logger->info('Handled '
-                . Params::shortName($command));
-
             $this->requests++;
         } catch (Exception $e) {
             $response = new ErrorResponse($e->getMessage());
+
+            $success = false;
         }
 
         $message = $this->serializer->serialize($response);
 
         $this->server->send($message);
+
+        if ($this->logger and isset($command)) {
+            if ($success) {
+                $this->logger->info('SUCCESS '
+                    . Params::shortName($command));
+            } else {
+                $this->logger->info('FAIL '
+                    . Params::shortName($command));
+            }
+        }
     }
 }

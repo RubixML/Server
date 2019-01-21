@@ -20,4 +20,17 @@ class QueryModelResponseTest extends TestCase
         $this->assertInstanceOf(QueryModelResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
+
+    public function test_as_array()
+    {
+        $expected = [
+            'type' => 'Classifier',
+            'probabilistic' => true,
+        ];
+        
+        $payload = $this->response->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
+    }
 }

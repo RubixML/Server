@@ -13,8 +13,7 @@ class PredictTest extends TestCase
     public function setUp()
     {
         $this->command = new Predict([
-            [1.0, 3.2, -1.5],
-            [0.5, -6.0, 2.9],
+            ['nice', 'rough', 'loner'],
         ]);
     }
 
@@ -22,5 +21,19 @@ class PredictTest extends TestCase
     {
         $this->assertInstanceOf(Predict::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
+    }
+
+    public function test_as_array()
+    {
+        $expected = [
+            'samples' => [
+                ['nice', 'rough', 'loner'],
+            ],
+        ];
+
+        $payload = $this->command->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
     }
 }

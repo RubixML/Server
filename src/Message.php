@@ -36,7 +36,7 @@ abstract class Message implements JsonSerializable
     }
 
     /**
-     * Magic getters.
+     * Magic getters to access the payload properties of the message.
      * 
      * @param  string  $property
      * @throws \InvalidArgumentException

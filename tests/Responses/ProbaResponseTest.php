@@ -25,4 +25,21 @@ class ProbaResponseTest extends TestCase
         $this->assertInstanceOf(ProbaResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
+
+    public function test_as_array()
+    {
+        $expected = [
+            'probabilities' => [
+                [
+                    'monster' => 0.4,
+                    'not monster' => 0.6,
+                ],
+            ],
+        ];
+        
+        $payload = $this->response->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
+    }
 }

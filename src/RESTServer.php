@@ -276,9 +276,11 @@ class RESTServer implements Server, LoggerAware
 
         switch ($status) {
             case Dispatcher::FOUND:
+                $response = $controller->handle($request, $params);
+
                 $this->requests++;
                 
-                return $controller->handle($request, $params);
+                return $response;
 
             case Dispatcher::NOT_FOUND:
                 return new ReactResponse(404);

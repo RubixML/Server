@@ -26,4 +26,24 @@ class ServerStatusResponseTest extends TestCase
         $this->assertInstanceOf(ServerStatusResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
+
+    public function test_as_array()
+    {
+        $expected = [
+            'requests' => [
+                'count' => 10,
+                'requests_min' => 6.2,
+            ],
+            'memory_usage' => [
+                'current' => 250,
+                'peak' => 500,
+            ],
+            'uptime' => 100,
+        ];
+        
+        $payload = $this->response->asArray();
+
+        $this->assertInternalType('array', $payload);
+        $this->assertEquals($expected, $payload);
+    }
 }

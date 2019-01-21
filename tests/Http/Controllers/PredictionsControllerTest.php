@@ -18,7 +18,8 @@ class PredictionsControllerTest extends TestCase
     {
         $commandBus = $this->createMock(CommandBus::class);
 
-        $commandBus->method('dispatch')->willReturn(new PredictResponse([]));
+        $commandBus->method('dispatch')
+            ->willReturn(new PredictResponse([]));
 
         $this->controller = new PredictionsController($commandBus);
     }
@@ -29,7 +30,7 @@ class PredictionsControllerTest extends TestCase
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
-    public function test_handle()
+    public function test_handle_request()
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
             'samples' => [

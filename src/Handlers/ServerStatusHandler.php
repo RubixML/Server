@@ -32,7 +32,7 @@ class ServerStatusHandler implements Handler
      */
     public function handle(ServerStatus $command) : ServerStatusResponse
     {
-        $uptime = $this->server->uptime();
+        $uptime = $this->server->uptime() ?: 1;
         $n = $this->server->requests();
 
         $requests = [

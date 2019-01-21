@@ -6,6 +6,9 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Responses\Response;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Serializers\Json;
+use React\Promise\Deferred;
+use Reacy\Promise\PromiseInterface as Promise;
+use Reacy\Promise\Promise as ReactPromise;
 use InvalidArgumentException;
 use RuntimeException;
 use ZMQContext;
@@ -54,7 +57,7 @@ class ZMQClient implements Client
                                 ?Serializer $serializer = null)
     {
         if (!extension_loaded('zmq')) {
-            throw new RuntimeException('Zero MQ extension is not loaded,'
+            throw new RuntimeException('ZeroMQ extension is not loaded,'
                 . ' check PHP configuration.');
         }
 
@@ -65,7 +68,8 @@ class ZMQClient implements Client
 
         if (!in_array($protocol, ZMQServer::PROTOCOLS)) {
             throw new InvalidArgumentException("'$protocol' is an invalid"
-                . ' protocol.');
+                . ' protocol, only allowed '
+                . implode(', ', ZMQServer::PROTOCOLS) . '.');
         }
 
         if (is_null($serializer)) {

@@ -18,7 +18,8 @@ class ProbabilitiesControllerTest extends TestCase
     {
         $commandBus = $this->createMock(CommandBus::class);
 
-        $commandBus->method('dispatch')->willReturn(new ProbaResponse([]));
+        $commandBus->method('dispatch')
+            ->willReturn(new ProbaResponse([]));
 
         $this->controller = new ProbabilitiesController($commandBus);
     }
@@ -29,7 +30,7 @@ class ProbabilitiesControllerTest extends TestCase
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
-    public function test_handle()
+    public function test_handle_request()
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
             'samples' => [
