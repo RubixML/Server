@@ -12,6 +12,7 @@ use Rubix\Server\Serializers\Json;
 use GuzzleHttp\Client as Guzzle;
 use InvalidArgumentException;
 use RuntimeException;
+use Exception;
 
 /**
  * REST Client
@@ -45,6 +46,20 @@ class RESTClient implements Client
     protected $client;
 
     /**
+     * The number of seconds to wait before retrying.
+     * 
+     * @var float
+     */
+    protected $timeout;
+
+    /**
+     * The number of retries before giving up.
+     * 
+     * @var int
+     */
+    protected $retries;
+
+    /**
      * The serializer used to serialize/unserialize messages before
      * and after transit.
      * 
@@ -57,11 +72,13 @@ class RESTClient implements Client
      * @param  int  $port
      * @param  bool  $secure
      * @param  array  $headers
+     * @param  float  $timeout
+     * @param  int  $retries
      * @throws \InvalidArgumentException
      * @return void
      */
     public function __construct(string $host = '127.0.0.1', int $port = 8888, bool $secure = false,
-                                array $headers = [])
+                                array $headers = [], float $timeout = 0., int $retries = 2)
     {
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
@@ -70,10 +87,23 @@ class RESTClient implements Client
 
         $headers = array_replace(self::DEFAULT_HEADERS, $headers);
 
+        if ($timeout < 0.) {
+            throw new InvalidArgumentException('Timeout cannot be less'
+                . "than 0, $timeout given.");
+        }
+
+        if ($retries < 0) {
+            throw new InvalidArgumentException('The number of retries'
+                . " cannot be less than 0, $retries given.");
+        }
+
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",
             'headers' => $headers,
         ]);
+
+        $this->timeout = $timeout;
+        $this->retries = $retries;
 
         $this->serializer = new Json();
     }
@@ -89,9 +119,29 @@ class RESTClient implements Client
     {
         list($method, $uri) = self::ROUTES[get_class($command)];
 
-        $data = $this->client->request($method, $uri, [
-            'json' => $command->asArray(),
-        ])->getBody();
+        $retries = $this->retries;
+
+        do {
+            try {
+                $data = $this->client->request($method, $uri, [
+                    'json' => $command->asArray(),
+                    'timeout' => $this->timeout,
+                ])->getBody();
+
+                break 1;
+            } catch (Exception $e) {
+                if (round($e->getCode(), -2) == 400) {
+                    throw $e;
+                }
+
+                $retries--;
+            }
+        } while ($retries >= 0);
+
+        if (!isset($data)) {
+            throw new RuntimeException('There was a problem'
+            . ' communicating with the server.');
+        }
 
         $response = $this->serializer->unserialize($data);
 

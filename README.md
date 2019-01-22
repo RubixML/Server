@@ -146,7 +146,9 @@ The REST Client is made to communicate with a [REST Server](#rest-server) over H
 | 1 | host | '127.0.0.1' | string | The address of the server. |
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
-| 4 | headers | None| array | Any additional HTTP headers to send along with each request. |
+| 4 | headers | None | array | Any additional HTTP headers to send along with each request. |
+| 5 | timeout | None | float | The number of seconds to wait before retrying. |
+| 6 | retries | 2 | int | The number of retries before giving up. |
 
 #### Example:
 ```php
@@ -154,7 +156,7 @@ use Rubix\Server\RESTClient;
 
 $client = new RESTClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
-]);
+], 2.5, 3);
 ```
 
 ### ZeroMQ Client
