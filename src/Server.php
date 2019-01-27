@@ -2,14 +2,17 @@
 
 namespace Rubix\Server;
 
+use Rubix\ML\Estimator;
+
 interface Server
 {
     /**
-     * Boot up the server.
+     * Serve a model.
      * 
+     * @param  \Rubix\ML\Estimator  $estimator
      * @return void
      */
-    public function run() : void;
+    public function serve(Estimator $estimator) : void;
 
     /**
      * Return the number of requests that have been received.

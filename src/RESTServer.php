@@ -22,7 +22,7 @@ use FastRoute\RouteCollector as Collector;
 use FastRoute\RouteParser\Std as Parser;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as Dispatcher;
-use React\Http\Server as ReactServer;
+use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
@@ -117,16 +117,15 @@ class RESTServer implements Server, LoggerAware
     protected $start;
 
     /**
-     * @param  \Rubix\ML\Estimator  $estimator
      * @param  string  $host
      * @param  int  $port
-     * @param  array  $middleware
      * @param  string|null  $cert
+     * @param  array  $middleware
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(Estimator $estimator, string $host = '127.0.0.1', int $port = 8888,
-                                array $middleware = [], ?string $cert = null)
+    public function __construct(string $host = '127.0.0.1', int $port = 8888, ?string $cert = null,
+                                array $middleware = [])
     {
         if (empty($host)) {
             throw new InvalidArgumentException('Host cannot be empty.');
@@ -137,6 +136,11 @@ class RESTServer implements Server, LoggerAware
                 . " a positive integer, $port given.");
         }
 
+        if (isset($cert) and empty($cert)) {
+            throw new InvalidArgumentException('Certificate cannot be'
+                . ' empty.');
+        }
+
         foreach ($middleware as $mw) {
             if (!$mw instanceof Middleware) {
                 throw new InvalidArgumentException('Class must implement'
@@ -145,45 +149,10 @@ class RESTServer implements Server, LoggerAware
             }
         }
 
-        if (isset($cert) and empty($cert)) {
-            throw new InvalidArgumentException('Certificate cannot be'
-                . ' empty.');
-        }
-
-        $commands = [
-            QueryModel::class => new QueryModelHandler($estimator),
-            Predict::class => new PredictHandler($estimator),
-            ServerStatus::class => new ServerStatusHandler($this),
-        ];
-
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-        }
-
-        $commandBus = new CommandBus($commands);
-
-        $collector = new Collector(new Parser(), new DataGenerator());
-
-        $collector->get(self::MODEL_PREFIX, new QueryModelController($commandBus));
-
-        $collector->addGroup(self::MODEL_PREFIX, function (Collector $group) use ($commandBus, $estimator) {
-            $group->post(self::PREDICT_ENDPOINT, new PredictionsController($commandBus));
-            
-            if ($estimator instanceof Probabilistic) {
-                $group->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
-            }
-        });
-
-        $collector->addGroup(self::SERVER_PREFIX, function (Collector $group) use ($commandBus) {
-            $group->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
-        });
-
-        $this->router = new Dispatcher($collector->getData());
-        $this->middleware = array_values($middleware);
-
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
+        $this->middleware = array_values($middleware);
         $this->requests = 0;
     }
 
@@ -219,12 +188,15 @@ class RESTServer implements Server, LoggerAware
     }
 
     /**
-     * Boot up the server.
+     * Serve a model.
      * 
+     * @param  \Rubix\ML\Estimator  $estimator
      * @return void
      */
-    public function run() : void
+    public function serve(Estimator $estimator) : void
     {
+        $this->router = $this->bootRouter($estimator);
+
         $loop = Loop::create();
 
         $socket = new Socket("$this->host:$this->port", $loop);
@@ -237,7 +209,7 @@ class RESTServer implements Server, LoggerAware
 
         $stack = array_merge($this->middleware, [[$this, 'handle']]);
 
-        $server = new ReactServer($stack);
+        $server = new HTTPServer($stack);
 
         $server->listen($socket);
 
@@ -248,6 +220,45 @@ class RESTServer implements Server, LoggerAware
         $this->start = time();
 
         $loop->run();
+    }
+
+    /**
+     * Boot up the router.
+     * 
+     * @param  \Rubix\ML\Estimator  $estimator
+     * @return Dispatcher
+     */
+    protected function bootRouter(Estimator $estimator) : Dispatcher
+    {
+        $commands = [
+            QueryModel::class => new QueryModelHandler($estimator),
+            Predict::class => new PredictHandler($estimator),
+            ServerStatus::class => new ServerStatusHandler($this),
+        ];
+
+        if ($estimator instanceof Probabilistic) {
+            $commands[Proba::class] = new ProbaHandler($estimator);
+        }
+
+        $commandBus = new CommandBus($commands);
+
+        $collector = new Collector(new Parser(), new DataGenerator());
+
+        $collector->addGroup(self::SERVER_PREFIX, function (Collector $group) use ($commandBus) {
+            $group->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
+        });
+
+        $collector->get(self::MODEL_PREFIX, new QueryModelController($commandBus));
+
+        $collector->addGroup(self::MODEL_PREFIX, function (Collector $group) use ($commandBus, $estimator) {
+            $group->post(self::PREDICT_ENDPOINT, new PredictionsController($commandBus));
+            
+            if ($estimator instanceof Probabilistic) {
+                $group->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
+            }
+        });
+
+        return new Dispatcher($collector->getData());
     }
 
     /**

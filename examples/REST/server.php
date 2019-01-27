@@ -18,8 +18,8 @@ $estimator = new KNearestNeighbors(3);
 
 $estimator->train($generator->generate(500));
 
-$server = new RESTServer($estimator, '127.0.0.1', 8888);
+$server = new RESTServer('127.0.0.1', 8888);
 
 $server->setLogger(new Screen('server'));
 
-$server->run();
+$server->serve($estimator);

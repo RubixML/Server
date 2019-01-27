@@ -57,9 +57,9 @@ $estimator = new KNearestNeighbors(3);
 
 // Train estimator
 
-$server = new RESTServer($estimator, '127.0.0.1', 8888);
+$server = new RESTServer('127.0.0.1', 8888);
 
-$server->run();
+$server->serve($estimator);
 ```
 
 The server will stay running until the process is terminated.
@@ -75,8 +75,8 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | 1 | estimator | | object | The estimator instance that you want to serve. |
 | 2 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 3 | port | 8888 | int | The network port to run the HTTP services on. |
-| 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
-| 5 | cert | null | ?string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
+| 4 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
+| 5 | middleware | | array | The HTTP middleware stack to run on each request. |
 
 #### HTTP Routes:
 | Method | URI | JSON Params | Description |
@@ -91,9 +91,9 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
-$server = new RESTServer($estimator, '127.0.0.1', 4443, [
+$server = new RESTServer('127.0.0.1', 4443, '/cert.pem', [
     new SharedTokenAuthenticator('secret'),
-], '/cert.pem');
+]);
 ```
 
 ### ZeroMQ Server
@@ -115,7 +115,7 @@ Server that communicates using the lightweight background messaging protocol Zer
 use Rubix\Server\ZMQServer;
 use Rubix\Server\Serializers\Binary;
 
-$server = new ZMQServer($estimator, '127.0.0.1', 5555, 'tcp', new Binary());
+$server = new ZMQServer('127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---
@@ -146,9 +146,10 @@ The REST Client is made to communicate with a [REST Server](#rest-server) over H
 | 1 | host | '127.0.0.1' | string | The address of the server. |
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
-| 4 | headers | None | array | Any additional HTTP headers to send along with each request. |
-| 5 | timeout | None | float | The number of seconds to wait before retrying. |
+| 4 | headers | Auto | array | The HTTP headers to send along with each request. |
+| 5 | timeout | INF | float | The number of seconds to wait before retrying. |
 | 6 | retries | 2 | int | The number of retries before giving up. |
+| 7 | delay | 0.1 | float | The delay in seconds between retries. |
 
 #### Example:
 ```php
@@ -156,7 +157,7 @@ use Rubix\Server\RESTClient;
 
 $client = new RESTClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
-], 2.5, 3);
+], 2.5, 3, 0.5);
 ```
 
 ### ZeroMQ Client

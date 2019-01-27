@@ -111,7 +111,6 @@ class ZMQServer implements Server, LoggerAware
     protected $start;
 
     /**
-     * @param  \Rubix\ML\Estimator  $estimator
      * @param  string  $host
      * @param  int  $port
      * @param  string  $protocol
@@ -120,8 +119,8 @@ class ZMQServer implements Server, LoggerAware
      * @throws \RuntimeException
      * @return void
      */
-    public function __construct(Estimator $estimator, string $host = '127.0.0.1', int $port = 5555,
-                                string $protocol = 'tcp', ?Serializer $serializer = null)
+    public function __construct(string $host = '127.0.0.1', int $port = 5555, string $protocol = 'tcp',
+                                ?Serializer $serializer = null)
     {
         if (!extension_loaded('zmq')) {
             throw new RuntimeException('ZeroMQ extension is not loaded,'
@@ -146,18 +145,6 @@ class ZMQServer implements Server, LoggerAware
         if (is_null($serializer)) {
             $serializer = new Json();
         }
-
-        $commands = [
-            QueryModel::class => new QueryModelHandler($estimator),
-            Predict::class => new PredictHandler($estimator),
-            ServerStatus::class => new ServerStatusHandler($this),
-        ];
-
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-        }
-
-        $this->commandBus = new CommandBus($commands);
 
         $this->host = $host;
         $this->port = $port;
@@ -197,12 +184,25 @@ class ZMQServer implements Server, LoggerAware
     }
 
     /**
-     * Boot up the server.
+     * Serve a model.
      * 
+     * @param  \Rubix\ML\Estimator  $estimator
      * @return void
      */
-    public function run() : void
+    public function serve(Estimator $estimator) : void
     {
+        $commands = [
+            QueryModel::class => new QueryModelHandler($estimator),
+            Predict::class => new PredictHandler($estimator),
+            ServerStatus::class => new ServerStatusHandler($this),
+        ];
+
+        if ($estimator instanceof Probabilistic) {
+            $commands[Proba::class] = new ProbaHandler($estimator);
+        }
+
+        $this->commandBus = new CommandBus($commands);
+
         $loop = Loop::create();
 
         $context = new Context($loop);

@@ -60,6 +60,13 @@ class RESTClient implements Client
     protected $retries;
 
     /**
+     * The number of microseconds to wait before retrying a request.
+     * 
+     * @var int
+     */
+    protected $delay;
+
+    /**
      * The serializer used to serialize/unserialize messages before
      * and after transit.
      * 
@@ -74,11 +81,12 @@ class RESTClient implements Client
      * @param  array  $headers
      * @param  float  $timeout
      * @param  int  $retries
+     * @param  float  $delay
      * @throws \InvalidArgumentException
      * @return void
      */
     public function __construct(string $host = '127.0.0.1', int $port = 8888, bool $secure = false,
-                                array $headers = [], float $timeout = 0., int $retries = 2)
+                    array $headers = [], float $timeout = 0., int $retries = 2, float $delay = 0.1)
     {
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
@@ -97,6 +105,11 @@ class RESTClient implements Client
                 . " cannot be less than 0, $retries given.");
         }
 
+        if ($delay < 0.) {
+            throw new InvalidArgumentException('Retry delay cannot be'
+                . " less than 0, $delay given.");
+        }
+
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",
             'headers' => $headers,
@@ -104,6 +117,7 @@ class RESTClient implements Client
 
         $this->timeout = $timeout;
         $this->retries = $retries;
+        $this->delay = (int) round($delay * 1e6);
 
         $this->serializer = new Json();
     }
@@ -119,7 +133,7 @@ class RESTClient implements Client
     {
         list($method, $uri) = self::ROUTES[get_class($command)];
 
-        $retries = $this->retries;
+        $tries = 1 + $this->retries;
 
         do {
             try {
@@ -130,13 +144,17 @@ class RESTClient implements Client
 
                 break 1;
             } catch (Exception $e) {
-                if (round($e->getCode(), -2) == 400) {
+                if ((int) round($e->getCode(), -2) === 400) {
                     throw $e;
                 }
 
-                $retries--;
+                $tries--;
+                
+                if ($tries > 0) { 
+                    usleep($this->delay);
+                }
             }
-        } while ($retries >= 0);
+        } while ($tries > 0);
 
         if (!isset($data)) {
             throw new RuntimeException('There was a problem'

@@ -12,7 +12,7 @@ class RESTClientTest extends TestCase
 
     public function setUp()
     {
-        $this->client = new RESTClient('127.0.0.1', 8888, false, [], 0., 2);
+        $this->client = new RESTClient('127.0.0.1', 8888, false, [], 0., 2, 0.1);
     }
 
     public function test_build_server()

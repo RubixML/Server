@@ -18,8 +18,8 @@ $estimator = new KNearestNeighbors(3);
 
 $estimator->train($generator->generate(500));
 
-$server = new ZMQServer($estimator, '127.0.0.1', 5555);
+$server = new ZMQServer('127.0.0.1', 5555);
 
 $server->setLogger(new Screen('server'));
 
-$server->run();
+$server->serve($estimator);
