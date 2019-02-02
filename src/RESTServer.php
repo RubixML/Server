@@ -2,6 +2,7 @@
 
 namespace Rubix\Server;
 
+use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\Server\CommandBus;
@@ -191,10 +192,18 @@ class RESTServer implements Server, LoggerAware
      * Serve a model.
      * 
      * @param  \Rubix\ML\Estimator  $estimator
+     * @throws \InvalidArgumentException
      * @return void
      */
     public function serve(Estimator $estimator) : void
     {
+        if ($estimator instanceof Learner) {
+            if (!$estimator->trained()) {
+                throw new InvalidArgumentException('Cannot serve'
+                    . ' an untrained learner.');
+            }
+        }
+
         $this->router = $this->bootRouter($estimator);
 
         $loop = Loop::create();
