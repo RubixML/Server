@@ -19,7 +19,7 @@ class QueryModelControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new QueryModelResponse('Classifier', true));
+            ->willReturn(new QueryModelResponse('Classifier', [], true));
         
         $this->controller = new QueryModelController($commandBus);
     }

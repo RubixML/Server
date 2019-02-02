@@ -283,7 +283,7 @@ class RESTServer implements Server, LoggerAware
 
         $route = $this->router->dispatch($method, $uri);
 
-        list($status, $controller, $params) = array_pad($route, 3, null);
+        [$status, $controller, $params] = array_pad($route, 3, null);
 
         if ($this->logger) {
             $server = $request->getServerParams();

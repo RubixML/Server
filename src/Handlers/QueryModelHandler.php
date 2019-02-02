@@ -4,6 +4,7 @@ namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
+use Rubix\ML\Datasets\DataFrame;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Responses\QueryModelResponse;
 
@@ -34,8 +35,13 @@ class QueryModelHandler implements Handler
     public function handle(QueryModel $command) : QueryModelResponse
     {
         $type = Estimator::TYPES[$this->estimator->type()];
+
+        $compatibility = array_map(function ($c) {
+            return DataFrame::TYPES[$c];
+        }, $this->estimator->compatibility());
+
         $probabilistic = $this->estimator instanceof Probabilistic;
 
-        return new QueryModelResponse($type, $probabilistic);
+        return new QueryModelResponse($type, $compatibility, $probabilistic);
     }
 }

@@ -19,6 +19,13 @@ class QueryModelResponse extends Response
     protected $type;
 
     /**
+     * The data types that the model is compatible with.
+     * 
+     * @var int[]
+     */
+    protected $compatibility;
+
+    /**
      * Is the model probabilistic?
      * 
      * @var bool
@@ -34,19 +41,22 @@ class QueryModelResponse extends Response
     public static function fromArray(array $data) : self
     {
         $type = $data['type'] ?? 'unknown';
+        $compatibility = $data['compatibility'] ?? [];
         $probabilistic = $data['probabilistic'] ?? false;
 
-        return new self($type, $probabilistic);
+        return new self($type, $compatibility, $probabilistic);
     }
 
     /**
      * @param  string  $type
-     * @param  bool   $probabilistic
+     * @param  array  $compatibility
+     * @param  bool  $probabilistic
      * @return void
      */
-    public function __construct(string $type, bool $probabilistic) 
+    public function __construct(string $type, array $compatibility, bool $probabilistic) 
     {
         $this->type = $type;
+        $this->compatibility = $compatibility;
         $this->probabilistic = $probabilistic;
     }
 
@@ -79,6 +89,7 @@ class QueryModelResponse extends Response
     {
         return [
             'type' => $this->type,
+            'compatibility' => $this->compatibility,
             'probabilistic' => $this->probabilistic,
         ];
     }

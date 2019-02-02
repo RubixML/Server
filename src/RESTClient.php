@@ -131,7 +131,7 @@ class RESTClient implements Client
      */
     public function send(Command $command) : Response
     {
-        list($method, $uri) = self::ROUTES[get_class($command)];
+        [$method, $uri] = self::ROUTES[get_class($command)];
 
         $tries = 1 + $this->retries;
 

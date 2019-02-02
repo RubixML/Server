@@ -12,7 +12,7 @@ class QueryModelResponseTest extends TestCase
 
     public function setUp()
     {
-        $this->response = new QueryModelResponse('Classifier', true);
+        $this->response = new QueryModelResponse('Classifier', ['Categorical'], true);
     }
 
     public function test_build_response()
@@ -22,15 +22,12 @@ class QueryModelResponseTest extends TestCase
     }
 
     public function test_as_array()
-    {
-        $expected = [
-            'type' => 'Classifier',
-            'probabilistic' => true,
-        ];
-        
+    {        
         $payload = $this->response->asArray();
 
         $this->assertInternalType('array', $payload);
-        $this->assertEquals($expected, $payload);
+        $this->assertEquals('Classifier', $payload['type']);
+        $this->assertContains('Categorical', $payload['compatibility']);
+        $this->assertTrue($payload['probabilistic']);
     }
 }
