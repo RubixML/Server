@@ -20,20 +20,20 @@ class ServerStatusController implements Controller
 
     /**
      * The command bus.
-     * 
+     *
      * @var \Rubix\Server\CommandBus
      */
     protected $commandBus;
 
     /**
      * The JSON message serializer.
-     * 
+     *
      * @var \Rubix\Server\Serializers\Json
      */
     protected $serializer;
 
     /**
-     * @param  \Rubix\Server\CommandBus  $commandBus
+     * @param \Rubix\Server\CommandBus $commandBus
      * @return void
      */
     public function __construct(CommandBus $commandBus)
@@ -44,9 +44,9 @@ class ServerStatusController implements Controller
 
     /**
      * Handle the request.
-     * 
-     * @param  Request  $request
-     * @param  array  $params
+     *
+     * @param Request $request
+     * @param array $params
      * @return Response
      */
     public function handle(Request $request, array $params) : Response

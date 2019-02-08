@@ -22,7 +22,7 @@ class QueryModelResponseTest extends TestCase
     }
 
     public function test_as_array()
-    {        
+    {
         $payload = $this->response->asArray();
 
         $this->assertInternalType('array', $payload);

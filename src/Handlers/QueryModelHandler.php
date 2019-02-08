@@ -4,7 +4,7 @@ namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\ML\Datasets\DataFrame;
+use Rubix\ML\Other\Helpers\DataType;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Responses\QueryModelResponse;
 
@@ -12,14 +12,13 @@ class QueryModelHandler implements Handler
 {
     /**
      * The model being served.
-     * 
+     *
      * @var \Rubix\ML\Estimator
      */
     protected $estimator;
 
     /**
-     * @param  \Rubix\ML\Estimator  $estimator
-     * @return void
+     * @param \Rubix\ML\Estimator $estimator
      */
     public function __construct(Estimator $estimator)
     {
@@ -28,8 +27,8 @@ class QueryModelHandler implements Handler
 
     /**
      * Handle the command.
-     * 
-     * @param  \Rubix\Server\Commands\QueryModel  $command
+     *
+     * @param \Rubix\Server\Commands\QueryModel $command
      * @return \Rubix\Server\Responses\QueryModelResponse
      */
     public function handle(QueryModel $command) : QueryModelResponse
@@ -37,7 +36,7 @@ class QueryModelHandler implements Handler
         $type = Estimator::TYPES[$this->estimator->type()];
 
         $compatibility = array_map(function ($c) {
-            return DataFrame::TYPES[$c];
+            return DataType::TYPES[$c];
         }, $this->estimator->compatibility());
 
         $probabilistic = $this->estimator instanceof Probabilistic;

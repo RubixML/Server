@@ -282,16 +282,21 @@ $middleware = new SharedTokenAuthenticator('secret');
 
 ---
 ## Testing
-Rubix utilizes a combination of static analysis and unit tests for quality assurance and to reduce the number of bugs. Rubix provides two [Composer](https://getcomposer.org/) scripts that can be run from the root directory to automate the testing process.
+Rubix utilizes a combination of static analysis and unit tests for quality assurance and to reduce the number of bugs. Rubix provides three [Composer](https://getcomposer.org/) scripts that can be run from the root directory to automate the testing process.
 
 To run static analysis:
 ```sh
-composer analyze
+$ composer analyze
+```
+
+To run the style checker:
+```sh
+$ composer check
 ```
 
 To run the unit tests:
 ```sh
-composer test
+$ composer test
 ```
 
 ---

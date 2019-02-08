@@ -9,8 +9,8 @@ abstract class Message implements JsonSerializable
 {
     /**
      * Build the message from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     abstract public static function fromArray(array $data);
@@ -24,7 +24,7 @@ abstract class Message implements JsonSerializable
 
     /**
      * Return the payload for json serialization.
-     * 
+     *
      * @return mixed
      */
     public function jsonSerialize()
@@ -37,8 +37,8 @@ abstract class Message implements JsonSerializable
 
     /**
      * Magic getters to access the payload properties of the message.
-     * 
-     * @param  string  $property
+     *
+     * @param string $property
      * @throws \InvalidArgumentException
      * @return mixed
      */

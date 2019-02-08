@@ -15,15 +15,15 @@ class Proba extends Command
 {
     /**
      * The samples to predict.
-     * 
+     *
      * @var array[]
      */
     protected $samples;
 
     /**
      * Build the command from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -32,18 +32,18 @@ class Proba extends Command
     }
 
     /**
-     * @param  array  $samples
+     * @param array $samples
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $samples) 
+    public function __construct(array $samples)
     {
         $this->samples = $samples;
     }
 
     /**
      * Return the samples to rpedict.
-     * 
+     *
      * @return array
      */
     public function samples() : array

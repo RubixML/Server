@@ -9,8 +9,8 @@ class Json implements Serializer
 {
     /**
      * Serialize a message.
-     * 
-     * @param  \Rubix\Server\Message  $message
+     *
+     * @param \Rubix\Server\Message $message
      * @return string
      */
     public function serialize(Message $message) : string
@@ -20,8 +20,8 @@ class Json implements Serializer
 
     /**
      * Unserialize a message.
-     * 
-     * @param string  $data
+     *
+     * @param string $data
      * @throws \RuntimeException
      * @return \Rubix\Server\Message;
      */

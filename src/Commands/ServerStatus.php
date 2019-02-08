@@ -15,8 +15,8 @@ class ServerStatus extends Command
 {
     /**
      * Build the command from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     public static function fromArray(array $data) : self

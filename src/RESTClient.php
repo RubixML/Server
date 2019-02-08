@@ -40,28 +40,28 @@ class RESTClient implements Client
 
     /**
      * The Guzzle client.
-     * 
+     *
      * @var Guzzle
      */
     protected $client;
 
     /**
      * The number of seconds to wait before retrying.
-     * 
+     *
      * @var float
      */
     protected $timeout;
 
     /**
      * The number of retries before giving up.
-     * 
+     *
      * @var int
      */
     protected $retries;
 
     /**
      * The number of microseconds to wait before retrying a request.
-     * 
+     *
      * @var int
      */
     protected $delay;
@@ -69,25 +69,30 @@ class RESTClient implements Client
     /**
      * The serializer used to serialize/unserialize messages before
      * and after transit.
-     * 
+     *
      * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
 
     /**
-     * @param  string  $host
-     * @param  int  $port
-     * @param  bool  $secure
-     * @param  array  $headers
-     * @param  float  $timeout
-     * @param  int  $retries
-     * @param  float  $delay
+     * @param string $host
+     * @param int $port
+     * @param bool $secure
+     * @param array $headers
+     * @param float $timeout
+     * @param int $retries
+     * @param float $delay
      * @throws \InvalidArgumentException
-     * @return void
      */
-    public function __construct(string $host = '127.0.0.1', int $port = 8888, bool $secure = false,
-                    array $headers = [], float $timeout = 0., int $retries = 2, float $delay = 0.1)
-    {
+    public function __construct(
+        string $host = '127.0.0.1',
+        int $port = 8888,
+        bool $secure = false,
+        array $headers = [],
+        float $timeout = 0.,
+        int $retries = 2,
+        float $delay = 0.1
+    ) {
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
                 . " a positive integer, $port given.");
@@ -124,8 +129,8 @@ class RESTClient implements Client
 
     /**
      * Send a command to the server and return the results.
-     * 
-     * @param  \Rubix\Server\Commands\Command  $command
+     *
+     * @param \Rubix\Server\Commands\Command $command
      * @throws \RuntimeException
      * @return \Rubix\Server\Responses\Response
      */
@@ -150,7 +155,7 @@ class RESTClient implements Client
 
                 $tries--;
                 
-                if ($tries > 0) { 
+                if ($tries > 0) {
                     usleep($this->delay);
                 }
             }

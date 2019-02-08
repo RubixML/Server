@@ -17,10 +17,10 @@ use ZMQ;
 
 /**
  * ZeroMQ Client
- * 
+ *
  * Client for the ZeroMQ Server which uses lightweight background messaging for
  * fast service to service communication.
- * 
+ *
  * > **Note**: This client requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
  *
  * @category    Machine Learning
@@ -31,31 +31,33 @@ class ZMQClient implements Client
 {
     /**
      * The ZeroMQ client.
-     * 
+     *
      * @var ZMQSocket
      */
-    protected $client;    
+    protected $client;
 
     /**
      * The serializer used to serialize/unserialize messages before
      * and after transit.
-     * 
+     *
      * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
 
     /**
-     * @param  string  $host
-     * @param  int  $port
-     * @param  string  $protocol
-     * @param  \Rubix\Server\Serializers\Serializer|null  $serializer
+     * @param string $host
+     * @param int $port
+     * @param string $protocol
+     * @param \Rubix\Server\Serializers\Serializer|null $serializer
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @return void
      */
-    public function __construct(string $host = '127.0.0.1', int $port = 5555, string $protocol = 'tcp',
-                                ?Serializer $serializer = null)
-    {
+    public function __construct(
+        string $host = '127.0.0.1',
+        int $port = 5555,
+        string $protocol = 'tcp',
+        ?Serializer $serializer = null
+    ) {
         if (!extension_loaded('zmq')) {
             throw new RuntimeException('ZeroMQ extension is not loaded,'
                 . ' check PHP configuration.');
@@ -85,8 +87,8 @@ class ZMQClient implements Client
 
     /**
      * Send a command to the server and return the results.
-     * 
-     * @param  \Rubix\Server\Commands\Command  $command
+     *
+     * @param \Rubix\Server\Commands\Command $command
      * @throws \RuntimeException
      * @return \Rubix\Server\Responses\Response
      */

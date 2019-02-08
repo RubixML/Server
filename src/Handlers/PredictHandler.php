@@ -11,13 +11,13 @@ class PredictHandler implements Handler
 {
     /**
      * The model that is being served.
-     * 
+     *
      * @var \Rubix\ML\Estimator
      */
     protected $estimator;
 
     /**
-     * @param  \Rubix\ML\Estimator  $estimator
+     * @param \Rubix\ML\Estimator $estimator
      * @return void
      */
     public function __construct(Estimator $estimator)
@@ -27,12 +27,12 @@ class PredictHandler implements Handler
 
     /**
      * Handle the command.
-     * 
-     * @param  \Rubix\Server\Commands\Predict  $command
+     *
+     * @param \Rubix\Server\Commands\Predict $command
      * @return \Rubix\Server\Responses\PredictResponse
      */
     public function handle(Predict $command) : PredictResponse
-    {        
+    {
         $dataset = Unlabeled::build($command->samples());
 
         $predictions = $this->estimator->predict($dataset);

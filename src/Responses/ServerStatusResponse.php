@@ -15,29 +15,29 @@ class ServerStatusResponse extends Response
 {
     /**
      * An associative array of request statistics.
-     * 
+     *
      * @var array
      */
     protected $requests;
 
     /**
      * An associative array of memory usage statistics.
-     * 
+     *
      * @var array
      */
     protected $memoryUsage;
 
     /**
      * The number of seconds that the server has been up.
-     * 
+     *
      * @var int
      */
     protected $uptime;
 
     /**
      * Build the message from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -50,13 +50,13 @@ class ServerStatusResponse extends Response
     }
 
     /**
-     * @param  array  $requests
-     * @param  array  $memoryUsage
-     * @param  int  $uptime
+     * @param array $requests
+     * @param array $memoryUsage
+     * @param int $uptime
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __construct(array $requests, array $memoryUsage, int $uptime) 
+    public function __construct(array $requests, array $memoryUsage, int $uptime)
     {
         if ($uptime < 0) {
             throw new InvalidArgumentException('Uptime cannot be less than 0,'
@@ -70,7 +70,7 @@ class ServerStatusResponse extends Response
 
     /**
      * Return the request statistics.
-     * 
+     *
      * @return array
      */
     public function requests() : array
@@ -80,7 +80,7 @@ class ServerStatusResponse extends Response
 
     /**
      * Return the memory usage statistics.
-     * 
+     *
      * @return array
      */
     public function memoryUsage() : array
@@ -90,7 +90,7 @@ class ServerStatusResponse extends Response
 
     /**
      * Return the uptime of the server.
-     * 
+     *
      * @return int
      */
     public function uptime() : int

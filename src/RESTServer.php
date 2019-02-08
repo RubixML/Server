@@ -61,14 +61,14 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * The host address to bind the server to.
-     * 
+     *
      * @var string
      */
     protected $host;
 
     /**
      * The network port to run the HTTP services on.
-     * 
+     *
      * @var int
      */
     protected $port;
@@ -76,21 +76,21 @@ class RESTServer implements Server, LoggerAware
     /**
      * The path to the certificate used to authenticate and encrypt the
      * communication channel.
-     * 
+     *
      * @var string|null
      */
     protected $cert;
 
     /**
      * The HTTP middleware stack.
-     * 
+     *
      * @var \Rubix\Server\Http\Middleware\Middleware[]
      */
     protected $middleware;
 
     /**
      * The controller dispatcher i.e the router.
-     * 
+     *
      * @var Dispatcher
      */
     protected $router;
@@ -105,29 +105,31 @@ class RESTServer implements Server, LoggerAware
     /**
      * The number of requests that have been handled during this
      * run of the server.
-     * 
+     *
      * @var int
      */
     protected $requests;
 
     /**
      * The timestamp from when the server went up.
-     * 
+     *
      * @var int|null
      */
     protected $start;
 
     /**
-     * @param  string  $host
-     * @param  int  $port
-     * @param  string|null  $cert
-     * @param  array  $middleware
+     * @param string $host
+     * @param int $port
+     * @param string|null $cert
+     * @param array $middleware
      * @throws \InvalidArgumentException
-     * @return void
      */
-    public function __construct(string $host = '127.0.0.1', int $port = 8888, ?string $cert = null,
-                                array $middleware = [])
-    {
+    public function __construct(
+        string $host = '127.0.0.1',
+        int $port = 8888,
+        ?string $cert = null,
+        array $middleware = []
+    ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host cannot be empty.');
         }
@@ -160,8 +162,7 @@ class RESTServer implements Server, LoggerAware
     /**
      * Sets a logger.
      *
-     * @param Logger|null  $logger
-     * @return void
+     * @param Logger|null $logger
      */
     public function setLogger(?Logger $logger = null)
     {
@@ -170,7 +171,7 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * Return the number of requests that have been received.
-     * 
+     *
      * @var int
      */
     public function requests() : int
@@ -180,7 +181,7 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * Return the uptime of the server in seconds.
-     * 
+     *
      * @return int
      */
     public function uptime() : int
@@ -190,10 +191,9 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * Serve a model.
-     * 
-     * @param  \Rubix\ML\Estimator  $estimator
+     *
+     * @param \Rubix\ML\Estimator $estimator
      * @throws \InvalidArgumentException
-     * @return void
      */
     public function serve(Estimator $estimator) : void
     {
@@ -222,8 +222,10 @@ class RESTServer implements Server, LoggerAware
 
         $server->listen($socket);
 
-        if ($this->logger) $this->logger->info('Server running at'
+        if ($this->logger) {
+            $this->logger->info('Server running at'
             . " $this->host on port $this->port");
+        }
 
         $this->requests = 0;
         $this->start = time();
@@ -233,8 +235,8 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * Boot up the router.
-     * 
-     * @param  \Rubix\ML\Estimator  $estimator
+     *
+     * @param \Rubix\ML\Estimator $estimator
      * @return Dispatcher
      */
     protected function bootRouter(Estimator $estimator) : Dispatcher
@@ -272,8 +274,8 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * Handle an incoming request.
-     * 
-     * @param  Request  $request
+     *
+     * @param Request $request
      * @return Response
      */
     public function handle(Request $request) : Response

@@ -13,15 +13,15 @@ class ProbaResponse extends Response
 {
     /**
      * The probabilities returned from the model.
-     * 
+     *
      * @var array
      */
     protected $probabilities;
 
     /**
      * Build the command from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -30,17 +30,17 @@ class ProbaResponse extends Response
     }
 
     /**
-     * @param  array  $probabilities
+     * @param array $probabilities
      * @return void
      */
-    public function __construct(array $probabilities) 
+    public function __construct(array $probabilities)
     {
         $this->probabilities = $probabilities;
     }
 
     /**
      * Return the probabilities.
-     * 
+     *
      * @return array
      */
     public function probabilities() : array

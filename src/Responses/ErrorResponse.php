@@ -13,15 +13,15 @@ class ErrorResponse extends Response
 {
     /**
      * The error message.
-     * 
+     *
      * @var string
      */
     protected $message;
 
     /**
      * Build the message from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -30,17 +30,17 @@ class ErrorResponse extends Response
     }
 
     /**
-     * @param  string  $message
+     * @param string $message
      * @return void
      */
-    public function __construct(string $message) 
+    public function __construct(string $message)
     {
         $this->message = $message;
     }
 
     /**
      * Return the error message.
-     * 
+     *
      * @return string
      */
     public function message() : string

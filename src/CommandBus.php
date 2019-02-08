@@ -24,13 +24,13 @@ class CommandBus
 {
     /**
      * The mapping of commands to their handlers.
-     * 
+     *
      * @var array
      */
     protected $mapping;
 
     /**
-     * @param  array  $mapping
+     * @param array $mapping
      * @throws \InvalidArgumentException
      * @return void
      */
@@ -54,8 +54,8 @@ class CommandBus
 
     /**
      * Dispatch the command to a handler.
-     * 
-     * @param  \Rubix\Server\Commands\Command  $command
+     *
+     * @param \Rubix\Server\Commands\Command $command
      * @throws \RuntimeException
      * @return \Rubix\Server\Responses\Response
      */

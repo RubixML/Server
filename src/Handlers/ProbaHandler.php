@@ -11,13 +11,13 @@ class ProbaHandler implements Handler
 {
     /**
      * The probabilistic model that is being served.
-     * 
+     *
      * @var \Rubix\ML\Probabilistic
      */
     protected $estimator;
 
     /**
-     * @param  \Rubix\ML\Probabilistic  $estimator
+     * @param \Rubix\ML\Probabilistic $estimator
      * @return void
      */
     public function __construct(Probabilistic $estimator)
@@ -27,12 +27,12 @@ class ProbaHandler implements Handler
 
     /**
      * Handle the command.
-     * 
-     * @param  \Rubix\Server\Commands\Proba  $command
+     *
+     * @param \Rubix\Server\Commands\Proba $command
      * @return \Rubix\Server\Responses\ProbaResponse
      */
     public function handle(Proba $command) : ProbaResponse
-    {        
+    {
         $dataset = Unlabeled::build($command->samples());
 
         $probabilities = $this->estimator->proba($dataset);

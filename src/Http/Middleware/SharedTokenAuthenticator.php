@@ -12,7 +12,7 @@ use InvalidArgumentException;
  *
  * Authenticates incoming requests using a shared key that is kept
  * secret between the client and server.
- * 
+ *
  * > **Note**: This strategy is only secure over an encrypted channel
  * such as HTTPS with SSL or TLS.
  *
@@ -27,13 +27,13 @@ class SharedTokenAuthenticator extends Middleware
     /**
      * The shared secret key (token) required to authenticate every
      * request.
-     * 
+     *
      * @var string
      */
     protected $token;
 
     /**
-     * @param  string  $token
+     * @param string $token
      * @throws \InvalidArgumentException
      * @return void
      */
@@ -48,9 +48,9 @@ class SharedTokenAuthenticator extends Middleware
 
     /**
      * Run the middleware over the request.
-     * 
-     * @param  Request  $request
-     * @param  callable  $next
+     *
+     * @param Request $request
+     * @param callable $next
      * @return Response
      */
     public function handle(Request $request, callable $next) : Response

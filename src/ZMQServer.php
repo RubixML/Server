@@ -30,10 +30,10 @@ use ZMQ;
 
 /**
  * Zero MQ Server
- * 
+ *
  * Fast and lightweight background messaging server that doesn't require a
  * separate message broker.
- * 
+ *
  * > **Note**: This server requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
  *
  * @category    Machine Learning
@@ -48,21 +48,21 @@ class ZMQServer implements Server, LoggerAware
 
     /**
      * The host address to bind the server to.
-     * 
+     *
      * @var string
      */
     protected $host;
 
     /**
      * The network port to run the http services on.
-     * 
+     *
      * @var int
      */
     protected $port;
 
     /**
      * The transport protocol used to send and recieve messages.
-     * 
+     *
      * @var string
      */
     protected $protocol;
@@ -70,21 +70,21 @@ class ZMQServer implements Server, LoggerAware
     /**
      * The serializer used to serialize/unserialize messages before
      * and after transit.
-     * 
+     *
      * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
 
     /**
      * The command bus.
-     * 
+     *
      * @var \Rubix\Server\CommandBus
      */
     protected $commandBus;
 
     /**
      * The Zero MQ socket.
-     * 
+     *
      * @var \React\ZMQ\SocketWrapper
      */
     protected $server;
@@ -99,30 +99,32 @@ class ZMQServer implements Server, LoggerAware
     /**
      * The number of requests that have been handled during this
      * run of the server.
-     * 
+     *
      * @var int
      */
     protected $requests;
 
     /**
      * The time that the server went up.
-     * 
+     *
      * @var int|null
      */
     protected $start;
 
     /**
-     * @param  string  $host
-     * @param  int  $port
-     * @param  string  $protocol
-     * @param  \Rubix\Server\Serializers\Serializer|null  $serializer
+     * @param string $host
+     * @param int $port
+     * @param string $protocol
+     * @param \Rubix\Server\Serializers\Serializer|null $serializer
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @return void
      */
-    public function __construct(string $host = '127.0.0.1', int $port = 5555, string $protocol = 'tcp',
-                                ?Serializer $serializer = null)
-    {
+    public function __construct(
+        string $host = '127.0.0.1',
+        int $port = 5555,
+        string $protocol = 'tcp',
+        ?Serializer $serializer = null
+    ) {
         if (!extension_loaded('zmq')) {
             throw new RuntimeException('ZeroMQ extension is not loaded,'
                 . ' check PHP configuration.');
@@ -156,8 +158,7 @@ class ZMQServer implements Server, LoggerAware
     /**
      * Sets a logger.
      *
-     * @param Logger|null  $logger
-     * @return void
+     * @param Logger|null $logger
      */
     public function setLogger(?Logger $logger = null)
     {
@@ -166,7 +167,7 @@ class ZMQServer implements Server, LoggerAware
 
     /**
      * Return the number of requests that have been received.
-     * 
+     *
      * @var int
      */
     public function requests() : int
@@ -176,7 +177,7 @@ class ZMQServer implements Server, LoggerAware
 
     /**
      * Return the uptime of the server in seconds.
-     * 
+     *
      * @return int
      */
     public function uptime() : int
@@ -186,10 +187,9 @@ class ZMQServer implements Server, LoggerAware
 
     /**
      * Serve a model.
-     * 
-     * @param  \Rubix\ML\Estimator  $estimator
+     *
+     * @param \Rubix\ML\Estimator $estimator
      * @throws \InvalidArgumentException
-     * @return void
      */
     public function serve(Estimator $estimator) : void
     {
@@ -225,9 +225,11 @@ class ZMQServer implements Server, LoggerAware
 
         $this->server = $server;
 
-        if ($this->logger) $this->logger->info('Server running at'
+        if ($this->logger) {
+            $this->logger->info('Server running at'
             . " $this->host on port $this->port using $this->protocol"
-            . " protocol.");
+            . ' protocol.');
+        }
 
         $this->requests = 0;
         $this->start = time();
@@ -237,10 +239,9 @@ class ZMQServer implements Server, LoggerAware
 
     /**
      * Handle a request.
-     * 
-     * @param  string  $message
+     *
+     * @param string $message
      * @throws \RuntimeException
-     * @return void
      */
     public function handle(string $message) : void
     {

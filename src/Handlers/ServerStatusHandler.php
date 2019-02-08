@@ -10,13 +10,13 @@ class ServerStatusHandler implements Handler
 {
     /**
      * The server instance.
-     * 
+     *
      * @var \Rubix\Server\Server
      */
     protected $server;
 
     /**
-     * @param  \Rubix\Server\Server  $server
+     * @param \Rubix\Server\Server $server
      * @return void
      */
     public function __construct(Server $server)
@@ -26,8 +26,8 @@ class ServerStatusHandler implements Handler
 
     /**
      * Handle the command.
-     * 
-     * @param  \Rubix\Server\Commands\ServerStatus  $command
+     *
+     * @param \Rubix\Server\Commands\ServerStatus $command
      * @return \Rubix\Server\Responses\ServerStatusResponse
      */
     public function handle(ServerStatus $command) : ServerStatusResponse

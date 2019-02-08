@@ -9,8 +9,8 @@ interface Client
 {
     /**
      * Synchronously send a command to the server and return a response.
-     * 
-     * @param  \Rubix\Server\Commands\Command  $command
+     *
+     * @param \Rubix\Server\Commands\Command $command
      * @return \Rubix\Server\Responses\Response
      */
     public function send(Command $command) : Response;

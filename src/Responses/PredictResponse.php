@@ -13,15 +13,15 @@ class PredictResponse extends Response
 {
     /**
      * The preditions returned from the model.
-     * 
+     *
      * @var array
      */
     protected $predictions;
 
     /**
      * Build the message from an associative array of data.
-     * 
-     * @param  array  $data
+     *
+     * @param array $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -30,17 +30,17 @@ class PredictResponse extends Response
     }
 
     /**
-     * @param  array  $predictions
+     * @param array $predictions
      * @return void
      */
-    public function __construct(array $predictions) 
+    public function __construct(array $predictions)
     {
         $this->predictions = $predictions;
     }
 
     /**
      * Return the predictions.
-     * 
+     *
      * @return array
      */
     public function predictions() : array
