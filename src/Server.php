@@ -10,7 +10,6 @@ interface Server
      * Serve a model.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @return void
      */
     public function serve(Estimator $estimator) : void;
 

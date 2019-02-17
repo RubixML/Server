@@ -32,7 +32,6 @@ class CommandBus
     /**
      * @param array $mapping
      * @throws \InvalidArgumentException
-     * @return void
      */
     public function __construct(array $mapping)
     {
@@ -66,8 +65,8 @@ class CommandBus
         $handler = $this->mapping[$classname] ?? null;
 
         if (!$handler) {
-            throw new RuntimeException('An appropriate handler could'
-                . " not be located for $classname.");
+            throw new RuntimeException('An appropriate handler'
+                . " could not be located for $classname.");
         }
 
         return $handler->handle($command);

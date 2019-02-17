@@ -17,7 +17,6 @@ class ServerStatusHandler implements Handler
 
     /**
      * @param \Rubix\Server\Server $server
-     * @return void
      */
     public function __construct(Server $server)
     {

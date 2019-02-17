@@ -19,7 +19,6 @@ class Binary implements Serializer
 {
     /**
      * @throws \RuntimeException
-     * @return void
      */
     public function __construct()
     {

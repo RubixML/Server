@@ -6,9 +6,6 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Responses\Response;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Serializers\Json;
-use React\Promise\Deferred;
-use Reacy\Promise\PromiseInterface as Promise;
-use Reacy\Promise\Promise as ReactPromise;
 use InvalidArgumentException;
 use RuntimeException;
 use ZMQContext;
@@ -86,7 +83,7 @@ class ZMQClient implements Client
     }
 
     /**
-     * Send a command to the server and return the results.
+     * Send a command to the server and return the response.
      *
      * @param \Rubix\Server\Commands\Command $command
      * @throws \RuntimeException

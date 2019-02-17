@@ -31,7 +31,6 @@ class PredictResponse extends Response
 
     /**
      * @param array $predictions
-     * @return void
      */
     public function __construct(array $predictions)
     {

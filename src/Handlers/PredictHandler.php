@@ -18,7 +18,6 @@ class PredictHandler implements Handler
 
     /**
      * @param \Rubix\ML\Estimator $estimator
-     * @return void
      */
     public function __construct(Estimator $estimator)
     {

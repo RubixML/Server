@@ -5,7 +5,6 @@ namespace Rubix\Server;
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\QueryModel;
@@ -223,8 +222,8 @@ class RESTServer implements Server, LoggerAware
         $server->listen($socket);
 
         if ($this->logger) {
-            $this->logger->info('Server running at'
-            . " $this->host on port $this->port");
+            $this->logger->info('REST Server running at'
+                . " $this->host on port $this->port");
         }
 
         $this->requests = 0;
@@ -290,9 +289,11 @@ class RESTServer implements Server, LoggerAware
         if ($this->logger) {
             $server = $request->getServerParams();
 
+            $level = $status === Dispatcher::FOUND ? 'info' : 'error';
+
             $ip = $server['REMOTE_ADDR'] ?? 'unknown';
             
-            $this->logger->info(self::ROUTER_STATUS[$status]
+            $this->logger->$level(self::ROUTER_STATUS[$status]
                 . " $method $uri from $ip");
         }
 

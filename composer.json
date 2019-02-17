@@ -6,7 +6,8 @@
     "license": "MIT",
     "keywords": [
         "php", "machine-learning", "data-science", "model-serving", "server", "microservice",
-        "json-api", "api", "rest-api", "zeromq", "soa"
+        "json-api", "api", "rest-api", "zeromq", "soa", "cloud", "infrastructure", "ai",
+        "rubix-ml", "distributed", "client", "rest", "messaging"
     ],
     "authors": [
         {
@@ -25,7 +26,7 @@
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
         "react/zmq": "^0.4.0",
-        "rubix/ml": "dev-master"
+        "rubix/ml": "^0.0.9-beta"
     },
     "require-dev": {
         "ext-igbinary": "*",

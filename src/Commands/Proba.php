@@ -34,7 +34,6 @@ class Proba extends Command
     /**
      * @param array $samples
      * @throws \InvalidArgumentException
-     * @return void
      */
     public function __construct(array $samples)
     {

@@ -33,7 +33,6 @@ class ProbabilitiesController implements Controller
 
     /**
      * @param \Rubix\Server\CommandBus $commandBus
-     * @return void
      */
     public function __construct(CommandBus $commandBus)
     {

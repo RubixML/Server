@@ -18,7 +18,6 @@ class ProbaHandler implements Handler
 
     /**
      * @param \Rubix\ML\Probabilistic $estimator
-     * @return void
      */
     public function __construct(Probabilistic $estimator)
     {

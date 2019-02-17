@@ -7,7 +7,6 @@ use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Responses\ServerStatusResponse;
-use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
 
 class ServerStatusHandlerTest extends TestCase

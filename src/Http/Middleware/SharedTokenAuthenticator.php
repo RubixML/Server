@@ -35,7 +35,6 @@ class SharedTokenAuthenticator extends Middleware
     /**
      * @param string $token
      * @throws \InvalidArgumentException
-     * @return void
      */
     public function __construct(string $token)
     {

@@ -31,7 +31,6 @@ class ProbaResponse extends Response
 
     /**
      * @param array $probabilities
-     * @return void
      */
     public function __construct(array $probabilities)
     {

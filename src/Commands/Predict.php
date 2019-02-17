@@ -33,7 +33,6 @@ class Predict extends Command
 
     /**
      * @param array $samples
-     * @return void
      */
     public function __construct(array $samples)
     {

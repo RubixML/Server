@@ -123,7 +123,6 @@ class RESTClient implements Client
         $this->timeout = $timeout;
         $this->retries = $retries;
         $this->delay = (int) round($delay * 1e6);
-
         $this->serializer = new Json();
     }
 

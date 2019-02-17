@@ -5,7 +5,6 @@ namespace Rubix\Server;
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\QueryModel;
@@ -226,9 +225,9 @@ class ZMQServer implements Server, LoggerAware
         $this->server = $server;
 
         if ($this->logger) {
-            $this->logger->info('Server running at'
-            . " $this->host on port $this->port using $this->protocol"
-            . ' protocol.');
+            $this->logger->info('ZeroMQ Server running at'
+                . " $this->host on port $this->port using"
+                . " $this->protocol protocol.");
         }
 
         $this->requests = 0;
@@ -270,11 +269,11 @@ class ZMQServer implements Server, LoggerAware
 
         if ($this->logger and isset($command)) {
             if ($success) {
-                $this->logger->info('SUCCESS '
-                    . Params::shortName($command));
+                $this->logger->info(Params::shortName($command)
+                    . ' Succeeded');
             } else {
-                $this->logger->info('FAIL '
-                    . Params::shortName($command));
+                $this->logger->error(Params::shortName($command)
+                    . ' Failed');
             }
         }
     }

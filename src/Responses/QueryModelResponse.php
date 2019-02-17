@@ -51,7 +51,6 @@ class QueryModelResponse extends Response
      * @param string $type
      * @param array $compatibility
      * @param bool $probabilistic
-     * @return void
      */
     public function __construct(string $type, array $compatibility, bool $probabilistic)
     {

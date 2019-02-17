@@ -3,7 +3,6 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\RESTServer;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\ErrorResponse;
 use Rubix\Server\Serializers\Json;
@@ -34,7 +33,6 @@ class ServerStatusController implements Controller
 
     /**
      * @param \Rubix\Server\CommandBus $commandBus
-     * @return void
      */
     public function __construct(CommandBus $commandBus)
     {

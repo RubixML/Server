@@ -54,7 +54,6 @@ class ServerStatusResponse extends Response
      * @param array $memoryUsage
      * @param int $uptime
      * @throws \InvalidArgumentException
-     * @return void
      */
     public function __construct(array $requests, array $memoryUsage, int $uptime)
     {
