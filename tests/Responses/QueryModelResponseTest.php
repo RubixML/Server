@@ -8,11 +8,16 @@ use PHPUnit\Framework\TestCase;
 
 class QueryModelResponseTest extends TestCase
 {
+    protected const TYPE = 'Classifier';
+    protected const COMPATIBILITY = ['Categorical'];
+    protected const PROBABILISTIC = true;
+    protected const RANKING = false;
+    
     protected $response;
 
     public function setUp()
     {
-        $this->response = new QueryModelResponse('Classifier', ['Categorical'], true);
+        $this->response = new QueryModelResponse(self::TYPE, self::COMPATIBILITY, self::PROBABILISTIC, self::RANKING);
     }
 
     public function test_build_response()
@@ -26,8 +31,9 @@ class QueryModelResponseTest extends TestCase
         $payload = $this->response->asArray();
 
         $this->assertInternalType('array', $payload);
-        $this->assertEquals('Classifier', $payload['type']);
-        $this->assertContains('Categorical', $payload['compatibility']);
-        $this->assertTrue($payload['probabilistic']);
+        $this->assertEquals(self::TYPE, $payload['type']);
+        $this->assertEquals(self::COMPATIBILITY, $payload['compatibility']);
+        $this->assertEquals(self::PROBABILISTIC, $payload['probabilistic']);
+        $this->assertEquals(self::RANKING, $payload['ranking']);
     }
 }

@@ -38,7 +38,7 @@ class ProbabilitiesControllerTest extends TestCase
             ],
         ]) ?: null);
 
-        $response = $this->controller->handle($request, ['model' => 'test']);
+        $response = $this->controller->handle($request);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

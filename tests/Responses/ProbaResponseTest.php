@@ -8,16 +8,18 @@ use PHPUnit\Framework\TestCase;
 
 class ProbaResponseTest extends TestCase
 {
+    protected const EXPECTED_PROBABILITIES = [
+        [
+            'monster' => 0.4,
+            'not monster' => 0.6,
+        ],
+    ];
+
     protected $response;
 
     public function setUp()
     {
-        $this->response = new ProbaResponse([
-            [
-                'monster' => 0.4,
-                'not monster' => 0.6,
-            ],
-        ]);
+        $this->response = new ProbaResponse(self::EXPECTED_PROBABILITIES);
     }
 
     public function test_build_response()
@@ -29,12 +31,7 @@ class ProbaResponseTest extends TestCase
     public function test_as_array()
     {
         $expected = [
-            'probabilities' => [
-                [
-                    'monster' => 0.4,
-                    'not monster' => 0.6,
-                ],
-            ],
+            'probabilities' => self::EXPECTED_PROBABILITIES,
         ];
         
         $payload = $this->response->asArray();

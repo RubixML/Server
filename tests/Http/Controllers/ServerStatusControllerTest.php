@@ -34,7 +34,7 @@ class ServerStatusControllerTest extends TestCase
     {
         $request = new ServerRequest('GET', '/status');
 
-        $response = $this->controller->handle($request, []);
+        $response = $this->controller->handle($request);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

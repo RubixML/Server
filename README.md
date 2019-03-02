@@ -29,6 +29,7 @@ $ composer require rubix/server
 	- [Commands](#commands)
 		- [Predict](#predict)
 		- [Proba](#proba)
+		- [Rank](#rank)
 		- [Query Model](#query-model)
 		- [Server Status](#server-status)
 	- [Responses](#responses)
@@ -228,6 +229,21 @@ Return the probabilistic predictions from an underlying probabilistic model.
 use Rubix\Server\Commands\Proba;
 
 $command = new Proba($samples);
+```
+
+### Rank
+Apply an arbitrary unnormalized scoring function over the the samples.
+
+#### Parameters:
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | samples | | array | The unknown samples to predict. |
+
+#### Example:
+```php
+use Rubix\Server\Commands\Rank;
+
+$command = new Rank($samples);
 ```
 
 ### Query Model

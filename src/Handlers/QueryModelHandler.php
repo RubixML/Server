@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Handlers;
 
+use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Other\Helpers\DataType;
@@ -40,7 +41,8 @@ class QueryModelHandler implements Handler
         }, $this->estimator->compatibility());
 
         $probabilistic = $this->estimator instanceof Probabilistic;
+        $ranking = $this->estimator instanceof Ranking;
 
-        return new QueryModelResponse($type, $compatibility, $probabilistic);
+        return new QueryModelResponse($type, $compatibility, $probabilistic, $ranking);
     }
 }

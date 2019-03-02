@@ -3,14 +3,14 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Http\Controllers\PredictionsController;
+use Rubix\Server\Http\Controllers\RankController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Responses\RankResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class PredictionsControllerTest extends TestCase
+class RankControllerTest extends TestCase
 {
     protected $controller;
 
@@ -19,14 +19,14 @@ class PredictionsControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new PredictResponse([]));
+            ->willReturn(new RankResponse([]));
 
-        $this->controller = new PredictionsController($commandBus);
+        $this->controller = new RankController($commandBus);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(PredictionsController::class, $this->controller);
+        $this->assertInstanceOf(RankController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 

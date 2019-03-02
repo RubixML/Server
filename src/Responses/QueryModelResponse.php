@@ -33,7 +33,14 @@ class QueryModelResponse extends Response
     protected $probabilistic;
 
     /**
-     * Build the message from an associative array of data.
+     * Does the model score unknown samples?
+     *
+     * @var bool
+     */
+    protected $ranking;
+
+    /**
+     * Build the response from an associative array of data.
      *
      * @param array $data
      * @return self
@@ -43,20 +50,23 @@ class QueryModelResponse extends Response
         $type = $data['type'] ?? 'unknown';
         $compatibility = $data['compatibility'] ?? [];
         $probabilistic = $data['probabilistic'] ?? false;
+        $ranking = $data['ranking'] ?? false;
 
-        return new self($type, $compatibility, $probabilistic);
+        return new self($type, $compatibility, $probabilistic, $ranking);
     }
 
     /**
      * @param string $type
      * @param array $compatibility
      * @param bool $probabilistic
+     * @param bool $ranking
      */
-    public function __construct(string $type, array $compatibility, bool $probabilistic)
+    public function __construct(string $type, array $compatibility, bool $probabilistic, bool $ranking)
     {
         $this->type = $type;
         $this->compatibility = $compatibility;
         $this->probabilistic = $probabilistic;
+        $this->ranking = $ranking;
     }
 
     /**
@@ -70,6 +80,16 @@ class QueryModelResponse extends Response
     }
 
     /**
+     * Return the data types the model is compatible with.
+     *
+     * @return int[]
+     */
+    public function compatibility() : array
+    {
+        return $this->compatibility;
+    }
+
+    /**
      * Is the model probabilistic?
      *
      * @return bool
@@ -77,6 +97,16 @@ class QueryModelResponse extends Response
     public function probabilistic() : bool
     {
         return $this->probabilistic;
+    }
+
+    /**
+     * Is the model ranking?
+     *
+     * @return bool
+     */
+    public function ranking() : bool
+    {
+        return $this->ranking;
     }
 
     /**
@@ -90,6 +120,7 @@ class QueryModelResponse extends Response
             'type' => $this->type,
             'compatibility' => $this->compatibility,
             'probabilistic' => $this->probabilistic,
+            'ranking' => $this->ranking,
         ];
     }
 }

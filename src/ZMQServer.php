@@ -3,15 +3,18 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Learner;
+use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\QueryModel;
+use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Responses\ErrorResponse;
@@ -41,7 +44,7 @@ use ZMQ;
  */
 class ZMQServer implements Server, LoggerAware
 {
-    const PROTOCOLS = [
+    public const PROTOCOLS = [
         'tcp', 'inproc', 'ipc', 'pgm', 'epgm',
     ];
 
@@ -144,14 +147,10 @@ class ZMQServer implements Server, LoggerAware
                 . implode(', ', self::PROTOCOLS) . '.');
         }
 
-        if (is_null($serializer)) {
-            $serializer = new Json();
-        }
-
         $this->host = $host;
         $this->port = $port;
         $this->protocol = $protocol;
-        $this->serializer = $serializer;
+        $this->serializer = $serializer ?: new Json();
     }
 
     /**
@@ -207,6 +206,10 @@ class ZMQServer implements Server, LoggerAware
 
         if ($estimator instanceof Probabilistic) {
             $commands[Proba::class] = new ProbaHandler($estimator);
+        }
+
+        if ($estimator instanceof Ranking) {
+            $commands[Rank::class] = new RankHandler($estimator);
         }
 
         $this->commandBus = new CommandBus($commands);

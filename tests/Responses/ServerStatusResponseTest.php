@@ -8,17 +8,23 @@ use PHPUnit\Framework\TestCase;
 
 class ServerStatusResponseTest extends TestCase
 {
+    protected const REQUESTS = [
+        'count' => 10,
+        'requests_min' => 6.2,
+    ];
+
+    protected const MEMORY_USAGE = [
+        'current' => 250,
+        'peak' => 500,
+    ];
+
+    protected const UPTIME = 999;
+
     protected $response;
 
     public function setUp()
     {
-        $this->response = new ServerStatusResponse([
-            'count' => 10,
-            'requests_min' => 6.2,
-        ], [
-            'current' => 250,
-            'peak' => 500,
-        ], 100);
+        $this->response = new ServerStatusResponse(self::REQUESTS, self::MEMORY_USAGE, self::UPTIME);
     }
 
     public function test_build_response()
@@ -30,15 +36,9 @@ class ServerStatusResponseTest extends TestCase
     public function test_as_array()
     {
         $expected = [
-            'requests' => [
-                'count' => 10,
-                'requests_min' => 6.2,
-            ],
-            'memory_usage' => [
-                'current' => 250,
-                'peak' => 500,
-            ],
-            'uptime' => 100,
+            'requests' => self::REQUESTS,
+            'memory_usage' => self::MEMORY_USAGE,
+            'uptime' => self::UPTIME,
         ];
         
         $payload = $this->response->asArray();

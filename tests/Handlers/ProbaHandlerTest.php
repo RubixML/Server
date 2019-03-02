@@ -11,6 +11,17 @@ use PHPUnit\Framework\TestCase;
 
 class ProbaHandlerTest extends TestCase
 {
+    protected const SAMPLES = [
+        ['mean', 'rough', 'loner'],
+    ];
+
+    protected const EXPECTED_PROBABILITIES = [
+        [
+            'not monster' => 0.8,
+            'monster' => 0.2,
+        ],
+    ];
+
     protected $command;
     
     protected $handler;
@@ -20,16 +31,9 @@ class ProbaHandlerTest extends TestCase
         $estimator = $this->createMock(GaussianNB::class);
 
         $estimator->method('proba')
-            ->willReturn([
-                [
-                    'not monster' => 0.8,
-                    'monster' => 0.2,
-                ],
-            ]);
+            ->willReturn(self::EXPECTED_PROBABILITIES);
 
-        $this->command = new Proba([
-            ['mean', 'rough', 'loner'],
-        ]);
+        $this->command = new Proba(self::SAMPLES);
 
         $this->handler = new ProbaHandler($estimator);
     }
@@ -45,5 +49,6 @@ class ProbaHandlerTest extends TestCase
         $response = $this->handler->handle($this->command);
 
         $this->assertInstanceOf(ProbaResponse::class, $response);
+        $this->assertEquals(self::EXPECTED_PROBABILITIES, $response->probabilities());
     }
 }

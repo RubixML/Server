@@ -19,7 +19,7 @@ class QueryModelControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new QueryModelResponse('Classifier', [], true));
+            ->willReturn(new QueryModelResponse('Classifier', [], true, false));
         
         $this->controller = new QueryModelController($commandBus);
     }
@@ -34,7 +34,7 @@ class QueryModelControllerTest extends TestCase
     {
         $request = new ServerRequest('GET', '/status');
 
-        $response = $this->controller->handle($request, []);
+        $response = $this->controller->handle($request);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

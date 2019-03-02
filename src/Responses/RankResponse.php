@@ -3,20 +3,20 @@
 namespace Rubix\Server\Responses;
 
 /**
- * Error Response
+ * Rank Response
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ErrorResponse extends Response
+class RankResponse extends Response
 {
     /**
-     * The error message.
+     * The scores returned from the model.
      *
-     * @var string
+     * @var array
      */
-    protected $message;
+    protected $scores;
 
     /**
      * Build the response from an associative array of data.
@@ -26,25 +26,25 @@ class ErrorResponse extends Response
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['message']);
+        return new self($data['scores'] ?? []);
     }
 
     /**
-     * @param string $message
+     * @param array $scores
      */
-    public function __construct(string $message)
+    public function __construct(array $scores)
     {
-        $this->message = $message;
+        $this->scores = $scores;
     }
 
     /**
-     * Return the error message.
+     * Return the scores.
      *
-     * @return string
+     * @return array
      */
-    public function message() : string
+    public function scores() : array
     {
-        return $this->message;
+        return $this->scores;
     }
 
     /**
@@ -55,7 +55,7 @@ class ErrorResponse extends Response
     public function asArray() : array
     {
         return [
-            'message' => $this->message,
+            'scores' => $this->scores,
         ];
     }
 }

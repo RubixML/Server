@@ -71,15 +71,11 @@ class ZMQClient implements Client
                 . implode(', ', ZMQServer::PROTOCOLS) . '.');
         }
 
-        if (is_null($serializer)) {
-            $serializer = new Json();
-        }
-
         $this->client = new ZMQSocket(new ZMQContext(), ZMQ::SOCKET_REQ);
 
         $this->client->connect("$protocol://$host:$port");
 
-        $this->serializer = $serializer;
+        $this->serializer = $serializer ?: new Json();
     }
 
     /**

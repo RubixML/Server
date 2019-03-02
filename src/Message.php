@@ -47,8 +47,8 @@ abstract class Message implements JsonSerializable
         $properties = $this->asArray();
 
         if (!isset($properties[$property])) {
-            throw new InvalidArgumentException('Property'
-                . " '$property' could not be found.");
+            throw new InvalidArgumentException("Property '$property'"
+                . ' could not be found on message.');
         }
 
         return $properties[$property];

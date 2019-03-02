@@ -5,6 +5,7 @@ namespace Rubix\Server;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\Response;
@@ -26,15 +27,16 @@ use Exception;
  */
 class RESTClient implements Client
 {
-    const DEFAULT_HEADERS = [
+    protected const DEFAULT_HEADERS = [
         'Content-Type' => 'application/json',
         'Accept' => 'application/json',
     ];
 
-    const ROUTES = [
-        QueryModel::class => ['GET', RESTServer::MODEL_PREFIX],
+    protected const ROUTES = [
         Predict::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::PREDICT_ENDPOINT],
         Proba::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::PROBA_ENDPOINT],
+        QueryModel::class => ['GET', RESTServer::MODEL_PREFIX],
+        Rank::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::RANK_ENDPOINT],
         ServerStatus::class => ['GET', RESTServer::SERVER_PREFIX . RESTServer::SERVER_STATUS_ENDPOINT],
     ];
 
@@ -102,7 +104,7 @@ class RESTClient implements Client
 
         if ($timeout < 0.) {
             throw new InvalidArgumentException('Timeout cannot be less'
-                . "than 0, $timeout given.");
+                . " than 0, $timeout given.");
         }
 
         if ($retries < 0) {

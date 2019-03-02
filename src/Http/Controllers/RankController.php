@@ -3,7 +3,7 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\Rank;
 use Rubix\Server\Responses\ErrorResponse;
 use Rubix\Server\Serializers\Json;
 use React\Http\Response as ReactResponse;
@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Exception;
 
-class ProbabilitiesController implements Controller
+class RankController implements Controller
 {
     protected const HEADERS = [
         'Content-Type' => 'text/json',
@@ -52,7 +52,7 @@ class ProbabilitiesController implements Controller
         try {
             $json = json_decode($request->getBody()->getContents(), true);
 
-            $command = new Proba($json['samples'] ?? []);
+            $command = new Rank($json['samples'] ?? []);
 
             $response = $this->commandBus->dispatch($command);
 

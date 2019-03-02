@@ -19,7 +19,7 @@ class ProbaResponse extends Response
     protected $probabilities;
 
     /**
-     * Build the command from an associative array of data.
+     * Build the response from an associative array of data.
      *
      * @param array $data
      * @return self

@@ -11,8 +11,8 @@ interface Controller
      * Handle the request.
      *
      * @param Request $request
-     * @param array $params
+     * @param array|null $params
      * @return Response
      */
-    public function handle(Request $request, array $params) : Response;
+    public function handle(Request $request, ?array $params) : Response;
 }

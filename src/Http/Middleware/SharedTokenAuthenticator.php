@@ -22,7 +22,7 @@ use InvalidArgumentException;
  */
 class SharedTokenAuthenticator extends Middleware
 {
-    const AUTH_HEADER = 'Authorization';
+    public const AUTH_HEADER = 'Authorization';
 
     /**
      * The shared secret key (token) required to authenticate every

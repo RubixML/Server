@@ -35,9 +35,9 @@ class CommandBus
      */
     public function __construct(array $mapping)
     {
-        foreach ($mapping as $classname => $handler) {
-            if (!class_exists($classname)) {
-                throw new InvalidArgumentException("$classname does"
+        foreach ($mapping as $command => $handler) {
+            if (!class_exists($command)) {
+                throw new InvalidArgumentException("$command does"
                     . ' not exist.');
             }
 

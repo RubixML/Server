@@ -3,20 +3,24 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Learner;
+use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\QueryModelController;
+use Rubix\Server\Http\Controllers\RankController;
 use Rubix\Server\Http\Controllers\ServerStatusController;
 use FastRoute\RouteCollector as Collector;
 use FastRoute\RouteParser\Std as Parser;
@@ -45,14 +49,15 @@ use InvalidArgumentException;
  */
 class RESTServer implements Server, LoggerAware
 {
-    const MODEL_PREFIX = '/model';
-    const SERVER_PREFIX = '/server';
+    public const MODEL_PREFIX = '/model';
+    public const SERVER_PREFIX = '/server';
 
-    const PREDICT_ENDPOINT = '/predictions';
-    const PROBA_ENDPOINT = '/probabilities';
-    const SERVER_STATUS_ENDPOINT = '/status';
+    public const PREDICT_ENDPOINT = '/predictions';
+    public const PROBA_ENDPOINT = '/probabilities';
+    public const RANK_ENDPOINT = '/scores';
+    public const SERVER_STATUS_ENDPOINT = '/status';
 
-    const ROUTER_STATUS = [
+    protected const ROUTER_STATUS = [
         0 => '404',
         1 => '200',
         2 => '405',
@@ -250,6 +255,10 @@ class RESTServer implements Server, LoggerAware
             $commands[Proba::class] = new ProbaHandler($estimator);
         }
 
+        if ($estimator instanceof Ranking) {
+            $commands[Rank::class] = new RankHandler($estimator);
+        }
+
         $commandBus = new CommandBus($commands);
 
         $collector = new Collector(new Parser(), new DataGenerator());
@@ -265,6 +274,10 @@ class RESTServer implements Server, LoggerAware
             
             if ($estimator instanceof Probabilistic) {
                 $group->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
+            }
+
+            if ($estimator instanceof Ranking) {
+                $group->post(self::RANK_ENDPOINT, new RankController($commandBus));
             }
         });
 
