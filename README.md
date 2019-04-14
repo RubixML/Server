@@ -2,7 +2,7 @@
 High-performance standalone model servers bring your [Rubix ML](https://github.com/RubixML/RubixML) estimators live into production quickly and effortlessly.
 
 ## Installation
-Install Rubix Server using Composer:
+Install Rubix Server using [Composer](https://getcomposer.org/):
 
 ```sh
 $ composer require rubix/server
@@ -10,7 +10,6 @@ $ composer require rubix/server
 
 ## Requirements
 - [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
-- [Zero MQ extension](https://pecl.php.net/package/zmq) for lightweight messaging
 
 #### Optional
 - [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
@@ -21,10 +20,8 @@ $ composer require rubix/server
 - [Getting Started](#getting-started)
 - [Servers](#servers)
 	- [REST Server](#rest-server)
-	- [ZeroMQ Server](#zero-mq-server)
 - [Clients](#clients)
 	- [REST Client](#rest-client)
-	- [ZeroMQ Client](#zeromq-client)
 - [Messages](#messages)
 	- [Commands](#commands)
 		- [Predict](#predict)
@@ -49,7 +46,8 @@ To boot up a server, simply call the `run()` method on the instance.
 public function run() : void
 ```
 
-#### Example
+**Example**
+
 ```php
 use Rubix\Server\RESTServer;
 use Rubix\ML\Classifiers\KNearestNeighbors;
@@ -70,16 +68,18 @@ The server will stay running until the process is terminated.
 ### REST Server
 JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 
-#### Parameters:
+**Parameters:**
+
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | estimator | | object | The estimator instance that you want to serve. |
-| 2 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 3 | port | 8888 | int | The network port to run the HTTP services on. |
-| 4 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 5 | middleware | | array | The HTTP middleware stack to run on each request. |
+| 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
+| 2 | port | 8888 | int | The network port to run the HTTP services on. |
+| 3 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
+| 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
 
-#### HTTP Routes:
+
+**HTTP Routes:**
+
 | Method | URI | JSON Params | Description |
 |--|--|--|--|
 | GET | /model | | Query information about the model. |
@@ -87,7 +87,8 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | POST | /model/probabilities | `samples` | Predict the probabilities of each outcome. |
 | GET | /server/status | | Query the status of the server. |
 
-#### Example
+**Example**
+
 ```php
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
@@ -95,28 +96,6 @@ use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 $server = new RESTServer('127.0.0.1', 4443, '/cert.pem', [
     new SharedTokenAuthenticator('secret'),
 ]);
-```
-
-### ZeroMQ Server
-Server that communicates using the lightweight background messaging protocol ZeroMQ.
-
-> **Note**: This server requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
-
-#### Parameters:
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | estimator | | object | The estimator instance that you want to serve. |
-| 2 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 3 | port | 5555 | int | The network port to run the server to. |
-| 4 | protocol | 'tcp' | string | The transport protocol to use (tcp, inproc, ipc, pgm, or ipgm). |
-| 5 | serializer | Native | object | The message serializer/unserializer. |
-
-#### Example
-```php
-use Rubix\Server\ZMQServer;
-use Rubix\Server\Serializers\Binary;
-
-$server = new ZMQServer('127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---
@@ -128,7 +107,8 @@ To send a Command and return a Response object:
 public send(Command $command) : Response
 ```
 
-#### Example:
+**Example:**
+
 ```php
 use Rubix\Server\RESTClient;
 use Rubix\Server\Commands\Predict;
@@ -141,7 +121,8 @@ $predictions = $client->send(new Predict($samples));
 ### REST Client
 The REST Client is made to communicate with a [REST Server](#rest-server) over HTTP or Secure HTTP (HTTPS).
 
-#### Parameters:
+**Parameters:**
+
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | host | '127.0.0.1' | string | The address of the server. |
@@ -152,34 +133,14 @@ The REST Client is made to communicate with a [REST Server](#rest-server) over H
 | 6 | retries | 2 | int | The number of retries before giving up. |
 | 7 | delay | 0.1 | float | The delay in seconds between retries. |
 
-#### Example:
+**Example:**
+
 ```php
 use Rubix\Server\RESTClient;
 
 $client = new RESTClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
 ], 2.5, 3, 0.5);
-```
-
-### ZeroMQ Client
-Client for the [ZeroMQ Server](#zeromq-server) which uses lightweight background messaging for fast service to service communication.
-
-> **Note**: This client requires the [ZeroMQ PHP extension](https://php.net/manual/en/book.zmq.php).
-
-#### Parameters:
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | host | '127.0.0.1' | string | The address that the server is running on. |
-| 2 | port | 5555 | int | The network port the server is binded to. |
-| 3 | protocol | 'tcp' | string | The transport protocol to use (tcp, inproc, ipc, pgm, or ipgm). |
-| 4 | serializer | Native | object | The message serializer/unserializer. |
-
-#### Example:
-```php
-use Rubix\Server\ZMQClient;
-use Rubix\Server\Serializers\Binary;
-
-$client = new ZMQClient('127.0.0.1', 5555, 'tcp', new Binary());
 ```
 
 ---
@@ -204,12 +165,14 @@ Commands are messages sent by clients and used internally by servers to transpor
 ### Predict
 Return the predictions of the samples provided from the model running on the server.
 
-#### Parameters:
+**Parameters:**
+
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | samples | | array | The unknown samples to predict. |
 
-#### Example:
+**Example:**
+
 ```php
 use Rubix\Server\Commands\Predict;
 
@@ -219,12 +182,12 @@ $command = new Predict($samples);
 ### Proba
 Return the probabilistic predictions from an underlying probabilistic model.
 
-#### Parameters:
+**Parameters:**
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | samples | | array | The unknown samples to predict. |
 
-#### Example:
+**Example:**
 ```php
 use Rubix\Server\Commands\Proba;
 
@@ -234,12 +197,14 @@ $command = new Proba($samples);
 ### Rank
 Apply an arbitrary unnormalized scoring function over the the samples.
 
-#### Parameters:
+**Parameters:**
+
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | samples | | array | The unknown samples to predict. |
 
-#### Example:
+**Example:**
+
 ```php
 use Rubix\Server\Commands\Rank;
 
@@ -249,10 +214,11 @@ $command = new Rank($samples);
 ### Query Model
 Query the status of the current model being served.
 
-#### Parameters:
+**Parameters:**
+
 This command does not have any parameters.
 
-#### Example:
+**Example:**
 ```php
 use Rubix\Server\Commands\QueryModel;
 
@@ -262,10 +228,12 @@ $command = new QueryModel();
 ### Server Status
 Return statistics regarding the server status such as uptime, requests per minute, and memory usage.
 
-#### Parameters:
+**Parameters:**
+
 This command does not have any parameters.
 
-#### Example:
+**Example:**
+
 ```php
 use Rubix\Server\Commands\ServerStatus;
 
@@ -284,12 +252,14 @@ Authenticates incoming requests using a shared key that is kept secret between t
 
 > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with SSL or TLS.
 
-#### Parameters:
+**Parameters:**
+
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | token | | string | The shared secret key (token) required to authenticate every request. |
 
-#### Example
+**Example:**
+
 ```php
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 

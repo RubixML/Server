@@ -3,9 +3,9 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Learner;
-use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
+use Rubix\ML\AnomalyDetectors\Ranking;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\Rank;

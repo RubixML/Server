@@ -3,20 +3,10 @@ language: php
 php:
     - '7.1'
     - '7.2'
-
-addons:
-    apt:
-        packages:
-            - libzmq-dev
+    - '7.3'
 
 before_install:
-    - echo "yes" | pecl -d preferred_state=beta install zmq
     - pecl install -f igbinary
 
-install:
-    - composer install
-
 script:
-    - composer analyze
-    - composer check
-    - composer test
+    - composer build

@@ -2,8 +2,8 @@
 
 namespace Rubix\Server\Handlers;
 
-use Rubix\ML\Ranking;
 use Rubix\ML\Datasets\Unlabeled;
+use Rubix\ML\AnomalyDetectors\Ranking;
 use Rubix\Server\Commands\Rank;
 use Rubix\Server\Responses\RankResponse;
 
@@ -12,12 +12,12 @@ class RankHandler implements Handler
     /**
      * The ranking model that is being served.
      *
-     * @var \Rubix\ML\Ranking
+     * @var \Rubix\ML\AnomalyDetectors\Ranking
      */
     protected $estimator;
 
     /**
-     * @param \Rubix\ML\Ranking $estimator
+     * @param \Rubix\ML\AnomalyDetectors\Ranking $estimator
      */
     public function __construct(Ranking $estimator)
     {
