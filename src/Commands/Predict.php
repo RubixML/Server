@@ -42,7 +42,7 @@ class Predict extends Command
     /**
      * Return the samples to predict.
      *
-     * @return array
+     * @return array[]
      */
     public function samples() : array
     {

@@ -3,20 +3,17 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Commands\Rank;
+use Rubix\Server\Commands\Command;
 use Rubix\Server\Responses\ErrorResponse;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\Serializer;
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use RuntimeException;
 use Exception;
 
 class RankController implements Controller
 {
-    protected const HEADERS = [
-        'Content-Type' => 'text/json',
-    ];
-
     /**
      * The command bus.
      *
@@ -25,19 +22,28 @@ class RankController implements Controller
     protected $commandBus;
 
     /**
-     * The JSON message serializer.
+     * The message serializer.
      *
-     * @var \Rubix\Server\Serializers\Json
+     * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
 
     /**
-     * @param \Rubix\Server\CommandBus $commandBus
+     * The headers to send with every response.
+     *
+     * @var array
      */
-    public function __construct(CommandBus $commandBus)
+    protected $headers;
+
+    /**
+     * @param \Rubix\Server\CommandBus $commandBus
+     * @param \Rubix\Server\Serializers\Serializer $serializer
+     */
+    public function __construct(CommandBus $commandBus, Serializer $serializer)
     {
         $this->commandBus = $commandBus;
-        $this->serializer = new Json();
+        $this->serializer = $serializer;
+        $this->headers = Controller::SERIALIZER_HEADERS[get_class($serializer)];
     }
 
     /**
@@ -50,9 +56,13 @@ class RankController implements Controller
     public function handle(Request $request, ?array $params = null) : Response
     {
         try {
-            $json = json_decode($request->getBody()->getContents(), true);
+            $data = $request->getBody()->getContents();
 
-            $command = new Rank($json['samples'] ?? []);
+            $command = $this->serializer->unserialize($data);
+
+            if (!$command instanceof Command) {
+                throw new RuntimeException('Command could not be reconstituted.');
+            }
 
             $response = $this->commandBus->dispatch($command);
 
@@ -65,6 +75,6 @@ class RankController implements Controller
 
         $data = $this->serializer->serialize($response);
 
-        return new ReactResponse($status, self::HEADERS, $data);
+        return new ReactResponse($status, $this->headers, $data);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Rubix\Server;
 
-use InvalidArgumentException;
 use JsonSerializable;
 
 abstract class Message implements JsonSerializable
@@ -33,24 +32,5 @@ abstract class Message implements JsonSerializable
             'name' => get_class($this),
             'data' => $this->asArray(),
         ];
-    }
-
-    /**
-     * Magic getters to access the payload properties of the message.
-     *
-     * @param string $property
-     * @throws \InvalidArgumentException
-     * @return mixed
-     */
-    public function __get(string $property)
-    {
-        $properties = $this->asArray();
-
-        if (!isset($properties[$property])) {
-            throw new InvalidArgumentException("Property '$property'"
-                . ' could not be found on message.');
-        }
-
-        return $properties[$property];
     }
 }

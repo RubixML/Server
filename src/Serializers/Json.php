@@ -5,7 +5,7 @@ namespace Rubix\Server\Serializers;
 use Rubix\Server\Message;
 use RuntimeException;
 
-class Json implements Serializer
+class JSON implements Serializer
 {
     /**
      * Serialize a message.
@@ -29,7 +29,7 @@ class Json implements Serializer
     {
         $json = json_decode($data, true);
 
-        if (class_exists($json['name'])) {
+        if (isset($json['name']) and class_exists($json['name'])) {
             return $json['name']::fromArray($json['data'] ?? []);
         }
 

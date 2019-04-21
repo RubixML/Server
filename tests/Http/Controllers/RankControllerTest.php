@@ -3,6 +3,8 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
+use Rubix\Server\Commands\Rank;
+use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\RankController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\RankResponse;
@@ -21,7 +23,7 @@ class RankControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new RankResponse([]));
 
-        $this->controller = new RankController($commandBus);
+        $this->controller = new RankController($commandBus, new JSON());
     }
 
     public function test_build_controller()
@@ -33,8 +35,11 @@ class RankControllerTest extends TestCase
     public function test_handle_request()
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
-            'samples' => [
-                ['The first step is to establish that something is possible, then probability will occur.'],
+            'name' => Rank::class,
+            'data' => [
+                'samples' => [
+                    ['The first step is to establish that something is possible, then probability will occur.'],
+                ],
             ],
         ]) ?: null);
 

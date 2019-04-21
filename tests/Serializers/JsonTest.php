@@ -4,11 +4,11 @@ namespace Rubix\Server\Tests\Serializers;
 
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use PHPUnit\Framework\TestCase;
 
-class JsonTest extends TestCase
+class JSONTest extends TestCase
 {
     protected $command;
     
@@ -18,12 +18,12 @@ class JsonTest extends TestCase
     {
         $this->command = new QueryModel();
 
-        $this->serializer = new Json();
+        $this->serializer = new JSON();
     }
 
     public function test_build_serialzer()
     {
-        $this->assertInstanceOf(Json::class, $this->serializer);
+        $this->assertInstanceOf(JSON::class, $this->serializer);
         $this->assertInstanceOf(Serializer::class, $this->serializer);
     }
 

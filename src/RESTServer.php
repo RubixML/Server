@@ -17,6 +17,8 @@ use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Serializers\JSON;
+use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\QueryModelController;
@@ -100,6 +102,20 @@ class RESTServer implements Server, LoggerAware
     protected $router;
 
     /**
+     * The command bus.
+     *
+     * @var \Rubix\Server\CommandBus
+     */
+    protected $commandBus;
+
+    /**
+     * The message serializer.
+     *
+     * @var \Rubix\Server\Serializers\Serializer
+     */
+    protected $serializer;
+
+    /**
      * The logger instance.
      *
      * @var Logger|null
@@ -132,7 +148,8 @@ class RESTServer implements Server, LoggerAware
         string $host = '127.0.0.1',
         int $port = 8888,
         ?string $cert = null,
-        array $middleware = []
+        array $middleware = [],
+        ?Serializer $serializer = null
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host cannot be empty.');
@@ -151,8 +168,7 @@ class RESTServer implements Server, LoggerAware
         foreach ($middleware as $mw) {
             if (!$mw instanceof Middleware) {
                 throw new InvalidArgumentException('Class must implement'
-                . ' the middleware interface, ' . get_class($mw)
-                . ' given.');
+                . ' middleware interface, ' . get_class($mw) . ' given.');
             }
         }
 
@@ -160,11 +176,13 @@ class RESTServer implements Server, LoggerAware
         $this->port = $port;
         $this->cert = $cert;
         $this->middleware = array_values($middleware);
+        $this->serializer = $serializer ?? new JSON();
+        $this->commandBus = new CommandBus([]);
         $this->requests = 0;
     }
 
     /**
-     * Sets a logger.
+     * Sets a psr-3 logger.
      *
      * @param Logger|null $logger
      */
@@ -220,7 +238,8 @@ class RESTServer implements Server, LoggerAware
             ]);
         }
 
-        $stack = array_merge($this->middleware, [[$this, 'handle']]);
+        $stack = $this->middleware;
+        $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($stack);
 
@@ -245,10 +264,12 @@ class RESTServer implements Server, LoggerAware
      */
     protected function bootRouter(Estimator $estimator) : Dispatcher
     {
+        $collector = new Collector(new Parser(), new DataGenerator());
+
         $commands = [
             QueryModel::class => new QueryModelHandler($estimator),
-            Predict::class => new PredictHandler($estimator),
             ServerStatus::class => new ServerStatusHandler($this),
+            Predict::class => new PredictHandler($estimator),
         ];
 
         if ($estimator instanceof Probabilistic) {
@@ -259,25 +280,38 @@ class RESTServer implements Server, LoggerAware
             $commands[Rank::class] = new RankHandler($estimator);
         }
 
-        $commandBus = new CommandBus($commands);
+        $this->commandBus = new CommandBus($commands);
 
-        $collector = new Collector(new Parser(), new DataGenerator());
+        $collector->get(
+            self::MODEL_PREFIX,
+            new QueryModelController($this->commandBus, $this->serializer)
+        );
 
-        $collector->addGroup(self::SERVER_PREFIX, function (Collector $group) use ($commandBus) {
-            $group->get(self::SERVER_STATUS_ENDPOINT, new ServerStatusController($commandBus));
+        $collector->addGroup(self::SERVER_PREFIX, function ($group) {
+            $group->get(
+                self::SERVER_STATUS_ENDPOINT,
+                new ServerStatusController($this->commandBus, $this->serializer)
+            );
         });
 
-        $collector->get(self::MODEL_PREFIX, new QueryModelController($commandBus));
-
-        $collector->addGroup(self::MODEL_PREFIX, function (Collector $group) use ($commandBus, $estimator) {
-            $group->post(self::PREDICT_ENDPOINT, new PredictionsController($commandBus));
+        $collector->addGroup(self::MODEL_PREFIX, function ($group) use ($estimator) {
+            $group->post(
+                self::PREDICT_ENDPOINT,
+                new PredictionsController($this->commandBus, $this->serializer)
+            );
             
             if ($estimator instanceof Probabilistic) {
-                $group->post(self::PROBA_ENDPOINT, new ProbabilitiesController($commandBus));
+                $group->post(
+                    self::PROBA_ENDPOINT,
+                    new ProbabilitiesController($this->commandBus, $this->serializer)
+                );
             }
 
             if ($estimator instanceof Ranking) {
-                $group->post(self::RANK_ENDPOINT, new RankController($commandBus));
+                $group->post(
+                    self::RANK_ENDPOINT,
+                    new RankController($this->commandBus, $this->serializer)
+                );
             }
         });
 
@@ -312,9 +346,9 @@ class RESTServer implements Server, LoggerAware
 
         switch ($status) {
             case Dispatcher::FOUND:
-                $response = $controller->handle($request, $params);
-
                 $this->requests++;
+
+                $response = $controller->handle($request, $params);
                 
                 return $response;
 

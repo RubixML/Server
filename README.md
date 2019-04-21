@@ -66,7 +66,7 @@ The server will stay running until the process is terminated.
 > **Note**: It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case there is a failure.
 
 ### REST Server
-JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
+Representational State Transfer (REST) server over HTTP and HTTPS that is compatible with multiple message formats including Json, Binary, and Native PHP serial format.
 
 **Parameters:**
 
@@ -76,7 +76,7 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
-
+| 5 | serializer | JSON | object | The message serializer. |
 
 **HTTP Routes:**
 
@@ -85,6 +85,7 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 | GET | /model | | Query information about the model. |
 | POST | /model/predictions | `samples` | Return the predictions given by the model. |
 | POST | /model/probabilities | `samples` | Predict the probabilities of each outcome. |
+| POST | /model/scores | `samples` | Assign an anomaly score to each sample. |
 | GET | /server/status | | Query the status of the server. |
 
 **Example**
@@ -92,10 +93,11 @@ JSON based Representational State Transfer (REST) server over HTTP and HTTPS.
 ```php
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\Serializers\Json;
 
 $server = new RESTServer('127.0.0.1', 4443, '/cert.pem', [
     new SharedTokenAuthenticator('secret'),
-]);
+], new JSON());
 ```
 
 ---
@@ -119,7 +121,7 @@ $predictions = $client->send(new Predict($samples));
 ```
 
 ### REST Client
-The REST Client is made to communicate with a [REST Server](#rest-server) over HTTP or Secure HTTP (HTTPS).
+The REST Client allows you to communicate with a [REST Server](#rest-server) over HTTP or Secure HTTP (HTTPS). It handles serialization and routing for each command under the hood.
 
 **Parameters:**
 
@@ -131,16 +133,18 @@ The REST Client is made to communicate with a [REST Server](#rest-server) over H
 | 4 | headers | Auto | array | The HTTP headers to send along with each request. |
 | 5 | timeout | INF | float | The number of seconds to wait before retrying. |
 | 6 | retries | 2 | int | The number of retries before giving up. |
-| 7 | delay | 0.1 | float | The delay in seconds between retries. |
+| 7 | delay | 0.3 | float | The delay in seconds between retries. |
+| 8 | serializer | JSON | object | The message serializer. |
 
 **Example:**
 
 ```php
 use Rubix\Server\RESTClient;
+use Rubix\Server\Serializers\JSON;
 
 $client = new RESTClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
-], 2.5, 3, 0.5);
+], 2.5, 3, 0.5, new Json());
 ```
 
 ---

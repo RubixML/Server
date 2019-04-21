@@ -9,7 +9,10 @@ use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\Response;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\JSON;
+use Rubix\Server\Serializers\Binary;
+use Rubix\Server\Serializers\Native;
+use Rubix\Server\Serializers\Serializer;
 use GuzzleHttp\Client as Guzzle;
 use InvalidArgumentException;
 use RuntimeException;
@@ -27,17 +30,35 @@ use Exception;
  */
 class RESTClient implements Client
 {
-    protected const DEFAULT_HEADERS = [
-        'Content-Type' => 'application/json',
-        'Accept' => 'application/json',
+    protected const URLS = [
+        QueryModel::class => RESTServer::MODEL_PREFIX,
+        ServerStatus::class => RESTServer::SERVER_PREFIX . RESTServer::SERVER_STATUS_ENDPOINT,
+        Predict::class => RESTServer::MODEL_PREFIX . RESTServer::PREDICT_ENDPOINT,
+        Proba::class => RESTServer::MODEL_PREFIX . RESTServer::PROBA_ENDPOINT,
+        Rank::class => RESTServer::MODEL_PREFIX . RESTServer::RANK_ENDPOINT,
     ];
 
     protected const ROUTES = [
-        Predict::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::PREDICT_ENDPOINT],
-        Proba::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::PROBA_ENDPOINT],
-        QueryModel::class => ['GET', RESTServer::MODEL_PREFIX],
-        Rank::class => ['POST', RESTServer::MODEL_PREFIX . RESTServer::RANK_ENDPOINT],
-        ServerStatus::class => ['GET', RESTServer::SERVER_PREFIX . RESTServer::SERVER_STATUS_ENDPOINT],
+        QueryModel::class => ['GET', self::URLS[QueryModel::class]],
+        Predict::class => ['POST', self::URLS[Predict::class]],
+        Proba::class => ['POST', self::URLS[Proba::class]],
+        Rank::class => ['POST', self::URLS[Rank::class]],
+        ServerStatus::class => ['GET', self::URLS[ServerStatus::class]],
+    ];
+
+    protected const SERIALIZER_HEADERS = [
+        JSON::class => [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ],
+        Native::class => [
+            'Content-Type' => 'application/octet-stream',
+            'Accept' => 'application/octet-stream',
+        ],
+        Binary::class => [
+            'Content-Type' => 'application/octet-stream',
+            'Accept' => 'application/octet-stream',
+        ],
     ];
 
     /**
@@ -84,6 +105,7 @@ class RESTClient implements Client
      * @param float $timeout
      * @param int $retries
      * @param float $delay
+     * @param \Rubix\Server\Serializers\Serializer|null $serializer
      * @throws \InvalidArgumentException
      */
     public function __construct(
@@ -93,14 +115,13 @@ class RESTClient implements Client
         array $headers = [],
         float $timeout = 0.,
         int $retries = 2,
-        float $delay = 0.1
+        float $delay = 0.3,
+        ?Serializer $serializer = null
     ) {
         if ($port < 0) {
             throw new InvalidArgumentException('Port number must be'
                 . " a positive integer, $port given.");
         }
-
-        $headers = array_replace(self::DEFAULT_HEADERS, $headers);
 
         if ($timeout < 0.) {
             throw new InvalidArgumentException('Timeout cannot be less'
@@ -117,6 +138,10 @@ class RESTClient implements Client
                 . " less than 0, $delay given.");
         }
 
+        $serializer = $serializer ?? new JSON();
+
+        $headers = array_replace(self::SERIALIZER_HEADERS[get_class($serializer)], $headers);
+
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",
             'headers' => $headers,
@@ -125,26 +150,36 @@ class RESTClient implements Client
         $this->timeout = $timeout;
         $this->retries = $retries;
         $this->delay = (int) round($delay * 1e6);
-        $this->serializer = new Json();
+        $this->serializer = $serializer;
     }
 
     /**
      * Send a command to the server and return the results.
      *
      * @param \Rubix\Server\Commands\Command $command
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      * @return \Rubix\Server\Responses\Response
      */
     public function send(Command $command) : Response
     {
-        [$method, $uri] = self::ROUTES[get_class($command)];
+        $classname = get_class($command);
+
+        if (!isset(self::ROUTES[$classname])) {
+            throw new InvalidArgumentException('Command is missing'
+                . ' from routing table.');
+        }
+
+        [$method, $uri] = self::ROUTES[$classname];
 
         $tries = 1 + $this->retries;
+
+        $body = $this->serializer->serialize($command);
 
         do {
             try {
                 $data = $this->client->request($method, $uri, [
-                    'json' => $command->asArray(),
+                    'body' => $body,
                     'timeout' => $this->timeout,
                 ])->getBody();
 

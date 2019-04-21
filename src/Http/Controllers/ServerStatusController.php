@@ -5,7 +5,7 @@ namespace Rubix\Server\Http\Controllers;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\ErrorResponse;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\Serializer;
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -13,10 +13,6 @@ use Exception;
 
 class ServerStatusController implements Controller
 {
-    protected const HEADERS = [
-        'Content-Type' => 'text/json',
-    ];
-
     /**
      * The command bus.
      *
@@ -25,19 +21,28 @@ class ServerStatusController implements Controller
     protected $commandBus;
 
     /**
-     * The JSON message serializer.
+     * The message serializer.
      *
-     * @var \Rubix\Server\Serializers\Json
+     * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
 
     /**
-     * @param \Rubix\Server\CommandBus $commandBus
+     * The headers to send with every response.
+     *
+     * @var array
      */
-    public function __construct(CommandBus $commandBus)
+    protected $headers;
+
+    /**
+     * @param \Rubix\Server\CommandBus $commandBus
+     * @param \Rubix\Server\Serializers\Serializer $serializer
+     */
+    public function __construct(CommandBus $commandBus, Serializer $serializer)
     {
         $this->commandBus = $commandBus;
-        $this->serializer = new Json();
+        $this->serializer = $serializer;
+        $this->headers = Controller::SERIALIZER_HEADERS[get_class($serializer)];
     }
 
     /**
@@ -61,6 +66,6 @@ class ServerStatusController implements Controller
 
         $data = $this->serializer->serialize($response);
 
-        return new ReactResponse($status, self::HEADERS, $data);
+        return new ReactResponse($status, $this->headers, $data);
     }
 }
