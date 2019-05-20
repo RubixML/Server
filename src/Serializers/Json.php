@@ -5,7 +5,7 @@ namespace Rubix\Server\Serializers;
 use Rubix\Server\Message;
 use RuntimeException;
 
-class JSON implements Serializer
+class Json implements Serializer
 {
     /**
      * Serialize a message.

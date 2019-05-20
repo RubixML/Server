@@ -3,7 +3,6 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\ServerStatusResponse;
@@ -22,7 +21,7 @@ class ServerStatusControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new ServerStatusResponse([], [], 2));
         
-        $this->controller = new ServerStatusController($commandBus, new JSON());
+        $this->controller = new ServerStatusController($commandBus);
     }
 
     public function test_build_controller()

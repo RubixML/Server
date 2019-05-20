@@ -2,13 +2,13 @@
 
 include __DIR__ . '../../../vendor/autoload.php';
 
-use Rubix\Server\RESTClient;
+use Rubix\Server\RPCClient;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 
-$client = new RESTClient('127.0.0.1', 8888);
+$client = new RPCClient('127.0.0.1', 8888);
 
 $samples = [
     [228, 28, 138],

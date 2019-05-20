@@ -20,8 +20,9 @@ $ composer require rubix/server
 - [Getting Started](#getting-started)
 - [Servers](#servers)
 	- [REST Server](#rest-server)
+	- [RPC Server](#rpc-server)
 - [Clients](#clients)
-	- [REST Client](#rest-client)
+	- [RPC Client](#rpc-client)
 - [Messages](#messages)
 	- [Commands](#commands)
 		- [Predict](#predict)
@@ -35,15 +36,15 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you've trained an estimator in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix model servers expose your Rubix ML estimators as standalone services (such as REST, ZeroMQ, etc.) that can be queried in a live production environment. The library also provides an object oriented client API for executing *commands* on the server from your applications.
+Once you've trained an estimator in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix model servers expose your Rubix ML estimators as standalone services (such as REST and RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing *commands* on the server from your applications.
 
 ---
 ### Servers
 Server objects are standalone server implementations built on top of React PHP, an event-driven system that makes it possible to serve thousands of concurrent requests at once.
 
-To boot up a server, simply call the `run()` method on the instance.
+To boot up a server, pass a trained estimator to the `serve()` method:
 ```php
-public function run() : void
+public function serve(Estimator $estimator) : void
 ```
 
 **Example**
@@ -54,7 +55,7 @@ use Rubix\ML\Classifiers\KNearestNeighbors;
 
 $estimator = new KNearestNeighbors(3);
 
-// Train estimator
+// Train learner
 
 $server = new RESTServer('127.0.0.1', 8888);
 
@@ -66,7 +67,7 @@ The server will stay running until the process is terminated.
 > **Note**: It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case there is a failure.
 
 ### REST Server
-Representational State Transfer (REST) server over HTTP and HTTPS that is compatible with multiple message formats including Json, Binary, and Native PHP serial format.
+A standalone Json over HTTP and secure HTTP server exposing a [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) (Representational State Transfer) API. 
 
 **Parameters:**
 
@@ -76,11 +77,10 @@ Representational State Transfer (REST) server over HTTP and HTTPS that is compat
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
-| 5 | serializer | JSON | object | The message serializer. |
 
 **HTTP Routes:**
 
-| Method | URI | JSON Params | Description |
+| Method | URI | Json Params | Description |
 |--|--|--|--|
 | GET | /model | | Query information about the model. |
 | POST | /model/predictions | `samples` | Return the predictions given by the model. |
@@ -93,11 +93,35 @@ Representational State Transfer (REST) server over HTTP and HTTPS that is compat
 ```php
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
-use Rubix\Server\Serializers\Json;
 
 $server = new RESTServer('127.0.0.1', 4443, '/cert.pem', [
     new SharedTokenAuthenticator('secret'),
-], new JSON());
+]);
+```
+
+### RPC Server
+A lightweight [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) server over HTTP and HTTPS that responds to serialized messages called [Commands](#commands).
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
+| 2 | port | 8888 | int | The network port to run the HTTP services on. |
+| 3 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
+| 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
+| 5 | serializer | Json | object | The message serializer. |
+
+**Example**
+
+```php
+use Rubix\Server\RPCServer;
+use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\Serializers\Binary;
+
+$server = new RPCServer('127.0.0.1', 4443, '/cert.pem', [
+    new SharedTokenAuthenticator('secret'),
+], new Binary());
 ```
 
 ---
@@ -112,16 +136,16 @@ public send(Command $command) : Response
 **Example:**
 
 ```php
-use Rubix\Server\RESTClient;
+use Rubix\Server\RPCClient;
 use Rubix\Server\Commands\Predict;
 
-$client = new RESTClient('127.0.0.1', 8888);
+$client = new RPCClient('127.0.0.1', 8888);
 
 $predictions = $client->send(new Predict($samples));
 ```
 
-### REST Client
-The REST Client allows you to communicate with a [REST Server](#rest-server) over HTTP or Secure HTTP (HTTPS). It handles serialization and routing for each command under the hood.
+### RPC Client
+The RPC Client allows you to communicate with a [RPC Server](#rpc-server) over HTTP or Secure HTTP (HTTPS).
 
 **Parameters:**
 
@@ -131,20 +155,20 @@ The REST Client allows you to communicate with a [REST Server](#rest-server) ove
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
 | 4 | headers | Auto | array | The HTTP headers to send along with each request. |
-| 5 | timeout | INF | float | The number of seconds to wait before retrying. |
-| 6 | retries | 2 | int | The number of retries before giving up. |
-| 7 | delay | 0.3 | float | The delay in seconds between retries. |
-| 8 | serializer | JSON | object | The message serializer. |
+| 5 | serializer | Json | object | The message serializer. |
+| 6 | timeout | INF | float | The number of seconds to wait before retrying. |
+| 7 | retries | 2 | int | The number of retries before giving up. |
+| 8 | delay | 0.3 | float | The delay in seconds between retries. |
 
 **Example:**
 
 ```php
-use Rubix\Server\RESTClient;
-use Rubix\Server\Serializers\JSON;
+use Rubix\Server\RPCClient;
+use Rubix\Server\Serializers\Binary;
 
-$client = new RESTClient('127.0.0.1', 8888, false, [
+$client = new RPCClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
-], 2.5, 3, 0.5, new Json());
+], new Binary(), 2.5, 3, 0.5);
 ```
 
 ---

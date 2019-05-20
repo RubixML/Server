@@ -2,7 +2,7 @@
 
 include __DIR__ . '../../../vendor/autoload.php';
 
-use Rubix\Server\RESTServer;
+use Rubix\Server\RPCServer;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\KNearestNeighbors;
@@ -18,7 +18,7 @@ $estimator = new KNearestNeighbors(3);
 
 $estimator->train($generator->generate(500));
 
-$server = new RESTServer('127.0.0.1', 8080);
+$server = new RPCServer('127.0.0.1', 8888);
 
 $server->setLogger(new Screen('server'));
 

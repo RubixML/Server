@@ -3,8 +3,6 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\PredictResponse;
@@ -23,7 +21,7 @@ class PredictionsControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new PredictResponse([]));
 
-        $this->controller = new PredictionsController($commandBus, new JSON());
+        $this->controller = new PredictionsController($commandBus);
     }
 
     public function test_build_controller()
@@ -35,11 +33,8 @@ class PredictionsControllerTest extends TestCase
     public function test_handle_request()
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
-            'name' => Predict::class,
-            'data' => [
-                'samples' => [
-                    ['The first step is to establish that something is possible, then probability will occur.'],
-                ],
+            'samples' => [
+                ['The first step is to establish that something is possible, then probability will occur.'],
             ],
         ]) ?: null);
 

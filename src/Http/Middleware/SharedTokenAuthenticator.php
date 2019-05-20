@@ -24,6 +24,8 @@ class SharedTokenAuthenticator extends Middleware
 {
     public const AUTH_HEADER = 'Authorization';
 
+    protected const UNAUTHORIZED = 401;
+
     /**
      * The shared secret key (token) required to authenticate every
      * request.
@@ -57,7 +59,7 @@ class SharedTokenAuthenticator extends Middleware
         $token = $request->getHeaderLine(self::AUTH_HEADER);
 
         if ($token !== $this->token) {
-            return new ReactResponse(401);
+            return new ReactResponse(self::UNAUTHORIZED);
         }
 
         return $next($request);

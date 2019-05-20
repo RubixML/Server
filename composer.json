@@ -7,7 +7,7 @@
     "keywords": [
         "php", "machine-learning", "data-science", "model-serving", "server", "microservice",
         "json-api", "api", "rest-api", "zeromq", "soa", "cloud", "infrastructure", "ai",
-        "rubix-ml", "distributed", "client", "rest", "messaging", "borg", "hive-mind"
+        "rubix-ml", "distributed", "client", "rest", "messaging", "borg", "hive-mind", "rpc"
     ],
     "authors": [
         {
@@ -25,7 +25,7 @@
         "psr/log": "^1.1",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
-        "rubix/ml": "^0.0.11-beta"
+        "rubix/ml": "^0.0.12-beta"
     },
     "require-dev": {
         "ext-igbinary": "*",

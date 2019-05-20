@@ -2,28 +2,15 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Serializers\JSON;
-use Rubix\Server\Serializers\Binary;
-use Rubix\Server\Serializers\Native;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 interface Controller
 {
-    public const SERIALIZER_HEADERS = [
-        JSON::class => [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ],
-        Native::class => [
-            'Content-Type' => 'application/octet-stream',
-            'Accept' => 'application/octet-stream',
-        ],
-        Binary::class => [
-            'Content-Type' => 'application/octet-stream',
-            'Accept' => 'application/octet-stream',
-        ],
-    ];
+    public const OK = 200;
+    public const NOT_FOUND = 404;
+    public const METHOD_NOT_ALLOWED = 405;
+    public const INTERNAL_SERVER_ERROR = 500;
 
     /**
      * Handle the request.
@@ -32,5 +19,5 @@ interface Controller
      * @param array|null $params
      * @return Response
      */
-    public function handle(Request $request, ?array $params) : Response;
+    public function handle(Request $request, ?array $params = null) : Response;
 }

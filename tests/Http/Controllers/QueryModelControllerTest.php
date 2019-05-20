@@ -3,7 +3,6 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\QueryModelResponse;
@@ -22,7 +21,7 @@ class QueryModelControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new QueryModelResponse('Classifier', [], true, false));
         
-        $this->controller = new QueryModelController($commandBus, new JSON());
+        $this->controller = new QueryModelController($commandBus);
     }
 
     public function test_build_controller()

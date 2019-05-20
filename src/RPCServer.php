@@ -6,6 +6,7 @@ use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\AnomalyDetectors\Ranking;
+use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\Rank;
@@ -16,22 +17,14 @@ use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
+use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Controllers\PredictionsController;
-use Rubix\Server\Http\Controllers\ProbabilitiesController;
-use Rubix\Server\Http\Controllers\QueryModelController;
-use Rubix\Server\Http\Controllers\RankController;
-use Rubix\Server\Http\Controllers\ServerStatusController;
-use FastRoute\RouteCollector;
-use FastRoute\RouteParser\Std;
-use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
-use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
-use FastRoute\Dispatcher;
+use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\Serializer;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
-use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface as LoggerAware;
@@ -39,29 +32,17 @@ use Psr\Log\LoggerInterface as Logger;
 use InvalidArgumentException;
 
 /**
- * HTTP Server
+ * RPC Server
  *
- * A standalone Json over HTTP and secure HTTP server exposing a REST
- * (Representational State Transfer) API.
+ * A lightweight Remote Procedure Call (RPC) server over HTTP and HTTPS
+ * that responds to serialized messages called commands.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RESTServer implements Server, LoggerAware
+class RPCServer implements Server, LoggerAware
 {
-    public const MODEL_PREFIX = '/model';
-    public const SERVER_PREFIX = '/server';
-
-    public const PREDICT_ENDPOINT = '/predictions';
-    public const PROBA_ENDPOINT = '/probabilities';
-    public const RANK_ENDPOINT = '/scores';
-    public const SERVER_STATUS_ENDPOINT = '/status';
-
-    protected const NOT_FOUND = 404;
-    protected const METHOD_NOT_ALLOWED = 405;
-    protected const INTERNAL_SERVER_ERROR = 500;
-
     /**
      * The host address to bind the server to.
      *
@@ -78,7 +59,7 @@ class RESTServer implements Server, LoggerAware
 
     /**
      * The path to the certificate used to authenticate and encrypt the
-     * secure (HTTPS) communication channel.
+     * communication channel.
      *
      * @var string|null
      */
@@ -92,11 +73,18 @@ class RESTServer implements Server, LoggerAware
     protected $middleware;
 
     /**
-     * The controller dispatcher i.e the router.
+     * The message serializer.
      *
-     * @var \FastRoute\Dispatcher
+     * @var \Rubix\Server\Serializers\Serializer
      */
-    protected $router;
+    protected $serializer;
+
+    /**
+     * The RPC controller.
+     *
+     * @var \Rubix\Server\Http\Controllers\Controller
+     */
+    protected $controller;
 
     /**
      * The logger instance.
@@ -125,13 +113,15 @@ class RESTServer implements Server, LoggerAware
      * @param int $port
      * @param string|null $cert
      * @param array $middleware
+     * @param \Rubix\Server\Serializers\Serializer $serializer
      * @throws \InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
-        int $port = 8080,
+        int $port = 8888,
         ?string $cert = null,
-        array $middleware = []
+        array $middleware = [],
+        ?Serializer $serializer = null
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host cannot be empty.');
@@ -158,6 +148,7 @@ class RESTServer implements Server, LoggerAware
         $this->port = $port;
         $this->cert = $cert;
         $this->middleware = array_values($middleware);
+        $this->serializer = $serializer ?? new Json();
     }
 
     /**
@@ -207,7 +198,7 @@ class RESTServer implements Server, LoggerAware
 
         $bus = $this->bootCommandBus($estimator);
 
-        $this->router = $this->bootRouter($estimator, $bus);
+        $this->controller = new RPCController($bus, $this->serializer);
 
         $loop = Loop::create();
 
@@ -227,7 +218,7 @@ class RESTServer implements Server, LoggerAware
         $server->listen($socket);
 
         if ($this->logger) {
-            $this->logger->info('HTTP REST Server running at'
+            $this->logger->info('HTTP RPC Server running at'
                 . " $this->host on port $this->port");
         }
 
@@ -238,7 +229,7 @@ class RESTServer implements Server, LoggerAware
     }
 
     /**
-     * Boot up and return the command bus.
+     * Boot up the command bus.
      *
      * @param \Rubix\ML\Estimator $estimator
      * @return \Rubix\Server\CommandBus
@@ -263,56 +254,6 @@ class RESTServer implements Server, LoggerAware
     }
 
     /**
-     * Boot up and return the router.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\CommandBus $bus
-     * @return \FastRoute\Dispatcher
-     */
-    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Dispatcher
-    {
-        $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
-
-        $collector->get(self::MODEL_PREFIX, new QueryModelController($bus));
-
-        $collector->addGroup(
-            self::SERVER_PREFIX,
-            function ($group) use ($bus) {
-                $group->get(
-                    self::SERVER_STATUS_ENDPOINT,
-                    new ServerStatusController($bus)
-                );
-            }
-        );
-
-        $collector->addGroup(
-            self::MODEL_PREFIX,
-            function ($group) use ($estimator, $bus) {
-                $group->post(
-                    self::PREDICT_ENDPOINT,
-                    new PredictionsController($bus)
-                );
-                
-                if ($estimator instanceof Probabilistic) {
-                    $group->post(
-                        self::PROBA_ENDPOINT,
-                        new ProbabilitiesController($bus)
-                    );
-                }
-
-                if ($estimator instanceof Ranking) {
-                    $group->post(
-                        self::RANK_ENDPOINT,
-                        new RankController($bus)
-                    );
-                }
-            }
-        );
-
-        return new GroupCountBasedDispatcher($collector->getData());
-    }
-
-    /**
      * Handle an incoming request.
      *
      * @param Request $request
@@ -320,33 +261,12 @@ class RESTServer implements Server, LoggerAware
      */
     public function handle(Request $request) : Response
     {
-        $method = $request->getMethod();
-        $uri = $request->getUri()->getPath();
-
-        $route = $this->router->dispatch($method, $uri);
-
-        [$status, $controller, $params] = array_pad($route, 3, null);
-
-        switch ($status) {
-            case Dispatcher::FOUND:
-                $response = $controller->handle($request, $params);
-
-                $this->requests++;
-                break 1;
-
-            case Dispatcher::NOT_FOUND:
-                $response = new ReactResponse(self::NOT_FOUND);
-                break 1;
-
-            case Dispatcher::METHOD_NOT_ALLOWED:
-                $response = new ReactResponse(self::METHOD_NOT_ALLOWED);
-                break 1;
-
-            default:
-                $response = new ReactResponse(self::INTERNAL_SERVER_ERROR);
-        }
+        $response = $this->controller->handle($request);
 
         if ($this->logger) {
+            $method = $request->getMethod();
+            $uri = $request->getUri()->getPath();
+
             $status = (string) $response->getStatusCode();
 
             $server = $request->getServerParams();
