@@ -2,10 +2,14 @@
 
 namespace Rubix\Server\Commands;
 
+use Rubix\ML\Datasets\Dataset;
+use Rubix\ML\Datasets\Unlabeled;
+
 /**
  * Predict
  *
- * Make predictions on unknown samples and return them in an array.
+ * Return the predictions of the samples provided in a dataset from the
+ * model running on the server.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -14,11 +18,11 @@ namespace Rubix\Server\Commands;
 class Predict extends Command
 {
     /**
-     * The samples to predict.
+     * The dataset to predict.
      *
-     * @var array[]
+     * @var \Rubix\ML\Datasets\Dataset
      */
-    protected $samples;
+    protected $dataset;
 
     /**
      * Build the command from an associative array of data.
@@ -28,25 +32,25 @@ class Predict extends Command
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['samples'] ?? []);
+        return new self(new Unlabeled($data['samples'] ?? []));
     }
 
     /**
-     * @param array $samples
+     * @param \Rubix\ML\Datasets\Dataset $dataset
      */
-    public function __construct(array $samples)
+    public function __construct(Dataset $dataset)
     {
-        $this->samples = $samples;
+        $this->dataset = $dataset;
     }
 
     /**
-     * Return the samples to predict.
+     * Return the dataset to predict.
      *
-     * @return array[]
+     * @return \Rubix\ML\Datasets\Dataset
      */
-    public function samples() : array
+    public function dataset() : Dataset
     {
-        return $this->samples;
+        return $this->dataset;
     }
 
     /**
@@ -57,7 +61,7 @@ class Predict extends Command
     public function asArray() : array
     {
         return [
-            'samples' => $this->samples,
+            'samples' => $this->dataset->samples(),
         ];
     }
 }

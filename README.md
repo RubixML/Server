@@ -23,6 +23,8 @@ $ composer require rubix/server
 	- [RPC Server](#rpc-server)
 - [Clients](#clients)
 	- [RPC Client](#rpc-client)
+- [Http Middleware](#http-middeware)
+	- [Shared Token Authenticator](#shared-token-authenticator)
 - [Messages](#messages)
 	- [Commands](#commands)
 		- [Predict](#predict)
@@ -31,8 +33,12 @@ $ composer require rubix/server
 		- [Query Model](#query-model)
 		- [Server Status](#server-status)
 	- [Responses](#responses)
-- [Http Middleware](#http-middeware)
-	- [Shared Token Authenticator](#shared-token-authenticator)
+        - [Error Response](#error-response)
+        - [Predict Response](#predict-response)
+        - [Proba Response](#proba-response)
+        - [Query Model Response](#query-model-response)
+        - [Rank Response](#rank-response)
+        - [Server Status Response](#server-status-response)
 
 ---
 ### Getting Started
@@ -53,11 +59,13 @@ public function serve(Estimator $estimator) : void
 use Rubix\Server\RESTServer;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 
+// Import dataset
+
 $estimator = new KNearestNeighbors(3);
 
-// Train learner
+$estimator->train($dataset);
 
-$server = new RESTServer('127.0.0.1', 8888);
+$server = new RESTServer('127.0.0.1', 8080);
 
 $server->serve($estimator);
 ```
@@ -172,106 +180,6 @@ $client = new RPCClient('127.0.0.1', 8888, false, [
 ```
 
 ---
-### Messages
-Messages are containers for the data that flow accross the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - *commands* and *responses*. Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
-
-To build a Message from an associative array:
-```php
-public static function fromArray() : self
-```
-
-To return the Message payload as an associative array:
-```php
-public function asArray() : array
-```
-
-> **Note**: Message objects use magic getters that allow you to access the payload data as if they were public properties of the message instance.
-
-### Commands
-Commands are messages sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. They should contain all the data needed by the server to execute the request. The result of a command is a [Response](#responses) object that contains the data sent back from the server.
-
-### Predict
-Return the predictions of the samples provided from the model running on the server.
-
-**Parameters:**
-
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | samples | | array | The unknown samples to predict. |
-
-**Example:**
-
-```php
-use Rubix\Server\Commands\Predict;
-
-$command = new Predict($samples);
-```
-
-### Proba
-Return the probabilistic predictions from an underlying probabilistic model.
-
-**Parameters:**
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | samples | | array | The unknown samples to predict. |
-
-**Example:**
-```php
-use Rubix\Server\Commands\Proba;
-
-$command = new Proba($samples);
-```
-
-### Rank
-Apply an arbitrary unnormalized scoring function over the the samples.
-
-**Parameters:**
-
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | samples | | array | The unknown samples to predict. |
-
-**Example:**
-
-```php
-use Rubix\Server\Commands\Rank;
-
-$command = new Rank($samples);
-```
-
-### Query Model
-Query the status of the current model being served.
-
-**Parameters:**
-
-This command does not have any parameters.
-
-**Example:**
-```php
-use Rubix\Server\Commands\QueryModel;
-
-$command = new QueryModel();
-```
-
-### Server Status
-Return statistics regarding the server status such as uptime, requests per minute, and memory usage.
-
-**Parameters:**
-
-This command does not have any parameters.
-
-**Example:**
-
-```php
-use Rubix\Server\Commands\ServerStatus;
-
-$command = new ServerStatus();
-```
-
-### Responses
-Response objects are those returned as a result of an executed [Command](#commands). They contain all the data being sent back from the server.
-
----
 ### HTTP Middleware
 HTTP middleware are objects that process incoming HTTP requests before they are handled by a controller.
 
@@ -292,6 +200,323 @@ Authenticates incoming requests using a shared key that is kept secret between t
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator('secret');
+```
+
+---
+### Messages
+Messages are containers for the data that flow accross the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - *commands* and *responses*. Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
+
+To build a Message from an associative array:
+```php
+public static function fromArray() : self
+```
+
+To return the Message payload as an associative array:
+```php
+public function asArray() : array
+```
+
+### Commands
+Commands are messages sent by clients and used internally by servers to transport data over the wire and direct the server to execute a remote procedure. They should contain all the data needed by the server to execute the request. The result of a command is a [Response](#responses) object that contains the data sent back from the server.
+
+### Predict
+Return the predictions of the samples provided in a dataset from the model running on the server.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | dataset | | Dataset |  The dataset that contains the samples to predict. |
+
+**Additional Methods:**
+
+Return the dataset that contains the unknown samples:
+```php
+public dataset() : Dataset
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Commands\Predict;
+use Rubix\ML\Datasets\Unlabeled;
+
+// Import samples
+
+$command = new Predict(new Unlabeled($samples));
+```
+
+### Proba
+Return the probabilistic predictions from a probabilistic model.
+
+**Parameters:**
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | dataset | | Dataset |  The dataset that contains the samples to predict. |
+
+**Additional Methods:**
+
+Return the dataset that contains the unknown samples:
+```php
+public dataset() : Dataset
+```
+
+**Example:**
+```php
+use Rubix\Server\Commands\Proba;
+use Rubix\ML\Datasets\Unlabeled;
+
+// Import samples
+
+$command = new Proba(new Unlabeled($samples));
+```
+
+### Rank
+Rank the unknown samples in a dataset in terms of their anomaly score.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | dataset | | Dataset |  The dataset that contains the samples to predict. |
+
+**Additional Methods:**
+
+Return the dataset that contains the unknown samples:
+```php
+public dataset() : Dataset
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Commands\Rank;
+use Rubix\ML\Datasets\Unlabeled;
+
+// Import samples
+
+$command = new Rank(new Unlabeled($samples));
+```
+
+### Query Model
+Query the status of the current model being served.
+
+**Parameters:**
+
+This command does not have any parameters.
+
+**Additional Methods:**
+
+This command does not have any additional methods.
+
+**Example:**
+```php
+use Rubix\Server\Commands\QueryModel;
+
+$command = new QueryModel();
+```
+
+### Server Status
+Return statistics regarding the server status such as uptime, requests per minute, and memory usage.
+
+**Parameters:**
+
+This command does not have any parameters.
+
+**Additional Methods:**
+
+This command does not have any additional methods.
+
+**Example:**
+
+```php
+use Rubix\Server\Commands\ServerStatus;
+
+$command = new ServerStatus();
+```
+
+### Responses
+Response objects are returned as a result of a [Command](#commands). They contain the data being sent back from the server.
+
+### Error Response
+This is the response from the server when something went wrong in attempting to fulfill the request. It contains an error message that describes what went wrong.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | message | | string | The error message. |
+
+**Additional Methods:**
+
+Return the error message from the server:
+```php
+public message() : string
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\ErrorResponse;
+
+$response = new ErrorResponse("He's toast - but he's in a butter place now.");
+```
+
+### Predict Response
+This is the response returned from a predict command containing the predictions returned from the model.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | predictions | | array | The predictions returned from the model. |
+
+**Additional Methods:**
+
+Return the predictions obtained from the model:
+```php
+public predictions() : array
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\PredictResponse;
+
+// Obtain predictions from model
+
+$response = new PredictResponse($predictions);
+```
+
+### Proba Response
+This is the response from a Proba command containing the probabilities obtained from the model.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | probabilities | | array | The probabilties returned from the model. |
+
+**Additional Methods:**
+
+Return the probabilities obtained from the model:
+```php
+public probabilities() : array
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\ProbaResponse;
+
+// Obtain probabilities from model
+
+$response = new ProbaResponse($probabilities);
+```
+
+### Query Model Response
+This response contains the properties of the underlying estimator instance being served such as type and compatibility.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | type | | int | The estimator type i.e. classifier, regressor, etc. |
+| 2 | compatibility | | array | The data types that the estimator is compatible with. |
+| 3 | probabilistic | | bool | Is the model probabilistic? |
+| 4 | ranking | | bool | Is the model a ranking estimator? |
+
+**Additional Methods:**
+
+Return the type of estimator:
+```php
+public type() : string
+```
+
+Return the data types the estimator is compatible with:
+```php
+public compatibility() : array
+```
+
+Is the model probabilistic?
+```php
+public probabilistic() : bool
+```
+
+Is the model a ranking estimator?
+```php
+public ranking() : bool
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\QueryModelResponse;
+use Rubix\ML\Other\Helpers\DataType;
+
+$response = new QueryModelResponse('classifier', [DataType::CONTINUOUS], true, false);
+```
+
+### Rank Response
+Return the anaomaly scores from a Rank command.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | scores | | array | The probabilties returned from the model. |
+
+**Additional Methods:**
+
+Return the anomaly scores obtained from the model:
+```php
+public scores() : array
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\RankResponse;
+
+// Obtain anomaly scores from model
+
+$response = new ProbaResponse($scores);
+```
+
+### Server Status Response
+A response containing the status of the currently running server.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | requests | | array | An associative array of request statistics. |
+| 2 | memory usage | | array | An associative array of memory usage statistics. |
+| 3 | uptime | | int | The number of seconds the server has been up. |
+
+**Additional Methods:**
+
+Return the request statistics:
+```php
+public requests() : array
+```
+
+Return the memory usage statistics:
+```php
+public memoryUsage() : array
+```
+
+Return the uptime of the server.
+```php
+public uptime() : int
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\ServerStatusResponse;
+
+$response = new ServerStatusResponse($requests, $memoryUsage, 16);
 ```
 
 ---

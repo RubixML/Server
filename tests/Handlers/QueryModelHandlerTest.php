@@ -11,14 +11,10 @@ use PHPUnit\Framework\TestCase;
 
 class QueryModelHandlerTest extends TestCase
 {
-    protected $command;
-
     protected $handler;
 
     public function setUp()
     {
-        $this->command = new QueryModel();
-        
         $this->handler = new QueryModelHandler(new DummyClassifier());
     }
 
@@ -30,7 +26,7 @@ class QueryModelHandlerTest extends TestCase
 
     public function test_handle_command()
     {
-        $response = $this->handler->handle($this->command);
+        $response = $this->handler->handle(new QueryModel());
 
         $this->assertInstanceOf(QueryModelResponse::class, $response);
     }

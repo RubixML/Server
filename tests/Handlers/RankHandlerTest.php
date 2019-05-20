@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Tests\Handlers;
 
+use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Rank;
 use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\Handler;
@@ -20,8 +21,6 @@ class RankHandlerTest extends TestCase
     protected const EXPECTED_SCORES = [
         6, 4, 10,
     ];
-
-    protected $command;
     
     protected $handler;
 
@@ -31,8 +30,6 @@ class RankHandlerTest extends TestCase
 
         $estimator->method('rank')
             ->willReturn(self::EXPECTED_SCORES);
-
-        $this->command = new Rank(self::SAMPLES);
 
         $this->handler = new RankHandler($estimator);
     }
@@ -45,7 +42,7 @@ class RankHandlerTest extends TestCase
 
     public function test_handle_command()
     {
-        $response = $this->handler->handle($this->command);
+        $response = $this->handler->handle(new Rank(new Unlabeled(self::SAMPLES)));
 
         $this->assertInstanceOf(RankResponse::class, $response);
         $this->assertEquals(self::EXPECTED_SCORES, $response->scores());

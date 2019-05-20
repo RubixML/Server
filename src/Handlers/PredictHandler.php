@@ -3,7 +3,6 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Estimator;
-use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Responses\PredictResponse;
 
@@ -32,10 +31,6 @@ class PredictHandler implements Handler
      */
     public function handle(Predict $command) : PredictResponse
     {
-        $dataset = Unlabeled::build($command->samples());
-
-        $predictions = $this->estimator->predict($dataset);
-
-        return new PredictResponse($predictions);
+        return new PredictResponse($this->estimator->predict($command->dataset()));
     }
 }

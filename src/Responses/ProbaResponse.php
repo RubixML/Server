@@ -5,6 +5,9 @@ namespace Rubix\Server\Responses;
 /**
  * Proba Response
  *
+ * This is the response from a Proba command containing the
+ * probabilities obtained from the model.
+ *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino

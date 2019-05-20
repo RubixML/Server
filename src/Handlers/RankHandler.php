@@ -2,7 +2,6 @@
 
 namespace Rubix\Server\Handlers;
 
-use Rubix\ML\Datasets\Unlabeled;
 use Rubix\ML\AnomalyDetectors\Ranking;
 use Rubix\Server\Commands\Rank;
 use Rubix\Server\Responses\RankResponse;
@@ -32,10 +31,6 @@ class RankHandler implements Handler
      */
     public function handle(Rank $command) : RankResponse
     {
-        $dataset = Unlabeled::build($command->samples());
-
-        $scores = $this->estimator->rank($dataset);
-
-        return new RankResponse($scores);
+        return new RankResponse($this->estimator->rank($command->dataset()));
     }
 }

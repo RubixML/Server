@@ -5,6 +5,9 @@ namespace Rubix\Server\Responses;
 /**
  * Predict Response
  *
+ * This is the response returned from a predict command containing the
+ * predictions returned from the model.
+ *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino

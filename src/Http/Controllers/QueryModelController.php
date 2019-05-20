@@ -23,11 +23,11 @@ class QueryModelController extends RESTController
         try {
             $response = $this->bus->dispatch(new QueryModel());
 
-            $status = 200;
+            $status = self::OK;
         } catch (Exception $e) {
             $response = new ErrorResponse($e->getMessage());
 
-            $status = 500;
+            $status = self::INTERNAL_SERVER_ERROR;
         }
 
         return new ReactResponse($status, self::HEADERS, json_encode($response->asArray()));

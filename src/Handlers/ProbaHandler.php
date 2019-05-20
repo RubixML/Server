@@ -3,7 +3,6 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Probabilistic;
-use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Responses\ProbaResponse;
 
@@ -32,10 +31,6 @@ class ProbaHandler implements Handler
      */
     public function handle(Proba $command) : ProbaResponse
     {
-        $dataset = Unlabeled::build($command->samples());
-
-        $probabilities = $this->estimator->proba($dataset);
-
-        return new ProbaResponse($probabilities);
+        return new ProbaResponse($this->estimator->proba($command->dataset()));
     }
 }

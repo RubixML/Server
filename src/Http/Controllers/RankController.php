@@ -22,19 +22,19 @@ class RankController extends RESTController
     public function handle(Request $request, ?array $params = null) : Response
     {
         try {
-            $payload = json_decode($request->getBody()->getContents());
+            $payload = json_decode($request->getBody()->getContents(), true);
 
-            if (empty($payload->samples)) {
-                throw new ValidationException('Samples cannot be empty.');
+            if (empty($payload['samples'])) {
+                throw new ValidationException('Samples property cannot be empty.');
             }
 
-            $response = $this->bus->dispatch(new Rank($payload->samples));
+            $response = $this->bus->dispatch(Rank::fromArray($payload));
 
-            $status = 200;
+            $status = self::OK;
         } catch (Exception $e) {
             $response = new ErrorResponse($e->getMessage());
 
-            $status = 500;
+            $status = self::INTERNAL_SERVER_ERROR;
         }
 
         return new ReactResponse($status, self::HEADERS, json_encode($response->asArray()));

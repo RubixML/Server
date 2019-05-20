@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Tests\Http\Controllers;
 
+use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Serializers\Json;
@@ -14,6 +15,10 @@ use PHPUnit\Framework\TestCase;
 
 class RPCControllerTest extends TestCase
 {
+    protected const SAMPLES = [
+        ['The first step is to establish that something is possible, then probability will occur.'],
+    ];
+    
     protected $controller;
 
     protected $serializer;
@@ -38,9 +43,7 @@ class RPCControllerTest extends TestCase
 
     public function test_handle_request()
     {
-        $data = $this->serializer->serialize(new Predict([
-            ['The first step is to establish that something is possible, then probability will occur.'],
-        ]));
+        $data = $this->serializer->serialize(new Predict(new Unlabeled(self::SAMPLES)));
 
         $request = new ServerRequest('POST', '/', [], $data);
 

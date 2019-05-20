@@ -5,6 +5,9 @@ namespace Rubix\Server\Responses;
 /**
  * Query Model Response
  *
+ * This response contains the properties of the underlying estimator
+ * instance being served such as type and compatibility.
+ *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino

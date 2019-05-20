@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Tests\Handlers;
 
+use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\Handler;
@@ -21,8 +22,6 @@ class ProbaHandlerTest extends TestCase
             'monster' => 0.2,
         ],
     ];
-
-    protected $command;
     
     protected $handler;
 
@@ -32,8 +31,6 @@ class ProbaHandlerTest extends TestCase
 
         $estimator->method('proba')
             ->willReturn(self::EXPECTED_PROBABILITIES);
-
-        $this->command = new Proba(self::SAMPLES);
 
         $this->handler = new ProbaHandler($estimator);
     }
@@ -46,7 +43,7 @@ class ProbaHandlerTest extends TestCase
 
     public function test_handle_command()
     {
-        $response = $this->handler->handle($this->command);
+        $response = $this->handler->handle(new Proba(new Unlabeled(self::SAMPLES)));
 
         $this->assertInstanceOf(ProbaResponse::class, $response);
         $this->assertEquals(self::EXPECTED_PROBABILITIES, $response->probabilities());

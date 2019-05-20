@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Tests\Handlers;
 
+use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\Handler;
@@ -22,8 +23,6 @@ class PredictHandlerTest extends TestCase
         'not monster',
         'monster',
     ];
-
-    protected $command;
     
     protected $handler;
 
@@ -33,8 +32,6 @@ class PredictHandlerTest extends TestCase
 
         $estimator->method('predict')
             ->willReturn(self::EXPECTED_PREDICTIONS);
-
-        $this->command = new Predict(self::SAMPLES);
 
         $this->handler = new PredictHandler($estimator);
     }
@@ -47,7 +44,7 @@ class PredictHandlerTest extends TestCase
 
     public function test_handle_command()
     {
-        $response = $this->handler->handle($this->command);
+        $response = $this->handler->handle(new Predict(new Unlabeled(self::SAMPLES)));
 
         $this->assertInstanceOf(PredictResponse::class, $response);
         $this->assertEquals(self::EXPECTED_PREDICTIONS, $response->predictions());

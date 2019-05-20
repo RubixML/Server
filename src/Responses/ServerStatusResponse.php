@@ -7,6 +7,8 @@ use InvalidArgumentException;
 /**
  * Server Status Response
  *
+ * A response containing the status of the currently running server.
+ *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino

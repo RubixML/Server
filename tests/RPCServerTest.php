@@ -25,5 +25,8 @@ class RPCServerTest extends TestCase
         $this->assertInstanceOf(RPCServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
         $this->assertInstanceOf(LoggerAwareInterface::class, $this->server);
+
+        $this->assertEquals(0, $this->server->requests());
+        $this->assertEquals(0, $this->server->uptime());
     }
 }

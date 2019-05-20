@@ -5,6 +5,10 @@ namespace Rubix\Server\Responses;
 /**
  * Error Response
  *
+ * This is the response from the server when something went wrong in
+ * attempting to fulfill the request. It contains an error message that
+ * describes what went wrong.
+ *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
@@ -26,7 +30,7 @@ class ErrorResponse extends Response
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['message']);
+        return new self($data['message'] ?? '');
     }
 
     /**

@@ -16,7 +16,7 @@ class RPCClientTest extends TestCase
         $this->client = new RPCClient('127.0.0.1', 8888, false, [], new Native());
     }
 
-    public function test_build_server()
+    public function test_build_client()
     {
         $this->assertInstanceOf(RPCClient::class, $this->client);
         $this->assertInstanceOf(Client::class, $this->client);

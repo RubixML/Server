@@ -2,10 +2,13 @@
 
 namespace Rubix\Server\Commands;
 
+use Rubix\ML\Datasets\Dataset;
+use Rubix\ML\Datasets\Unlabeled;
+
 /**
- * Predict
+ * Proba
  *
- * Return the probabilistic predictions of an array of unknown samples.
+ * Return the probabilistic predictions from a probabilistic model.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -14,11 +17,11 @@ namespace Rubix\Server\Commands;
 class Proba extends Command
 {
     /**
-     * The samples to predict.
+     * The dataset to predict.
      *
-     * @var array[]
+     * @var \Rubix\ML\Datasets\Dataset
      */
-    protected $samples;
+    protected $dataset;
 
     /**
      * Build the command from an associative array of data.
@@ -28,26 +31,25 @@ class Proba extends Command
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['samples'] ?? []);
+        return new self(new Unlabeled($data['samples'] ?? []));
     }
 
     /**
-     * @param array $samples
-     * @throws \InvalidArgumentException
+     * @param \Rubix\ML\Datasets\Dataset $dataset
      */
-    public function __construct(array $samples)
+    public function __construct(Dataset $dataset)
     {
-        $this->samples = $samples;
+        $this->dataset = $dataset;
     }
 
     /**
-     * Return the samples to rpedict.
+     * Return the dataset to predict.
      *
-     * @return array
+     * @return \Rubix\ML\Datasets\Dataset
      */
-    public function samples() : array
+    public function dataset() : Dataset
     {
-        return $this->samples;
+        return $this->dataset;
     }
 
     /**
@@ -58,7 +60,7 @@ class Proba extends Command
     public function asArray() : array
     {
         return [
-            'samples' => $this->samples,
+            'samples' => $this->dataset->samples(),
         ];
     }
 }
