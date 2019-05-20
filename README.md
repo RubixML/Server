@@ -13,6 +13,8 @@ $ composer require rubix/server
 
 #### Optional
 - [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
+- [Event extension](https://pecl.php.net/package/event) for better concurrency management
+- [Ev extension](https://pecl.php.net/package/ev) for better concurrency management
 
 ## Documentation
 
@@ -42,11 +44,13 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you've trained an estimator in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix model servers expose your Rubix ML estimators as standalone services (such as REST and RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing *commands* on the server from your applications.
+Once you've trained an estimator in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix model servers expose your Rubix ML estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing *commands* on the server from your applications.
 
 ---
 ### Servers
-Server objects are standalone server implementations built on top of React PHP, an event-driven system that makes it possible to serve thousands of concurrent requests at once.
+Server objects are standalone server implementations built on top of [React PHP](https://reactphp.org/), an event-driven concurrency framework that makes it possible to serve thousands of requests at once.
+
+> **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case there is a failure.
 
 To boot up a server, pass a trained estimator to the `serve()` method:
 ```php
@@ -69,10 +73,6 @@ $server = new RESTServer('127.0.0.1', 8080);
 
 $server->serve($estimator);
 ```
-
-The server will stay running until the process is terminated.
-
-> **Note**: It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case there is a failure.
 
 ### REST Server
 A standalone Json over HTTP and secure HTTP server exposing a [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) (Representational State Transfer) API. 
@@ -146,10 +146,25 @@ public send(Command $command) : Response
 ```php
 use Rubix\Server\RPCClient;
 use Rubix\Server\Commands\Predict;
+use Rubix\ML\Datasets\Unlabeled;
 
 $client = new RPCClient('127.0.0.1', 8888);
 
-$predictions = $client->send(new Predict($samples));
+$response = $client->send(new Predict(new Unlabeled($samples)));
+
+$predictions = $response->predictions();
+
+var_dump($predictions);
+```
+
+**Output:**
+
+```sh
+array(3) {
+	[0]=>string(3) "red"
+    [1]=>string(4) "blue"
+    [2]=>string(5) "green"
+}
 ```
 
 ### RPC Client
@@ -184,7 +199,7 @@ $client = new RPCClient('127.0.0.1', 8888, false, [
 HTTP middleware are objects that process incoming HTTP requests before they are handled by a controller.
 
 ### Shared Token Authenticator
-Authenticates incoming requests using a shared key that is kept secret between the client and server.
+Authenticates incoming requests using a shared key that is kept secret between the client and server. It uses the `Authorization` header field to hold the key string.
 
 > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with SSL or TLS.
 
@@ -204,7 +219,7 @@ $middleware = new SharedTokenAuthenticator('secret');
 
 ---
 ### Messages
-Messages are containers for the data that flow accross the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - *commands* and *responses*. Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
+Messages are containers for the data that flow accross the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - [Commands](#commands) and [Responses](#responses). Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
 
 To build a Message from an associative array:
 ```php
