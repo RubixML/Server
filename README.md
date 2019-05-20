@@ -145,7 +145,7 @@ $predictions = $client->send(new Predict($samples));
 ```
 
 ### RPC Client
-The RPC Client allows you to communicate with a [RPC Server](#rpc-server) over HTTP or Secure HTTP (HTTPS).
+The RPC Client allows you to communicate with a [RPC Server](#rpc-server) over HTTP or Secure HTTP (HTTPS). In the event of a network failure, it uses a backoff and retry mechanism as a failover strategy.
 
 **Parameters:**
 

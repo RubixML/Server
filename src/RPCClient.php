@@ -16,8 +16,9 @@ use Exception;
 /**
  * RPC Client
  *
- * The RPC Client is made to communicate with a RPC Server over HTTP or
- * Secure HTTP (HTTPS).
+ * The RPC Client is made to communicate with a RPC Server over HTTP or Secure
+ * HTTP (HTTPS). In the event of a network failure, it uses a backoff and retry
+ * mechanism as a failover strategy.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -64,7 +65,7 @@ class RPCClient implements Client
     /**
      * The number of microseconds to wait before retrying a request.
      *
-     * @var int
+     * @var float
      */
     protected $delay;
 
@@ -128,7 +129,7 @@ class RPCClient implements Client
 
         $this->timeout = $timeout;
         $this->retries = $retries;
-        $this->delay = (int) round($delay * 1e6);
+        $this->delay = $delay;
         $this->serializer = $serializer;
     }
 
@@ -146,7 +147,7 @@ class RPCClient implements Client
 
         $tries = 1 + $this->retries;
 
-        do {
+        for ($i = 1; $i <= $tries; $i++) {
             try {
                 $payload = $this->client->request('POST', '/', [
                     'body' => $data,
@@ -158,14 +159,12 @@ class RPCClient implements Client
                 if ((int) round($e->getCode(), -2) === 400) {
                     throw $e;
                 }
-
-                $tries--;
                 
-                if ($tries > 0) {
-                    usleep($this->delay);
+                if ($i <= $tries) {
+                    usleep((int) round($i * $this->delay * 1e6));
                 }
             }
-        } while ($tries > 0);
+        }
 
         if (empty($payload)) {
             throw new RuntimeException('There was a problem'
