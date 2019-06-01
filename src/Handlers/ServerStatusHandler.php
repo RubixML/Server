@@ -8,6 +8,10 @@ use Rubix\Server\Responses\ServerStatusResponse;
 
 class ServerStatusHandler implements Handler
 {
+    protected const MINUTE = 60;
+
+    protected const MEGABYTE = 1048576;
+
     /**
      * The server instance.
      *
@@ -36,12 +40,12 @@ class ServerStatusHandler implements Handler
 
         $requests = [
             'count' => $n,
-            'requestsMin' => round($n / ($uptime / 60), 2),
+            'requestsMin' => round($n / ($uptime / self::MINUTE), 2),
         ];
         
         $memoryUsage = [
-            'current' => round(memory_get_usage() / (1024 ** 2), 1),
-            'peak' => round(memory_get_peak_usage() / (1024 ** 2), 1),
+            'current' => round(memory_get_usage() / self::MEGABYTE, 1),
+            'peak' => round(memory_get_peak_usage() / self::MEGABYTE, 1),
         ];
 
         return new ServerStatusResponse($requests, $memoryUsage, $uptime);
