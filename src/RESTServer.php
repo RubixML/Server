@@ -3,21 +3,24 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Learner;
+use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\ML\AnomalyDetectors\Ranking;
 use Rubix\Server\Commands\Predict;
+use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
+use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\PredictionsController;
+use Rubix\Server\Http\Controllers\PredictionController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\RankController;
@@ -54,6 +57,7 @@ class RESTServer implements Server, LoggerAware
     public const SERVER_PREFIX = '/server';
 
     public const PREDICT_ENDPOINT = '/predictions';
+    public const PREDICT_SAMPLE_ENDPOINT = '/prediction';
     public const PROBA_ENDPOINT = '/probabilities';
     public const RANK_ENDPOINT = '/scores';
     public const SERVER_STATUS_ENDPOINT = '/status';
@@ -251,6 +255,10 @@ class RESTServer implements Server, LoggerAware
             Predict::class => new PredictHandler($estimator),
         ];
 
+        if ($estimator instanceof Learner) {
+            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
+        }
+
         if ($estimator instanceof Probabilistic) {
             $commands[Proba::class] = new ProbaHandler($estimator);
         }
@@ -292,6 +300,13 @@ class RESTServer implements Server, LoggerAware
                     self::PREDICT_ENDPOINT,
                     new PredictionsController($bus)
                 );
+
+                if ($estimator instanceof Learner) {
+                    $group->post(
+                        self::PREDICT_SAMPLE_ENDPOINT,
+                        new PredictionController($bus)
+                    );
+                }
                 
                 if ($estimator instanceof Probabilistic) {
                     $group->post(

@@ -5,3 +5,4 @@
     - Implemented messaging framework
     - Added Shared Token Authenticator HTTP middleware
     - Added REST and RPC controllers
+    - Added predict single sample command

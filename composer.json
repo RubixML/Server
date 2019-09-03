@@ -1,7 +1,7 @@
 {
     "name": "rubix/server",
     "type": "library",
-    "description": "High-performance standalone model servers bring your Rubix ML estimators live into production quickly and effortlessly.",
+    "description": "High-performance standalone model servers bring your Rubix ML estimators into production quickly and effortlessly.",
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
     "keywords": [
@@ -25,7 +25,7 @@
         "psr/log": "^1.1",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
-        "rubix/ml": "^0.0.12-beta"
+        "rubix/ml": "^0.0.15-beta"
     },
     "require-dev": {
         "ext-igbinary": "*",

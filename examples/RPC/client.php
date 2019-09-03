@@ -6,6 +6,7 @@ use Rubix\Server\RPCClient;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\Predict;
+use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 
@@ -17,8 +18,8 @@ $dataset = new Unlabeled([
     [27, 165, 7],
 ]);
 
-var_dump($client->send(new Predict($dataset)));
-var_dump($client->send(new Proba($dataset)));
-
-var_dump($client->send(new QueryModel()));
-var_dump($client->send(new ServerStatus()));
+print_r($client->send(new Predict($dataset)));
+print_r($client->send(new PredictSample($dataset->row(0))));
+print_r($client->send(new Proba($dataset)));
+print_r($client->send(new QueryModel()));
+print_r($client->send(new ServerStatus()));

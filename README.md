@@ -30,6 +30,7 @@ $ composer require rubix/server
 - [Messages](#messages)
 	- [Commands](#commands)
 		- [Predict](#predict)
+		- [Predict Sample](#predict-sample)
 		- [Proba](#proba)
 		- [Rank](#rank)
 		- [Query Model](#query-model)
@@ -37,6 +38,7 @@ $ composer require rubix/server
 	- [Responses](#responses)
         - [Error Response](#error-response)
         - [Predict Response](#predict-response)
+		- [Predict Sample Response](#predict-sample-response)
         - [Proba Response](#proba-response)
         - [Query Model Response](#query-model-response)
         - [Rank Response](#rank-response)
@@ -44,7 +46,7 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you've trained an estimator in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix model servers expose your Rubix ML estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing *commands* on the server from your applications.
+Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications.
 
 ---
 ### Servers
@@ -241,7 +243,7 @@ Return the predictions of the samples provided in a dataset from the model runni
 
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | dataset | | Dataset |  The dataset that contains the samples to predict. |
+| 1 | dataset | | Dataset | The dataset that contains the samples to predict. |
 
 **Additional Methods:**
 
@@ -259,6 +261,32 @@ use Rubix\ML\Datasets\Unlabeled;
 // Import samples
 
 $command = new Predict(new Unlabeled($samples));
+```
+
+### Predict Sample
+Predict a single sample and return the result.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | sample | | array | The dataset that contains the samples to predict. |
+
+**Additional Methods:**
+
+Return the sample to be predicted:
+```php
+public sample() : array
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Commands\PredictSample;
+
+// Import sample
+
+$command = new PredictSample($sample);
 ```
 
 ### Proba
@@ -401,6 +429,32 @@ use Rubix\Server\Responses\PredictResponse;
 // Obtain predictions from model
 
 $response = new PredictResponse($predictions);
+```
+
+### Predict Sample Response
+This is the response returned from a predict sample command containing the prediction returned from the model.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | prediction | | mixed | The prediction returned from the model. |
+
+**Additional Methods:**
+
+Return the prediction obtained from the model:
+```php
+public prediction() : mixed
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\PredictSampleResponse;
+
+// Obtain prediction from model
+
+$response = new PredictSampleResponse($prediction);
 ```
 
 ### Proba Response

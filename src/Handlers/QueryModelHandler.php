@@ -2,9 +2,9 @@
 
 namespace Rubix\Server\Handlers;
 
+use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\ML\AnomalyDetectors\Ranking;
 use Rubix\ML\Other\Helpers\DataType;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Responses\QueryModelResponse;
