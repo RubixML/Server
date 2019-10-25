@@ -28,6 +28,19 @@ class QueryModelHandlerTest extends TestCase
     {
         $response = $this->handler->handle(new QueryModel());
 
+        $expected = [
+            'type' => 'classifier',
+            'compatibility' => [
+                'continuous',
+                'categorical',
+                'resource',
+                'other',
+            ],
+            'probabilistic' => false,
+            'ranking' => false
+        ];
+
         $this->assertInstanceOf(QueryModelResponse::class, $response);
+        $this->assertEquals($expected, $response->asArray());
     }
 }

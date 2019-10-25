@@ -3,9 +3,9 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Ranking;
+use Rubix\ML\DataType;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
-use Rubix\ML\Other\Helpers\DataType;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Responses\QueryModelResponse;
 
@@ -36,9 +36,7 @@ class QueryModelHandler implements Handler
     {
         $type = Estimator::TYPES[$this->estimator->type()];
 
-        $compatibility = array_map(function ($c) {
-            return DataType::TYPES[$c];
-        }, $this->estimator->compatibility());
+        $compatibility = array_map([DataType::class, 'asString'], $this->estimator->compatibility());
 
         $probabilistic = $this->estimator instanceof Probabilistic;
         $ranking = $this->estimator instanceof Ranking;

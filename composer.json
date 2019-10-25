@@ -6,8 +6,8 @@
     "license": "MIT",
     "keywords": [
         "php", "machine-learning", "data-science", "model-serving", "server", "microservice",
-        "json-api", "api", "rest-api", "zeromq", "soa", "cloud", "infrastructure", "ai",
-        "rubix-ml", "distributed", "client", "rest", "messaging", "borg", "hive-mind", "rpc"
+        "json-api", "api", "rest-api", "soa", "cloud", "infrastructure", "ai", "rubix-ml",
+        "distributed", "client", "rest", "messaging", "hive-mind", "rpc"
     ],
     "authors": [
         {
@@ -25,7 +25,7 @@
         "psr/log": "^1.1",
         "react/event-loop": "^1.0",
         "react/http": "^0.8.1",
-        "rubix/ml": "^0.0.15-beta"
+        "rubix/ml": "^0.0.16-beta"
     },
     "require-dev": {
         "ext-igbinary": "*",
@@ -63,6 +63,9 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "support": {
+        "email": "contact@rubixml.com",
+        "issues": "https://github.com/RubixML/Server/issues",
+        "source": "https://github.com/RubixML/Server"
+    }
 }
