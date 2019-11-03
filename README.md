@@ -32,21 +32,25 @@ $ composer require rubix/server
 		- [Predict](#predict)
 		- [Predict Sample](#predict-sample)
 		- [Proba](#proba)
-		- [Rank](#rank)
+		- [Proba Sample](#proba-sample)
 		- [Query Model](#query-model)
+		- [Rank](#rank)
+		- [Rank Sample](#rank-sample)
 		- [Server Status](#server-status)
 	- [Responses](#responses)
         - [Error Response](#error-response)
         - [Predict Response](#predict-response)
 		- [Predict Sample Response](#predict-sample-response)
         - [Proba Response](#proba-response)
+		- [Proba Sample Response](#proba-sample-response)
         - [Query Model Response](#query-model-response)
         - [Rank Response](#rank-response)
+		- [Rank Sample Response](#rank-sample-response)
         - [Server Status Response](#server-status-response)
 
 ---
 ### Getting Started
-Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications.
+Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real-time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications.
 
 ---
 ### Servers
@@ -65,13 +69,13 @@ public function serve(Estimator $estimator) : void
 use Rubix\Server\RESTServer;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 
-// Import dataset
+$server = new RESTServer('127.0.0.1', 8080);
 
 $estimator = new KNearestNeighbors(3);
 
-$estimator->train($dataset);
+// Import dataset
 
-$server = new RESTServer('127.0.0.1', 8080);
+$estimator->train($dataset);
 
 $server->serve($estimator);
 ```
@@ -98,6 +102,7 @@ A standalone Json over HTTP and secure HTTP server exposing a [REST](https://en.
 | POST | /model/probabilities | `samples` | Predict the probabilities of each outcome. |
 | POST | /model/sample_probabilities | `sample` | Return the probabilities of a single sample. |
 | POST | /model/scores | `samples` | Assign an anomaly score to each sample. |
+| POST | /model/sample_score | `sample` | Assign an anomaly score to a single sample. |
 | GET | /server/status | | Query the status of the server. |
 
 **Example**
@@ -121,7 +126,7 @@ A lightweight [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_proce
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middleware | None | array | The HTTP middleware stack to run on each request. |
+| 4 | middleware | | array | The HTTP middleware stack to run on each request. |
 | 5 | serializer | Json | object | The message serializer. |
 
 **Example**
@@ -272,7 +277,7 @@ Predict a single sample and return the result.
 
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | sample | | array | The dataset that contains the samples to predict. |
+| 1 | sample | | array | The sample to predict. |
 
 **Additional Methods:**
 
@@ -316,6 +321,50 @@ use Rubix\ML\Datasets\Unlabeled;
 $command = new Proba(new Unlabeled($samples));
 ```
 
+### Proba Sample
+Predict the joint probabilities of a single sample.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | sample | | array | The sample to predict. |
+
+**Additional Methods:**
+
+Return the sample to be predicted:
+```php
+public sample() : array
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Commands\ProbaSample;
+
+// Import sample
+
+$command = new ProbaSample($sample);
+```
+
+### Query Model
+Query the status of the current model being served.
+
+**Parameters:**
+
+This command does not have any parameters.
+
+**Additional Methods:**
+
+This command does not have any additional methods.
+
+**Example:**
+```php
+use Rubix\Server\Commands\QueryModel;
+
+$command = new QueryModel();
+```
+
 ### Rank
 Rank the unknown samples in a dataset in terms of their anomaly score.
 
@@ -343,22 +392,30 @@ use Rubix\ML\Datasets\Unlabeled;
 $command = new Rank(new Unlabeled($samples));
 ```
 
-### Query Model
-Query the status of the current model being served.
+### Rank Sample
+Return the anomaly score of a single sample.
 
 **Parameters:**
 
-This command does not have any parameters.
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | sample | | array | The sample to be scored. |
 
 **Additional Methods:**
 
-This command does not have any additional methods.
+Return the sample to be scored:
+```php
+public sample() : array
+```
 
 **Example:**
-```php
-use Rubix\Server\Commands\QueryModel;
 
-$command = new QueryModel();
+```php
+use Rubix\Server\Commands\RankSample;
+
+// Import sample
+
+$command = new RankSample($sample);
 ```
 
 ### Server Status
@@ -444,7 +501,7 @@ This is the response returned from a predict sample command containing the predi
 
 **Additional Methods:**
 
-Return the prediction obtained from the model:
+Return the prediction obtained from the model:s
 ```php
 public prediction() : mixed
 ```
@@ -483,6 +540,32 @@ use Rubix\Server\Responses\ProbaResponse;
 // Obtain probabilities from model
 
 $response = new ProbaResponse($probabilities);
+```
+
+### Proba Sample Response
+This is the response returned from a proba sample command containing the probabilities returned from the model.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | probabilities | | array | The probabilities returned from the model. |
+
+**Additional Methods:**
+
+Return the probabilities obtained from the model:
+```php
+public probabilities() : array
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\ProbasSampleResponse;
+
+// Obtain probabilities from model
+
+$response = new ProbaampleResponse($probabilities);
 ```
 
 ### Query Model Response
@@ -552,6 +635,32 @@ use Rubix\Server\Responses\RankResponse;
 // Obtain anomaly scores from model
 
 $response = new ProbaResponse($scores);
+```
+
+### RankSample Response
+This is the response returned from a rank sample command containing the score returned from the model.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | score | | mixed | The score returned from the model. |
+
+**Additional Methods:**
+
+Return the score obtained from the model:
+```php
+public score() : mixed
+```
+
+**Example:**
+
+```php
+use Rubix\Server\Responses\RankSampleResponse;
+
+// Obtain score from model
+
+$response = new RankSampleResponse($score);
 ```
 
 ### Server Status Response

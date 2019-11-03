@@ -11,6 +11,7 @@ use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Rank;
+use Rubix\Server\Commands\RankSample;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
@@ -18,6 +19,7 @@ use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\RankHandler;
+use Rubix\Server\Handlers\RankSampleHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
@@ -26,7 +28,8 @@ use Rubix\Server\Http\Controllers\SamplePredictionController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\QueryModelController;
-use Rubix\Server\Http\Controllers\RankController;
+use Rubix\Server\Http\Controllers\ScoresController;
+use Rubix\Server\Http\Controllers\SampleScoreController;
 use Rubix\Server\Http\Controllers\ServerStatusController;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
@@ -64,6 +67,7 @@ class RESTServer implements Server, LoggerAware
     public const PROBA_ENDPOINT = '/probabilities';
     public const PROBA_SAMPLE_ENDPOINT = '/sample_probabilities';
     public const RANK_ENDPOINT = '/scores';
+    public const RANK_SAMPLE_ENDPOINT = '/sample_score';
     public const SERVER_STATUS_ENDPOINT = '/status';
 
     protected const NOT_FOUND = 404;
@@ -270,6 +274,7 @@ class RESTServer implements Server, LoggerAware
 
         if ($estimator instanceof Ranking) {
             $commands[Rank::class] = new RankHandler($estimator);
+            $commands[RankSample::class] = new RankSampleHandler($estimator);
         }
 
         return new CommandBus($commands);
@@ -318,7 +323,12 @@ class RESTServer implements Server, LoggerAware
                 if ($estimator instanceof Ranking) {
                     $group->post(
                         self::RANK_ENDPOINT,
-                        new RankController($bus)
+                        new ScoresController($bus)
+                    );
+
+                    $group->post(
+                        self::RANK_SAMPLE_ENDPOINT,
+                        new SampleScoreController($bus)
                     );
                 }
             }

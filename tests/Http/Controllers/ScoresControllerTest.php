@@ -3,14 +3,14 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Http\Controllers\RankController;
+use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\RankResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class RankControllerTest extends TestCase
+class ScoresControllerTest extends TestCase
 {
     protected $controller;
 
@@ -21,12 +21,12 @@ class RankControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new RankResponse([]));
 
-        $this->controller = new RankController($commandBus);
+        $this->controller = new ScoresController($commandBus);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(RankController::class, $this->controller);
+        $this->assertInstanceOf(ScoresController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 

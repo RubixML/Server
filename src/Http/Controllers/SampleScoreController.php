@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Commands\Rank;
+use Rubix\Server\Commands\RankSample;
 use Rubix\Server\Exceptions\ValidationException;
 use Rubix\Server\Responses\ErrorResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Response as ReactResponse;
 use Exception;
 
-class RankController extends RESTController
+class SampleScoreController extends RESTController
 {
     /**
      * Handle the request.
@@ -24,11 +24,11 @@ class RankController extends RESTController
         try {
             $payload = json_decode($request->getBody()->getContents(), true);
 
-            if (empty($payload['samples'])) {
-                throw new ValidationException('Samples property cannot be empty.');
+            if (empty($payload['sample'])) {
+                throw new ValidationException('Sample property cannot be empty.');
             }
 
-            $response = $this->bus->dispatch(Rank::fromArray($payload));
+            $response = $this->bus->dispatch(RankSample::fromArray($payload));
 
             $status = self::OK;
         } catch (Exception $e) {
