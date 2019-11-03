@@ -8,3 +8,4 @@
     - Added predict single sample command
     - Added predict probabilities of a single sample
     - Added rank single sample command
+    - Added Verbose interface for chatty servers

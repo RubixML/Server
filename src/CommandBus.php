@@ -64,11 +64,11 @@ class CommandBus
 
         $handler = $this->mapping[$classname] ?? null;
 
-        if (!$handler) {
-            throw new RuntimeException('An appropriate handler'
-                . " could not be located for $classname.");
+        if ($handler) {
+            return $handler->handle($command);
         }
 
-        return $handler->handle($command);
+        throw new RuntimeException('An appropriate handler'
+            . " could not be located for $classname.");
     }
 }

@@ -31,6 +31,7 @@ use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoreController;
 use Rubix\Server\Http\Controllers\ServerStatusController;
+use Rubix\Server\Traits\LoggerAware;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
@@ -43,8 +44,6 @@ use React\EventLoop\Factory as Loop;
 use React\Http\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Log\LoggerAwareInterface as LoggerAware;
-use Psr\Log\LoggerInterface as Logger;
 use InvalidArgumentException;
 
 /**
@@ -57,8 +56,10 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RESTServer implements Server, LoggerAware
+class RESTServer implements Server, Verbose
 {
+    use LoggerAware;
+
     public const MODEL_PREFIX = '/model';
     public const SERVER_PREFIX = '/server';
 
@@ -109,13 +110,6 @@ class RESTServer implements Server, LoggerAware
      * @var \FastRoute\Dispatcher
      */
     protected $router;
-
-    /**
-     * The logger instance.
-     *
-     * @var Logger|null
-     */
-    protected $logger;
 
     /**
      * The timestamp from when the server went up.
@@ -170,16 +164,6 @@ class RESTServer implements Server, LoggerAware
         $this->port = $port;
         $this->cert = $cert;
         $this->middleware = array_values($middleware);
-    }
-
-    /**
-     * Sets a psr-3 logger.
-     *
-     * @param Logger|null $logger
-     */
-    public function setLogger(?Logger $logger = null)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -259,7 +243,6 @@ class RESTServer implements Server, LoggerAware
     {
         $commands = [
             QueryModel::class => new QueryModelHandler($estimator),
-            ServerStatus::class => new ServerStatusHandler($this),
             Predict::class => new PredictHandler($estimator),
         ];
 
@@ -275,6 +258,10 @@ class RESTServer implements Server, LoggerAware
         if ($estimator instanceof Ranking) {
             $commands[Rank::class] = new RankHandler($estimator);
             $commands[RankSample::class] = new RankSampleHandler($estimator);
+        }
+
+        if ($this instanceof Verbose) {
+            $commands[ServerStatus::class] = new ServerStatusHandler($this);
         }
 
         return new CommandBus($commands);
@@ -337,10 +324,12 @@ class RESTServer implements Server, LoggerAware
         $collector->addGroup(
             self::SERVER_PREFIX,
             function ($group) use ($bus) {
-                $group->get(
-                    self::SERVER_STATUS_ENDPOINT,
-                    new ServerStatusController($bus)
-                );
+                if ($this instanceof Verbose) {
+                    $group->get(
+                        self::SERVER_STATUS_ENDPOINT,
+                        new ServerStatusController($bus)
+                    );
+                }
             }
         );
 

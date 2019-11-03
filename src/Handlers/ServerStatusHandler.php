@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Handlers;
 
-use Rubix\Server\Server;
+use Rubix\Server\Verbose;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\ServerStatusResponse;
 
@@ -13,16 +13,16 @@ class ServerStatusHandler implements Handler
     protected const MEGABYTE = 1048576;
 
     /**
-     * The server instance.
+     * The verbose server instance.
      *
-     * @var \Rubix\Server\Server
+     * @var \Rubix\Server\Verbose
      */
     protected $server;
 
     /**
-     * @param \Rubix\Server\Server $server
+     * @param \Rubix\Server\Verbose $server
      */
-    public function __construct(Server $server)
+    public function __construct(Verbose $server)
     {
         $this->server = $server;
     }
