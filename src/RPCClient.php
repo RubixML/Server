@@ -65,7 +65,7 @@ class RPCClient implements Client
     /**
      * The number of microseconds to wait before retrying a request.
      *
-     * @var float
+     * @var int
      */
     protected $delay;
 
@@ -129,7 +129,7 @@ class RPCClient implements Client
 
         $this->timeout = $timeout;
         $this->retries = $retries;
-        $this->delay = $delay;
+        $this->delay = (int) round($delay * 1e6);
         $this->serializer = $serializer;
     }
 
@@ -147,7 +147,7 @@ class RPCClient implements Client
 
         $tries = 1 + $this->retries;
 
-        for ($i = 1; $i <= $tries; $i++) {
+        while ($tries) {
             try {
                 $payload = $this->client->request('POST', '/', [
                     'body' => $data,
@@ -159,9 +159,11 @@ class RPCClient implements Client
                 if ((int) round($e->getCode(), -2) === 400) {
                     throw $e;
                 }
+
+                $tries--;
                 
-                if ($i <= $tries) {
-                    usleep((int) round($i * $this->delay * 1e6));
+                if ($tries) {
+                    usleep($this->delay);
                 }
             }
         }

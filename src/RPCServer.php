@@ -10,12 +10,14 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
@@ -250,6 +252,7 @@ class RPCServer implements Server, LoggerAware
 
         if ($estimator instanceof Probabilistic) {
             $commands[Proba::class] = new ProbaHandler($estimator);
+            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
         }
 
         if ($estimator instanceof Ranking) {

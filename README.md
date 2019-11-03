@@ -1,5 +1,5 @@
 # Rubix Model Server
-High-performance standalone model servers bring your [Rubix ML](https://github.com/RubixML/RubixML) estimators live into production quickly and effortlessly.
+A library to serve your [Rubix ML](https://github.com/RubixML/RubixML) models quickly and effortlessly.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -12,9 +12,9 @@ $ composer require rubix/server
 - [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
 
 #### Optional
-- [Igbinary extension](https://github.com/igbinary/igbinary) for fast binary message serialization
-- [Event extension](https://pecl.php.net/package/event) for better concurrency management
-- [Ev extension](https://pecl.php.net/package/ev) for better concurrency management
+- [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
+- [Event extension](https://pecl.php.net/package/event) for fast concurrency management
+- [Ev extension](https://pecl.php.net/package/ev) for fast concurrency management
 
 ## Documentation
 
@@ -94,7 +94,9 @@ A standalone Json over HTTP and secure HTTP server exposing a [REST](https://en.
 |--|--|--|--|
 | GET | /model | | Query information about the model. |
 | POST | /model/predictions | `samples` | Return the predictions given by the model. |
+| POST | /model/sample_prediction | `sample` | Make a prediction on a single sample. |
 | POST | /model/probabilities | `samples` | Predict the probabilities of each outcome. |
+| POST | /model/sample_probabilities | `sample` | Return the probabilities of a single sample. |
 | POST | /model/scores | `samples` | Assign an anomaly score to each sample. |
 | GET | /server/status | | Query the status of the server. |
 
@@ -183,7 +185,7 @@ The RPC Client allows you to communicate with a [RPC Server](#rpc-server) over H
 | 5 | serializer | Json | object | The message serializer. |
 | 6 | timeout | INF | float | The number of seconds to wait before retrying. |
 | 7 | retries | 2 | int | The number of retries before giving up. |
-| 8 | delay | 0.3 | float | The delay in seconds between retries. |
+| 8 | delay | 0.3 | float | The delay between retries in seconds. |
 
 **Example:**
 

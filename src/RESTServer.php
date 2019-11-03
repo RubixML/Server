@@ -9,19 +9,22 @@ use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Rank;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\RankHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\PredictionsController;
-use Rubix\Server\Http\Controllers\PredictionController;
+use Rubix\Server\Http\Controllers\SamplePredictionController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
+use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\RankController;
 use Rubix\Server\Http\Controllers\ServerStatusController;
@@ -57,8 +60,9 @@ class RESTServer implements Server, LoggerAware
     public const SERVER_PREFIX = '/server';
 
     public const PREDICT_ENDPOINT = '/predictions';
-    public const PREDICT_SAMPLE_ENDPOINT = '/prediction';
+    public const PREDICT_SAMPLE_ENDPOINT = '/sample_prediction';
     public const PROBA_ENDPOINT = '/probabilities';
+    public const PROBA_SAMPLE_ENDPOINT = '/sample_probabilities';
     public const RANK_ENDPOINT = '/scores';
     public const SERVER_STATUS_ENDPOINT = '/status';
 
@@ -230,13 +234,13 @@ class RESTServer implements Server, LoggerAware
 
         $server->listen($socket);
 
+        $this->start = time();
+        $this->requests = 0;
+
         if ($this->logger) {
             $this->logger->info('HTTP REST Server running at'
                 . " $this->host on port $this->port");
         }
-
-        $this->start = time();
-        $this->requests = 0;
 
         $loop->run();
     }
@@ -261,6 +265,7 @@ class RESTServer implements Server, LoggerAware
 
         if ($estimator instanceof Probabilistic) {
             $commands[Proba::class] = new ProbaHandler($estimator);
+            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
         }
 
         if ($estimator instanceof Ranking) {
@@ -284,16 +289,6 @@ class RESTServer implements Server, LoggerAware
         $collector->get(self::MODEL_PREFIX, new QueryModelController($bus));
 
         $collector->addGroup(
-            self::SERVER_PREFIX,
-            function ($group) use ($bus) {
-                $group->get(
-                    self::SERVER_STATUS_ENDPOINT,
-                    new ServerStatusController($bus)
-                );
-            }
-        );
-
-        $collector->addGroup(
             self::MODEL_PREFIX,
             function ($group) use ($estimator, $bus) {
                 $group->post(
@@ -304,7 +299,7 @@ class RESTServer implements Server, LoggerAware
                 if ($estimator instanceof Learner) {
                     $group->post(
                         self::PREDICT_SAMPLE_ENDPOINT,
-                        new PredictionController($bus)
+                        new SamplePredictionController($bus)
                     );
                 }
                 
@@ -312,6 +307,11 @@ class RESTServer implements Server, LoggerAware
                     $group->post(
                         self::PROBA_ENDPOINT,
                         new ProbabilitiesController($bus)
+                    );
+
+                    $group->post(
+                        self::PROBA_SAMPLE_ENDPOINT,
+                        new SampleProbabilitiesController($bus)
                     );
                 }
 
@@ -321,6 +321,16 @@ class RESTServer implements Server, LoggerAware
                         new RankController($bus)
                     );
                 }
+            }
+        );
+
+        $collector->addGroup(
+            self::SERVER_PREFIX,
+            function ($group) use ($bus) {
+                $group->get(
+                    self::SERVER_STATUS_ENDPOINT,
+                    new ServerStatusController($bus)
+                );
             }
         );
 
@@ -336,6 +346,7 @@ class RESTServer implements Server, LoggerAware
     public function handle(Request $request) : Response
     {
         $method = $request->getMethod();
+
         $uri = $request->getUri()->getPath();
 
         $route = $this->router->dispatch($method, $uri);
@@ -347,14 +358,17 @@ class RESTServer implements Server, LoggerAware
                 $response = $controller->handle($request, $params);
 
                 $this->requests++;
+
                 break 1;
 
             case Dispatcher::NOT_FOUND:
                 $response = new ReactResponse(self::NOT_FOUND);
+
                 break 1;
 
             case Dispatcher::METHOD_NOT_ALLOWED:
                 $response = new ReactResponse(self::METHOD_NOT_ALLOWED);
+
                 break 1;
 
             default:

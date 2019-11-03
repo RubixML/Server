@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Response as ReactResponse;
 use Exception;
 
-class PredictionController extends RESTController
+class SamplePredictionController extends RESTController
 {
     /**
      * Handle the request.

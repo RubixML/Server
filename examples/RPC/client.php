@@ -5,6 +5,7 @@ include __DIR__ . '../../../vendor/autoload.php';
 use Rubix\Server\RPCClient;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\QueryModel;
@@ -21,5 +22,6 @@ $dataset = new Unlabeled([
 print_r($client->send(new Predict($dataset)));
 print_r($client->send(new PredictSample($dataset->row(0))));
 print_r($client->send(new Proba($dataset)));
+print_r($client->send(new ProbaSample($dataset->row(0))));
 print_r($client->send(new QueryModel()));
 print_r($client->send(new ServerStatus()));

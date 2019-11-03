@@ -15,7 +15,7 @@ namespace Rubix\Server\Responses;
 class PredictSampleResponse extends Response
 {
     /**
-     * The predition returned from the model.
+     * The prediction returned from the model.
      *
      * @var mixed
      */

@@ -3,14 +3,14 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\CommandBus;
-use Rubix\Server\Http\Controllers\PredictionController;
+use Rubix\Server\Http\Controllers\SamplePredictionController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\PredictSampleResponse;
 use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
-class PredictionControllerTest extends TestCase
+class SamplePredictionControllerTest extends TestCase
 {
     protected $controller;
 
@@ -21,12 +21,12 @@ class PredictionControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new PredictSampleResponse([]));
 
-        $this->controller = new PredictionController($commandBus);
+        $this->controller = new SamplePredictionController($commandBus);
     }
 
     public function test_build_controller()
     {
-        $this->assertInstanceOf(PredictionController::class, $this->controller);
+        $this->assertInstanceOf(SamplePredictionController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
