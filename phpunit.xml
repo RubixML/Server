@@ -21,6 +21,12 @@
         <testsuite name="Http">
             <directory>tests/Http</directory>
         </testsuite>
+        <testsuite name="Responses">
+            <directory>tests/Responses</directory>
+        </testsuite>
+        <testsuite name="Serializers">
+            <directory>tests/Serializers</directory>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
