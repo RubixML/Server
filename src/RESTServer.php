@@ -241,23 +241,26 @@ class RESTServer implements Server, Verbose
      */
     protected function bootCommandBus(Estimator $estimator) : CommandBus
     {
-        $commands = [
-            QueryModel::class => new QueryModelHandler($estimator),
-            Predict::class => new PredictHandler($estimator),
-        ];
+        $commands = [];
 
-        if ($estimator instanceof Learner) {
-            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
-        }
+        switch (true) {
+            case $estimator instanceof Estimator:
+                $commands[QueryModel::class] = new QueryModelHandler($estimator);
+                $commands[Predict::class] = new PredictHandler($estimator);
 
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
-        }
+                // no break
+            case $estimator instanceof Learner:
+                $commands[PredictSample::class] = new PredictSampleHandler($estimator);
 
-        if ($estimator instanceof Ranking) {
-            $commands[Rank::class] = new RankHandler($estimator);
-            $commands[RankSample::class] = new RankSampleHandler($estimator);
+                // no break
+            case $estimator instanceof Probabilistic:
+                $commands[Proba::class] = new ProbaHandler($estimator);
+                $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
+
+                // no break
+            case $estimator instanceof Ranking:
+                $commands[Rank::class] = new RankHandler($estimator);
+                $commands[RankSample::class] = new RankSampleHandler($estimator);
         }
 
         if ($this instanceof Verbose) {
@@ -288,35 +291,36 @@ class RESTServer implements Server, Verbose
                     new PredictionsController($bus)
                 );
 
-                if ($estimator instanceof Learner) {
-                    $group->post(
-                        self::PREDICT_SAMPLE_ENDPOINT,
-                        new SamplePredictionController($bus)
-                    );
-                }
+                switch (true) {
+                    case $estimator instanceof Learner:
+                        $group->post(
+                            self::PREDICT_SAMPLE_ENDPOINT,
+                            new SamplePredictionController($bus)
+                        );
                 
-                if ($estimator instanceof Probabilistic) {
-                    $group->post(
-                        self::PROBA_ENDPOINT,
-                        new ProbabilitiesController($bus)
-                    );
+                        // no break
+                    case $estimator instanceof Probabilistic:
+                        $group->post(
+                            self::PROBA_ENDPOINT,
+                            new ProbabilitiesController($bus)
+                        );
 
-                    $group->post(
-                        self::PROBA_SAMPLE_ENDPOINT,
-                        new SampleProbabilitiesController($bus)
-                    );
-                }
+                        $group->post(
+                            self::PROBA_SAMPLE_ENDPOINT,
+                            new SampleProbabilitiesController($bus)
+                        );
 
-                if ($estimator instanceof Ranking) {
-                    $group->post(
-                        self::RANK_ENDPOINT,
-                        new ScoresController($bus)
-                    );
+                        // no break
+                    case $estimator instanceof Ranking:
+                        $group->post(
+                            self::RANK_ENDPOINT,
+                            new ScoresController($bus)
+                        );
 
-                    $group->post(
-                        self::RANK_SAMPLE_ENDPOINT,
-                        new SampleScoreController($bus)
-                    );
+                        $group->post(
+                            self::RANK_SAMPLE_ENDPOINT,
+                            new SampleScoreController($bus)
+                        );
                 }
             }
         );
@@ -352,11 +356,11 @@ class RESTServer implements Server, Verbose
 
         [$status, $controller, $params] = array_pad($route, 3, null);
 
+        ++$this->requests;
+
         switch ($status) {
             case Dispatcher::FOUND:
                 $response = $controller->handle($request, $params);
-
-                $this->requests++;
 
                 break 1;
 

@@ -1,4 +1,4 @@
-- Unreleased
+- 0.0.1-beta
     - Added REST and RPC Servers
     - Added RPC client with retry and backoff failover
     - Implemented Command Bus

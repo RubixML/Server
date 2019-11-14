@@ -160,7 +160,7 @@ class RPCClient implements Client
                     throw $e;
                 }
 
-                $tries--;
+                --$tries;
                 
                 if ($tries) {
                     usleep($this->delay);

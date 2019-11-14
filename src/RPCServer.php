@@ -226,23 +226,26 @@ class RPCServer implements Server, Verbose
      */
     protected function bootCommandBus(Estimator $estimator) : CommandBus
     {
-        $commands = [
-            QueryModel::class => new QueryModelHandler($estimator),
-            Predict::class => new PredictHandler($estimator),
-        ];
+        $commands = [];
 
-        if ($estimator instanceof Learner) {
-            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
-        }
+        switch (true) {
+            case $estimator instanceof Estimator:
+                $commands[QueryModel::class] = new QueryModelHandler($estimator);
+                $commands[Predict::class] = new PredictHandler($estimator);
 
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
-        }
+                // no break
+            case $estimator instanceof Learner:
+                $commands[PredictSample::class] = new PredictSampleHandler($estimator);
 
-        if ($estimator instanceof Ranking) {
-            $commands[Rank::class] = new RankHandler($estimator);
-            $commands[RankSample::class] = new RankSampleHandler($estimator);
+                // no break
+            case $estimator instanceof Probabilistic:
+                $commands[Proba::class] = new ProbaHandler($estimator);
+                $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
+
+                // no break
+            case $estimator instanceof Ranking:
+                $commands[Rank::class] = new RankHandler($estimator);
+                $commands[RankSample::class] = new RankSampleHandler($estimator);
         }
 
         if ($this instanceof Verbose) {
@@ -262,6 +265,8 @@ class RPCServer implements Server, Verbose
     {
         $response = $this->controller->handle($request);
 
+        ++$this->requests;
+
         if ($this->logger) {
             $method = $request->getMethod();
             $uri = $request->getUri()->getPath();
@@ -274,8 +279,6 @@ class RPCServer implements Server, Verbose
             
             $this->logger->info("$status $method $uri from $ip");
         }
-
-        $this->requests++;
 
         return $response;
     }

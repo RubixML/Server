@@ -12,9 +12,7 @@ $ composer require rubix/server
 - [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
 
 #### Optional
-- [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
-- [Event extension](https://pecl.php.net/package/event) for fast concurrency management
-- [Ev extension](https://pecl.php.net/package/ev) for fast concurrency management
+- [Igbinary extension](https://github.com/igbinary/igbinary) for binary messaging
 
 ## Documentation
 
