@@ -228,24 +228,23 @@ class RPCServer implements Server, Verbose
     {
         $commands = [];
 
-        switch (true) {
-            case $estimator instanceof Estimator:
-                $commands[QueryModel::class] = new QueryModelHandler($estimator);
-                $commands[Predict::class] = new PredictHandler($estimator);
+        if ($estimator instanceof Estimator) {
+            $commands[QueryModel::class] = new QueryModelHandler($estimator);
+            $commands[Predict::class] = new PredictHandler($estimator);
+        }
 
-                // no break
-            case $estimator instanceof Learner:
-                $commands[PredictSample::class] = new PredictSampleHandler($estimator);
+        if ($estimator instanceof Learner) {
+            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
+        }
 
-                // no break
-            case $estimator instanceof Probabilistic:
-                $commands[Proba::class] = new ProbaHandler($estimator);
-                $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
-
-                // no break
-            case $estimator instanceof Ranking:
-                $commands[Rank::class] = new RankHandler($estimator);
-                $commands[RankSample::class] = new RankSampleHandler($estimator);
+        if ($estimator instanceof Probabilistic) {
+            $commands[Proba::class] = new ProbaHandler($estimator);
+            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
+        }
+                
+        if ($estimator instanceof Ranking) {
+            $commands[Rank::class] = new RankHandler($estimator);
+            $commands[RankSample::class] = new RankSampleHandler($estimator);
         }
 
         if ($this instanceof Verbose) {
