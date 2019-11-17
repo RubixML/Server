@@ -290,36 +290,35 @@ class RESTServer implements Server, Verbose
                     new PredictionsController($bus)
                 );
 
-                switch (true) {
-                    case $estimator instanceof Learner:
-                        $group->post(
-                            self::PREDICT_SAMPLE_ENDPOINT,
-                            new SamplePredictionController($bus)
-                        );
+                if ($estimator instanceof Learner) {
+                    $group->post(
+                        self::PREDICT_SAMPLE_ENDPOINT,
+                        new SamplePredictionController($bus)
+                    );
+                }
                 
-                        // no break
-                    case $estimator instanceof Probabilistic:
-                        $group->post(
-                            self::PROBA_ENDPOINT,
-                            new ProbabilitiesController($bus)
-                        );
+                if ($estimator instanceof Probabilistic) {
+                    $group->post(
+                        self::PROBA_ENDPOINT,
+                        new ProbabilitiesController($bus)
+                    );
 
-                        $group->post(
-                            self::PROBA_SAMPLE_ENDPOINT,
-                            new SampleProbabilitiesController($bus)
-                        );
+                    $group->post(
+                        self::PROBA_SAMPLE_ENDPOINT,
+                        new SampleProbabilitiesController($bus)
+                    );
+                }
 
-                        // no break
-                    case $estimator instanceof Ranking:
-                        $group->post(
-                            self::RANK_ENDPOINT,
-                            new ScoresController($bus)
-                        );
+                if ($estimator instanceof Ranking) {
+                    $group->post(
+                        self::RANK_ENDPOINT,
+                        new ScoresController($bus)
+                    );
 
-                        $group->post(
-                            self::RANK_SAMPLE_ENDPOINT,
-                            new SampleScoreController($bus)
-                        );
+                    $group->post(
+                        self::RANK_SAMPLE_ENDPOINT,
+                        new SampleScoreController($bus)
+                    );
                 }
             }
         );

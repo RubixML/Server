@@ -176,8 +176,7 @@ class RPCClient implements Client
         $response = $this->serializer->unserialize($payload);
 
         if (!$response instanceof Response) {
-            throw new RuntimeException('Response could not'
-                . ' be reconstituted.');
+            throw new RuntimeException('Message is not a valid response.');
         }
 
         return $response;

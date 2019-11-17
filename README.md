@@ -559,11 +559,11 @@ public probabilities() : array
 **Example:**
 
 ```php
-use Rubix\Server\Responses\ProbasSampleResponse;
+use Rubix\Server\Responses\ProbaSampleResponse;
 
 // Obtain probabilities from model
 
-$response = new ProbaampleResponse($probabilities);
+$response = new ProbaSampleResponse($probabilities);
 ```
 
 ### Query Model Response

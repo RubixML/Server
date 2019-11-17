@@ -33,9 +33,9 @@ class ProbaSampleResponse extends Response
     }
 
     /**
-     * @param mixed $probabilities
+     * @param array $probabilities
      */
-    public function __construct($probabilities)
+    public function __construct(array $probabilities)
     {
         $this->probabilities = $probabilities;
     }
@@ -43,9 +43,9 @@ class ProbaSampleResponse extends Response
     /**
      * Return the probabilities.
      *
-     * @return mixed
+     * @return array
      */
-    public function probabilities()
+    public function probabilities() : array
     {
         return $this->probabilities;
     }

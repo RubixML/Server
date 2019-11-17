@@ -29,11 +29,12 @@ class Json implements Serializer
     {
         $json = json_decode($data, true);
 
-        if (isset($json['name']) and class_exists($json['name'])) {
-            return $json['name']::fromArray($json['data'] ?? []);
+        $class = $json['name'] ?? null;
+
+        if ($class and class_exists($class)) {
+            return $class::fromArray($json['data'] ?? []);
         }
 
-        throw new RuntimeException('Message could not be'
-            . ' reconstituted.');
+        throw new RuntimeException('Message could not be reconstituted.');
     }
 }

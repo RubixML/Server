@@ -37,14 +37,12 @@ class CommandBus
     {
         foreach ($mapping as $command => $handler) {
             if (!class_exists($command)) {
-                throw new InvalidArgumentException("$command does"
-                    . ' not exist.');
+                throw new InvalidArgumentException("$command does not exist.");
             }
 
             if (!$handler instanceof Handler) {
                 throw new InvalidArgumentException('Command must map'
-                    . ' to a handler, ' . get_class($handler)
-                    . ' given.');
+                    . ' to a handler, ' . get_class($handler) . ' given.');
             }
         }
 
