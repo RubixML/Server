@@ -46,7 +46,7 @@ class ServerStatusResponseTest extends TestCase
         
         $payload = $this->response->asArray();
 
-        $this->assertInternalType('array', $payload);
+        $this->assertIsArray($payload);
         $this->assertEquals($expected, $payload);
     }
 }

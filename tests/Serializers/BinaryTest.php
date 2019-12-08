@@ -32,7 +32,7 @@ class BinaryTest extends TestCase
 
         $data = $this->serializer->serialize($command);
         
-        $this->assertInternalType('string', $data);
+        $this->assertIsString($data);
         $this->assertNotEmpty($data);
 
         $command = $this->serializer->unserialize($data);

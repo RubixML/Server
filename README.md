@@ -1,5 +1,5 @@
 # Rubix Model Server
-A library to serve your [Rubix ML](https://github.com/RubixML/RubixML) models quickly and effortlessly.
+A library to serve your [Rubix ML](https://github.com/RubixML/RubixML) models in production quickly and effortlessly.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -9,7 +9,7 @@ $ composer require rubix/server
 ```
 
 ## Requirements
-- [PHP](https://php.net/manual/en/install.php) 7.1.3 or above
+- [PHP](https://php.net/manual/en/install.php) 7.2 or above
 
 #### Optional
 - [Igbinary extension](https://github.com/igbinary/igbinary) for binary messaging

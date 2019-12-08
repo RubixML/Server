@@ -30,7 +30,7 @@ class ServerStatusTest extends TestCase
         
         $payload = $this->command->asArray();
 
-        $this->assertInternalType('array', $payload);
+        $this->assertIsArray($payload);
         $this->assertEquals($expected, $payload);
     }
 }

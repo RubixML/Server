@@ -33,7 +33,8 @@ class QueryModelResponseTest extends TestCase
     {
         $payload = $this->response->asArray();
 
-        $this->assertInternalType('array', $payload);
+        $this->assertIsArray($payload);
+        
         $this->assertEquals(self::TYPE, $payload['type']);
         $this->assertEquals(self::COMPATIBILITY, $payload['compatibility']);
         $this->assertEquals(self::PROBABILISTIC, $payload['probabilistic']);
