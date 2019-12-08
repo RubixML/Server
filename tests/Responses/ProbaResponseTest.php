@@ -15,20 +15,23 @@ class ProbaResponseTest extends TestCase
         ],
     ];
 
+    /**
+     * @var \Rubix\Server\Responses\ProbaResponse
+     */
     protected $response;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->response = new ProbaResponse(self::EXPECTED_PROBABILITIES);
     }
 
-    public function test_build_response()
+    public function test_build_response() : void
     {
         $this->assertInstanceOf(ProbaResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [
             'probabilities' => self::EXPECTED_PROBABILITIES,

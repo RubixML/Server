@@ -81,7 +81,7 @@ class RPCClient implements Client
      * @param string $host
      * @param int $port
      * @param bool $secure
-     * @param array $headers
+     * @param mixed[] $headers
      * @param float $timeout
      * @param int $retries
      * @param float $delay

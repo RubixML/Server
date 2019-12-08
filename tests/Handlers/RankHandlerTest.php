@@ -22,9 +22,12 @@ class RankHandlerTest extends TestCase
         6, 4, 10,
     ];
     
+    /**
+     * @var \Rubix\Server\Handlers\RankHandler
+     */
     protected $handler;
 
-    public function setUp()
+    public function setUp() : void
     {
         $estimator = $this->createMock(IsolationForest::class);
 
@@ -34,13 +37,13 @@ class RankHandlerTest extends TestCase
         $this->handler = new RankHandler($estimator);
     }
 
-    public function test_build_handler()
+    public function test_build_handler() : void
     {
         $this->assertInstanceOf(RankHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command()
+    public function test_handle_command() : void
     {
         $response = $this->handler->handle(new Rank(new Unlabeled(self::SAMPLES)));
 

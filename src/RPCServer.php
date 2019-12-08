@@ -112,7 +112,7 @@ class RPCServer implements Server, Verbose
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param array $middleware
+     * @param mixed[] $middleware
      * @param \Rubix\Server\Serializers\Serializer $serializer
      * @throws \InvalidArgumentException
      */

@@ -16,7 +16,7 @@ class PredictionsController extends RESTController
      * Handle the request.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param array|null $params
+     * @param mixed[]|null $params
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function handle(Request $request, ?array $params = null) : Response

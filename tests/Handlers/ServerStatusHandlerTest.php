@@ -11,14 +11,13 @@ use PHPUnit\Framework\TestCase;
 
 class ServerStatusHandlerTest extends TestCase
 {
-    protected $command;
-
+    /**
+     * @var \Rubix\Server\Handlers\ServerStatusHandler
+     */
     protected $handler;
 
-    public function setUp()
+    public function setUp() : void
     {
-        $this->command = new ServerStatus();
-
         $server = $this->createMock(RESTServer::class);
 
         $server->method('requests')
@@ -30,15 +29,17 @@ class ServerStatusHandlerTest extends TestCase
         $this->handler = new ServerStatusHandler($server);
     }
 
-    public function test_build_handler()
+    public function test_build_handler() : void
     {
         $this->assertInstanceOf(ServerStatusHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command()
+    public function test_handle_command() : void
     {
-        $response = $this->handler->handle($this->command);
+        $command = new ServerStatus();
+
+        $response = $this->handler->handle($command);
 
         $this->assertInstanceOf(ServerStatusResponse::class, $response);
     }

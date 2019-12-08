@@ -10,28 +10,30 @@ use PHPUnit\Framework\TestCase;
 
 class JsonTest extends TestCase
 {
-    protected $command;
-    
+    /**
+     * @var \Rubix\Server\Serializers\Json
+     */
     protected $serializer;
 
-    public function setUp()
+    public function setUp() : void
     {
-        $this->command = new QueryModel();
-
         $this->serializer = new Json();
     }
 
-    public function test_build_serialzer()
+    public function test_build_serialzer() : void
     {
         $this->assertInstanceOf(Json::class, $this->serializer);
         $this->assertInstanceOf(Serializer::class, $this->serializer);
     }
 
-    public function test_serialize_unserialize()
+    public function test_serialize_unserialize() : void
     {
-        $data = $this->serializer->serialize($this->command);
+        $command = new QueryModel();
+
+        $data = $this->serializer->serialize($command);
         
         $this->assertInternalType('string', $data);
+        $this->assertNotEmpty($data);
 
         $command = $this->serializer->unserialize($data);
 

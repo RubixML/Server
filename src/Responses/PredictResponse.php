@@ -17,14 +17,14 @@ class PredictResponse extends Response
     /**
      * The preditions returned from the model.
      *
-     * @var array
+     * @var mixed[]
      */
     protected $predictions;
 
     /**
      * Build the response from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -33,7 +33,7 @@ class PredictResponse extends Response
     }
 
     /**
-     * @param array $predictions
+     * @param mixed[] $predictions
      */
     public function __construct(array $predictions)
     {
@@ -43,7 +43,7 @@ class PredictResponse extends Response
     /**
      * Return the predictions.
      *
-     * @return array
+     * @return mixed[]
      */
     public function predictions() : array
     {
@@ -53,7 +53,7 @@ class PredictResponse extends Response
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     public function asArray() : array
     {

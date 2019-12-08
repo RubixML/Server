@@ -20,20 +20,23 @@ class ServerStatusResponseTest extends TestCase
 
     protected const UPTIME = 999;
 
+    /**
+     * @var \Rubix\Server\Responses\ServerStatusResponse
+     */
     protected $response;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->response = new ServerStatusResponse(self::REQUESTS, self::MEMORY_USAGE, self::UPTIME);
     }
 
-    public function test_build_response()
+    public function test_build_response() : void
     {
         $this->assertInstanceOf(ServerStatusResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [
             'requests' => self::REQUESTS,

@@ -12,9 +12,12 @@ use PHPUnit\Framework\TestCase;
 
 class PredictionsControllerTest extends TestCase
 {
+    /**
+     * @var \Rubix\Server\Http\Controllers\PredictionsController
+     */
     protected $controller;
 
-    public function setUp()
+    public function setUp() : void
     {
         $commandBus = $this->createMock(CommandBus::class);
 
@@ -24,13 +27,13 @@ class PredictionsControllerTest extends TestCase
         $this->controller = new PredictionsController($commandBus);
     }
 
-    public function test_build_controller()
+    public function test_build_controller() : void
     {
         $this->assertInstanceOf(PredictionsController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
-    public function test_handle_request()
+    public function test_handle_request() : void
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
             'samples' => [

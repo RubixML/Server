@@ -18,9 +18,12 @@ class ProbaSampleHandlerTest extends TestCase
         'monster' => 0.2,
     ];
     
+    /**
+     * @var \Rubix\Server\Handlers\ProbaSampleHandler
+     */
     protected $handler;
 
-    public function setUp()
+    public function setUp() : void
     {
         $estimator = $this->createMock(GaussianNB::class);
 
@@ -30,13 +33,13 @@ class ProbaSampleHandlerTest extends TestCase
         $this->handler = new ProbaSampleHandler($estimator);
     }
 
-    public function test_build_handler()
+    public function test_build_handler() : void
     {
         $this->assertInstanceOf(ProbaSampleHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command()
+    public function test_handle_command() : void
     {
         $response = $this->handler->handle(new ProbaSample(self::SAMPLE));
 

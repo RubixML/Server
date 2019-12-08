@@ -18,14 +18,14 @@ class RankSample extends Command
     /**
      * The sample to rank.
      *
-     * @var array
+     * @var mixed[]
      */
     protected $sample;
 
     /**
      * Build the command from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -34,7 +34,7 @@ class RankSample extends Command
     }
 
     /**
-     * @param array $sample
+     * @param mixed[] $sample
      * @throws \InvalidArgumentException
      */
     public function __construct(array $sample)
@@ -49,7 +49,7 @@ class RankSample extends Command
     /**
      * Return the sample to predict.
      *
-     * @return array
+     * @return mixed[]
      */
     public function sample() : array
     {
@@ -59,7 +59,7 @@ class RankSample extends Command
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     public function asArray() : array
     {

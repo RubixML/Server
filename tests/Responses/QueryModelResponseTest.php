@@ -13,20 +13,23 @@ class QueryModelResponseTest extends TestCase
     protected const PROBABILISTIC = true;
     protected const RANKING = false;
     
+    /**
+     * @var \Rubix\Server\Responses\QueryModelResponse
+     */
     protected $response;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->response = new QueryModelResponse(self::TYPE, self::COMPATIBILITY, self::PROBABILISTIC, self::RANKING);
     }
 
-    public function test_build_response()
+    public function test_build_response() : void
     {
         $this->assertInstanceOf(QueryModelResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $payload = $this->response->asArray();
 

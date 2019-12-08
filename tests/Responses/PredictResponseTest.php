@@ -14,20 +14,23 @@ class PredictResponseTest extends TestCase
         'not monster',
     ];
 
+    /**
+     * @var \Rubix\Server\Responses\PredictResponse
+     */
     protected $response;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->response = new PredictResponse(self::EXPECTED_PREDICTIONS);
     }
 
-    public function test_build_response()
+    public function test_build_response() : void
     {
         $this->assertInstanceOf(PredictResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [
             'predictions' => self::EXPECTED_PREDICTIONS,

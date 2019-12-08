@@ -15,9 +15,12 @@ class RankSampleHandlerTest extends TestCase
 
     protected const EXPECTED_PREDICTION = 4.5;
     
+    /**
+     * @var \Rubix\Server\Handlers\RankSampleHandler
+     */
     protected $handler;
 
-    public function setUp()
+    public function setUp() : void
     {
         $estimator = $this->createMock(IsolationForest::class);
 
@@ -27,13 +30,13 @@ class RankSampleHandlerTest extends TestCase
         $this->handler = new RankSampleHandler($estimator);
     }
 
-    public function test_build_handler()
+    public function test_build_handler() : void
     {
         $this->assertInstanceOf(RankSampleHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command()
+    public function test_handle_command() : void
     {
         $response = $this->handler->handle(new RankSample(self::SAMPLE));
 

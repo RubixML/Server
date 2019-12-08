@@ -19,31 +19,34 @@ class RPCControllerTest extends TestCase
         ['The first step is to establish that something is possible, then probability will occur.'],
     ];
     
+    /**
+     * @var \Rubix\Server\Http\Controllers\RPCController
+     */
     protected $controller;
 
-    protected $serializer;
-
-    public function setUp()
+    public function setUp() : void
     {
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
             ->willReturn(new PredictResponse([]));
 
-        $this->serializer = new Json();
-
-        $this->controller = new RPCController($commandBus, $this->serializer);
+        $this->controller = new RPCController($commandBus, new Json());
     }
 
-    public function test_build_controller()
+    public function test_build_controller() : void
     {
         $this->assertInstanceOf(RPCController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
-    public function test_handle_request()
+    public function test_handle_request() : void
     {
-        $data = $this->serializer->serialize(new Predict(new Unlabeled(self::SAMPLES)));
+        $dataset = new Unlabeled(self::SAMPLES);
+
+        $serializer = new Json();
+
+        $data = $serializer->serialize(new Predict($dataset));
 
         $request = new ServerRequest('POST', '/', [], $data);
 

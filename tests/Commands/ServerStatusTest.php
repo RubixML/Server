@@ -8,20 +8,23 @@ use PHPUnit\Framework\TestCase;
 
 class ServerStatusTest extends TestCase
 {
+    /**
+     * @var \Rubix\Server\Commands\ServerStatus
+     */
     protected $command;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->command = new ServerStatus();
     }
 
-    public function test_build_command()
+    public function test_build_command() : void
     {
         $this->assertInstanceOf(ServerStatus::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [];
         

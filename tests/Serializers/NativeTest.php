@@ -10,28 +10,30 @@ use PHPUnit\Framework\TestCase;
 
 class NativeTest extends TestCase
 {
-    protected $command;
-    
+    /**
+     * @var \Rubix\Server\Serializers\Native
+     */
     protected $serializer;
 
-    public function setUp()
+    public function setUp() : void
     {
-        $this->command = new QueryModel();
-
         $this->serializer = new Native();
     }
 
-    public function test_build_serialzer()
+    public function test_build_serialzer() : void
     {
         $this->assertInstanceOf(Native::class, $this->serializer);
         $this->assertInstanceOf(Serializer::class, $this->serializer);
     }
 
-    public function test_serialize_unserialize()
+    public function test_serialize_unserialize() : void
     {
-        $data = $this->serializer->serialize($this->command);
+        $command = new QueryModel();
+
+        $data = $this->serializer->serialize($command);
         
         $this->assertInternalType('string', $data);
+        $this->assertNotEmpty($data);
 
         $command = $this->serializer->unserialize($data);
 

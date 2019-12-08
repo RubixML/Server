@@ -24,7 +24,7 @@ class ProbaSampleResponse extends Response
     /**
      * Build the response from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -33,7 +33,7 @@ class ProbaSampleResponse extends Response
     }
 
     /**
-     * @param array $probabilities
+     * @param mixed[] $probabilities
      */
     public function __construct(array $probabilities)
     {
@@ -43,7 +43,7 @@ class ProbaSampleResponse extends Response
     /**
      * Return the probabilities.
      *
-     * @return array
+     * @return float[]
      */
     public function probabilities() : array
     {
@@ -53,7 +53,7 @@ class ProbaSampleResponse extends Response
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     public function asArray() : array
     {

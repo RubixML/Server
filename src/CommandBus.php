@@ -25,12 +25,12 @@ class CommandBus
     /**
      * The mapping of commands to their handlers.
      *
-     * @var array
+     * @var mixed[]
      */
     protected $mapping;
 
     /**
-     * @param array $mapping
+     * @param mixed[] $mapping
      * @throws \InvalidArgumentException
      */
     public function __construct(array $mapping)

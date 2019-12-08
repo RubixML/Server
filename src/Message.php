@@ -9,7 +9,7 @@ abstract class Message implements JsonSerializable
     /**
      * Build the message from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     abstract public static function fromArray(array $data);
@@ -17,7 +17,7 @@ abstract class Message implements JsonSerializable
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     abstract public function asArray() : array;
 

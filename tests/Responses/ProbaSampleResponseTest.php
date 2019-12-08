@@ -13,20 +13,23 @@ class ProbaSampleResponseTest extends TestCase
         'not monster' => 0.6,
     ];
 
+    /**
+     * @var \Rubix\Server\Responses\ProbaSampleResponse
+     */
     protected $response;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->response = new ProbaSampleResponse(self::EXPECTED_PROBABILITIES);
     }
 
-    public function test_build_response()
+    public function test_build_response() : void
     {
         $this->assertInstanceOf(ProbaSampleResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [
             'probabilities' => self::EXPECTED_PROBABILITIES,

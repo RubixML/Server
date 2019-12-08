@@ -20,14 +20,14 @@ class Predict extends Command
     /**
      * The dataset to predict.
      *
-     * @var \Rubix\ML\Datasets\Dataset
+     * @var \Rubix\ML\Datasets\Dataset<array>
      */
     protected $dataset;
 
     /**
      * Build the command from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -36,7 +36,7 @@ class Predict extends Command
     }
 
     /**
-     * @param \Rubix\ML\Datasets\Dataset $dataset
+     * @param \Rubix\ML\Datasets\Dataset<array> $dataset
      */
     public function __construct(Dataset $dataset)
     {
@@ -46,7 +46,7 @@ class Predict extends Command
     /**
      * Return the dataset to predict.
      *
-     * @return \Rubix\ML\Datasets\Dataset
+     * @return \Rubix\ML\Datasets\Dataset<array>
      */
     public function dataset() : Dataset
     {
@@ -56,7 +56,7 @@ class Predict extends Command
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     public function asArray() : array
     {

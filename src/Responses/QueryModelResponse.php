@@ -45,7 +45,7 @@ class QueryModelResponse extends Response
     /**
      * Build the response from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -60,7 +60,7 @@ class QueryModelResponse extends Response
 
     /**
      * @param string $type
-     * @param array $compatibility
+     * @param mixed[] $compatibility
      * @param bool $probabilistic
      * @param bool $ranking
      */
@@ -115,7 +115,7 @@ class QueryModelResponse extends Response
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     public function asArray() : array
     {

@@ -12,20 +12,23 @@ class RankResponseTest extends TestCase
         6, 9, 10,
     ];
 
+    /**
+     * @var \Rubix\Server\Responses\RankResponse
+     */
     protected $response;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->response = new RankResponse(self::EXPECTED_SCORES);
     }
 
-    public function test_build_response()
+    public function test_build_response() : void
     {
         $this->assertInstanceOf(RankResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [
             'scores' => self::EXPECTED_SCORES,

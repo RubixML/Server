@@ -10,16 +10,19 @@ use PHPUnit\Framework\TestCase;
 
 class RESTServerTest extends TestCase
 {
+    /**
+     * @var \Rubix\Server\RESTServer
+     */
     protected $server;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->server = new RESTServer('127.0.0.1', 8888, null, [
             new SharedTokenAuthenticator('secret'),
         ]);
     }
 
-    public function test_build_server()
+    public function test_build_server() : void
     {
         $this->assertInstanceOf(RESTServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);

@@ -130,7 +130,7 @@ class RESTServer implements Server, Verbose
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param array $middleware
+     * @param mixed[] $middleware
      * @throws \InvalidArgumentException
      */
     public function __construct(

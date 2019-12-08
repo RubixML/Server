@@ -11,20 +11,23 @@ use PHPUnit\Framework\TestCase;
 
 class QueryModelHandlerTest extends TestCase
 {
+    /**
+     * @var \Rubix\Server\Handlers\QueryModelHandler
+     */
     protected $handler;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->handler = new QueryModelHandler(new DummyClassifier());
     }
 
-    public function test_build_handler()
+    public function test_build_handler() : void
     {
         $this->assertInstanceOf(QueryModelHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command()
+    public function test_handle_command() : void
     {
         $response = $this->handler->handle(new QueryModel());
 

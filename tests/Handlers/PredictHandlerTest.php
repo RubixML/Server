@@ -24,9 +24,12 @@ class PredictHandlerTest extends TestCase
         'monster',
     ];
     
+    /**
+     * @var \Rubix\Server\Handlers\PredictHandler
+     */
     protected $handler;
 
-    public function setUp()
+    public function setUp() : void
     {
         $estimator = $this->createMock(DummyClassifier::class);
 
@@ -36,13 +39,13 @@ class PredictHandlerTest extends TestCase
         $this->handler = new PredictHandler($estimator);
     }
 
-    public function test_build_handler()
+    public function test_build_handler() : void
     {
         $this->assertInstanceOf(PredictHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command()
+    public function test_handle_command() : void
     {
         $response = $this->handler->handle(new Predict(new Unlabeled(self::SAMPLES)));
 

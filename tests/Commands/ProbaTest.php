@@ -14,25 +14,28 @@ class ProbaTest extends TestCase
         ['mean', 'furry', 'friendly'],
     ];
 
+    /**
+     * @var \Rubix\Server\Commands\Proba
+     */
     protected $command;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->command = new Proba(new Unlabeled(self::SAMPLES));
     }
 
-    public function test_build_command()
+    public function test_build_command() : void
     {
         $this->assertInstanceOf(Proba::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_dataset()
+    public function test_dataset() : void
     {
         $this->assertInstanceOf(Dataset::class, $this->command->dataset());
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [
             'samples' => [

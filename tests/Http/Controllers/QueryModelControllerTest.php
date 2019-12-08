@@ -12,9 +12,12 @@ use PHPUnit\Framework\TestCase;
 
 class QueryModelControllerTest extends TestCase
 {
+    /**
+     * @var \Rubix\Server\Http\Controllers\QueryModelController
+     */
     protected $controller;
 
-    public function setUp()
+    public function setUp() : void
     {
         $commandBus = $this->createMock(CommandBus::class);
 
@@ -24,13 +27,13 @@ class QueryModelControllerTest extends TestCase
         $this->controller = new QueryModelController($commandBus);
     }
 
-    public function test_build_controller()
+    public function test_build_controller() : void
     {
         $this->assertInstanceOf(QueryModelController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
-    public function test_handle_request()
+    public function test_handle_request() : void
     {
         $request = new ServerRequest('GET', '/status');
 

@@ -8,20 +8,23 @@ use PHPUnit\Framework\TestCase;
 
 class QueryModelTest extends TestCase
 {
+    /**
+     * @var \Rubix\Server\Commands\QueryModel
+     */
     protected $command;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->command = new QueryModel();
     }
 
-    public function test_build_command()
+    public function test_build_command() : void
     {
         $this->assertInstanceOf(QueryModel::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_as_array()
+    public function test_as_array() : void
     {
         $expected = [];
         

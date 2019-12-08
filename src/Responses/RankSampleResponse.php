@@ -17,14 +17,14 @@ class RankSampleResponse extends Response
     /**
      * The anomaly score returned from the model.
      *
-     * @var mixed
+     * @var float
      */
     protected $score;
 
     /**
      * Build the response from an associative array of data.
      *
-     * @param array $data
+     * @param mixed[] $data
      * @return self
      */
     public static function fromArray(array $data) : self
@@ -33,9 +33,9 @@ class RankSampleResponse extends Response
     }
 
     /**
-     * @param mixed $score
+     * @param float $score
      */
-    public function __construct($score)
+    public function __construct(float $score)
     {
         $this->score = $score;
     }
@@ -43,9 +43,9 @@ class RankSampleResponse extends Response
     /**
      * Return the anomaly score.
      *
-     * @return mixed
+     * @return float
      */
-    public function score()
+    public function score() : float
     {
         return $this->score;
     }
@@ -53,7 +53,7 @@ class RankSampleResponse extends Response
     /**
      * Return the message as an array.
      *
-     * @return array
+     * @return mixed[]
      */
     public function asArray() : array
     {

@@ -16,7 +16,7 @@ interface Controller
      * Handle the request.
      *
      * @param Request $request
-     * @param array|null $params
+     * @param mixed[]|null $params
      * @return Response
      */
     public function handle(Request $request, ?array $params = null) : Response;
