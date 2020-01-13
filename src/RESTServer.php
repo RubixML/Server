@@ -49,7 +49,7 @@ use InvalidArgumentException;
 /**
  * HTTP Server
  *
- * A standalone Json over HTTP and secure HTTP server exposing a REST
+ * A standalone JSON over HTTP and secure HTTP server exposing a REST
  * (Representational State Transfer) API.
  *
  * @category    Machine Learning

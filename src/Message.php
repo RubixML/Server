@@ -2,9 +2,9 @@
 
 namespace Rubix\Server;
 
-use JsonSerializable;
+use JSONSerializable;
 
-abstract class Message implements JsonSerializable
+abstract class Message implements JSONSerializable
 {
     /**
      * Build the message from an associative array of data.

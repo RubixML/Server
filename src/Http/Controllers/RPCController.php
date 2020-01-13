@@ -4,9 +4,9 @@ namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Native;
-use Rubix\Server\Serializers\Binary;
+use Rubix\Server\Serializers\Igbinary;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Responses\ErrorResponse;
 use Rubix\Server\Exceptions\ValidationException;
@@ -18,7 +18,7 @@ use Exception;
 class RPCController implements Controller
 {
     public const SERIALIZER_HEADERS = [
-        Json::class => [
+        JSON::class => [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ],
@@ -26,7 +26,7 @@ class RPCController implements Controller
             'Content-Type' => 'application/octet-stream',
             'Accept' => 'application/octet-stream',
         ],
-        Binary::class => [
+        Igbinary::class => [
             'Content-Type' => 'application/octet-stream',
             'Accept' => 'application/octet-stream',
         ],

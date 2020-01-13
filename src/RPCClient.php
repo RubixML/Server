@@ -4,8 +4,8 @@ namespace Rubix\Server;
 
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Responses\Response;
-use Rubix\Server\Serializers\Json;
-use Rubix\Server\Serializers\Binary;
+use Rubix\Server\Serializers\JSON;
+use Rubix\Server\Serializers\Igbinary;
 use Rubix\Server\Serializers\Native;
 use Rubix\Server\Serializers\Serializer;
 use GuzzleHttp\Client as Guzzle;
@@ -27,7 +27,7 @@ use Exception;
 class RPCClient implements Client
 {
     protected const SERIALIZER_HEADERS = [
-        Json::class => [
+        JSON::class => [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ],
@@ -35,7 +35,7 @@ class RPCClient implements Client
             'Content-Type' => 'application/octet-stream',
             'Accept' => 'application/octet-stream',
         ],
-        Binary::class => [
+        Igbinary::class => [
             'Content-Type' => 'application/octet-stream',
             'Accept' => 'application/octet-stream',
         ],
@@ -118,7 +118,7 @@ class RPCClient implements Client
                 . " less than 0, $delay given.");
         }
 
-        $serializer = $serializer ?? new Json();
+        $serializer = $serializer ?? new JSON();
 
         $headers = array_replace($headers, self::SERIALIZER_HEADERS[get_class($serializer)]);
 

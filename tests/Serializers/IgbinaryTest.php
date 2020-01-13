@@ -4,18 +4,18 @@ namespace Rubix\Server\Tests\Serializers;
 
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\Igbinary;
 use Rubix\Server\Serializers\Serializer;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Serializers
- * @covers \Rubix\Server\Serializers\Json
+ * @covers \Rubix\Server\Serializers\Igbinary
  */
-class JsonTest extends TestCase
+class IgbinaryTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Serializers\Json
+     * @var \Rubix\Server\Serializers\Igbinary
      */
     protected $serializer;
 
@@ -24,7 +24,7 @@ class JsonTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->serializer = new Json();
+        $this->serializer = new Igbinary();
     }
 
     /**
@@ -32,7 +32,7 @@ class JsonTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(Json::class, $this->serializer);
+        $this->assertInstanceOf(Igbinary::class, $this->serializer);
         $this->assertInstanceOf(Serializer::class, $this->serializer);
     }
 

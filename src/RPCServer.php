@@ -25,7 +25,7 @@ use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Traits\LoggerAware;
 use React\Http\Server as HTTPServer;
@@ -148,7 +148,7 @@ class RPCServer implements Server, Verbose
         $this->port = $port;
         $this->cert = $cert;
         $this->middleware = array_values($middleware);
-        $this->serializer = $serializer ?? new Json();
+        $this->serializer = $serializer ?? new JSON();
     }
 
     /**

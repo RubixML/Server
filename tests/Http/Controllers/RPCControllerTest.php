@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Commands\Predict;
-use Rubix\Server\Serializers\Json;
+use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\PredictResponse;
@@ -38,7 +38,7 @@ class RPCControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new PredictResponse([]));
 
-        $this->controller = new RPCController($commandBus, new Json());
+        $this->controller = new RPCController($commandBus, new JSON());
     }
 
     /**
@@ -57,7 +57,7 @@ class RPCControllerTest extends TestCase
     {
         $dataset = new Unlabeled(self::SAMPLES);
 
-        $serializer = new Json();
+        $serializer = new JSON();
 
         $data = $serializer->serialize(new Predict($dataset));
 

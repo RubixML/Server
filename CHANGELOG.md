@@ -1,3 +1,6 @@
+- Unreleased
+    - Changed name of Binary serializer to Igbinary
+
 - 0.0.1-beta
     - Added REST and RPC Servers
     - Added RPC client with retry and backoff failover

@@ -1,4 +1,7 @@
-# Rubix Model Server
+# Rubix Server
+
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/rubix/tensor.svg?style=flat-square&colorB=8892BF)](https://www.php.net/) [![Latest Stable Version](https://img.shields.io/packagist/v/rubix/tensor.svg?style=flat-square&colorB=orange)](https://packagist.org/packages/rubix/tensor) [![Travis](https://img.shields.io/travis/RubixML/Tensor.svg?style=flat-square)](https://travis-ci.org/RubixML/Tensor) [![Downloads from Packagist](https://img.shields.io/packagist/dt/rubix/tensor.svg?style=flat-square&colorB=red)](https://packagist.org/packages/rubix/tensor)
+
 A library to serve your [Rubix ML](https://github.com/RubixML/RubixML) models in production quickly and effortlessly.
 
 ## Installation
@@ -48,7 +51,7 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real-time (as opposed to offline) then you'll need to make it availble to clients through a *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications.
+Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real-time (as opposed to offline) then you'll need to make it available to clients through a *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications.
 
 ---
 ### Servers
@@ -79,7 +82,7 @@ $server->serve($estimator);
 ```
 
 ### REST Server
-A standalone Json over HTTP and secure HTTP server exposing a [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) (Representational State Transfer) API. 
+A standalone JSON over HTTP and secure HTTP server exposing a [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) (Representational State Transfer) API. 
 
 **Parameters:**
 
@@ -92,7 +95,7 @@ A standalone Json over HTTP and secure HTTP server exposing a [REST](https://en.
 
 **HTTP Routes:**
 
-| Method | URI | Json Params | Description |
+| Method | URI | JSON Params | Description |
 |--|--|--|--|
 | GET | /model | | Query information about the model. |
 | POST | /model/predictions | `samples` | Return the predictions given by the model. |
@@ -125,18 +128,18 @@ A lightweight [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_proce
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | None | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middleware | | array | The HTTP middleware stack to run on each request. |
-| 5 | serializer | Json | object | The message serializer. |
+| 5 | serializer | JSON | object | The message serializer. |
 
 **Example**
 
 ```php
 use Rubix\Server\RPCServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
-use Rubix\Server\Serializers\Binary;
+use Rubix\Server\Serializers\JSON;
 
 $server = new RPCServer('127.0.0.1', 4443, '/cert.pem', [
     new SharedTokenAuthenticator('secret'),
-], new Binary());
+], new JSON());
 ```
 
 ---
@@ -185,7 +188,7 @@ The RPC Client allows you to communicate with a [RPC Server](#rpc-server) over H
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
 | 4 | headers | Auto | array | The HTTP headers to send along with each request. |
-| 5 | serializer | Json | object | The message serializer. |
+| 5 | serializer | JSON | object | The message serializer. |
 | 6 | timeout | INF | float | The number of seconds to wait before retrying. |
 | 7 | retries | 2 | int | The number of retries before giving up. |
 | 8 | delay | 0.3 | float | The delay between retries in seconds. |
@@ -194,11 +197,11 @@ The RPC Client allows you to communicate with a [RPC Server](#rpc-server) over H
 
 ```php
 use Rubix\Server\RPCClient;
-use Rubix\Server\Serializers\Binary;
+use Rubix\Server\Serializers\JSON;
 
 $client = new RPCClient('127.0.0.1', 8888, false, [
     'Authorization' => 'secret',
-], new Binary(), 2.5, 3, 0.5);
+], new JSON(), 2.5, 3, 0.5);
 ```
 
 ---
@@ -226,7 +229,7 @@ $middleware = new SharedTokenAuthenticator('secret');
 
 ---
 ### Messages
-Messages are containers for the data that flow accross the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - [Commands](#commands) and [Responses](#responses). Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
+Messages are containers for the data that flow across the network between clients and model servers. They provide an object oriented interface to making requests and receiving responses through client/server interaction. There are two types of messages to consider in Rubix Server - [Commands](#commands) and [Responses](#responses). Commands signal an action to be performed by the server and are instantiated by the user and sent by the client API. Responses are returned by the server and contain the data that was sent back as a result of a command.
 
 To build a Message from an associative array:
 ```php
@@ -521,7 +524,7 @@ This is the response from a Proba command containing the probabilities obtained 
 
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | probabilities | | array | The probabilties returned from the model. |
+| 1 | probabilities | | array | The probabilities returned from the model. |
 
 **Additional Methods:**
 
@@ -616,7 +619,7 @@ Return the anaomaly scores from a Rank command.
 
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | scores | | array | The probabilties returned from the model. |
+| 1 | scores | | array | The probabilities returned from the model. |
 
 **Additional Methods:**
 

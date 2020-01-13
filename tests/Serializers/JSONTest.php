@@ -4,18 +4,18 @@ namespace Rubix\Server\Tests\Serializers;
 
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Serializers\Binary;
+use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Serializers
- * @covers \Rubix\Server\Serializers\Binary
+ * @covers \Rubix\Server\Serializers\JSON
  */
-class BinaryTest extends TestCase
+class JSONTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Serializers\Binary
+     * @var \Rubix\Server\Serializers\JSON
      */
     protected $serializer;
 
@@ -24,7 +24,7 @@ class BinaryTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->serializer = new Binary();
+        $this->serializer = new JSON();
     }
 
     /**
@@ -32,7 +32,7 @@ class BinaryTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(Binary::class, $this->serializer);
+        $this->assertInstanceOf(JSON::class, $this->serializer);
         $this->assertInstanceOf(Serializer::class, $this->serializer);
     }
 
