@@ -1,6 +1,6 @@
 # Rubix Server
 
-[![PHP from Packagist](https://img.shields.io/packagist/php-v/rubix/tensor.svg?style=flat-square&colorB=8892BF)](https://www.php.net/) [![Latest Stable Version](https://img.shields.io/packagist/v/rubix/tensor.svg?style=flat-square&colorB=orange)](https://packagist.org/packages/rubix/tensor) [![Travis](https://img.shields.io/travis/RubixML/Tensor.svg?style=flat-square)](https://travis-ci.org/RubixML/Tensor) [![Downloads from Packagist](https://img.shields.io/packagist/dt/rubix/tensor.svg?style=flat-square&colorB=red)](https://packagist.org/packages/rubix/tensor)
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/rubix/server.svg?style=flat-square&colorB=8892BF)](https://www.php.net/) [![Latest Stable Version](https://img.shields.io/packagist/v/rubix/server.svg?style=flat-square&colorB=orange)](https://packagist.org/packages/rubix/server) [![Travis](https://img.shields.io/travis/RubixML/Server.svg?style=flat-square)](https://travis-ci.org/RubixML/Server) [![Downloads from Packagist](https://img.shields.io/packagist/dt/rubix/server.svg?style=flat-square&colorB=red)](https://packagist.org/packages/rubix/server)
 
 A library to serve your [Rubix ML](https://github.com/RubixML/RubixML) models in production quickly and effortlessly.
 
