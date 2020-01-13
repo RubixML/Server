@@ -17,18 +17,27 @@ class RankResponseTest extends TestCase
      */
     protected $response;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->response = new RankResponse(self::EXPECTED_SCORES);
     }
 
-    public function test_build_response() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(RankResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [
             'scores' => self::EXPECTED_SCORES,

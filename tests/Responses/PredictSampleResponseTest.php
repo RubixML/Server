@@ -15,18 +15,27 @@ class PredictSampleResponseTest extends TestCase
      */
     protected $response;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->response = new PredictSampleResponse(self::EXPECTED_PREDICTION);
     }
 
-    public function test_build_response() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(PredictSampleResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [
             'prediction' => self::EXPECTED_PREDICTION,

@@ -6,6 +6,10 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\ServerStatus;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Commands
+ * @covers \Rubix\Server\Commands\ServerStatus
+ */
 class ServerStatusTest extends TestCase
 {
     /**
@@ -13,18 +17,27 @@ class ServerStatusTest extends TestCase
      */
     protected $command;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->command = new ServerStatus();
     }
 
-    public function test_build_command() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(ServerStatus::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [];
         

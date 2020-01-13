@@ -3,10 +3,13 @@
 use PhpCsFixer\Finder;
 use PhpCsFixer\Config;
 
-$rules = [
+$finder = Finder::create()->in(__DIR__);
+
+return Config::create()->setRules([
     '@PSR2' => true,
     'align_multiline_comment' => true,
     'array_syntax' => ['syntax' => 'short'],
+    'backtick_to_shell_exec' => true,
     'binary_operator_spaces' => true,
     'blank_line_after_opening_tag' => true,
     'cast_spaces' => ['space' => 'single'],
@@ -29,8 +32,13 @@ $rules = [
     'no_spaces_around_offset' => true,
     'no_unused_imports' => true,
     'object_operator_without_whitespace' => true,
+    'php_unit_fqcn_annotation' => true,
+    'php_unit_method_casing' => ['case' => 'camel_case'],
+    'php_unit_ordered_covers' => true,
+    'phpdoc_add_missing_param_annotation' => ['only_untyped' => false],
     'phpdoc_align' => ['align' => 'left'],
     'phpdoc_no_empty_return' => true,
+    'phpdoc_no_useless_inheritdoc' => true,
     'phpdoc_order' => true,
     'phpdoc_scalar' => true,
     'phpdoc_single_line_var_spacing' => true,
@@ -41,7 +49,4 @@ $rules = [
     'single_blank_line_before_namespace' => true,
     'single_quote' => true,
     'single_line_comment_style' => true,
-];
-
-return Config::create()->setRules($rules)
-    ->setFinder(Finder::create()->in(__DIR__));
+])->setFinder($finder);

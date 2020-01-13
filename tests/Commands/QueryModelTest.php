@@ -6,6 +6,10 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\QueryModel;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Commands
+ * @covers \Rubix\Server\Commands\QueryModel
+ */
 class QueryModelTest extends TestCase
 {
     /**
@@ -13,18 +17,27 @@ class QueryModelTest extends TestCase
      */
     protected $command;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->command = new QueryModel();
     }
 
-    public function test_build_command() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(QueryModel::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [];
         

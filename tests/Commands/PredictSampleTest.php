@@ -6,6 +6,10 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\PredictSample;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Commands
+ * @covers \Rubix\Server\Commands\PredictSample
+ */
 class PredictSampleTest extends TestCase
 {
     protected const SAMPLE = ['nice', 'rough', 'loner'];
@@ -15,23 +19,35 @@ class PredictSampleTest extends TestCase
      */
     protected $command;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->command = new PredictSample(self::SAMPLE);
     }
 
-    public function test_build_command() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(PredictSample::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_sample() : void
+    /**
+     * @test
+     */
+    public function sample() : void
     {
         $this->assertEquals(self::SAMPLE, $this->command->sample());
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [
             'sample' => ['nice', 'rough', 'loner'],

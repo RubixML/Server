@@ -27,11 +27,10 @@
         "rubix/ml": "^0.0.17-beta"
     },
     "require-dev": {
-        "ext-igbinary": "*",
-        "friendsofphp/php-cs-fixer": "^2.14",
-        "phpstan/phpstan": "^0.12.0",
-        "phpstan/phpstan-phpunit": "^0.12.0",
-        "phpunit/phpunit": "8.4.*"
+        "friendsofphp/php-cs-fixer": "2.16.*",
+        "phpstan/phpstan": "0.12.*",
+        "phpstan/phpstan-phpunit": "0.12.*",
+        "phpunit/phpunit": "8.5.*"
     },
     "suggest": {
         "ext-igbinary": "For binary message serialization"

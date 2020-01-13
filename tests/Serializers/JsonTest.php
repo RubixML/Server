@@ -8,6 +8,10 @@ use Rubix\Server\Serializers\Json;
 use Rubix\Server\Serializers\Serializer;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Serializers
+ * @covers \Rubix\Server\Serializers\Json
+ */
 class JsonTest extends TestCase
 {
     /**
@@ -15,18 +19,27 @@ class JsonTest extends TestCase
      */
     protected $serializer;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->serializer = new Json();
     }
 
-    public function test_build_serialzer() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(Json::class, $this->serializer);
         $this->assertInstanceOf(Serializer::class, $this->serializer);
     }
 
-    public function test_serialize_unserialize() : void
+    /**
+     * @test
+     */
+    public function serializeUnserialize() : void
     {
         $command = new QueryModel();
 

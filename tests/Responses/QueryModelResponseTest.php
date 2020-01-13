@@ -18,18 +18,27 @@ class QueryModelResponseTest extends TestCase
      */
     protected $response;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->response = new QueryModelResponse(self::TYPE, self::COMPATIBILITY, self::PROBABILISTIC, self::RANKING);
     }
 
-    public function test_build_response() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(QueryModelResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $payload = $this->response->asArray();
 

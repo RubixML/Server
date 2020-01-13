@@ -9,6 +9,10 @@ use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Responses\ServerStatusResponse;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Handlers
+ * @covers \Rubix\Server\Handlers\ServerStatusHandler
+ */
 class ServerStatusHandlerTest extends TestCase
 {
     /**
@@ -16,7 +20,10 @@ class ServerStatusHandlerTest extends TestCase
      */
     protected $handler;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $server = $this->createMock(RESTServer::class);
 
@@ -29,13 +36,19 @@ class ServerStatusHandlerTest extends TestCase
         $this->handler = new ServerStatusHandler($server);
     }
 
-    public function test_build_handler() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(ServerStatusHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command() : void
+    /**
+     * @test
+     */
+    public function handle() : void
     {
         $command = new ServerStatus();
 

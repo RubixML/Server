@@ -10,6 +10,10 @@ use Rubix\Server\Responses\ProbaResponse;
 use Rubix\ML\Classifiers\GaussianNB;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Handlers
+ * @covers \Rubix\Server\Handlers\ProbaHandler
+ */
 class ProbaHandlerTest extends TestCase
 {
     protected const SAMPLES = [
@@ -28,7 +32,10 @@ class ProbaHandlerTest extends TestCase
      */
     protected $handler;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $estimator = $this->createMock(GaussianNB::class);
 
@@ -38,13 +45,19 @@ class ProbaHandlerTest extends TestCase
         $this->handler = new ProbaHandler($estimator);
     }
 
-    public function test_build_handler() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(ProbaHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command() : void
+    /**
+     * @test
+     */
+    public function handle() : void
     {
         $response = $this->handler->handle(new Proba(new Unlabeled(self::SAMPLES)));
 

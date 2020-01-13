@@ -10,6 +10,10 @@ use React\Http\Io\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Controllers
+ * @covers \Rubix\Server\Http\Controllers\ScoresController
+ */
 class ScoresControllerTest extends TestCase
 {
     /**
@@ -17,7 +21,10 @@ class ScoresControllerTest extends TestCase
      */
     protected $controller;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $commandBus = $this->createMock(CommandBus::class);
 
@@ -27,13 +34,19 @@ class ScoresControllerTest extends TestCase
         $this->controller = new ScoresController($commandBus);
     }
 
-    public function test_build_controller() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(ScoresController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
-    public function test_handle_request() : void
+    /**
+     * @test
+     */
+    public function handle() : void
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
             'samples' => [

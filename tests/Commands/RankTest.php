@@ -8,6 +8,10 @@ use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Rank;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Commands
+ * @covers \Rubix\Server\Commands\Rank
+ */
 class RankTest extends TestCase
 {
     protected const SAMPLES = [
@@ -19,23 +23,35 @@ class RankTest extends TestCase
      */
     protected $command;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->command = new Rank(new Unlabeled(self::SAMPLES));
     }
 
-    public function test_build_command() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(Rank::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 
-    public function test_dataset() : void
+    /**
+     * @test
+     */
+    public function dataset() : void
     {
         $this->assertInstanceOf(Dataset::class, $this->command->dataset());
     }
-
-    public function test_as_array() : void
+    
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [
             'samples' => [

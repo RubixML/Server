@@ -25,18 +25,27 @@ class ServerStatusResponseTest extends TestCase
      */
     protected $response;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->response = new ServerStatusResponse(self::REQUESTS, self::MEMORY_USAGE, self::UPTIME);
     }
 
-    public function test_build_response() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(ServerStatusResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [
             'requests' => self::REQUESTS,

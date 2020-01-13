@@ -10,6 +10,10 @@ use Rubix\Server\Responses\RankResponse;
 use Rubix\ML\AnomalyDetectors\IsolationForest;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Handlers
+ * @covers \Rubix\Server\Handlers\RankHandler
+ */
 class RankHandlerTest extends TestCase
 {
     protected const SAMPLES = [
@@ -27,7 +31,10 @@ class RankHandlerTest extends TestCase
      */
     protected $handler;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $estimator = $this->createMock(IsolationForest::class);
 
@@ -37,13 +44,19 @@ class RankHandlerTest extends TestCase
         $this->handler = new RankHandler($estimator);
     }
 
-    public function test_build_handler() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(RankHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command() : void
+    /**
+     * @test
+     */
+    public function handle() : void
     {
         $response = $this->handler->handle(new Rank(new Unlabeled(self::SAMPLES)));
 

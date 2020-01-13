@@ -9,6 +9,10 @@ use Rubix\Server\Responses\QueryModelResponse;
 use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Handlers
+ * @covers \Rubix\Server\Handlers\QueryModelHandler
+ */
 class QueryModelHandlerTest extends TestCase
 {
     /**
@@ -16,18 +20,27 @@ class QueryModelHandlerTest extends TestCase
      */
     protected $handler;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->handler = new QueryModelHandler(new DummyClassifier());
     }
 
-    public function test_build_handler() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(QueryModelHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command() : void
+    /**
+     * @test
+     */
+    public function handle() : void
     {
         $response = $this->handler->handle(new QueryModel());
 

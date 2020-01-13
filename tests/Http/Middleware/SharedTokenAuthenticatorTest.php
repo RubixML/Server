@@ -6,6 +6,10 @@ use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Middleware
+ * @covers \Rubix\Server\Http\Middleware\SharedTokenAuthenticator
+ */
 class SharedTokenAuthenticatorTest extends TestCase
 {
     /**
@@ -13,12 +17,18 @@ class SharedTokenAuthenticatorTest extends TestCase
      */
     protected $middleware;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->middleware = new SharedTokenAuthenticator('secret');
     }
 
-    public function test_build_middleware() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(SharedTokenAuthenticator::class, $this->middleware);
         $this->assertInstanceOf(Middleware::class, $this->middleware);

@@ -6,6 +6,10 @@ use Rubix\Server\Responses\Response;
 use Rubix\Server\Responses\PredictResponse;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Responses
+ * @covers \Rubix\Server\Responses\PredictResponse
+ */
 class PredictResponseTest extends TestCase
 {
     protected const EXPECTED_PREDICTIONS = [
@@ -19,18 +23,27 @@ class PredictResponseTest extends TestCase
      */
     protected $response;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $this->response = new PredictResponse(self::EXPECTED_PREDICTIONS);
     }
 
-    public function test_build_response() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(PredictResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 
-    public function test_as_array() : void
+    /**
+     * @test
+     */
+    public function asArray() : void
     {
         $expected = [
             'predictions' => self::EXPECTED_PREDICTIONS,

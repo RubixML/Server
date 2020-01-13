@@ -10,6 +10,10 @@ use Rubix\Server\Responses\PredictResponse;
 use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group Handlers
+ * @covers \Rubix\Server\Handlers\PredictHandler
+ */
 class PredictHandlerTest extends TestCase
 {
     protected const SAMPLES = [
@@ -29,7 +33,10 @@ class PredictHandlerTest extends TestCase
      */
     protected $handler;
 
-    public function setUp() : void
+    /**
+     * @before
+     */
+    protected function setUp() : void
     {
         $estimator = $this->createMock(DummyClassifier::class);
 
@@ -39,13 +46,19 @@ class PredictHandlerTest extends TestCase
         $this->handler = new PredictHandler($estimator);
     }
 
-    public function test_build_handler() : void
+    /**
+     * @test
+     */
+    public function build() : void
     {
         $this->assertInstanceOf(PredictHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
-    public function test_handle_command() : void
+    /**
+     * @test
+     */
+    public function handle() : void
     {
         $response = $this->handler->handle(new Predict(new Unlabeled(self::SAMPLES)));
 
