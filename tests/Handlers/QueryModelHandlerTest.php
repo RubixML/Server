@@ -49,7 +49,7 @@ class QueryModelHandlerTest extends TestCase
             'compatibility' => [
                 'continuous',
                 'categorical',
-                'resource',
+                'image',
                 'other',
             ],
             'probabilistic' => false,

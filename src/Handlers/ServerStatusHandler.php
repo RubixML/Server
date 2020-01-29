@@ -40,7 +40,7 @@ class ServerStatusHandler implements Handler
 
         $requests = [
             'count' => $n,
-            'requestsMin' => round($n / ($uptime / self::MINUTE), 2),
+            'per_minute' => round($n / ($uptime / self::MINUTE), 2),
         ];
         
         $memoryUsage = [

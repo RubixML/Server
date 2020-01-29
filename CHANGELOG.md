@@ -1,5 +1,6 @@
-- Unreleased
+- 0.0.2-beta
     - Changed name of Binary serializer to Igbinary
+    - Renamed server status requests per minute key
 
 - 0.0.1-beta
     - Added REST and RPC Servers

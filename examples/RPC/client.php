@@ -20,8 +20,8 @@ $dataset = new Unlabeled([
 ]);
 
 print_r($client->send(new Predict($dataset)));
-print_r($client->send(new PredictSample($dataset->row(0))));
+print_r($client->send(new PredictSample($dataset->sample(0))));
 print_r($client->send(new Proba($dataset)));
-print_r($client->send(new ProbaSample($dataset->row(0))));
+print_r($client->send(new ProbaSample($dataset->sample(0))));
 print_r($client->send(new QueryModel()));
 print_r($client->send(new ServerStatus()));
