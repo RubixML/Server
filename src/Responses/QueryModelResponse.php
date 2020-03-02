@@ -2,6 +2,8 @@
 
 namespace Rubix\Server\Responses;
 
+use Rubix\ML\EstimatorType;
+
 /**
  * Query Model Response
  *
@@ -17,14 +19,14 @@ class QueryModelResponse extends Response
     /**
      * The model type.
      *
-     * @var string
+     * @var \Rubix\ML\EstimatorType
      */
     protected $type;
 
     /**
      * The data types that the model is compatible with.
      *
-     * @var int[]
+     * @var \Rubix\ML\DataType[]
      */
     protected $compatibility;
 
@@ -36,7 +38,7 @@ class QueryModelResponse extends Response
     protected $probabilistic;
 
     /**
-     * Does the model score unknown samples?
+     * Is the model ranking?
      *
      * @var bool
      */
@@ -59,12 +61,12 @@ class QueryModelResponse extends Response
     }
 
     /**
-     * @param string $type
-     * @param mixed[] $compatibility
+     * @param \Rubix\ML\EstimatorType $type
+     * @param \Rubix\ML\DataType[] $compatibility
      * @param bool $probabilistic
      * @param bool $ranking
      */
-    public function __construct(string $type, array $compatibility, bool $probabilistic, bool $ranking)
+    public function __construct(EstimatorType $type, array $compatibility, bool $probabilistic, bool $ranking)
     {
         $this->type = $type;
         $this->compatibility = $compatibility;
@@ -75,9 +77,9 @@ class QueryModelResponse extends Response
     /**
      * Return the model type.
      *
-     * @return string
+     * @return \Rubix\ML\EstimatorType
      */
-    public function type() : string
+    public function type() : EstimatorType
     {
         return $this->type;
     }
@@ -85,7 +87,7 @@ class QueryModelResponse extends Response
     /**
      * Return the data types the model is compatible with.
      *
-     * @return int[]
+     * @return \Rubix\ML\DataType[]
      */
     public function compatibility() : array
     {

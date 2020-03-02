@@ -1,3 +1,6 @@
+- Unreleased
+    - RPC client now has exponential backoff mechanism
+
 - 0.0.2-beta
     - Changed name of Binary serializer to Igbinary
     - Renamed server status requests per minute key

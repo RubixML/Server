@@ -8,6 +8,8 @@ use Rubix\Server\Responses\Response;
 use InvalidArgumentException;
 use RuntimeException;
 
+use function get_class;
+
 /**
  * Command Bus
  *

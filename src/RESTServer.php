@@ -341,14 +341,14 @@ class RESTServer implements Server, Verbose
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
-     * @return Response
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function handle(Request $request) : Response
     {
-        $method = $request->getMethod();
-
         $uri = $request->getUri()->getPath();
+
+        $method = $request->getMethod();
 
         $route = $this->router->dispatch($method, $uri);
 

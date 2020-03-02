@@ -2,17 +2,14 @@
 
 namespace Rubix\Server\Tests\Responses;
 
+use Rubix\ML\DataType;
+use Rubix\ML\EstimatorType;
 use Rubix\Server\Responses\Response;
 use Rubix\Server\Responses\QueryModelResponse;
 use PHPUnit\Framework\TestCase;
 
 class QueryModelResponseTest extends TestCase
 {
-    protected const TYPE = 'Classifier';
-    protected const COMPATIBILITY = ['Categorical'];
-    protected const PROBABILISTIC = true;
-    protected const RANKING = false;
-    
     /**
      * @var \Rubix\Server\Responses\QueryModelResponse
      */
@@ -23,7 +20,12 @@ class QueryModelResponseTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->response = new QueryModelResponse(self::TYPE, self::COMPATIBILITY, self::PROBABILISTIC, self::RANKING);
+        $this->response = new QueryModelResponse(
+            EstimatorType::classifier(),
+            [DataType::categorical()],
+            true,
+            false
+        );
     }
 
     /**
@@ -44,9 +46,9 @@ class QueryModelResponseTest extends TestCase
 
         $this->assertIsArray($payload);
         
-        $this->assertEquals(self::TYPE, $payload['type']);
-        $this->assertEquals(self::COMPATIBILITY, $payload['compatibility']);
-        $this->assertEquals(self::PROBABILISTIC, $payload['probabilistic']);
-        $this->assertEquals(self::RANKING, $payload['ranking']);
+        $this->assertEquals(EstimatorType::classifier(), $payload['type']);
+        $this->assertEquals([DataType::categorical()], $payload['compatibility']);
+        $this->assertTrue($payload['probabilistic']);
+        $this->assertFalse($payload['ranking']);
     }
 }

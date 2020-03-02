@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Tests\Http\Controllers;
 
+use Rubix\ML\EstimatorType;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\Controller;
@@ -29,7 +30,7 @@ class QueryModelControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new QueryModelResponse('Classifier', [], true, false));
+            ->willReturn(new QueryModelResponse(EstimatorType::classifier(), [], true, false));
         
         $this->controller = new QueryModelController($commandBus);
     }

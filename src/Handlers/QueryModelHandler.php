@@ -33,13 +33,11 @@ class QueryModelHandler implements Handler
      */
     public function handle(QueryModel $command) : QueryModelResponse
     {
-        $type = Estimator::TYPE_STRINGS[$this->estimator->type()];
-
-        $compatibility = array_map('strval', $this->estimator->compatibility());
-
-        $probabilistic = $this->estimator instanceof Probabilistic;
-        $ranking = $this->estimator instanceof Ranking;
-
-        return new QueryModelResponse($type, $compatibility, $probabilistic, $ranking);
+        return new QueryModelResponse(
+            $this->estimator->type(),
+            $this->estimator->compatibility(),
+            $this->estimator instanceof Probabilistic,
+            $this->estimator instanceof Ranking
+        );
     }
 }

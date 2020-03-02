@@ -13,6 +13,8 @@ use InvalidArgumentException;
 use RuntimeException;
 use Exception;
 
+use function get_class;
+
 /**
  * RPC Client
  *
@@ -41,6 +43,8 @@ class RPCClient implements Client
         ],
     ];
 
+    public const MAX_DELAY = 5000000;
+
     /**
      * The Guzzle client.
      *
@@ -63,7 +67,7 @@ class RPCClient implements Client
     protected $retries;
 
     /**
-     * The number of microseconds to wait before retrying a request.
+     * The initial delay between request retries.
      *
      * @var int
      */
@@ -94,7 +98,7 @@ class RPCClient implements Client
         bool $secure = false,
         array $headers = [],
         ?Serializer $serializer = null,
-        float $timeout = 0.,
+        float $timeout = 0.0,
         int $retries = 2,
         float $delay = 0.3
     ) {
@@ -103,7 +107,7 @@ class RPCClient implements Client
                 . " a positive integer, $port given.");
         }
 
-        if ($timeout < 0.) {
+        if ($timeout < 0.0) {
             throw new InvalidArgumentException('Timeout cannot be less'
                 . " than 0, $timeout given.");
         }
@@ -113,7 +117,7 @@ class RPCClient implements Client
                 . " cannot be less than 0, $retries given.");
         }
 
-        if ($delay < 0.) {
+        if ($delay < 0.0) {
             throw new InvalidArgumentException('Retry delay cannot be'
                 . " less than 0, $delay given.");
         }
@@ -144,10 +148,10 @@ class RPCClient implements Client
     public function send(Command $command) : Response
     {
         $data = $this->serializer->serialize($command);
+        
+        $delay = $this->delay;
 
-        $tries = 1 + $this->retries;
-
-        while ($tries) {
+        for ($tries = 1 + $this->retries; $tries > 0; --$tries) {
             try {
                 $payload = $this->client->request('POST', '/', [
                     'body' => $data,
@@ -156,14 +160,10 @@ class RPCClient implements Client
 
                 break 1;
             } catch (Exception $e) {
-                if ((int) round($e->getCode(), -2) === 400) {
-                    throw $e;
-                }
+                usleep($delay);
 
-                --$tries;
-                
-                if ($tries) {
-                    usleep($this->delay);
+                if ($delay < self::MAX_DELAY) {
+                    $delay *= 2;
                 }
             }
         }
