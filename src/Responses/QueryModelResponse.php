@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Responses;
 
+use Rubix\ML\DataType;
 use Rubix\ML\EstimatorType;
 
 /**
@@ -52,10 +53,14 @@ class QueryModelResponse extends Response
      */
     public static function fromArray(array $data) : self
     {
-        $type = $data['type'] ?? 'unknown';
-        $compatibility = $data['compatibility'] ?? [];
-        $probabilistic = $data['probabilistic'] ?? false;
-        $ranking = $data['ranking'] ?? false;
+        $type = new EstimatorType($data['type']);
+        
+        $compatibility = array_map(function ($code) {
+            return new DataType($code);
+        }, $data['compatibility']);
+
+        $probabilistic = $data['probabilistic'];
+        $ranking = $data['ranking'];
 
         return new self($type, $compatibility, $probabilistic, $ranking);
     }
@@ -121,9 +126,13 @@ class QueryModelResponse extends Response
      */
     public function asArray() : array
     {
+        $compatibility = array_map(function ($type) {
+            return $type->code();
+        }, $this->compatibility);
+
         return [
-            'type' => $this->type,
-            'compatibility' => $this->compatibility,
+            'type' => $this->type->code(),
+            'compatibility' => $compatibility,
             'probabilistic' => $this->probabilistic,
             'ranking' => $this->ranking,
         ];

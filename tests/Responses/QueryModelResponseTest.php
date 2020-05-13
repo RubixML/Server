@@ -46,8 +46,8 @@ class QueryModelResponseTest extends TestCase
 
         $this->assertIsArray($payload);
         
-        $this->assertEquals(EstimatorType::classifier(), $payload['type']);
-        $this->assertEquals([DataType::categorical()], $payload['compatibility']);
+        $this->assertEquals(1, $payload['type']);
+        $this->assertEquals([2], $payload['compatibility']);
         $this->assertTrue($payload['probabilistic']);
         $this->assertFalse($payload['ranking']);
     }

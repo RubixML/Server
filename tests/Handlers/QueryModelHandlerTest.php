@@ -45,13 +45,8 @@ class QueryModelHandlerTest extends TestCase
         $response = $this->handler->handle(new QueryModel());
 
         $expected = [
-            'type' => 'classifier',
-            'compatibility' => [
-                'continuous',
-                'categorical',
-                'image',
-                'other',
-            ],
+            'type' => 1,
+            'compatibility' => [1, 2, 3, 0],
             'probabilistic' => false,
             'ranking' => false
         ];

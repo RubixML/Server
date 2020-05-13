@@ -1,5 +1,6 @@
 - Unreleased
     - RPC client now has exponential backoff mechanism
+    - Fixed JSON serialization of Estimator and Data types
 
 - 0.0.2-beta
     - Changed name of Binary serializer to Igbinary
