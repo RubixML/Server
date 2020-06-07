@@ -42,7 +42,7 @@ class PredictionsControllerTest extends TestCase
         $this->assertInstanceOf(PredictionsController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
-    
+
     /**
      * @test
      */

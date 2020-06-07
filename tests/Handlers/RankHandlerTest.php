@@ -21,11 +21,11 @@ class RankHandlerTest extends TestCase
         ['mean', 'furry', 'loner'],
         ['nice', 'rough', 'friendly'],
     ];
-    
+
     protected const EXPECTED_SCORES = [
         6, 4, 10,
     ];
-    
+
     /**
      * @var \Rubix\Server\Handlers\RankHandler
      */

@@ -48,7 +48,7 @@ class PredictResponseTest extends TestCase
         $expected = [
             'predictions' => self::EXPECTED_PREDICTIONS,
         ];
-        
+
         $payload = $this->response->asArray();
 
         $this->assertIsArray($payload);

@@ -28,6 +28,8 @@ use function get_class;
  */
 class RPCClient implements Client
 {
+    public const MAX_DELAY = 5000000;
+
     protected const SERIALIZER_HEADERS = [
         JSON::class => [
             'Content-Type' => 'application/json',
@@ -42,8 +44,6 @@ class RPCClient implements Client
             'Accept' => 'application/octet-stream',
         ],
     ];
-
-    public const MAX_DELAY = 5000000;
 
     /**
      * The Guzzle client.
@@ -148,7 +148,7 @@ class RPCClient implements Client
     public function send(Command $command) : Response
     {
         $data = $this->serializer->serialize($command);
-        
+
         $delay = $this->delay;
 
         for ($tries = 1 + $this->retries; $tries > 0; --$tries) {

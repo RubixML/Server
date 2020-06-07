@@ -42,7 +42,7 @@ class PredictSample extends Command
         if (empty($sample)) {
             throw new InvalidArgumentException('Sample cannot be empty.');
         }
-        
+
         $this->sample = $sample;
     }
 

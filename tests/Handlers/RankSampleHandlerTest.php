@@ -18,7 +18,7 @@ class RankSampleHandlerTest extends TestCase
     protected const SAMPLE = ['nice', 'rough', 'loner'];
 
     protected const EXPECTED_PREDICTION = 4.5;
-    
+
     /**
      * @var \Rubix\Server\Handlers\RankSampleHandler
      */

@@ -18,7 +18,7 @@ class PredictSampleHandlerTest extends TestCase
     protected const SAMPLE = ['nice', 'rough', 'loner'];
 
     protected const EXPECTED_PREDICTION = 'not monster';
-    
+
     /**
      * @var \Rubix\Server\Handlers\PredictSampleHandler
      */

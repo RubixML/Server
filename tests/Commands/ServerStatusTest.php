@@ -40,7 +40,7 @@ class ServerStatusTest extends TestCase
     public function asArray() : void
     {
         $expected = [];
-        
+
         $payload = $this->command->asArray();
 
         $this->assertIsArray($payload);

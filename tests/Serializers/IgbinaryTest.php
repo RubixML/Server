@@ -44,7 +44,7 @@ class IgbinaryTest extends TestCase
         $command = new QueryModel();
 
         $data = $this->serializer->serialize($command);
-        
+
         $this->assertIsString($data);
         $this->assertNotEmpty($data);
 

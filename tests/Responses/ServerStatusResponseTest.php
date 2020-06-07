@@ -52,7 +52,7 @@ class ServerStatusResponseTest extends TestCase
             'memory_usage' => self::MEMORY_USAGE,
             'uptime' => self::UPTIME,
         ];
-        
+
         $payload = $this->response->asArray();
 
         $this->assertIsArray($payload);

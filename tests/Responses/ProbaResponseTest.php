@@ -45,7 +45,7 @@ class ProbaResponseTest extends TestCase
         $expected = [
             'probabilities' => self::EXPECTED_PROBABILITIES,
         ];
-        
+
         $payload = $this->response->asArray();
 
         $this->assertIsArray($payload);

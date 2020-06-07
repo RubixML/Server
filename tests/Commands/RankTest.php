@@ -47,7 +47,7 @@ class RankTest extends TestCase
     {
         $this->assertInstanceOf(Dataset::class, $this->command->dataset());
     }
-    
+
     /**
      * @test
      */
@@ -58,7 +58,7 @@ class RankTest extends TestCase
                 ['mean', 'furry', 'friendly'],
             ],
         ];
-        
+
         $payload = $this->command->asArray();
 
         $this->assertIsArray($payload);

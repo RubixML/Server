@@ -42,7 +42,7 @@ class ServerStatusHandler implements Handler
             'count' => $n,
             'per_minute' => round($n / ($uptime / self::MINUTE), 2),
         ];
-        
+
         $memoryUsage = [
             'current' => round(memory_get_usage() / self::MEGABYTE, 1),
             'peak' => round(memory_get_peak_usage() / self::MEGABYTE, 1),

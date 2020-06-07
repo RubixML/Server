@@ -219,6 +219,34 @@ class RPCServer implements Server, Verbose
     }
 
     /**
+     * Handle an incoming request.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function handle(Request $request) : Response
+    {
+        $response = $this->controller->handle($request);
+
+        ++$this->requests;
+
+        if ($this->logger) {
+            $method = $request->getMethod();
+            $uri = $request->getUri()->getPath();
+
+            $status = (string) $response->getStatusCode();
+
+            $server = $request->getServerParams();
+
+            $ip = $server['HTTP_CLIENT_IP'] ?? $server['REMOTE_ADDR'] ?? 'unknown';
+
+            $this->logger->info("$status $method $uri from $ip");
+        }
+
+        return $response;
+    }
+
+    /**
      * Boot up the command bus.
      *
      * @param \Rubix\ML\Estimator $estimator
@@ -241,7 +269,7 @@ class RPCServer implements Server, Verbose
             $commands[Proba::class] = new ProbaHandler($estimator);
             $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
         }
-                
+
         if ($estimator instanceof Ranking) {
             $commands[Rank::class] = new RankHandler($estimator);
             $commands[RankSample::class] = new RankSampleHandler($estimator);
@@ -252,33 +280,5 @@ class RPCServer implements Server, Verbose
         }
 
         return new CommandBus($commands);
-    }
-
-    /**
-     * Handle an incoming request.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function handle(Request $request) : Response
-    {
-        $response = $this->controller->handle($request);
-
-        ++$this->requests;
-
-        if ($this->logger) {
-            $method = $request->getMethod();
-            $uri = $request->getUri()->getPath();
-
-            $status = (string) $response->getStatusCode();
-
-            $server = $request->getServerParams();
-
-            $ip = $server['HTTP_CLIENT_IP'] ?? $server['REMOTE_ADDR'] ?? 'unknown';
-            
-            $this->logger->info("$status $method $uri from $ip");
-        }
-
-        return $response;
     }
 }

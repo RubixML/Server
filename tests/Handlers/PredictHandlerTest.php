@@ -27,7 +27,7 @@ class PredictHandlerTest extends TestCase
         'not monster',
         'monster',
     ];
-    
+
     /**
      * @var \Rubix\Server\Handlers\PredictHandler
      */

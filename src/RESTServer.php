@@ -61,18 +61,27 @@ class RESTServer implements Server, Verbose
     use LoggerAware;
 
     public const MODEL_PREFIX = '/model';
+
     public const SERVER_PREFIX = '/server';
 
     public const PREDICT_ENDPOINT = '/predictions';
+
     public const PREDICT_SAMPLE_ENDPOINT = '/sample_prediction';
+
     public const PROBA_ENDPOINT = '/probabilities';
+
     public const PROBA_SAMPLE_ENDPOINT = '/sample_probabilities';
+
     public const RANK_ENDPOINT = '/scores';
+
     public const RANK_SAMPLE_ENDPOINT = '/sample_score';
+
     public const SERVER_STATUS_ENDPOINT = '/status';
 
     protected const NOT_FOUND = 404;
+
     protected const METHOD_NOT_ALLOWED = 405;
+
     protected const INTERNAL_SERVER_ERROR = 500;
 
     /**
@@ -234,111 +243,6 @@ class RESTServer implements Server, Verbose
     }
 
     /**
-     * Boot up and return the command bus.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @return \Rubix\Server\CommandBus
-     */
-    protected function bootCommandBus(Estimator $estimator) : CommandBus
-    {
-        $commands = [];
-
-        if ($estimator instanceof Estimator) {
-            $commands[QueryModel::class] = new QueryModelHandler($estimator);
-            $commands[Predict::class] = new PredictHandler($estimator);
-        }
-
-        if ($estimator instanceof Learner) {
-            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
-        }
-
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
-        }
-                
-        if ($estimator instanceof Ranking) {
-            $commands[Rank::class] = new RankHandler($estimator);
-            $commands[RankSample::class] = new RankSampleHandler($estimator);
-        }
-
-        if ($this instanceof Verbose) {
-            $commands[ServerStatus::class] = new ServerStatusHandler($this);
-        }
-
-        return new CommandBus($commands);
-    }
-
-    /**
-     * Boot up and return the router.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\CommandBus $bus
-     * @return \FastRoute\Dispatcher
-     */
-    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Dispatcher
-    {
-        $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
-
-        $collector->get(self::MODEL_PREFIX, new QueryModelController($bus));
-
-        $collector->addGroup(
-            self::MODEL_PREFIX,
-            function ($group) use ($estimator, $bus) {
-                $group->post(
-                    self::PREDICT_ENDPOINT,
-                    new PredictionsController($bus)
-                );
-
-                if ($estimator instanceof Learner) {
-                    $group->post(
-                        self::PREDICT_SAMPLE_ENDPOINT,
-                        new SamplePredictionController($bus)
-                    );
-                }
-                
-                if ($estimator instanceof Probabilistic) {
-                    $group->post(
-                        self::PROBA_ENDPOINT,
-                        new ProbabilitiesController($bus)
-                    );
-
-                    $group->post(
-                        self::PROBA_SAMPLE_ENDPOINT,
-                        new SampleProbabilitiesController($bus)
-                    );
-                }
-
-                if ($estimator instanceof Ranking) {
-                    $group->post(
-                        self::RANK_ENDPOINT,
-                        new ScoresController($bus)
-                    );
-
-                    $group->post(
-                        self::RANK_SAMPLE_ENDPOINT,
-                        new SampleScoreController($bus)
-                    );
-                }
-            }
-        );
-
-        $collector->addGroup(
-            self::SERVER_PREFIX,
-            function ($group) use ($bus) {
-                if ($this instanceof Verbose) {
-                    $group->get(
-                        self::SERVER_STATUS_ENDPOINT,
-                        new ServerStatusController($bus)
-                    );
-                }
-            }
-        );
-
-        return new GroupCountBasedDispatcher($collector->getData());
-    }
-
-    /**
      * Handle an incoming request.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
@@ -382,10 +286,115 @@ class RESTServer implements Server, Verbose
             $server = $request->getServerParams();
 
             $ip = $server['HTTP_CLIENT_IP'] ?? $server['REMOTE_ADDR'] ?? 'unknown';
-            
+
             $this->logger->info("$status $method $uri from $ip");
         }
 
         return $response;
+    }
+
+    /**
+     * Boot up and return the command bus.
+     *
+     * @param \Rubix\ML\Estimator $estimator
+     * @return \Rubix\Server\CommandBus
+     */
+    protected function bootCommandBus(Estimator $estimator) : CommandBus
+    {
+        $commands = [];
+
+        if ($estimator instanceof Estimator) {
+            $commands[QueryModel::class] = new QueryModelHandler($estimator);
+            $commands[Predict::class] = new PredictHandler($estimator);
+        }
+
+        if ($estimator instanceof Learner) {
+            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
+        }
+
+        if ($estimator instanceof Probabilistic) {
+            $commands[Proba::class] = new ProbaHandler($estimator);
+            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
+        }
+
+        if ($estimator instanceof Ranking) {
+            $commands[Rank::class] = new RankHandler($estimator);
+            $commands[RankSample::class] = new RankSampleHandler($estimator);
+        }
+
+        if ($this instanceof Verbose) {
+            $commands[ServerStatus::class] = new ServerStatusHandler($this);
+        }
+
+        return new CommandBus($commands);
+    }
+
+    /**
+     * Boot up and return the router.
+     *
+     * @param \Rubix\ML\Estimator $estimator
+     * @param \Rubix\Server\CommandBus $bus
+     * @return \FastRoute\Dispatcher
+     */
+    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Dispatcher
+    {
+        $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
+
+        $collector->get(self::MODEL_PREFIX, new QueryModelController($bus));
+
+        $collector->addGroup(
+            self::MODEL_PREFIX,
+            function ($group) use ($estimator, $bus) {
+                $group->post(
+                    self::PREDICT_ENDPOINT,
+                    new PredictionsController($bus)
+                );
+
+                if ($estimator instanceof Learner) {
+                    $group->post(
+                        self::PREDICT_SAMPLE_ENDPOINT,
+                        new SamplePredictionController($bus)
+                    );
+                }
+
+                if ($estimator instanceof Probabilistic) {
+                    $group->post(
+                        self::PROBA_ENDPOINT,
+                        new ProbabilitiesController($bus)
+                    );
+
+                    $group->post(
+                        self::PROBA_SAMPLE_ENDPOINT,
+                        new SampleProbabilitiesController($bus)
+                    );
+                }
+
+                if ($estimator instanceof Ranking) {
+                    $group->post(
+                        self::RANK_ENDPOINT,
+                        new ScoresController($bus)
+                    );
+
+                    $group->post(
+                        self::RANK_SAMPLE_ENDPOINT,
+                        new SampleScoreController($bus)
+                    );
+                }
+            }
+        );
+
+        $collector->addGroup(
+            self::SERVER_PREFIX,
+            function ($group) use ($bus) {
+                if ($this instanceof Verbose) {
+                    $group->get(
+                        self::SERVER_STATUS_ENDPOINT,
+                        new ServerStatusController($bus)
+                    );
+                }
+            }
+        );
+
+        return new GroupCountBasedDispatcher($collector->getData());
     }
 }

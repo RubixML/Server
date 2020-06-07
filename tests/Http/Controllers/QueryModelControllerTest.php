@@ -31,7 +31,7 @@ class QueryModelControllerTest extends TestCase
 
         $commandBus->method('dispatch')
             ->willReturn(new QueryModelResponse(EstimatorType::classifier(), [], true, false));
-        
+
         $this->controller = new QueryModelController($commandBus);
     }
 

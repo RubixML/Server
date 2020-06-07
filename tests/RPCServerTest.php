@@ -30,12 +30,6 @@ class RPCServerTest extends TestCase
         ], new Native());
     }
 
-    protected function assertPreConditions() : void
-    {
-        $this->assertEquals(0, $this->server->requests());
-        $this->assertEquals(0, $this->server->uptime());
-    }
-
     /**
      * @test
      */
@@ -44,5 +38,11 @@ class RPCServerTest extends TestCase
         $this->assertInstanceOf(RPCServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
         $this->assertInstanceOf(LoggerAwareInterface::class, $this->server);
+    }
+
+    protected function assertPreConditions() : void
+    {
+        $this->assertEquals(0, $this->server->requests());
+        $this->assertEquals(0, $this->server->uptime());
     }
 }

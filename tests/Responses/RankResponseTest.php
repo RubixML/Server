@@ -42,7 +42,7 @@ class RankResponseTest extends TestCase
         $expected = [
             'scores' => self::EXPECTED_SCORES,
         ];
-        
+
         $payload = $this->response->asArray();
 
         $this->assertIsArray($payload);

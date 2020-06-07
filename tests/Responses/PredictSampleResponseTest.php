@@ -40,7 +40,7 @@ class PredictSampleResponseTest extends TestCase
         $expected = [
             'prediction' => self::EXPECTED_PREDICTION,
         ];
-        
+
         $payload = $this->response->asArray();
 
         $this->assertIsArray($payload);

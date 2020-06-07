@@ -54,7 +54,7 @@ class QueryModelResponse extends Response
     public static function fromArray(array $data) : self
     {
         $type = new EstimatorType($data['type']);
-        
+
         $compatibility = array_map(function ($code) {
             return new DataType($code);
         }, $data['compatibility']);

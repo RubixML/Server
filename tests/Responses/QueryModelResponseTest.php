@@ -45,7 +45,7 @@ class QueryModelResponseTest extends TestCase
         $payload = $this->response->asArray();
 
         $this->assertIsArray($payload);
-        
+
         $this->assertEquals(1, $payload['type']);
         $this->assertEquals([2], $payload['compatibility']);
         $this->assertTrue($payload['probabilistic']);

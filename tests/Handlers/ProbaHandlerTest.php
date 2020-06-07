@@ -26,7 +26,7 @@ class ProbaHandlerTest extends TestCase
             'monster' => 0.2,
         ],
     ];
-    
+
     /**
      * @var \Rubix\Server\Handlers\ProbaHandler
      */

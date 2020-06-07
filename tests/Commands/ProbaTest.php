@@ -58,7 +58,7 @@ class ProbaTest extends TestCase
                 ['mean', 'furry', 'friendly'],
             ],
         ];
-        
+
         $payload = $this->command->asArray();
 
         $this->assertIsArray($payload);

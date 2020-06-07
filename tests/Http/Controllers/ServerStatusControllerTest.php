@@ -30,7 +30,7 @@ class ServerStatusControllerTest extends TestCase
 
         $commandBus->method('dispatch')
             ->willReturn(new ServerStatusResponse([], [], 2));
-        
+
         $this->controller = new ServerStatusController($commandBus);
     }
 

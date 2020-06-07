@@ -21,7 +21,7 @@ class ProbaSampleHandlerTest extends TestCase
         'not monster' => 0.8,
         'monster' => 0.2,
     ];
-    
+
     /**
      * @var \Rubix\Server\Handlers\ProbaSampleHandler
      */
