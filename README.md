@@ -1,5 +1,5 @@
-# Rubix ML Server
-A library to serve your [Rubix ML](https://github.com/RubixML/RubixML) models in production quickly and effortlessly.
+# Rubix Server
+Effortlessly serve your trained [Rubix ML](https://github.com/RubixML/RubixML) estimators in production.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -697,7 +697,6 @@ use Rubix\Server\Responses\ServerStatusResponse;
 $response = new ServerStatusResponse($requests, $memoryUsage, 16);
 ```
 
----
 ## Testing
 Rubix utilizes a combination of static analysis and unit tests for quality assurance and to reduce the number of bugs. Rubix provides three [Composer](https://getcomposer.org/) scripts that can be run from the root directory to automate the testing process.
 
@@ -716,6 +715,5 @@ To run the unit tests:
 $ composer test
 ```
 
----
 ## License
-[MIT](https://github.com/RubixML/Server/blob/master/LICENSE.md)
+The code is licensed [MIT](LICENSE.md) and the documentation is licensed [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).

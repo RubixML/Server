@@ -1,13 +1,15 @@
 {
     "name": "rubix/server",
     "type": "library",
-    "description": "A library to serve your Rubix ML models quickly and effortlessly.",
+    "description": "Effortlessly serve your trained Rubix ML estimators in production.",
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
+    "readme": "README.md",
     "keywords": [
-        "php", "machine-learning", "data-science", "model-serving", "server", "microservice",
-        "json-api", "api", "rest-api", "soa", "cloud", "infrastructure", "ai", "rubix-ml",
-        "distributed", "client", "rest", "messaging", "hive-mind", "rpc"
+        "api", "cloud", "distributed", "inference", "inference engine", "inference server",
+        "infrastructure", "json api", "machine learning", "microservice", "ml", "ml infrastructure",
+        "model server", "model deployment", "php", "php ml", "prediction", "rest api", "rest server",
+        "rpc client", "rpc server", "rubix ml", "rubixml", "server"
     ],
     "authors": [
         {
@@ -15,6 +17,10 @@
             "email": "me@andrewdalpino.com",
             "homepage": "https://andrewdalpino.com",
             "role": "Lead Engineer"
+        },
+        {
+            "name": "Contributors",
+            "homepage": "https://github.com/RubixML/Server/graphs/contributors"
         }
     ],
     "require": {
@@ -62,7 +68,7 @@
         "sort-packages": true
     },
     "support": {
-        "email": "contact@rubixml.com",
+        "email": "support@rubixml.com",
         "issues": "https://github.com/RubixML/Server/issues",
         "source": "https://github.com/RubixML/Server"
     },
