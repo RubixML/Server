@@ -6,7 +6,6 @@ use Rubix\Server\Server;
 use Rubix\Server\RPCServer;
 use Rubix\Server\Serializers\Native;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
-use Psr\Log\LoggerAwareInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,7 +36,6 @@ class RPCServerTest extends TestCase
     {
         $this->assertInstanceOf(RPCServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
-        $this->assertInstanceOf(LoggerAwareInterface::class, $this->server);
     }
 
     protected function assertPreConditions() : void

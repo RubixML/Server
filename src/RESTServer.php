@@ -56,7 +56,7 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RESTServer implements Server, Verbose
+class RESTServer implements Server
 {
     use LoggerAware;
 
@@ -320,9 +320,7 @@ class RESTServer implements Server, Verbose
             $commands[ScoreSample::class] = new ScoreSampleHandler($estimator);
         }
 
-        if ($this instanceof Verbose) {
-            $commands[ServerStatus::class] = new ServerStatusHandler($this);
-        }
+        $commands[ServerStatus::class] = new ServerStatusHandler($this);
 
         return new CommandBus($commands);
     }
@@ -384,12 +382,10 @@ class RESTServer implements Server, Verbose
         $collector->addGroup(
             self::SERVER_PREFIX,
             function ($group) use ($bus) {
-                if ($this instanceof Verbose) {
-                    $group->get(
-                        self::SERVER_STATUS_ENDPOINT,
-                        new ServerStatusController($bus)
-                    );
-                }
+                $group->get(
+                    self::SERVER_STATUS_ENDPOINT,
+                    new ServerStatusController($bus)
+                );
             }
         );
 

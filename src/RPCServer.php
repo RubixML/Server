@@ -46,7 +46,7 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RPCServer implements Server, Verbose
+class RPCServer implements Server
 {
     use LoggerAware;
 
@@ -275,9 +275,7 @@ class RPCServer implements Server, Verbose
             $commands[ScoreSample::class] = new ScoreSampleHandler($estimator);
         }
 
-        if ($this instanceof Verbose) {
-            $commands[ServerStatus::class] = new ServerStatusHandler($this);
-        }
+        $commands[ServerStatus::class] = new ServerStatusHandler($this);
 
         return new CommandBus($commands);
     }

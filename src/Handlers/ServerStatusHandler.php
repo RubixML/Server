@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Handlers;
 
-use Rubix\Server\Verbose;
+use Rubix\Server\Server;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\ServerStatusResponse;
 
@@ -15,14 +15,14 @@ class ServerStatusHandler implements Handler
     /**
      * The verbose server instance.
      *
-     * @var \Rubix\Server\Verbose
+     * @var \Rubix\Server\Server
      */
     protected $server;
 
     /**
-     * @param \Rubix\Server\Verbose $server
+     * @param \Rubix\Server\Server $server
      */
-    public function __construct(Verbose $server)
+    public function __construct(Server $server)
     {
         $this->server = $server;
     }
@@ -36,6 +36,7 @@ class ServerStatusHandler implements Handler
     public function handle(ServerStatus $command) : ServerStatusResponse
     {
         $uptime = $this->server->uptime() ?: 1;
+
         $n = $this->server->requests();
 
         $requests = [

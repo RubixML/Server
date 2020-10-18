@@ -5,7 +5,6 @@ namespace Rubix\Server\Tests;
 use Rubix\Server\Server;
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
-use Psr\Log\LoggerAwareInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,7 +35,6 @@ class RESTServerTest extends TestCase
     {
         $this->assertInstanceOf(RESTServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
-        $this->assertInstanceOf(LoggerAwareInterface::class, $this->server);
     }
 
     protected function assertPreConditions() : void
