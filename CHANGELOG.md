@@ -5,6 +5,7 @@
     - Rename Rank and RankSample to Score and ScoreSample
     - Move Verbose interface to Server
     - Abstracted Router and Command Bus instantiation
+    - Implemented Trusted Clients HTTP middleware
 
 - 0.0.2-beta
     - Changed name of Binary serializer to Igbinary

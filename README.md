@@ -25,6 +25,7 @@ $ composer require rubix/server
 	- [RPC Client](#rpc-client)
 - [Http Middleware](#http-middeware)
 	- [Shared Token Authenticator](#shared-token-authenticator)
+	- [Trusted Clients](#trusted-clients)
 - [Messages](#messages)
 	- [Commands](#commands)
 		- [Predict](#predict)
@@ -222,6 +223,25 @@ Authenticates incoming requests using a shared key that is kept secret between t
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator('secret');
+```
+
+### Trusted Clients
+A whitelist of trust clients - all other clients will be dropped.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | ips | ['127.0.0.1'] | array | An array of trusted client ip addresses. |
+
+**Example:**
+
+```php
+use Rubix\Server\Http\Middleware\TrustedClients;
+
+$middleware = new TrustedClients([
+	'127.0.0.1', '192.168.4.1', '45.63.67.15',
+]);
 ```
 
 ---

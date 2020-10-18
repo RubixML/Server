@@ -141,7 +141,6 @@ class RPCClient implements Client
      * Send a command to the server and return the results.
      *
      * @param \Rubix\Server\Commands\Command $command
-     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      * @return \Rubix\Server\Responses\Response
      */
@@ -150,6 +149,8 @@ class RPCClient implements Client
         $data = $this->serializer->serialize($command);
 
         $delay = $this->delay;
+
+        $lastException = null;
 
         for ($tries = 1 + $this->retries; $tries > 0; --$tries) {
             try {
@@ -165,12 +166,16 @@ class RPCClient implements Client
                 if ($delay < self::MAX_DELAY) {
                     $delay *= 2;
                 }
+
+                $lastException = $e;
             }
         }
 
         if (empty($payload)) {
-            throw new RuntimeException('There was a problem'
-                . ' communicating with the server.');
+            $message = $lastException ? $lastException->getMessage() : '';
+
+            throw new RuntimeException('There was a problem communicating'
+                . " with the server. $message");
         }
 
         $response = $this->serializer->unserialize($payload);
