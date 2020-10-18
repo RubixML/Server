@@ -3,18 +3,18 @@
 namespace Rubix\Server\Tests\Handlers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Rank;
-use Rubix\Server\Handlers\RankHandler;
+use Rubix\Server\Commands\Score;
+use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\Handler;
-use Rubix\Server\Responses\RankResponse;
+use Rubix\Server\Responses\ScoreResponse;
 use Rubix\ML\AnomalyDetectors\IsolationForest;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Handlers
- * @covers \Rubix\Server\Handlers\RankHandler
+ * @covers \Rubix\Server\Handlers\ScoreHandler
  */
-class RankHandlerTest extends TestCase
+class ScoreHandlerTest extends TestCase
 {
     protected const SAMPLES = [
         ['nice', 'rough', 'loner'],
@@ -27,7 +27,7 @@ class RankHandlerTest extends TestCase
     ];
 
     /**
-     * @var \Rubix\Server\Handlers\RankHandler
+     * @var \Rubix\Server\Handlers\ScoreHandler
      */
     protected $handler;
 
@@ -38,10 +38,10 @@ class RankHandlerTest extends TestCase
     {
         $estimator = $this->createMock(IsolationForest::class);
 
-        $estimator->method('rank')
+        $estimator->method('score')
             ->willReturn(self::EXPECTED_SCORES);
 
-        $this->handler = new RankHandler($estimator);
+        $this->handler = new ScoreHandler($estimator);
     }
 
     /**
@@ -49,7 +49,7 @@ class RankHandlerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RankHandler::class, $this->handler);
+        $this->assertInstanceOf(ScoreHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
@@ -58,9 +58,9 @@ class RankHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $response = $this->handler->handle(new Rank(new Unlabeled(self::SAMPLES)));
+        $response = $this->handler->handle(new Score(new Unlabeled(self::SAMPLES)));
 
-        $this->assertInstanceOf(RankResponse::class, $response);
+        $this->assertInstanceOf(ScoreResponse::class, $response);
         $this->assertEquals(self::EXPECTED_SCORES, $response->scores());
     }
 }

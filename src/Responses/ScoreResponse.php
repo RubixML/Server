@@ -3,15 +3,13 @@
 namespace Rubix\Server\Responses;
 
 /**
- * Rank Response
- *
- * Return the anaomaly scores from a Rank command.
+ * Score Response
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RankResponse extends Response
+class ScoreResponse extends Response
 {
     /**
      * The anomaly scores returned from the model.

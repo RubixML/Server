@@ -5,8 +5,8 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\SampleScoreController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\RankSampleResponse;
-use React\Http\Io\ServerRequest;
+use Rubix\Server\Responses\ScoreSampleResponse;
+use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +29,7 @@ class SampleScoreControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new RankSampleResponse(6.8));
+            ->willReturn(new ScoreSampleResponse(6.8));
 
         $this->controller = new SampleScoreController($commandBus);
     }
@@ -50,7 +50,7 @@ class SampleScoreControllerTest extends TestCase
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
             'sample' => ['The first step is to establish that something is possible, then probability will occur.'],
-        ]) ?: null);
+        ]) ?: '');
 
         $response = $this->controller->handle($request);
 

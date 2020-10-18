@@ -6,7 +6,7 @@ use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\ServerStatusResponse;
-use React\Http\Io\ServerRequest;
+use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 

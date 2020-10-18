@@ -9,7 +9,7 @@ use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\PredictResponse;
-use React\Http\Io\ServerRequest;
+use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 

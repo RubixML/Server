@@ -10,16 +10,16 @@ use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\ProbaSample;
-use Rubix\Server\Commands\Rank;
-use Rubix\Server\Commands\RankSample;
+use Rubix\Server\Commands\Score;
+use Rubix\Server\Commands\ScoreSample;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ProbaSampleHandler;
-use Rubix\Server\Handlers\RankHandler;
-use Rubix\Server\Handlers\RankSampleHandler;
+use Rubix\Server\Handlers\ScoreHandler;
+use Rubix\Server\Handlers\ScoreSampleHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Middleware\Middleware;
@@ -41,7 +41,7 @@ use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
-use React\Http\Response as ReactResponse;
+use React\Http\Message\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
@@ -227,9 +227,7 @@ class RESTServer implements Server, Verbose
         $stack = $this->middleware;
         $stack[] = [$this, 'handle'];
 
-        $server = new HTTPServer($stack);
-
-        $server->listen($socket);
+        $server = new HTTPServer($loop, $stack);
 
         $this->start = time();
         $this->requests = 0;
@@ -239,7 +237,7 @@ class RESTServer implements Server, Verbose
                 . " $this->host on port $this->port");
         }
 
-        $loop->run();
+        $server->listen($socket);
     }
 
     /**
@@ -318,8 +316,8 @@ class RESTServer implements Server, Verbose
         }
 
         if ($estimator instanceof Ranking) {
-            $commands[Rank::class] = new RankHandler($estimator);
-            $commands[RankSample::class] = new RankSampleHandler($estimator);
+            $commands[Score::class] = new ScoreHandler($estimator);
+            $commands[ScoreSample::class] = new ScoreSampleHandler($estimator);
         }
 
         if ($this instanceof Verbose) {

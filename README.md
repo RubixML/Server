@@ -32,8 +32,8 @@ $ composer require rubix/server
 		- [Proba](#proba)
 		- [Proba Sample](#proba-sample)
 		- [Query Model](#query-model)
-		- [Rank](#rank)
-		- [Rank Sample](#rank-sample)
+		- [Score](#score)
+		- [Score Sample](#score-sample)
 		- [Server Status](#server-status)
 	- [Responses](#responses)
         - [Error Response](#error-response)
@@ -42,8 +42,8 @@ $ composer require rubix/server
         - [Proba Response](#proba-response)
 		- [Proba Sample Response](#proba-sample-response)
         - [Query Model Response](#query-model-response)
-        - [Rank Response](#rank-response)
-		- [Rank Sample Response](#rank-sample-response)
+        - [Score Response](#score-response)
+		- [Score Sample Response](#score-sample-response)
         - [Server Status Response](#server-status-response)
 
 ---
@@ -363,8 +363,8 @@ use Rubix\Server\Commands\QueryModel;
 $command = new QueryModel();
 ```
 
-### Rank
-Rank the unknown samples in a dataset in terms of their anomaly score.
+### Score
+Score the unknown samples in a dataset in terms of their anomaly score.
 
 **Parameters:**
 
@@ -382,15 +382,15 @@ public dataset() : Dataset
 **Example:**
 
 ```php
-use Rubix\Server\Commands\Rank;
+use Rubix\Server\Commands\Score;
 use Rubix\ML\Datasets\Unlabeled;
 
 // Import samples
 
-$command = new Rank(new Unlabeled($samples));
+$command = new Score(new Unlabeled($samples));
 ```
 
-### Rank Sample
+### Score Sample
 Return the anomaly score of a single sample.
 
 **Parameters:**
@@ -409,11 +409,11 @@ public sample() : array
 **Example:**
 
 ```php
-use Rubix\Server\Commands\RankSample;
+use Rubix\Server\Commands\ScoreSample;
 
 // Import sample
 
-$command = new RankSample($sample);
+$command = new ScoreSample($sample);
 ```
 
 ### Server Status
@@ -609,8 +609,8 @@ use Rubix\ML\Other\Helpers\DataType;
 $response = new QueryModelResponse('classifier', [DataType::CONTINUOUS], true, false);
 ```
 
-### Rank Response
-Return the anaomaly scores from a Rank command.
+### Score Response
+Return the anaomaly scores from a Score command.
 
 **Parameters:**
 
@@ -628,14 +628,14 @@ public scores() : array
 **Example:**
 
 ```php
-use Rubix\Server\Responses\RankResponse;
+use Rubix\Server\Responses\ScoreResponse;
 
 // Obtain anomaly scores from model
 
 $response = new ProbaResponse($scores);
 ```
 
-### RankSample Response
+### ScoreSample Response
 This is the response returned from a rank sample command containing the score returned from the model.
 
 **Parameters:**
@@ -654,11 +654,11 @@ public score() : mixed
 **Example:**
 
 ```php
-use Rubix\Server\Responses\RankSampleResponse;
+use Rubix\Server\Responses\ScoreSampleResponse;
 
 // Obtain score from model
 
-$response = new RankSampleResponse($score);
+$response = new ScoreSampleResponse($score);
 ```
 
 ### Server Status Response

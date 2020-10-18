@@ -6,7 +6,7 @@ use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\ProbaSampleResponse;
-use React\Http\Io\ServerRequest;
+use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 
@@ -50,7 +50,7 @@ class SampleProbabilitiesControllerTest extends TestCase
     {
         $request = new ServerRequest('POST', '/example', [], json_encode([
             'sample' => ['The first step is to establish that something is possible, then probability will occur.'],
-        ]) ?: null);
+        ]) ?: '');
 
         $response = $this->controller->handle($request);
 

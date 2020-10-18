@@ -3,19 +3,19 @@
 namespace Rubix\Server\Tests\Commands;
 
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\RankSample;
+use Rubix\Server\Commands\ScoreSample;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Commands
- * @covers \Rubix\Server\Commands\RankSample
+ * @covers \Rubix\Server\Commands\ScoreSample
  */
-class RankSampleTest extends TestCase
+class ScoreSampleTest extends TestCase
 {
     protected const SAMPLE = ['nice', 'rough', 'loner'];
 
     /**
-     * @var \Rubix\Server\Commands\RankSample
+     * @var \Rubix\Server\Commands\ScoreSample
      */
     protected $command;
 
@@ -24,7 +24,7 @@ class RankSampleTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->command = new RankSample(self::SAMPLE);
+        $this->command = new ScoreSample(self::SAMPLE);
     }
 
     /**
@@ -32,7 +32,7 @@ class RankSampleTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RankSample::class, $this->command);
+        $this->assertInstanceOf(ScoreSample::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 

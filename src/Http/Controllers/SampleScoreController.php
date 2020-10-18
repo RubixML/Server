@@ -2,12 +2,12 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Commands\RankSample;
+use Rubix\Server\Commands\ScoreSample;
 use Rubix\Server\Exceptions\ValidationException;
 use Rubix\Server\Responses\ErrorResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Response as ReactResponse;
+use React\Http\Message\Response as ReactResponse;
 use Exception;
 
 class SampleScoreController extends RESTController
@@ -28,7 +28,7 @@ class SampleScoreController extends RESTController
                 throw new ValidationException('Sample property cannot be empty.');
             }
 
-            $response = $this->bus->dispatch(RankSample::fromArray($payload));
+            $response = $this->bus->dispatch(ScoreSample::fromArray($payload));
 
             $status = self::OK;
         } catch (Exception $e) {
@@ -37,6 +37,8 @@ class SampleScoreController extends RESTController
             $status = self::INTERNAL_SERVER_ERROR;
         }
 
-        return new ReactResponse($status, self::HEADERS, json_encode($response->asArray()));
+        $data = json_encode($response->asArray()) ?: '';
+
+        return new ReactResponse($status, self::HEADERS, $data);
     }
 }

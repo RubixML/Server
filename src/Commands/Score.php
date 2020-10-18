@@ -6,15 +6,13 @@ use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
 
 /**
- * Rank
- *
- * Rank the unknown samples in a dataset in terms of their anomaly score.
+ * Score
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class Rank extends Command
+class Score extends Command
 {
     /**
      * The dataset to predict.

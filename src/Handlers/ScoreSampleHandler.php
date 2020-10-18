@@ -3,10 +3,10 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Ranking;
-use Rubix\Server\Commands\RankSample;
-use Rubix\Server\Responses\RankSampleResponse;
+use Rubix\Server\Commands\ScoreSample;
+use Rubix\Server\Responses\ScoreSampleResponse;
 
-class RankSampleHandler implements Handler
+class ScoreSampleHandler implements Handler
 {
     /**
      * The model that is being served.
@@ -26,11 +26,11 @@ class RankSampleHandler implements Handler
     /**
      * Handle the command.
      *
-     * @param \Rubix\Server\Commands\RankSample $command
-     * @return \Rubix\Server\Responses\RankSampleResponse
+     * @param \Rubix\Server\Commands\ScoreSample $command
+     * @return \Rubix\Server\Responses\ScoreSampleResponse
      */
-    public function handle(RankSample $command) : RankSampleResponse
+    public function handle(ScoreSample $command) : ScoreSampleResponse
     {
-        return new RankSampleResponse($this->estimator->rankSample($command->sample()));
+        return new ScoreSampleResponse($this->estimator->scoreSample($command->sample()));
     }
 }

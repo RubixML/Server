@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Http\Middleware;
 
-use React\Http\Response as ReactResponse;
+use React\Http\Message\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;

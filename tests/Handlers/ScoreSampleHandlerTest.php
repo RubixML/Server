@@ -2,25 +2,25 @@
 
 namespace Rubix\Server\Tests\Handlers;
 
-use Rubix\Server\Commands\RankSample;
-use Rubix\Server\Handlers\RankSampleHandler;
+use Rubix\Server\Commands\ScoreSample;
+use Rubix\Server\Handlers\ScoreSampleHandler;
 use Rubix\Server\Handlers\Handler;
-use Rubix\Server\Responses\RankSampleResponse;
+use Rubix\Server\Responses\ScoreSampleResponse;
 use Rubix\ML\AnomalyDetectors\IsolationForest;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Handlers
- * @covers \Rubix\Server\Handlers\RankSamplesHandler
+ * @covers \Rubix\Server\Handlers\ScoreSamplesHandler
  */
-class RankSampleHandlerTest extends TestCase
+class ScoreSampleHandlerTest extends TestCase
 {
     protected const SAMPLE = ['nice', 'rough', 'loner'];
 
     protected const EXPECTED_PREDICTION = 4.5;
 
     /**
-     * @var \Rubix\Server\Handlers\RankSampleHandler
+     * @var \Rubix\Server\Handlers\ScoreSampleHandler
      */
     protected $handler;
 
@@ -31,10 +31,10 @@ class RankSampleHandlerTest extends TestCase
     {
         $estimator = $this->createMock(IsolationForest::class);
 
-        $estimator->method('rankSample')
+        $estimator->method('scoreSample')
             ->willReturn(self::EXPECTED_PREDICTION);
 
-        $this->handler = new RankSampleHandler($estimator);
+        $this->handler = new ScoreSampleHandler($estimator);
     }
 
     /**
@@ -42,7 +42,7 @@ class RankSampleHandlerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RankSampleHandler::class, $this->handler);
+        $this->assertInstanceOf(ScoreSampleHandler::class, $this->handler);
         $this->assertInstanceOf(Handler::class, $this->handler);
     }
 
@@ -51,9 +51,9 @@ class RankSampleHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $response = $this->handler->handle(new RankSample(self::SAMPLE));
+        $response = $this->handler->handle(new ScoreSample(self::SAMPLE));
 
-        $this->assertInstanceOf(RankSampleResponse::class, $response);
+        $this->assertInstanceOf(ScoreSampleResponse::class, $response);
         $this->assertEquals(self::EXPECTED_PREDICTION, $response->score());
     }
 }

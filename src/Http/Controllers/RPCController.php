@@ -12,7 +12,7 @@ use Rubix\Server\Responses\ErrorResponse;
 use Rubix\Server\Exceptions\ValidationException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Response as ReactResponse;
+use React\Http\Message\Response as ReactResponse;
 use Exception;
 
 class RPCController implements Controller

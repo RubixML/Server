@@ -5,15 +5,13 @@ namespace Rubix\Server\Commands;
 use InvalidArgumentException;
 
 /**
- * Rank Sample
- *
- * Rank a single sample and return the result.
+ * Score Sample
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RankSample extends Command
+class ScoreSample extends Command
 {
     /**
      * The sample to rank.

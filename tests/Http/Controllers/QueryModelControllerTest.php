@@ -7,7 +7,7 @@ use Rubix\Server\CommandBus;
 use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\QueryModelResponse;
-use React\Http\Io\ServerRequest;
+use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
 

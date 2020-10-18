@@ -1,6 +1,8 @@
-- Unreleased
+- 0.2.0-beta
+    - Update to Rubix ML 0.2.0
     - RPC client now has exponential backoff mechanism
     - Fixed JSON serialization of Estimator and Data types
+    - Rename Rank and RankSample to Score and ScoreSample
 
 - 0.0.2-beta
     - Changed name of Binary serializer to Igbinary

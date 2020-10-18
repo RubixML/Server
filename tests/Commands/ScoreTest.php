@@ -5,21 +5,21 @@ namespace Rubix\Server\Tests\Commands;
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\Rank;
+use Rubix\Server\Commands\Score;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Commands
- * @covers \Rubix\Server\Commands\Rank
+ * @covers \Rubix\Server\Commands\Score
  */
-class RankTest extends TestCase
+class ScoreTest extends TestCase
 {
     protected const SAMPLES = [
         ['mean', 'furry', 'friendly'],
     ];
 
     /**
-     * @var \Rubix\Server\Commands\Rank
+     * @var \Rubix\Server\Commands\Score
      */
     protected $command;
 
@@ -28,7 +28,7 @@ class RankTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->command = new Rank(new Unlabeled(self::SAMPLES));
+        $this->command = new Score(new Unlabeled(self::SAMPLES));
     }
 
     /**
@@ -36,7 +36,7 @@ class RankTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(Rank::class, $this->command);
+        $this->assertInstanceOf(Score::class, $this->command);
         $this->assertInstanceOf(Command::class, $this->command);
     }
 

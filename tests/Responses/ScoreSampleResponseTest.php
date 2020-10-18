@@ -3,15 +3,15 @@
 namespace Rubix\Server\Tests\Responses;
 
 use Rubix\Server\Responses\Response;
-use Rubix\Server\Responses\RankSampleResponse;
+use Rubix\Server\Responses\ScoreSampleResponse;
 use PHPUnit\Framework\TestCase;
 
-class RankSampleResponseTest extends TestCase
+class ScoreSampleResponseTest extends TestCase
 {
     protected const EXPECTED_SCORE = 4.5;
 
     /**
-     * @var \Rubix\Server\Responses\RankSampleResponse
+     * @var \Rubix\Server\Responses\ScoreSampleResponse
      */
     protected $response;
 
@@ -20,7 +20,7 @@ class RankSampleResponseTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->response = new RankSampleResponse(self::EXPECTED_SCORE);
+        $this->response = new ScoreSampleResponse(self::EXPECTED_SCORE);
     }
 
     /**
@@ -28,7 +28,7 @@ class RankSampleResponseTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RankSampleResponse::class, $this->response);
+        $this->assertInstanceOf(ScoreSampleResponse::class, $this->response);
         $this->assertInstanceOf(Response::class, $this->response);
     }
 

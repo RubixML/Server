@@ -3,10 +3,10 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Ranking;
-use Rubix\Server\Commands\Rank;
-use Rubix\Server\Responses\RankResponse;
+use Rubix\Server\Commands\Score;
+use Rubix\Server\Responses\ScoreResponse;
 
-class RankHandler implements Handler
+class ScoreHandler implements Handler
 {
     /**
      * The ranking model that is being served.
@@ -26,11 +26,11 @@ class RankHandler implements Handler
     /**
      * Handle the command.
      *
-     * @param \Rubix\Server\Commands\Rank $command
-     * @return \Rubix\Server\Responses\RankResponse
+     * @param \Rubix\Server\Commands\Score $command
+     * @return \Rubix\Server\Responses\ScoreResponse
      */
-    public function handle(Rank $command) : RankResponse
+    public function handle(Score $command) : ScoreResponse
     {
-        return new RankResponse($this->estimator->rank($command->dataset()));
+        return new ScoreResponse($this->estimator->score($command->dataset()));
     }
 }

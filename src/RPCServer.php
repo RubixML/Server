@@ -11,16 +11,16 @@ use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\ProbaSample;
-use Rubix\Server\Commands\Rank;
-use Rubix\Server\Commands\RankSample;
+use Rubix\Server\Commands\Score;
+use Rubix\Server\Commands\ScoreSample;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ProbaSampleHandler;
-use Rubix\Server\Handlers\RankHandler;
-use Rubix\Server\Handlers\RankSampleHandler;
+use Rubix\Server\Handlers\ScoreHandler;
+use Rubix\Server\Handlers\ScoreSampleHandler;
 use Rubix\Server\Handlers\QueryModelHandler;
 use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Http\Controllers\RPCController;
@@ -203,9 +203,7 @@ class RPCServer implements Server, Verbose
         $stack = $this->middleware;
         $stack[] = [$this, 'handle'];
 
-        $server = new HTTPServer($stack);
-
-        $server->listen($socket);
+        $server = new HTTPServer($loop, ...$stack);
 
         if ($this->logger) {
             $this->logger->info('HTTP RPC Server running at'
@@ -214,6 +212,8 @@ class RPCServer implements Server, Verbose
 
         $this->start = time();
         $this->requests = 0;
+
+        $server->listen($socket);
 
         $loop->run();
     }
@@ -271,8 +271,8 @@ class RPCServer implements Server, Verbose
         }
 
         if ($estimator instanceof Ranking) {
-            $commands[Rank::class] = new RankHandler($estimator);
-            $commands[RankSample::class] = new RankSampleHandler($estimator);
+            $commands[Score::class] = new ScoreHandler($estimator);
+            $commands[ScoreSample::class] = new ScoreSampleHandler($estimator);
         }
 
         if ($this instanceof Verbose) {
