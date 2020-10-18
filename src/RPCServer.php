@@ -3,26 +3,8 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Learner;
-use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
-use Rubix\ML\Probabilistic;
-use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\PredictSample;
-use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\ProbaSample;
-use Rubix\Server\Commands\Score;
-use Rubix\Server\Commands\ScoreSample;
-use Rubix\Server\Commands\QueryModel;
-use Rubix\Server\Commands\ServerStatus;
-use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Handlers\PredictSampleHandler;
-use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\ProbaSampleHandler;
-use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\ScoreSampleHandler;
-use Rubix\Server\Handlers\QueryModelHandler;
-use Rubix\Server\Handlers\ServerStatusHandler;
+use Rubix\Server\Providers\CommandBusProvider;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Serializers\JSON;
@@ -186,7 +168,7 @@ class RPCServer implements Server
             }
         }
 
-        $bus = $this->bootCommandBus($estimator);
+        $bus = CommandBusProvider::with($estimator, $this)->boot();
 
         $this->controller = new RPCController($bus, $this->serializer);
 
@@ -205,15 +187,15 @@ class RPCServer implements Server
 
         $server = new HTTPServer($loop, ...$stack);
 
-        if ($this->logger) {
-            $this->logger->info('HTTP RPC Server running at'
-                . " $this->host on port $this->port");
-        }
+        $server->listen($socket);
 
         $this->start = time();
         $this->requests = 0;
 
-        $server->listen($socket);
+        if ($this->logger) {
+            $this->logger->info('HTTP RPC Server running at'
+                . " $this->host on port $this->port");
+        }
 
         $loop->run();
     }
@@ -244,39 +226,5 @@ class RPCServer implements Server
         }
 
         return $response;
-    }
-
-    /**
-     * Boot up the command bus.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @return \Rubix\Server\CommandBus
-     */
-    protected function bootCommandBus(Estimator $estimator) : CommandBus
-    {
-        $commands = [];
-
-        if ($estimator instanceof Estimator) {
-            $commands[QueryModel::class] = new QueryModelHandler($estimator);
-            $commands[Predict::class] = new PredictHandler($estimator);
-        }
-
-        if ($estimator instanceof Learner) {
-            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
-        }
-
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
-        }
-
-        if ($estimator instanceof Ranking) {
-            $commands[Score::class] = new ScoreHandler($estimator);
-            $commands[ScoreSample::class] = new ScoreSampleHandler($estimator);
-        }
-
-        $commands[ServerStatus::class] = new ServerStatusHandler($this);
-
-        return new CommandBus($commands);
     }
 }

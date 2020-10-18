@@ -4,6 +4,7 @@
     - Fixed JSON serialization of Estimator and Data types
     - Rename Rank and RankSample to Score and ScoreSample
     - Move Verbose interface to Server
+    - Abstracted Router and Command Bus instantiation
 
 - 0.0.2-beta
     - Changed name of Binary serializer to Igbinary

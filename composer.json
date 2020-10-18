@@ -55,8 +55,8 @@
         "build": [
             "@composer install",
             "@analyze",
-            "@check",
-            "@test"
+            "@test",
+            "@check"
         ],
         "analyze": "phpstan analyse -c phpstan.neon",
         "check": "php-cs-fixer fix --config=.php_cs.dist -v --dry-run --using-cache=no",

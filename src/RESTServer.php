@@ -3,40 +3,11 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Learner;
-use Rubix\ML\Ranking;
 use Rubix\ML\Estimator;
-use Rubix\ML\Probabilistic;
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\PredictSample;
-use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\ProbaSample;
-use Rubix\Server\Commands\Score;
-use Rubix\Server\Commands\ScoreSample;
-use Rubix\Server\Commands\QueryModel;
-use Rubix\Server\Commands\ServerStatus;
-use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Handlers\PredictSampleHandler;
-use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\ProbaSampleHandler;
-use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\ScoreSampleHandler;
-use Rubix\Server\Handlers\QueryModelHandler;
-use Rubix\Server\Handlers\ServerStatusHandler;
+use Rubix\Server\Providers\CommandBusProvider;
+use Rubix\Server\Providers\RouterProvider;
 use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Controllers\PredictionsController;
-use Rubix\Server\Http\Controllers\SamplePredictionController;
-use Rubix\Server\Http\Controllers\ProbabilitiesController;
-use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
-use Rubix\Server\Http\Controllers\QueryModelController;
-use Rubix\Server\Http\Controllers\ScoresController;
-use Rubix\Server\Http\Controllers\SampleScoreController;
-use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Traits\LoggerAware;
-use FastRoute\RouteCollector;
-use FastRoute\RouteParser\Std;
-use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
-use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
-use FastRoute\Dispatcher;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
@@ -44,6 +15,7 @@ use React\EventLoop\Factory as Loop;
 use React\Http\Message\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use FastRoute\Dispatcher;
 use InvalidArgumentException;
 
 /**
@@ -59,24 +31,6 @@ use InvalidArgumentException;
 class RESTServer implements Server
 {
     use LoggerAware;
-
-    public const MODEL_PREFIX = '/model';
-
-    public const SERVER_PREFIX = '/server';
-
-    public const PREDICT_ENDPOINT = '/predictions';
-
-    public const PREDICT_SAMPLE_ENDPOINT = '/sample_prediction';
-
-    public const PROBA_ENDPOINT = '/probabilities';
-
-    public const PROBA_SAMPLE_ENDPOINT = '/sample_probabilities';
-
-    public const RANK_ENDPOINT = '/scores';
-
-    public const RANK_SAMPLE_ENDPOINT = '/sample_score';
-
-    public const SERVER_STATUS_ENDPOINT = '/status';
 
     protected const NOT_FOUND = 404;
 
@@ -210,9 +164,9 @@ class RESTServer implements Server
             }
         }
 
-        $bus = $this->bootCommandBus($estimator);
+        $bus = CommandBusProvider::with($estimator, $this)->boot();
 
-        $this->router = $this->bootRouter($estimator, $bus);
+        $this->router = RouterProvider::with($estimator, $bus)->boot();
 
         $loop = Loop::create();
 
@@ -229,6 +183,8 @@ class RESTServer implements Server
 
         $server = new HTTPServer($loop, $stack);
 
+        $server->listen($socket);
+
         $this->start = time();
         $this->requests = 0;
 
@@ -237,7 +193,7 @@ class RESTServer implements Server
                 . " $this->host on port $this->port");
         }
 
-        $server->listen($socket);
+        $loop->run();
     }
 
     /**
@@ -289,106 +245,5 @@ class RESTServer implements Server
         }
 
         return $response;
-    }
-
-    /**
-     * Boot up and return the command bus.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @return \Rubix\Server\CommandBus
-     */
-    protected function bootCommandBus(Estimator $estimator) : CommandBus
-    {
-        $commands = [];
-
-        if ($estimator instanceof Estimator) {
-            $commands[QueryModel::class] = new QueryModelHandler($estimator);
-            $commands[Predict::class] = new PredictHandler($estimator);
-        }
-
-        if ($estimator instanceof Learner) {
-            $commands[PredictSample::class] = new PredictSampleHandler($estimator);
-        }
-
-        if ($estimator instanceof Probabilistic) {
-            $commands[Proba::class] = new ProbaHandler($estimator);
-            $commands[ProbaSample::class] = new ProbaSampleHandler($estimator);
-        }
-
-        if ($estimator instanceof Ranking) {
-            $commands[Score::class] = new ScoreHandler($estimator);
-            $commands[ScoreSample::class] = new ScoreSampleHandler($estimator);
-        }
-
-        $commands[ServerStatus::class] = new ServerStatusHandler($this);
-
-        return new CommandBus($commands);
-    }
-
-    /**
-     * Boot up and return the router.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\CommandBus $bus
-     * @return \FastRoute\Dispatcher
-     */
-    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Dispatcher
-    {
-        $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
-
-        $collector->get(self::MODEL_PREFIX, new QueryModelController($bus));
-
-        $collector->addGroup(
-            self::MODEL_PREFIX,
-            function ($group) use ($estimator, $bus) {
-                $group->post(
-                    self::PREDICT_ENDPOINT,
-                    new PredictionsController($bus)
-                );
-
-                if ($estimator instanceof Learner) {
-                    $group->post(
-                        self::PREDICT_SAMPLE_ENDPOINT,
-                        new SamplePredictionController($bus)
-                    );
-                }
-
-                if ($estimator instanceof Probabilistic) {
-                    $group->post(
-                        self::PROBA_ENDPOINT,
-                        new ProbabilitiesController($bus)
-                    );
-
-                    $group->post(
-                        self::PROBA_SAMPLE_ENDPOINT,
-                        new SampleProbabilitiesController($bus)
-                    );
-                }
-
-                if ($estimator instanceof Ranking) {
-                    $group->post(
-                        self::RANK_ENDPOINT,
-                        new ScoresController($bus)
-                    );
-
-                    $group->post(
-                        self::RANK_SAMPLE_ENDPOINT,
-                        new SampleScoreController($bus)
-                    );
-                }
-            }
-        );
-
-        $collector->addGroup(
-            self::SERVER_PREFIX,
-            function ($group) use ($bus) {
-                $group->get(
-                    self::SERVER_STATUS_ENDPOINT,
-                    new ServerStatusController($bus)
-                );
-            }
-        );
-
-        return new GroupCountBasedDispatcher($collector->getData());
     }
 }
