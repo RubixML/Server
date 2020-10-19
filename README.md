@@ -1,5 +1,5 @@
 # Rubix Server
-Effortlessly serve your trained [Rubix ML](https://github.com/RubixML/RubixML) estimators in production.
+Put your [Rubix ML](https://github.com/RubixML/RubixML) models to work by serving them with one of our high-performance stand-alone model servers that can be run from the CLI. Model severs unleash your trained estimators on the world by wrapping them in an API such as REST or RPC that can be queried over a network in real-time. Need more inference throughput? Model servers scale linearly by adding more instances behind a load balancer. Since model servers implement their own networking stack, each instance is completely self-sufficient.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -23,7 +23,7 @@ $ composer require rubix/server
 	- [RPC Server](#rpc-server)
 - [Clients](#clients)
 	- [RPC Client](#rpc-client)
-- [Http Middleware](#http-middeware)
+- [HTTP Middleware](#http-middeware)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 	- [Trusted Clients](#trusted-clients)
 - [Messages](#messages)
@@ -49,13 +49,13 @@ $ composer require rubix/server
 
 ---
 ### Getting Started
-Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real-time (as opposed to offline) then you'll need to make it available to clients through a *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications.
+Once you've trained a learner in Rubix ML, the next step is to use it to make predictions. If the model is going to used to make predictions in real-time (as opposed to offline) then you'll need to make it available to clients through some type of *server*. Rubix ML model servers expose your estimators as standalone services (such as REST or RPC) that can be queried in a live production environment. The library also provides an object oriented client API for executing commands on the server from your applications over the wire.
 
 ---
 ### Servers
 Server objects are standalone server implementations built on top of [React PHP](https://reactphp.org/), an event-driven concurrency framework that makes it possible to serve thousands of requests at once.
 
-> **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case there is a failure.
+> **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case of a failure.
 
 To boot up a server, pass a trained estimator to the `serve()` method:
 ```php
