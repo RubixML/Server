@@ -8,7 +8,7 @@ use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Responses\QueryModelResponse;
 
-class QueryModelHandler implements Handler
+class QueryModelHandler
 {
     /**
      * The model being served.
@@ -31,7 +31,7 @@ class QueryModelHandler implements Handler
      * @param \Rubix\Server\Commands\QueryModel $command
      * @return \Rubix\Server\Responses\QueryModelResponse
      */
-    public function handle(QueryModel $command) : QueryModelResponse
+    public function __invoke(QueryModel $command) : QueryModelResponse
     {
         return new QueryModelResponse(
             $this->estimator->type(),

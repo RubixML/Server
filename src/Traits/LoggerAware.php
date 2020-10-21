@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 trait LoggerAware
 {
     /**
-     * The PSR-3 logger instance.
+     * A PSR-3 logger instance.
      *
      * @var \Psr\Log\LoggerInterface|null
      */

@@ -2,8 +2,27 @@
 
 namespace Rubix\Server;
 
+use Rubix\ML\Estimator;
+use Rubix\ML\Learner;
+use Rubix\ML\Probabilistic;
+use Rubix\ML\Ranking;
 use Rubix\Server\Commands\Command;
-use Rubix\Server\Handlers\Handler;
+use Rubix\Server\Commands\Predict;
+use Rubix\Server\Commands\PredictSample;
+use Rubix\Server\Commands\Proba;
+use Rubix\Server\Commands\ProbaSample;
+use Rubix\Server\Commands\Score;
+use Rubix\Server\Commands\ScoreSample;
+use Rubix\Server\Commands\QueryModel;
+use Rubix\Server\Commands\ServerStatus;
+use Rubix\Server\Handlers\PredictHandler;
+use Rubix\Server\Handlers\PredictSampleHandler;
+use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\ProbaSampleHandler;
+use Rubix\Server\Handlers\ScoreHandler;
+use Rubix\Server\Handlers\ScoreSampleHandler;
+use Rubix\Server\Handlers\QueryModelHandler;
+use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Responses\Response;
 use InvalidArgumentException;
 use RuntimeException;
@@ -27,12 +46,47 @@ class CommandBus
     /**
      * The mapping of commands to their handlers.
      *
-     * @var mixed[]
+     * @var callable[]
      */
     protected $mapping;
 
     /**
-     * @param mixed[] $mapping
+     * Boot the command bus.
+     *
+     * @param \Rubix\ML\Estimator $estimator
+     * @param \Rubix\Server\Server $server
+     * @return self
+     */
+    public static function boot(Estimator $estimator, Server $server) : self
+    {
+        $mapping = [];
+
+        if ($estimator instanceof Estimator) {
+            $mapping[QueryModel::class] = new QueryModelHandler($estimator);
+            $mapping[Predict::class] = new PredictHandler($estimator);
+        }
+
+        if ($estimator instanceof Learner) {
+            $mapping[PredictSample::class] = new PredictSampleHandler($estimator);
+        }
+
+        if ($estimator instanceof Probabilistic) {
+            $mapping[Proba::class] = new ProbaHandler($estimator);
+            $mapping[ProbaSample::class] = new ProbaSampleHandler($estimator);
+        }
+
+        if ($estimator instanceof Ranking) {
+            $mapping[Score::class] = new ScoreHandler($estimator);
+            $mapping[ScoreSample::class] = new ScoreSampleHandler($estimator);
+        }
+
+        $mapping[ServerStatus::class] = new ServerStatusHandler($server);
+
+        return new self($mapping);
+    }
+
+    /**
+     * @param callable[] $mapping
      * @throws \InvalidArgumentException
      */
     public function __construct(array $mapping)
@@ -42,9 +96,8 @@ class CommandBus
                 throw new InvalidArgumentException("$command does not exist.");
             }
 
-            if (!$handler instanceof Handler) {
-                throw new InvalidArgumentException('Command must map'
-                    . ' to a handler, ' . get_class($handler) . ' given.');
+            if (!is_callable($handler)) {
+                throw new InvalidArgumentException('Handler must be callable.');
             }
         }
 
@@ -60,13 +113,13 @@ class CommandBus
      */
     public function dispatch(Command $command) : Response
     {
-        $handler = $this->mapping[get_class($command)] ?? null;
+        $class = get_class($command);
 
-        if ($handler) {
-            return $handler->handle($command);
+        if (!isset($this->mapping[$class])) {
+            throw new RuntimeException('An appropriate handler'
+                . " could not be found for $class.");
         }
 
-        throw new RuntimeException('An appropriate handler could'
-            . ' not be found for ' . get_class($command) . '.');
+        return call_user_func($this->mapping[$class], $command);
     }
 }

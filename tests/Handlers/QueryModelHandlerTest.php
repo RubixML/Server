@@ -4,7 +4,6 @@ namespace Rubix\Server\Tests\Handlers;
 
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Handlers\QueryModelHandler;
-use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Responses\QueryModelResponse;
 use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
@@ -34,7 +33,7 @@ class QueryModelHandlerTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(QueryModelHandler::class, $this->handler);
-        $this->assertInstanceOf(Handler::class, $this->handler);
+        $this->assertIsCallable($this->handler);
     }
 
     /**
@@ -42,7 +41,9 @@ class QueryModelHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $response = $this->handler->handle(new QueryModel());
+        $command = new QueryModel();
+
+        $response = call_user_func($this->handler, $command);
 
         $expected = [
             'type' => 1,

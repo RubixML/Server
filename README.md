@@ -1,5 +1,5 @@
 # Rubix Server
-Put your [Rubix ML](https://github.com/RubixML/RubixML) models to work by serving them with one of our high-performance stand-alone model servers that can be run from the CLI. Model severs unleash your trained estimators on the world by wrapping them in an API such as REST or RPC that can be queried over a network in real-time. Need more inference throughput? Model servers scale linearly by adding more instances behind a load balancer. Since model servers implement their own networking stack, each instance is completely self-sufficient.
+Put your [Rubix ML](https://github.com/RubixML/RubixML) models to work by serving them with one of our high-performance stand-alone model servers that can be run from the PHP command line interface (CLI). Model severs unleash your trained estimators on the world by wrapping them in an API such as REST or RPC that can be queried over a network in real-time. Need more inference throughput? Model servers scale linearly by adding more instances behind a load balancer. Since model servers implement their own networking stack, each instance is completely self-sufficient.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -12,6 +12,7 @@ $ composer require rubix/server
 - [PHP](https://php.net/manual/en/install.php) 7.2 or above
 
 #### Optional
+- [Event extension](https://pecl.php.net/package/event) for high volume servers
 - [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
 
 ## Documentation

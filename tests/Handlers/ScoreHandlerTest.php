@@ -5,7 +5,6 @@ namespace Rubix\Server\Tests\Handlers;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Score;
 use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Responses\ScoreResponse;
 use Rubix\ML\AnomalyDetectors\IsolationForest;
 use PHPUnit\Framework\TestCase;
@@ -50,7 +49,7 @@ class ScoreHandlerTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(ScoreHandler::class, $this->handler);
-        $this->assertInstanceOf(Handler::class, $this->handler);
+        $this->assertIsCallable($this->handler);
     }
 
     /**
@@ -58,7 +57,9 @@ class ScoreHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $response = $this->handler->handle(new Score(new Unlabeled(self::SAMPLES)));
+        $command = new Score(new Unlabeled(self::SAMPLES));
+
+        $response = call_user_func($this->handler, $command);
 
         $this->assertInstanceOf(ScoreResponse::class, $response);
         $this->assertEquals(self::EXPECTED_SCORES, $response->scores());

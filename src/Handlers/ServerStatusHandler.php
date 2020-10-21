@@ -6,7 +6,7 @@ use Rubix\Server\Server;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Responses\ServerStatusResponse;
 
-class ServerStatusHandler implements Handler
+class ServerStatusHandler
 {
     protected const MINUTE = 60;
 
@@ -33,7 +33,7 @@ class ServerStatusHandler implements Handler
      * @param \Rubix\Server\Commands\ServerStatus $command
      * @return \Rubix\Server\Responses\ServerStatusResponse
      */
-    public function handle(ServerStatus $command) : ServerStatusResponse
+    public function __invoke(ServerStatus $command) : ServerStatusResponse
     {
         $uptime = $this->server->uptime() ?: 1;
 

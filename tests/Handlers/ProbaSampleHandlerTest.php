@@ -2,7 +2,6 @@
 
 namespace Rubix\Server\Tests\Handlers;
 
-use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Responses\ProbaSampleResponse;
@@ -46,7 +45,7 @@ class ProbaSampleHandlerTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(ProbaSampleHandler::class, $this->handler);
-        $this->assertInstanceOf(Handler::class, $this->handler);
+        $this->assertIsCallable($this->handler);
     }
 
     /**
@@ -54,7 +53,9 @@ class ProbaSampleHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $response = $this->handler->handle(new ProbaSample(self::SAMPLE));
+        $command = new ProbaSample(self::SAMPLE);
+
+        $response = call_user_func($this->handler, $command);
 
         $this->assertInstanceOf(ProbaSampleResponse::class, $response);
         $this->assertEquals(self::EXPECTED_PROBABILITIES, $response->probabilities());

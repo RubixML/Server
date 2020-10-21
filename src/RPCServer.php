@@ -4,7 +4,6 @@ namespace Rubix\Server;
 
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
-use Rubix\Server\Providers\CommandBusProvider;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Serializers\JSON;
@@ -59,7 +58,7 @@ class RPCServer implements Server
      *
      * @var \Rubix\Server\Http\Middleware\Middleware[]
      */
-    protected $middleware;
+    protected $middlewares;
 
     /**
      * The message serializer.
@@ -94,7 +93,7 @@ class RPCServer implements Server
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param mixed[] $middleware
+     * @param \Rubix\Server\Http\Middleware\Middleware[] $middlewares
      * @param \Rubix\Server\Serializers\Serializer $serializer
      * @throws \InvalidArgumentException
      */
@@ -102,7 +101,7 @@ class RPCServer implements Server
         string $host = '127.0.0.1',
         int $port = 8888,
         ?string $cert = null,
-        array $middleware = [],
+        array $middlewares = [],
         ?Serializer $serializer = null
     ) {
         if (empty($host)) {
@@ -119,17 +118,17 @@ class RPCServer implements Server
                 . ' empty.');
         }
 
-        foreach ($middleware as $mw) {
-            if (!$mw instanceof Middleware) {
+        foreach ($middlewares as $middleware) {
+            if (!$middleware instanceof Middleware) {
                 throw new InvalidArgumentException('Class must implement'
-                . ' middleware interface, ' . get_class($mw) . ' given.');
+                . ' the Middleware interface.');
             }
         }
 
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
-        $this->middleware = array_values($middleware);
+        $this->middlewares = array_values($middlewares);
         $this->serializer = $serializer ?? new JSON();
     }
 
@@ -168,7 +167,7 @@ class RPCServer implements Server
             }
         }
 
-        $bus = CommandBusProvider::with($estimator, $this)->boot();
+        $bus = CommandBus::boot($estimator, $this);
 
         $this->controller = new RPCController($bus, $this->serializer);
 
@@ -182,7 +181,7 @@ class RPCServer implements Server
             ]);
         }
 
-        $stack = $this->middleware;
+        $stack = $this->middlewares;
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);

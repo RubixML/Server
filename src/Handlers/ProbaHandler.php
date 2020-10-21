@@ -6,7 +6,7 @@ use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Responses\ProbaResponse;
 
-class ProbaHandler implements Handler
+class ProbaHandler
 {
     /**
      * The probabilistic model that is being served.
@@ -29,8 +29,10 @@ class ProbaHandler implements Handler
      * @param \Rubix\Server\Commands\Proba $command
      * @return \Rubix\Server\Responses\ProbaResponse
      */
-    public function handle(Proba $command) : ProbaResponse
+    public function __invoke(Proba $command) : ProbaResponse
     {
-        return new ProbaResponse($this->estimator->proba($command->dataset()));
+        $probabilities = $this->estimator->proba($command->dataset());
+
+        return new ProbaResponse($probabilities);
     }
 }

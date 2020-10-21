@@ -6,7 +6,7 @@ use Rubix\ML\Estimator;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Responses\PredictResponse;
 
-class PredictHandler implements Handler
+class PredictHandler
 {
     /**
      * The model that is being served.
@@ -29,8 +29,10 @@ class PredictHandler implements Handler
      * @param \Rubix\Server\Commands\Predict $command
      * @return \Rubix\Server\Responses\PredictResponse
      */
-    public function handle(Predict $command) : PredictResponse
+    public function __invoke(Predict $command) : PredictResponse
     {
-        return new PredictResponse($this->estimator->predict($command->dataset()));
+        $predictions = $this->estimator->predict($command->dataset());
+
+        return new PredictResponse($predictions);
     }
 }

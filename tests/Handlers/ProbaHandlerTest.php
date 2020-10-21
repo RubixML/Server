@@ -5,7 +5,6 @@ namespace Rubix\Server\Tests\Handlers;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Proba;
 use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Responses\ProbaResponse;
 use Rubix\ML\Classifiers\GaussianNB;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +50,7 @@ class ProbaHandlerTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(ProbaHandler::class, $this->handler);
-        $this->assertInstanceOf(Handler::class, $this->handler);
+        $this->assertIsCallable($this->handler);
     }
 
     /**
@@ -59,7 +58,9 @@ class ProbaHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $response = $this->handler->handle(new Proba(new Unlabeled(self::SAMPLES)));
+        $command = new Proba(new Unlabeled(self::SAMPLES));
+
+        $response = call_user_func($this->handler, $command);
 
         $this->assertInstanceOf(ProbaResponse::class, $response);
         $this->assertEquals(self::EXPECTED_PROBABILITIES, $response->probabilities());

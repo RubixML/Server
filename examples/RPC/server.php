@@ -18,7 +18,7 @@ $generator = new Agglomerate([
     'blue' => new Blob([0, 0, 255], 10.0),
 ]);
 
-$dataset = $generator->generate(1000);
+$dataset = $generator->generate(100);
 
 $estimator = new KNearestNeighbors(3);
 

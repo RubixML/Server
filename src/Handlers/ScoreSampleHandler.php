@@ -6,7 +6,7 @@ use Rubix\ML\Ranking;
 use Rubix\Server\Commands\ScoreSample;
 use Rubix\Server\Responses\ScoreSampleResponse;
 
-class ScoreSampleHandler implements Handler
+class ScoreSampleHandler
 {
     /**
      * The model that is being served.
@@ -29,8 +29,10 @@ class ScoreSampleHandler implements Handler
      * @param \Rubix\Server\Commands\ScoreSample $command
      * @return \Rubix\Server\Responses\ScoreSampleResponse
      */
-    public function handle(ScoreSample $command) : ScoreSampleResponse
+    public function __invoke(ScoreSample $command) : ScoreSampleResponse
     {
-        return new ScoreSampleResponse($this->estimator->scoreSample($command->sample()));
+        $score = $this->estimator->scoreSample($command->sample());
+
+        return new ScoreSampleResponse($score);
     }
 }

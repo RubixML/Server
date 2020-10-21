@@ -5,7 +5,6 @@ namespace Rubix\Server\Tests\Handlers;
 use Rubix\Server\RESTServer;
 use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\ServerStatusHandler;
-use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Responses\ServerStatusResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -42,7 +41,7 @@ class ServerStatusHandlerTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(ServerStatusHandler::class, $this->handler);
-        $this->assertInstanceOf(Handler::class, $this->handler);
+        $this->assertIsCallable($this->handler);
     }
 
     /**
@@ -52,7 +51,7 @@ class ServerStatusHandlerTest extends TestCase
     {
         $command = new ServerStatus();
 
-        $response = $this->handler->handle($command);
+        $response = call_user_func($this->handler, $command);
 
         $this->assertInstanceOf(ServerStatusResponse::class, $response);
     }
