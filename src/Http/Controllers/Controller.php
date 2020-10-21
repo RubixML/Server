@@ -2,10 +2,9 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Server\RequestHandlerInterface;
 
-interface Controller
+interface Controller extends RequestHandlerInterface
 {
     public const OK = 200;
 
@@ -14,13 +13,4 @@ interface Controller
     public const METHOD_NOT_ALLOWED = 405;
 
     public const INTERNAL_SERVER_ERROR = 500;
-
-    /**
-     * Handle the request.
-     *
-     * @param Request $request
-     * @param mixed[]|null $params
-     * @return Response
-     */
-    public function handle(Request $request, ?array $params = null) : Response;
 }

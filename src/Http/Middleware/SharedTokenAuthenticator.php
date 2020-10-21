@@ -20,7 +20,7 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class SharedTokenAuthenticator extends Middleware
+class SharedTokenAuthenticator implements Middleware
 {
     public const AUTH_HEADER = 'Authorization';
 
@@ -54,7 +54,7 @@ class SharedTokenAuthenticator extends Middleware
      * @param callable $next
      * @return Response
      */
-    public function handle(Request $request, callable $next) : Response
+    public function __invoke(Request $request, callable $next) : Response
     {
         $token = $request->getHeaderLine(self::AUTH_HEADER);
 

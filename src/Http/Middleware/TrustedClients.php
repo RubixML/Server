@@ -16,7 +16,7 @@ use InvalidArgumentException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class TrustedClients extends Middleware
+class TrustedClients implements Middleware
 {
     protected const UNAUTHORIZED = 401;
 
@@ -39,9 +39,9 @@ class TrustedClients extends Middleware
             throw new InvalidArgumentException('At least 1 trusted client is required.');
         }
 
-        foreach ($ips as $i => $ip) {
+        foreach ($ips as $ip) {
             if (filter_var($ip, FILTER_VALIDATE_IP, self::FLAGS) === false) {
-                throw new InvalidArgumentException("Invalid IP address at position $i.");
+                throw new InvalidArgumentException('Invalid IP address given.');
             }
         }
 
@@ -55,7 +55,7 @@ class TrustedClients extends Middleware
      * @param callable $next
      * @return Response
      */
-    public function handle(Request $request, callable $next) : Response
+    public function __invoke(Request $request, callable $next) : Response
     {
         $params = $request->getServerParams();
 

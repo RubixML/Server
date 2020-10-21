@@ -15,7 +15,7 @@ abstract class Message implements JSONSerializable
     abstract public static function fromArray(array $data);
 
     /**
-     * Return the message as an array.
+     * Return the message as an associative array.
      *
      * @return mixed[]
      */

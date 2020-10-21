@@ -1,3 +1,6 @@
+- 0.2.1-beta
+    - Support PSR-15 Server Request Handler interface
+
 - 0.2.0-beta
     - Update to Rubix ML 0.2.0
     - RPC client now has exponential backoff mechanism
