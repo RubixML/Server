@@ -25,6 +25,7 @@ $ composer require rubix/server
 - [Clients](#clients)
 	- [RPC Client](#rpc-client)
 - [HTTP Middleware](#http-middeware)
+	- [Basic Authenticator](#basic-authenticator)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 	- [Trusted Clients](#trusted-clients)
 - [Messages](#messages)
@@ -206,6 +207,28 @@ $client = new RPCClient('127.0.0.1', 8888, false, [
 ---
 ### HTTP Middleware
 HTTP middleware are objects that process incoming HTTP requests before they are handled by a controller.
+
+### Basic Authenticator
+An implementation of HTTP Basic Auth as described in RFC7617.
+
+> **Note**: This strategy is only secure over an encrypted channel such as HTTPS with SSL or TLS.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | passwords | | array | An associative map from usernames to their passwords. |
+
+**Example:**
+
+```php
+use Rubix\Server\Http\Middleware\BasicAuthenticator;
+
+$middleware = new BasicAuthenticator([
+	'morgan' => 'secret',
+	'taylor' => 'let me in',
+]);
+```
 
 ### Shared Token Authenticator
 Authenticates incoming requests using a shared key that is kept secret between the client and server. It uses the `Authorization` header field to hold the key string.

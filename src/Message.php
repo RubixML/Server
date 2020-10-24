@@ -4,6 +4,8 @@ namespace Rubix\Server;
 
 use JSONSerializable;
 
+use function get_class;
+
 abstract class Message implements JSONSerializable
 {
     /**
