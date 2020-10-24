@@ -8,6 +8,19 @@ use RuntimeException;
 class JSON implements Serializer
 {
     /**
+     * The HTTP headers to be send with each request or response in an associative array.
+     *
+     * @return string[]
+     */
+    public function headers() : array
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
+    }
+
+    /**
      * Serialize a message.
      *
      * @param \Rubix\Server\Message $message

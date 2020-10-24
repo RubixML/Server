@@ -11,8 +11,6 @@ use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\QueryModel;
 use Rubix\Server\Commands\ServerStatus;
 
-const SHARED_SECRET = '2e2c47bbda4e531c585d796c0c8a4ac9';
-
 $client = new RPCClient('127.0.0.1', 8888, false, [
     'Authorization' => 'Basic ' . base64_encode('test:secret'),
 ]);

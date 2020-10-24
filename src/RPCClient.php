@@ -5,22 +5,17 @@ namespace Rubix\Server;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Responses\Response;
 use Rubix\Server\Serializers\JSON;
-use Rubix\Server\Serializers\Igbinary;
-use Rubix\Server\Serializers\Native;
 use Rubix\Server\Serializers\Serializer;
 use GuzzleHttp\Client as Guzzle;
 use InvalidArgumentException;
 use RuntimeException;
 use Exception;
 
-use function get_class;
-
 /**
  * RPC Client
  *
- * The RPC Client is made to communicate with a RPC Server over HTTP or Secure
- * HTTP (HTTPS). In the event of a network failure, it uses a backoff and retry
- * mechanism as a failover strategy.
+ * The RPC Client is made to communicate with a RPC Server over HTTP or Secure HTTP (HTTPS). In
+ * the event of a network failure, it uses a backoff and retry mechanism as a failover strategy.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -29,21 +24,6 @@ use function get_class;
 class RPCClient implements Client
 {
     public const MAX_DELAY = 5000000;
-
-    protected const SERIALIZER_HEADERS = [
-        JSON::class => [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ],
-        Native::class => [
-            'Content-Type' => 'application/octet-stream',
-            'Accept' => 'application/octet-stream',
-        ],
-        Igbinary::class => [
-            'Content-Type' => 'application/octet-stream',
-            'Accept' => 'application/octet-stream',
-        ],
-    ];
 
     /**
      * The Guzzle client.
@@ -124,7 +104,7 @@ class RPCClient implements Client
 
         $serializer = $serializer ?? new JSON();
 
-        $headers = array_replace($headers, self::SERIALIZER_HEADERS[get_class($serializer)]);
+        $headers = array_replace($headers, $serializer->headers());
 
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",

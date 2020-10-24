@@ -9,6 +9,19 @@ use RuntimeException;
 class Native implements Serializer
 {
     /**
+     * The HTTP headers to be send with each request or response in an associative array.
+     *
+     * @return string[]
+     */
+    public function headers() : array
+    {
+        return [
+            'Content-Type' => 'application/octet-stream',
+            'Accept' => 'application/octet-stream',
+        ];
+    }
+
+    /**
      * Serialize a Message.
      *
      * @param \Rubix\Server\Message $message

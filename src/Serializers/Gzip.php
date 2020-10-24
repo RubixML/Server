@@ -6,6 +6,19 @@ use Rubix\Server\Message;
 use InvalidArgumentException;
 use RuntimeException;
 
+/**
+ * Gzip
+ *
+ * A compression format based on the DEFLATE algorithm with a header and checksum.
+ *
+ * References:
+ * [1] P. Deutsch. (1996). RFC 1951 - DEFLATE Compressed Data Format Specification
+ * version.
+ *
+ * @category    Machine Learning
+ * @package     Rubix/Server
+ * @author      Andrew DalPino
+ */
 class Gzip implements Serializer
 {
     /**
@@ -41,6 +54,19 @@ class Gzip implements Serializer
 
         $this->level = $level;
         $this->serializer = $serializer ?? new JSON();
+    }
+
+    /**
+     * The HTTP headers to be send with each request or response in an associative array.
+     *
+     * @return string[]
+     */
+    public function headers() : array
+    {
+        return $this->serializer->headers() + [
+            'Content-Encoding' => 'gzip',
+            'Accept-Encoding' => 'gzip',
+        ];
     }
 
     /**

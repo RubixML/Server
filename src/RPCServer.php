@@ -193,7 +193,7 @@ class RPCServer implements Server
 
         if ($this->logger) {
             $this->logger->info('HTTP RPC Server running at'
-                . " $this->host on port $this->port");
+                . " {$this->host} on port {$this->port}");
         }
 
         $loop->run();

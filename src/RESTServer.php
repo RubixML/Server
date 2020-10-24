@@ -220,7 +220,7 @@ class RESTServer implements Server
 
         if ($this->logger) {
             $this->logger->info('HTTP REST Server running at'
-                . " $this->host on port $this->port");
+                . " {$this->host} on port {$this->port}");
         }
 
         $loop->run();
