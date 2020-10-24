@@ -2,6 +2,7 @@
     - Support PSR-15 Server Request Handler interface
     - Implemented HTTP Basic Auth middleware
     - Added Gzip message serializer
+    - Shared Token Authenticator uses bearer scheme and multiple tokens
 
 - 0.2.0-beta
     - Update to Rubix ML 0.2.0

@@ -22,7 +22,9 @@ class SharedTokenAuthenticatorTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->middleware = new SharedTokenAuthenticator('secret');
+        $this->middleware = new SharedTokenAuthenticator([
+            'secret', 'another-key',
+        ]);
     }
 
     /**

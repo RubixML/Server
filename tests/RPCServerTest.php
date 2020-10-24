@@ -25,7 +25,7 @@ class RPCServerTest extends TestCase
     protected function setUp() : void
     {
         $this->server = new RPCServer('127.0.0.1', 8080, null, [
-            new SharedTokenAuthenticator('secret'),
+            new SharedTokenAuthenticator(['secret']),
         ], new Native());
     }
 

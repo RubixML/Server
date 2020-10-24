@@ -10,11 +10,11 @@ use InvalidArgumentException;
 /**
  * Shared Token Authenticator
  *
- * Authenticates incoming requests using a shared key that is kept
- * secret between the client and server.
+ * Authenticates incoming requests using a shared key that is kept secret between the
+ * client and server.
  *
- * > **Note**: This strategy is only secure over an encrypted channel
- * such as HTTPS with SSL or TLS.
+ * > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with
+ * Secure Socket Layer (SSL) or Transport Layer Security (TLS).
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -24,27 +24,37 @@ class SharedTokenAuthenticator implements Middleware
 {
     public const AUTH_HEADER = 'Authorization';
 
+    public const SCHEME = 'Bearer';
+
     protected const UNAUTHORIZED = 401;
 
     /**
-     * The shared secret key (token) required to authenticate every
-     * request.
+     * The shared secret keys (bearer tokens) used to authorize requests.
+     *
+     * @var null[]
+     */
+    protected $tokens;
+
+    /**
+     * The unique name given to the scope of permissions required for this server.
      *
      * @var string
      */
-    protected $token;
+    protected $realm;
 
     /**
-     * @param string $token
+     * @param string[] $tokens
+     * @param string $realm
      * @throws \InvalidArgumentException
      */
-    public function __construct(string $token)
+    public function __construct(array $tokens, string $realm = 'auth')
     {
-        if (empty($token)) {
-            throw new InvalidArgumentException('Token cannot be empty.');
+        if (empty($tokens)) {
+            throw new InvalidArgumentException('At least 1 token is required.');
         }
 
-        $this->token = $token;
+        $this->tokens = array_flip($tokens);
+        $this->realm = $realm;
     }
 
     /**
@@ -56,12 +66,18 @@ class SharedTokenAuthenticator implements Middleware
      */
     public function __invoke(Request $request, callable $next) : Response
     {
-        $token = $request->getHeaderLine(self::AUTH_HEADER);
+        $data = $request->getHeaderLine(self::AUTH_HEADER);
 
-        if ($token !== $this->token) {
-            return new ReactResponse(self::UNAUTHORIZED);
+        if (strpos($data, self::SCHEME) === 0) {
+            $token = trim(substr($data, strlen(self::SCHEME)));
+
+            if (isset($this->tokens[$token])) {
+                return $next($request);
+            }
         }
 
-        return $next($request);
+        return new ReactResponse(self::UNAUTHORIZED, [
+            'WWW-Authenticate' => "Bearer realm={$this->realm}",
+        ]);
     }
 }

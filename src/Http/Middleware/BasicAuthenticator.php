@@ -14,8 +14,8 @@ use function is_string;
  *
  * An implementation of HTTP Basic Auth as described in RFC7617.
  *
- * > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with SSL
- * or TLS.
+ * > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with
+ * Secure Socket Layer (SSL) or Transport Layer Security (TLS).
  *
  * References:
  * [1] J. Reschke. (2015). The 'Basic' HTTP Authentication Scheme.
@@ -30,7 +30,7 @@ class BasicAuthenticator implements Middleware
 
     public const SCHEME = 'Basic';
 
-    public const SEPARATOR = ':';
+    public const CREDENTIALS_SEPARATOR = ':';
 
     protected const UNAUTHORIZED = 401;
 
@@ -42,10 +42,18 @@ class BasicAuthenticator implements Middleware
     protected $passwords;
 
     /**
+     * The unique name given to the scope of permissions required for this server.
+     *
+     * @var string
+     */
+    protected $realm;
+
+    /**
      * @param string[] $passwords
+     * @param string $realm
      * @throws \InvalidArgumentException
      */
-    public function __construct(array $passwords)
+    public function __construct(array $passwords, string $realm = 'auth')
     {
         foreach ($passwords as $username => $password) {
             if (!is_string($username)) {
@@ -53,14 +61,15 @@ class BasicAuthenticator implements Middleware
                     . ' be a string, integer given.');
             }
 
-            if (str_contains($username, self::SEPARATOR)) {
+            if (str_contains($username, self::CREDENTIALS_SEPARATOR)) {
                 throw new InvalidArgumentException('Username must'
-                    . ' not contain the "' . self::SEPARATOR
+                    . ' not contain the "' . self::CREDENTIALS_SEPARATOR
                     . '" character.');
             }
         }
 
         $this->passwords = $passwords;
+        $this->realm = $realm;
     }
 
     /**
@@ -75,9 +84,9 @@ class BasicAuthenticator implements Middleware
         $data = $request->getHeaderLine(self::AUTH_HEADER);
 
         if (strpos($data, self::SCHEME) === 0) {
-            $token = base64_decode(trim(substr($data, strlen(self::SCHEME))));
+            $credentials = base64_decode(trim(substr($data, strlen(self::SCHEME))));
 
-            [$username, $password] = array_pad(explode(self::SEPARATOR, $token, 2), 2, '');
+            [$username, $password] = array_pad(explode(self::CREDENTIALS_SEPARATOR, $credentials, 2), 2, '');
 
             if (isset($this->passwords[$username])) {
                 if ($password === $this->passwords[$username]) {
@@ -87,7 +96,7 @@ class BasicAuthenticator implements Middleware
         }
 
         return new ReactResponse(self::UNAUTHORIZED, [
-            'WWW-Authenticate' => 'Basic realm=Auth',
+            'WWW-Authenticate' => "Basic realm={$this->realm}",
         ]);
     }
 }

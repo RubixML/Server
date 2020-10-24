@@ -24,7 +24,7 @@ class RESTServerTest extends TestCase
     protected function setUp() : void
     {
         $this->server = new RESTServer('127.0.0.1', 8888, null, [
-            new SharedTokenAuthenticator('secret'),
+            new SharedTokenAuthenticator(['secret']),
         ]);
     }
 

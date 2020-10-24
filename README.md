@@ -110,10 +110,13 @@ A standalone JSON over HTTP and secure HTTP server exposing a [REST](https://en.
 
 ```php
 use Rubix\Server\RESTServer;
-use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\Http\Middleware\BasicAuthenticator;
 
 $server = new RESTServer('127.0.0.1', 4443, '/cert.pem', [
-    new SharedTokenAuthenticator('secret'),
+    new BasicAuthenticator([
+		'morgan' => 'secret',
+		'taylor' => 'secret',
+	]),
 ]);
 ```
 
@@ -138,7 +141,9 @@ use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 use Rubix\Server\Serializers\JSON;
 
 $server = new RPCServer('127.0.0.1', 4443, '/cert.pem', [
-    new SharedTokenAuthenticator('secret'),
+    new SharedTokenAuthenticator([
+		'secret', 'another-key',
+	]),
 ], new JSON());
 ```
 
@@ -200,7 +205,7 @@ use Rubix\Server\RPCClient;
 use Rubix\Server\Serializers\JSON;
 
 $client = new RPCClient('127.0.0.1', 8888, false, [
-    'Authorization' => 'secret',
+    'Authorization' => 'Bearer secret',
 ], new JSON(), 2.5, 3, 0.5);
 ```
 
@@ -218,6 +223,7 @@ An implementation of HTTP Basic Auth as described in RFC7617.
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | passwords | | array | An associative map from usernames to their passwords. |
+| 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
 
 **Example:**
 
@@ -226,8 +232,8 @@ use Rubix\Server\Http\Middleware\BasicAuthenticator;
 
 $middleware = new BasicAuthenticator([
 	'morgan' => 'secret',
-	'taylor' => 'let me in',
-]);
+	'taylor' => 'secret',
+], 'machine learning');
 ```
 
 ### Shared Token Authenticator
@@ -239,14 +245,17 @@ Authenticates incoming requests using a shared key that is kept secret between t
 
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
-| 1 | token | | string | The shared secret key (token) required to authenticate every request. |
+| 1 | tokens | | array | The shared secret keys (bearer tokens) used to authorize requests. |
+| 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
 
 **Example:**
 
 ```php
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 
-$middleware = new SharedTokenAuthenticator('secret');
+$middleware = new SharedTokenAuthenticator([
+	'secret', 'another-key',
+], 'auth');
 ```
 
 ### Trusted Clients

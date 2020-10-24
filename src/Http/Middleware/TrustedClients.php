@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
 
+use function in_array;
+
 /**
  * Trusted Clients
  *
@@ -60,7 +62,7 @@ class TrustedClients implements Middleware
         $params = $request->getServerParams();
 
         if (isset($params['REMOTE_ADDR'])) {
-            $ip = (string) explode(':', $params['REMOTE_ADDR'])[0];
+            $ip = (string) explode(':', $params['REMOTE_ADDR'], 2)[0];
 
             if (in_array($ip, $this->ips)) {
                 return $next($request);
