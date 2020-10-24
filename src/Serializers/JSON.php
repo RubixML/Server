@@ -23,16 +23,18 @@ class JSON implements Serializer
      *
      * @param string $data
      * @throws \RuntimeException
-     * @return \Rubix\Server\Message;
+     * @return \Rubix\Server\Message
      */
     public function unserialize(string $data) : Message
     {
         $json = json_decode($data, true);
 
-        $class = $json['name'] ?? null;
+        if (isset($json['name']) and isset($json['data'])) {
+            $class = $json['name'];
 
-        if ($class and class_exists($class)) {
-            return $class::fromArray($json['data'] ?? []);
+            if (class_exists($class)) {
+                return $class::fromArray($json['data']);
+            }
         }
 
         throw new RuntimeException('Message could not be reconstituted.');

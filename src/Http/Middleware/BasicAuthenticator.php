@@ -28,7 +28,7 @@ class BasicAuthenticator implements Middleware
 {
     public const AUTH_HEADER = 'Authorization';
 
-    public const PROTOCOL_ID = 'Basic';
+    public const SCHEME = 'Basic';
 
     public const SEPARATOR = ':';
 
@@ -68,8 +68,8 @@ class BasicAuthenticator implements Middleware
     {
         $data = $request->getHeaderLine(self::AUTH_HEADER);
 
-        if (strpos($data, self::PROTOCOL_ID) === 0) {
-            $token = base64_decode(trim(substr($data, strlen(self::PROTOCOL_ID))));
+        if (strpos($data, self::SCHEME) === 0) {
+            $token = base64_decode(trim(substr($data, strlen(self::SCHEME))));
 
             [$username, $password] = array_pad(explode(self::SEPARATOR, $token, 2), 2, '');
 

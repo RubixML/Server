@@ -43,7 +43,7 @@ class Igbinary implements Serializer
      * Unserialize a Message.
      *
      * @param string $data
-     * @return \Rubix\Server\Message;
+     * @return \Rubix\Server\Message
      */
     public function unserialize(string $data) : Message
     {

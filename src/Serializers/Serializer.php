@@ -18,7 +18,7 @@ interface Serializer
      * Unserialize a message.
      *
      * @param string $data
-     * @return \Rubix\Server\Message;
+     * @return \Rubix\Server\Message
      */
     public function unserialize(string $data) : Message;
 }
