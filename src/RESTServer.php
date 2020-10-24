@@ -265,7 +265,7 @@ class RESTServer implements Server
         }
 
         if ($this->logger) {
-            $status = (string) $response->getStatusCode();
+            $status = $response->getStatusCode();
 
             $server = $request->getServerParams();
 
@@ -288,7 +288,10 @@ class RESTServer implements Server
     {
         $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
 
-        $collector->get(self::MODEL_PREFIX, new QueryModelController($bus));
+        $collector->get(
+            self::MODEL_PREFIX,
+            new QueryModelController($bus)
+        );
 
         $collector->addGroup(self::MODEL_PREFIX, function ($group) use ($estimator, $bus) {
             $group->post(

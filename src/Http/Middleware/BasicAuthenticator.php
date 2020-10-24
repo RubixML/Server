@@ -52,6 +52,12 @@ class BasicAuthenticator implements Middleware
                 throw new InvalidArgumentException('Username must'
                     . ' be a string, integer given.');
             }
+
+            if (str_contains($username, self::SEPARATOR)) {
+                throw new InvalidArgumentException('Username must'
+                    . ' not contain the "' . self::SEPARATOR
+                    . '" character.');
+            }
         }
 
         $this->passwords = $passwords;
@@ -80,6 +86,8 @@ class BasicAuthenticator implements Middleware
             }
         }
 
-        return new ReactResponse(self::UNAUTHORIZED);
+        return new ReactResponse(self::UNAUTHORIZED, [
+            'WWW-Authenticate' => 'Basic realm=Auth',
+        ]);
     }
 }
