@@ -29,6 +29,6 @@ $server = new RPCServer('127.0.0.1', 8888, null, [
     ]),
 ]);
 
-$server->setLogger(new Screen('server'));
+$server->setLogger(new Screen());
 
 $server->serve($estimator);

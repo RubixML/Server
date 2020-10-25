@@ -25,6 +25,6 @@ $server = new RESTServer('127.0.0.1', 8080, null, [
     new ResponseTime(),
 ]);
 
-$server->setLogger(new Screen('server'));
+$server->setLogger(new Screen());
 
 $server->serve($estimator);

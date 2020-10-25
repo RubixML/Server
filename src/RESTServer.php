@@ -260,9 +260,19 @@ class RESTServer implements Server
 
             $server = $request->getServerParams();
 
-            $ip = $server['HTTP_CLIENT_IP'] ?? $server['REMOTE_ADDR'] ?? 'unknown';
+            $ip = $server['REMOTE_ADDR'] ?? '-';
 
-            $this->logger->info("$status $method $uri from $ip");
+            $version = 'HTTP/' . $request->getProtocolVersion();
+
+            $size = strlen($response->getBody());
+
+            $headers = $request->getHeaders();
+
+            $agent = $headers['User-Agent'][0] ?? '-';
+
+            $info = "$ip '$method $uri $version' $status $size $agent";
+
+            $this->logger->info($info);
         }
 
         ++$this->requests;

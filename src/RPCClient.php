@@ -23,6 +23,10 @@ use Exception;
  */
 class RPCClient implements Client
 {
+    public const HTTP_HEADERS = [
+        'User-Agent' => 'Rubix RPC Client/0.2.X',
+    ];
+
     public const MAX_DELAY = 5000000;
 
     /**
@@ -104,7 +108,7 @@ class RPCClient implements Client
 
         $serializer = $serializer ?? new JSON();
 
-        $headers = array_replace($headers, $serializer->headers());
+        $headers += self::HTTP_HEADERS + $serializer->headers();
 
         $this->client = new Guzzle([
             'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",

@@ -28,6 +28,7 @@ use InvalidArgumentException;
 use RuntimeException;
 
 use function get_class;
+use function call_user_func;
 
 /**
  * Command Bus
