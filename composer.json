@@ -49,7 +49,10 @@
     "autoload": {
         "psr-4": {
             "Rubix\\Server\\": "src/"
-        }
+        },
+        "files": [
+            "src/constants.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

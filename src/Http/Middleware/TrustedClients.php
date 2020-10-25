@@ -7,10 +7,12 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
 
+use const Rubix\Server\Http\UNAUTHORIZED;
+
 /**
  * Trusted Clients
  *
- * A whitelist of trust clients - all other clients will be dropped.
+ * A whitelist of trusted clients - all other clients will be dropped.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -18,8 +20,6 @@ use InvalidArgumentException;
  */
 class TrustedClients implements Middleware
 {
-    protected const UNAUTHORIZED = 401;
-
     protected const FLAGS = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
 
     /**
@@ -67,6 +67,6 @@ class TrustedClients implements Middleware
             }
         }
 
-        return new ReactResponse(self::UNAUTHORIZED);
+        return new ReactResponse(UNAUTHORIZED);
     }
 }

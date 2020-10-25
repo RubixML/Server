@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Commands;
 
-use InvalidArgumentException;
+use Rubix\Server\Exceptions\ValidationException;
 
 /**
  * Predict Sample
@@ -26,21 +26,26 @@ class PredictSample extends Command
      * Build the command from an associative array of data.
      *
      * @param mixed[] $data
+     * @throws \Rubix\Server\Exceptions\ValidationException
      * @return self
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['sample'] ?? []);
+        if (!isset($data['sample'])) {
+            throw new ValidationException('Sample property must be present.');
+        }
+
+        return new self($data['sample']);
     }
 
     /**
      * @param mixed[] $sample
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\ValidationException
      */
     public function __construct(array $sample)
     {
         if (empty($sample)) {
-            throw new InvalidArgumentException('Sample cannot be empty.');
+            throw new ValidationException('Sample must not be empty.');
         }
 
         $this->sample = $sample;

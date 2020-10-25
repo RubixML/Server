@@ -60,28 +60,36 @@ class CommandBus
      */
     public static function boot(Estimator $estimator, Server $server) : self
     {
-        $mapping = [];
+        $mapping = [
+            ServerStatus::class => new ServerStatusHandler($server),
+        ];
 
         if ($estimator instanceof Estimator) {
-            $mapping[QueryModel::class] = new QueryModelHandler($estimator);
-            $mapping[Predict::class] = new PredictHandler($estimator);
+            $mapping += [
+                QueryModel::class => new QueryModelHandler($estimator),
+                Predict::class => new PredictHandler($estimator),
+            ];
         }
 
         if ($estimator instanceof Learner) {
-            $mapping[PredictSample::class] = new PredictSampleHandler($estimator);
+            $mapping += [
+                PredictSample::class => new PredictSampleHandler($estimator),
+            ];
         }
 
         if ($estimator instanceof Probabilistic) {
-            $mapping[Proba::class] = new ProbaHandler($estimator);
-            $mapping[ProbaSample::class] = new ProbaSampleHandler($estimator);
+            $mapping += [
+                Proba::class => new ProbaHandler($estimator),
+                ProbaSample::class => new ProbaSampleHandler($estimator),
+            ];
         }
 
         if ($estimator instanceof Ranking) {
-            $mapping[Score::class] = new ScoreHandler($estimator);
-            $mapping[ScoreSample::class] = new ScoreSampleHandler($estimator);
+            $mapping += [
+                Score::class => new ScoreHandler($estimator),
+                ScoreSample::class => new ScoreSampleHandler($estimator),
+            ];
         }
-
-        $mapping[ServerStatus::class] = new ServerStatusHandler($server);
 
         return new self($mapping);
     }

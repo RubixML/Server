@@ -4,6 +4,7 @@ namespace Rubix\Server\Commands;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Exceptions\ValidationException;
 
 /**
  * Predict
@@ -28,15 +29,20 @@ class Predict extends Command
      * Build the command from an associative array of data.
      *
      * @param mixed[] $data
+     * @throws \Rubix\Server\Exceptions\ValidationException
      * @return self
      */
     public static function fromArray(array $data) : self
     {
-        return new self(new Unlabeled($data['samples'] ?? []));
+        if (!isset($data['samples'])) {
+            throw new ValidationException('Samples property must be present.');
+        }
+
+        return new self(new Unlabeled($data['samples']));
     }
 
     /**
-     * @param \Rubix\ML\Datasets\Dataset<array> $dataset
+     * @param \Rubix\ML\Datasets\Dataset<array[]> $dataset
      */
     public function __construct(Dataset $dataset)
     {
@@ -46,7 +52,7 @@ class Predict extends Command
     /**
      * Return the dataset to predict.
      *
-     * @return \Rubix\ML\Datasets\Dataset<array>
+     * @return \Rubix\ML\Datasets\Dataset<array[]>
      */
     public function dataset() : Dataset
     {

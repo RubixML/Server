@@ -9,6 +9,8 @@ use InvalidArgumentException;
 
 use function is_string;
 
+use const Rubix\Server\Http\UNAUTHORIZED;
+
 /**
  * Basic Authenticator
  *
@@ -31,8 +33,6 @@ class BasicAuthenticator implements Middleware
     public const SCHEME = 'Basic';
 
     public const CREDENTIALS_SEPARATOR = ':';
-
-    protected const UNAUTHORIZED = 401;
 
     /**
      * An associative map from usernames to their passwords.
@@ -95,7 +95,7 @@ class BasicAuthenticator implements Middleware
             }
         }
 
-        return new ReactResponse(self::UNAUTHORIZED, [
+        return new ReactResponse(UNAUTHORIZED, [
             'WWW-Authenticate' => "Basic realm={$this->realm}",
         ]);
     }

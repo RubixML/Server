@@ -4,6 +4,7 @@ namespace Rubix\Server\Commands;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Exceptions\ValidationException;
 
 /**
  * Proba
@@ -27,11 +28,16 @@ class Proba extends Command
      * Build the command from an associative array of data.
      *
      * @param mixed[] $data
+     * @throws \Rubix\Server\Exceptions\ValidationException
      * @return self
      */
     public static function fromArray(array $data) : self
     {
-        return new self(new Unlabeled($data['samples'] ?? []));
+        if (!isset($data['samples'])) {
+            throw new ValidationException('Samples property must be present.');
+        }
+
+        return new self(new Unlabeled($data['samples']));
     }
 
     /**

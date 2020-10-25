@@ -16,6 +16,7 @@ use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoreController;
 use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Traits\LoggerAware;
+use Psr\Log\LogLevel;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Server as HTTPServer;
@@ -30,6 +31,10 @@ use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use FastRoute\Dispatcher;
 use InvalidArgumentException;
 
+use const Rubix\Server\Http\NOT_FOUND;
+use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
+use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
+
 /**
  * HTTP Server
  *
@@ -43,6 +48,8 @@ use InvalidArgumentException;
 class RESTServer implements Server
 {
     use LoggerAware;
+
+    public const SERVER_NAME = 'Rubix REST Server';
 
     public const MODEL_PREFIX = '/model';
 
@@ -61,10 +68,6 @@ class RESTServer implements Server
     public const SCORE_SAMPLE_ENDPOINT = '/sample_score';
 
     public const SERVER_STATUS_ENDPOINT = '/status';
-
-    protected const NOT_FOUND = 404;
-
-    protected const METHOD_NOT_ALLOWED = 405;
 
     /**
      * The host address to bind the server to.
@@ -93,7 +96,7 @@ class RESTServer implements Server
      *
      * @var \Rubix\Server\Http\Middleware\Middleware[]
      */
-    protected $middleware;
+    protected $middlewares;
 
     /**
      * The controller dispatcher i.e the router.
@@ -121,14 +124,14 @@ class RESTServer implements Server
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param mixed[] $middleware
+     * @param mixed[] $middlewares
      * @throws \InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
         int $port = 8080,
         ?string $cert = null,
-        array $middleware = []
+        array $middlewares = []
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host cannot be empty.');
@@ -144,17 +147,17 @@ class RESTServer implements Server
                 . ' empty.');
         }
 
-        foreach ($middleware as $mw) {
-            if (!$mw instanceof Middleware) {
+        foreach ($middlewares as $middleware) {
+            if (!$middleware instanceof Middleware) {
                 throw new InvalidArgumentException('Class must implement'
-                . ' middleware interface, ' . get_class($mw) . ' given.');
+                    . ' middleware interface.');
             }
         }
 
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
-        $this->middleware = array_values($middleware);
+        $this->middlewares = array_values($middlewares);
     }
 
     /**
@@ -206,7 +209,14 @@ class RESTServer implements Server
             ]);
         }
 
-        $stack = $this->middleware;
+        $stack = [
+            function (Request $request, callable $next) {
+                return $next($request)->withHeader('Server', self::SERVER_NAME);
+            },
+        ];
+
+        $stack = array_merge($stack, $this->middlewares);
+
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -242,12 +252,17 @@ class RESTServer implements Server
 
         switch ($status) {
             case Dispatcher::NOT_FOUND:
-                $response = new ReactResponse(self::NOT_FOUND);
+                $response = new ReactResponse(NOT_FOUND);
 
                 break 1;
 
             case Dispatcher::METHOD_NOT_ALLOWED:
-                $response = new ReactResponse(self::METHOD_NOT_ALLOWED);
+                /** @var string[] $allowed */
+                $allowed = $controller;
+
+                $response = new ReactResponse(METHOD_NOT_ALLOWED, [
+                    'Allowed' => implode(', ', $allowed),
+                ]);
 
                 break 1;
 
@@ -256,23 +271,27 @@ class RESTServer implements Server
         }
 
         if ($this->logger) {
-            $status = $response->getStatusCode();
-
             $server = $request->getServerParams();
 
             $ip = $server['REMOTE_ADDR'] ?? '-';
 
             $version = 'HTTP/' . $request->getProtocolVersion();
 
-            $size = strlen($response->getBody());
+            $status = $response->getStatusCode();
+
+            $size = $response->getBody()->getSize();
 
             $headers = $request->getHeaders();
 
             $agent = $headers['User-Agent'][0] ?? '-';
 
-            $info = "$ip '$method $uri $version' $status $size $agent";
+            $record = "$ip '$method $uri $version' $status $size $agent";
 
-            $this->logger->info($info);
+            $level = $status === INTERNAL_SERVER_ERROR
+                ? LogLevel::ERROR
+                : LogLevel::INFO;
+
+            $this->logger->log($level, $record);
         }
 
         ++$this->requests;

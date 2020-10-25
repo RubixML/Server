@@ -3,12 +3,14 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Commands\Proba;
-use Rubix\Server\Exceptions\ValidationException;
 use Rubix\Server\Responses\ErrorResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Message\Response as ReactResponse;
 use Exception;
+
+use const Rubix\Server\Http\HTTP_OK;
+use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
 class ProbabilitiesController extends RESTController
 {
@@ -24,17 +26,15 @@ class ProbabilitiesController extends RESTController
         try {
             $payload = json_decode($request->getBody()->getContents(), true);
 
-            if (empty($payload['samples'])) {
-                throw new ValidationException('Samples property cannot be empty.');
-            }
+            $command = Proba::fromArray($payload);
 
-            $response = $this->bus->dispatch(Proba::fromArray($payload));
+            $response = $this->bus->dispatch($command);
 
-            $status = self::OK;
+            $status = HTTP_OK;
         } catch (Exception $e) {
             $response = new ErrorResponse($e->getMessage());
 
-            $status = self::INTERNAL_SERVER_ERROR;
+            $status = INTERNAL_SERVER_ERROR;
         }
 
         $data = json_encode($response->asArray()) ?: '';

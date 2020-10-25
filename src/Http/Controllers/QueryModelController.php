@@ -9,6 +9,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Message\Response as ReactResponse;
 use Exception;
 
+use const Rubix\Server\Http\HTTP_OK;
+use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
+
 class QueryModelController extends RESTController
 {
     /**
@@ -23,11 +26,11 @@ class QueryModelController extends RESTController
         try {
             $response = $this->bus->dispatch(new QueryModel());
 
-            $status = self::OK;
+            $status = HTTP_OK;
         } catch (Exception $e) {
             $response = new ErrorResponse($e->getMessage());
 
-            $status = self::INTERNAL_SERVER_ERROR;
+            $status = INTERNAL_SERVER_ERROR;
         }
 
         $data = json_encode($response->asArray()) ?: '';

@@ -16,7 +16,12 @@ use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Log\LogLevel;
 use InvalidArgumentException;
+
+use const Rubix\Server\Http\NOT_FOUND;
+use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
+use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
 /**
  * RPC Server
@@ -32,13 +37,11 @@ class RPCServer implements Server
 {
     use LoggerAware;
 
-    public const HTTP_ENDPOINT = '/';
+    public const SERVER_NAME = 'Rubix RPC Server';
+
+    public const HTTP_ENDPOINT = '/commands';
 
     public const HTTP_METHOD = 'POST';
-
-    protected const NOT_FOUND = 404;
-
-    protected const METHOD_NOT_ALLOWED = 405;
 
     /**
      * The host address to bind the server to.
@@ -190,7 +193,14 @@ class RPCServer implements Server
             ]);
         }
 
-        $stack = $this->middlewares;
+        $stack = [
+            function (Request $request, callable $next) {
+                return $next($request)->withHeader('Server', self::SERVER_NAME);
+            },
+        ];
+
+        $stack = array_merge($stack, $this->middlewares);
+
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -222,12 +232,14 @@ class RPCServer implements Server
 
         switch (true) {
             case $uri !== self::HTTP_ENDPOINT:
-                $response = new ReactResponse(self::NOT_FOUND);
+                $response = new ReactResponse(NOT_FOUND);
 
                 break 1;
 
             case $method !== self::HTTP_METHOD:
-                $response = new ReactResponse(self::METHOD_NOT_ALLOWED);
+                $response = new ReactResponse(METHOD_NOT_ALLOWED, [
+                    'Allowed' => self::HTTP_METHOD,
+                ]);
 
                 break 1;
 
@@ -236,23 +248,27 @@ class RPCServer implements Server
         }
 
         if ($this->logger) {
-            $status = $response->getStatusCode();
-
             $server = $request->getServerParams();
 
             $ip = $server['REMOTE_ADDR'] ?? '-';
 
             $version = 'HTTP/' . $request->getProtocolVersion();
 
-            $size = strlen($response->getBody());
+            $status = $response->getStatusCode();
+
+            $size = $response->getBody()->getSize();
 
             $headers = $request->getHeaders();
 
             $agent = $headers['User-Agent'][0] ?? '-';
 
-            $info = "$ip '$method $uri $version' $status $size $agent";
+            $record = "$ip '$method $uri $version' $status $size $agent";
 
-            $this->logger->info($info);
+            $level = $status === INTERNAL_SERVER_ERROR
+                ? LogLevel::ERROR
+                : LogLevel::INFO;
+
+            $this->logger->log($level, $record);
         }
 
         ++$this->requests;

@@ -11,6 +11,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use Exception;
 
+use const Rubix\Server\Http\SERVICE_UNAVAILABLE;
+use const Rubix\Server\Http\TOO_MANY_REQUESTS;
+
 /**
  * RPC Client
  *
@@ -24,8 +27,12 @@ use Exception;
 class RPCClient implements Client
 {
     public const HTTP_HEADERS = [
-        'User-Agent' => 'Rubix RPC Client/0.2.X',
+        'User-Agent' => 'Rubix RPC Client',
     ];
+
+    public const HTTP_METHOD = 'POST';
+
+    public const HTTP_ENDPOINT = '/commands';
 
     public const MAX_DELAY = 5000000;
 
@@ -138,28 +145,33 @@ class RPCClient implements Client
 
         for ($tries = 1 + $this->retries; $tries > 0; --$tries) {
             try {
-                $payload = $this->client->request('POST', '/', [
+                $payload = $this->client->request(self::HTTP_METHOD, self::HTTP_ENDPOINT, [
                     'body' => $data,
                     'timeout' => $this->timeout,
                 ])->getBody();
 
                 break 1;
             } catch (Exception $e) {
-                usleep($delay);
-
-                if ($delay < self::MAX_DELAY) {
-                    $delay *= 2;
-                }
-
                 $lastException = $e;
+
+                $code = $e->getCode();
+
+                if ($code === SERVICE_UNAVAILABLE or $code === TOO_MANY_REQUESTS) {
+                    usleep($delay);
+
+                    if ($delay < self::MAX_DELAY) {
+                        $delay *= 2;
+                    }
+                } else {
+                    break 1;
+                }
             }
         }
 
         if (empty($payload)) {
             $message = $lastException ? $lastException->getMessage() : '';
 
-            throw new RuntimeException('There was a problem communicating'
-                . " with the server. $message");
+            throw new RuntimeException($message);
         }
 
         $response = $this->serializer->unserialize($payload);

@@ -12,12 +12,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Message\Response as ReactResponse;
 use Exception;
 
+use const Rubix\Server\Http\HTTP_OK;
+use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
+
 class RPCController implements Controller
 {
-    public const HEADERS = [
-        'Allow' => 'POST',
-    ];
-
     /**
      * The command bus.
      *
@@ -47,7 +46,6 @@ class RPCController implements Controller
     {
         $this->bus = $bus;
         $this->serializer = $serializer;
-        $this->headers = self::HEADERS + $serializer->headers();
     }
 
     /**
@@ -70,15 +68,15 @@ class RPCController implements Controller
 
             $response = $this->bus->dispatch($command);
 
-            $status = self::OK;
+            $status = HTTP_OK;
         } catch (Exception $e) {
             $response = new ErrorResponse($e->getMessage());
 
-            $status = self::INTERNAL_SERVER_ERROR;
+            $status = INTERNAL_SERVER_ERROR;
         }
 
         $data = $this->serializer->serialize($response);
 
-        return new ReactResponse($status, $this->headers, $data);
+        return new ReactResponse($status, $this->serializer->headers(), $data);
     }
 }

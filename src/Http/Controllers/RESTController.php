@@ -9,7 +9,6 @@ abstract class RESTController implements Controller
     public const HEADERS = [
         'Content-Type' => 'application/json',
         'Accept' => 'application/json',
-        'Allow' => 'GET, POST',
     ];
 
     /**

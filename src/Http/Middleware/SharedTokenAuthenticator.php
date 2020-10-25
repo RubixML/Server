@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
 
+use const Rubix\Server\Http\UNAUTHORIZED;
+
 /**
  * Shared Token Authenticator
  *
@@ -25,8 +27,6 @@ class SharedTokenAuthenticator implements Middleware
     public const AUTH_HEADER = 'Authorization';
 
     public const SCHEME = 'Bearer';
-
-    protected const UNAUTHORIZED = 401;
 
     /**
      * The shared secret keys (bearer tokens) used to authorize requests.
@@ -76,7 +76,7 @@ class SharedTokenAuthenticator implements Middleware
             }
         }
 
-        return new ReactResponse(self::UNAUTHORIZED, [
+        return new ReactResponse(UNAUTHORIZED, [
             'WWW-Authenticate' => "Bearer realm={$this->realm}",
         ]);
     }
