@@ -19,10 +19,10 @@ use Rubix\Server\Traits\LoggerAware;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Server as HTTPServer;
+use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
-use React\Http\Message\Response as ReactResponse;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
@@ -65,8 +65,6 @@ class RESTServer implements Server
     protected const NOT_FOUND = 404;
 
     protected const METHOD_NOT_ALLOWED = 405;
-
-    protected const INTERNAL_SERVER_ERROR = 500;
 
     /**
      * The host address to bind the server to.
@@ -211,7 +209,7 @@ class RESTServer implements Server
         $stack = $this->middleware;
         $stack[] = [$this, 'handle'];
 
-        $server = new HTTPServer($loop, $stack);
+        $server = new HTTPServer($loop, ...$stack);
 
         $server->listen($socket);
 
@@ -234,22 +232,15 @@ class RESTServer implements Server
      */
     public function handle(Request $request) : Response
     {
-        $uri = $request->getUri()->getPath();
-
         $method = $request->getMethod();
+
+        $uri = $request->getUri()->getPath();
 
         $route = $this->router->dispatch($method, $uri);
 
         [$status, $controller, $params] = array_pad($route, 3, null);
 
-        ++$this->requests;
-
         switch ($status) {
-            case Dispatcher::FOUND:
-                $response = $controller->handle($request, $params);
-
-                break 1;
-
             case Dispatcher::NOT_FOUND:
                 $response = new ReactResponse(self::NOT_FOUND);
 
@@ -261,7 +252,7 @@ class RESTServer implements Server
                 break 1;
 
             default:
-                $response = new ReactResponse(self::INTERNAL_SERVER_ERROR);
+                $response = $controller->handle($request, $params);
         }
 
         if ($this->logger) {
@@ -273,6 +264,8 @@ class RESTServer implements Server
 
             $this->logger->info("$status $method $uri from $ip");
         }
+
+        ++$this->requests;
 
         return $response;
     }

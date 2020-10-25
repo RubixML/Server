@@ -10,6 +10,7 @@ use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Traits\LoggerAware;
 use React\Http\Server as HTTPServer;
+use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
@@ -30,6 +31,14 @@ use InvalidArgumentException;
 class RPCServer implements Server
 {
     use LoggerAware;
+
+    public const HTTP_ENDPOINT = '/';
+
+    public const HTTP_METHOD = 'POST';
+
+    protected const NOT_FOUND = 404;
+
+    protected const METHOD_NOT_ALLOWED = 405;
 
     /**
      * The host address to bind the server to.
@@ -207,15 +216,27 @@ class RPCServer implements Server
      */
     public function handle(Request $request) : Response
     {
-        $response = $this->controller->handle($request);
+        $method = $request->getMethod();
 
-        ++$this->requests;
+        $uri = $request->getUri()->getPath();
+
+        switch (true) {
+            case $uri !== self::HTTP_ENDPOINT:
+                $response = new ReactResponse(self::NOT_FOUND);
+
+                break 1;
+
+            case $method !== self::HTTP_METHOD:
+                $response = new ReactResponse(self::METHOD_NOT_ALLOWED);
+
+                break 1;
+
+            default:
+                $response = $this->controller->handle($request);
+        }
 
         if ($this->logger) {
-            $method = $request->getMethod();
-            $uri = $request->getUri()->getPath();
-
-            $status = (string) $response->getStatusCode();
+            $status = $response->getStatusCode();
 
             $server = $request->getServerParams();
 
@@ -223,6 +244,8 @@ class RPCServer implements Server
 
             $this->logger->info("$status $method $uri from $ip");
         }
+
+        ++$this->requests;
 
         return $response;
     }

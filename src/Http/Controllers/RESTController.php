@@ -6,9 +6,10 @@ use Rubix\Server\CommandBus;
 
 abstract class RESTController implements Controller
 {
-    protected const HEADERS = [
+    public const HEADERS = [
         'Content-Type' => 'application/json',
         'Accept' => 'application/json',
+        'Allow' => 'GET, POST',
     ];
 
     /**

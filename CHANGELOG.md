@@ -3,6 +3,8 @@
     - Implemented HTTP Basic Auth middleware
     - Added Gzip message serializer
     - Shared Token Authenticator uses bearer scheme and multiple tokens
+    - Fix REST Server middleware stack
+    - Added Response Time middleware
 
 - 0.2.0-beta
     - Update to Rubix ML 0.2.0

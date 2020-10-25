@@ -3,6 +3,7 @@
 include __DIR__ . '../../../vendor/autoload.php';
 
 use Rubix\Server\RESTServer;
+use Rubix\Server\Http\Middleware\ResponseTime;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\KNearestNeighbors;
@@ -20,7 +21,9 @@ $dataset = $generator->generate(100);
 
 $estimator->train($dataset);
 
-$server = new RESTServer('127.0.0.1', 8080);
+$server = new RESTServer('127.0.0.1', 8080, null, [
+    new ResponseTime(),
+]);
 
 $server->setLogger(new Screen('server'));
 

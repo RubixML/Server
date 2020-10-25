@@ -31,7 +31,7 @@ class SharedTokenAuthenticator implements Middleware
     /**
      * The shared secret keys (bearer tokens) used to authorize requests.
      *
-     * @var null[]
+     * @var (int|string)[]
      */
     protected $tokens;
 

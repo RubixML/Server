@@ -26,6 +26,7 @@ $ composer require rubix/server
 	- [RPC Client](#rpc-client)
 - [HTTP Middleware](#http-middeware)
 	- [Basic Authenticator](#basic-authenticator)
+	- [Response Time](#response-time)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 	- [Trusted Clients](#trusted-clients)
 - [Messages](#messages)
@@ -234,6 +235,21 @@ $middleware = new BasicAuthenticator([
 	'morgan' => 'secret',
 	'taylor' => 'secret',
 ], 'machine learning');
+```
+
+### Response Time
+This middleware adds a response time header to every response. Response time is measured from the time the request is received by the middleware until the response is sent to the client.
+
+**Parameters:**
+
+This middleware does not have any parameters.
+
+**Example:**
+
+```php
+use Rubix\Server\Http\Middleware\ResponseTime;
+
+$middleware = new ResponseTime();
 ```
 
 ### Shared Token Authenticator
