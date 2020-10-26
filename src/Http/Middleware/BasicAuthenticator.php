@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use InvalidArgumentException;
 
 use function is_string;
+use function strlen;
 
 use const Rubix\Server\Http\UNAUTHORIZED;
 

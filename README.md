@@ -35,20 +35,16 @@ $ composer require rubix/server
 		- [Predict Sample](#predict-sample)
 		- [Proba](#proba)
 		- [Proba Sample](#proba-sample)
-		- [Query Model](#query-model)
 		- [Score](#score)
 		- [Score Sample](#score-sample)
-		- [Server Status](#server-status)
 	- [Responses](#responses)
         - [Error Response](#error-response)
         - [Predict Response](#predict-response)
 		- [Predict Sample Response](#predict-sample-response)
         - [Proba Response](#proba-response)
 		- [Proba Sample Response](#proba-sample-response)
-        - [Query Model Response](#query-model-response)
         - [Score Response](#score-response)
 		- [Score Sample Response](#score-sample-response)
-        - [Server Status Response](#server-status-response)
 
 ---
 ### Getting Started
@@ -414,24 +410,6 @@ use Rubix\Server\Commands\ProbaSample;
 $command = new ProbaSample($sample);
 ```
 
-### Query Model
-Query the status of the current model being served.
-
-**Parameters:**
-
-This command does not have any parameters.
-
-**Additional Methods:**
-
-This command does not have any additional methods.
-
-**Example:**
-```php
-use Rubix\Server\Commands\QueryModel;
-
-$command = new QueryModel();
-```
-
 ### Score
 Score the unknown samples in a dataset in terms of their anomaly score.
 
@@ -483,25 +461,6 @@ use Rubix\Server\Commands\ScoreSample;
 // Import sample
 
 $command = new ScoreSample($sample);
-```
-
-### Server Status
-Return statistics regarding the server status such as uptime, requests per minute, and memory usage.
-
-**Parameters:**
-
-This command does not have any parameters.
-
-**Additional Methods:**
-
-This command does not have any additional methods.
-
-**Example:**
-
-```php
-use Rubix\Server\Commands\ServerStatus;
-
-$command = new ServerStatus();
 ```
 
 ### Responses
@@ -635,49 +594,6 @@ use Rubix\Server\Responses\ProbaSampleResponse;
 $response = new ProbaSampleResponse($probabilities);
 ```
 
-### Query Model Response
-This response contains the properties of the underlying estimator instance being served such as type and compatibility.
-
-**Parameters:**
-
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | type | | int | The estimator type i.e. classifier, regressor, etc. |
-| 2 | compatibility | | array | The data types that the estimator is compatible with. |
-| 3 | probabilistic | | bool | Is the model probabilistic? |
-| 4 | ranking | | bool | Is the model a ranking estimator? |
-
-**Additional Methods:**
-
-Return the type of estimator:
-```php
-public type() : string
-```
-
-Return the data types the estimator is compatible with:
-```php
-public compatibility() : array
-```
-
-Is the model probabilistic?
-```php
-public probabilistic() : bool
-```
-
-Is the model a ranking estimator?
-```php
-public ranking() : bool
-```
-
-**Example:**
-
-```php
-use Rubix\Server\Responses\QueryModelResponse;
-use Rubix\ML\Other\Helpers\DataType;
-
-$response = new QueryModelResponse('classifier', [DataType::CONTINUOUS], true, false);
-```
-
 ### Score Response
 Return the anaomaly scores from a Score command.
 
@@ -728,42 +644,6 @@ use Rubix\Server\Responses\ScoreSampleResponse;
 // Obtain score from model
 
 $response = new ScoreSampleResponse($score);
-```
-
-### Server Status Response
-A response containing the status of the currently running server.
-
-**Parameters:**
-
-| # | Param | Default | Type | Description |
-|--|--|--|--|--|
-| 1 | requests | | array | An associative array of request statistics. |
-| 2 | memory usage | | array | An associative array of memory usage statistics. |
-| 3 | uptime | | int | The number of seconds the server has been up. |
-
-**Additional Methods:**
-
-Return the request statistics:
-```php
-public requests() : array
-```
-
-Return the memory usage statistics:
-```php
-public memoryUsage() : array
-```
-
-Return the uptime of the server.
-```php
-public uptime() : int
-```
-
-**Example:**
-
-```php
-use Rubix\Server\Responses\ServerStatusResponse;
-
-$response = new ServerStatusResponse($requests, $memoryUsage, 16);
 ```
 
 ## Testing
