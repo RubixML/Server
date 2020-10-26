@@ -13,16 +13,12 @@ use Rubix\Server\Commands\Proba;
 use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Score;
 use Rubix\Server\Commands\ScoreSample;
-use Rubix\Server\Commands\QueryModel;
-use Rubix\Server\Commands\ServerStatus;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\ScoreSampleHandler;
-use Rubix\Server\Handlers\QueryModelHandler;
-use Rubix\Server\Handlers\ServerStatusHandler;
 use Rubix\Server\Responses\Response;
 use InvalidArgumentException;
 use RuntimeException;
@@ -60,13 +56,10 @@ class CommandBus
      */
     public static function boot(Estimator $estimator, Server $server) : self
     {
-        $mapping = [
-            ServerStatus::class => new ServerStatusHandler($server),
-        ];
+        $mapping = [];
 
         if ($estimator instanceof Estimator) {
             $mapping += [
-                QueryModel::class => new QueryModelHandler($estimator),
                 Predict::class => new PredictHandler($estimator),
             ];
         }
@@ -125,8 +118,8 @@ class CommandBus
         $class = get_class($command);
 
         if (!isset($this->mapping[$class])) {
-            throw new RuntimeException('An appropriate handler'
-                . " could not be found for $class.");
+            throw new RuntimeException('A handler could'
+                . " not be found for $class.");
         }
 
         return call_user_func($this->mapping[$class], $command);

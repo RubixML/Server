@@ -37,10 +37,4 @@ class RPCServerTest extends TestCase
         $this->assertInstanceOf(RPCServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
     }
-
-    protected function assertPreConditions() : void
-    {
-        $this->assertEquals(0, $this->server->requests());
-        $this->assertEquals(0, $this->server->uptime());
-    }
 }

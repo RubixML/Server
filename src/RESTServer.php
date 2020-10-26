@@ -11,10 +11,8 @@ use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\SamplePredictionController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
-use Rubix\Server\Http\Controllers\QueryModelController;
 use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoreController;
-use Rubix\Server\Http\Controllers\ServerStatusController;
 use Rubix\Server\Traits\LoggerAware;
 use Psr\Log\LogLevel;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -53,8 +51,6 @@ class RESTServer implements Server
 
     public const MODEL_PREFIX = '/model';
 
-    public const SERVER_PREFIX = '/server';
-
     public const PREDICT_ENDPOINT = '/predictions';
 
     public const PREDICT_SAMPLE_ENDPOINT = '/sample_prediction';
@@ -66,8 +62,6 @@ class RESTServer implements Server
     public const SCORE_ENDPOINT = '/scores';
 
     public const SCORE_SAMPLE_ENDPOINT = '/sample_score';
-
-    public const SERVER_STATUS_ENDPOINT = '/status';
 
     /**
      * The host address to bind the server to.
@@ -104,21 +98,6 @@ class RESTServer implements Server
      * @var \FastRoute\Dispatcher
      */
     protected $router;
-
-    /**
-     * The timestamp from when the server went up.
-     *
-     * @var int|null
-     */
-    protected $start;
-
-    /**
-     * The number of requests that have been handled during this
-     * run of the server.
-     *
-     * @var int
-     */
-    protected $requests = 0;
 
     /**
      * @param string $host
@@ -158,26 +137,6 @@ class RESTServer implements Server
         $this->port = $port;
         $this->cert = $cert;
         $this->middlewares = array_values($middlewares);
-    }
-
-    /**
-     * Return the number of requests that have been received.
-     *
-     * @var int
-     */
-    public function requests() : int
-    {
-        return $this->requests;
-    }
-
-    /**
-     * Return the uptime of the server in seconds.
-     *
-     * @return int
-     */
-    public function uptime() : int
-    {
-        return $this->start ? (time() - $this->start) ?: 1 : 0;
     }
 
     /**
@@ -222,9 +181,6 @@ class RESTServer implements Server
         $server = new HTTPServer($loop, ...$stack);
 
         $server->listen($socket);
-
-        $this->start = time();
-        $this->requests = 0;
 
         if ($this->logger) {
             $this->logger->info('HTTP REST Server running at'
@@ -294,8 +250,6 @@ class RESTServer implements Server
             $this->logger->log($level, $record);
         }
 
-        ++$this->requests;
-
         return $response;
     }
 
@@ -309,11 +263,6 @@ class RESTServer implements Server
     protected function bootRouter(Estimator $estimator, CommandBus $bus) : Dispatcher
     {
         $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
-
-        $collector->get(
-            self::MODEL_PREFIX,
-            new QueryModelController($bus)
-        );
 
         $collector->addGroup(self::MODEL_PREFIX, function ($group) use ($estimator, $bus) {
             $group->post(
@@ -351,13 +300,6 @@ class RESTServer implements Server
                     new SampleScoreController($bus)
                 );
             }
-        });
-
-        $collector->addGroup(self::SERVER_PREFIX, function ($group) use ($bus) {
-            $group->get(
-                self::SERVER_STATUS_ENDPOINT,
-                new ServerStatusController($bus)
-            );
         });
 
         return new GroupCountBasedDispatcher($collector->getData());

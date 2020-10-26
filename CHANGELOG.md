@@ -6,6 +6,8 @@
     - Fix REST Server middleware stack
     - Added Response Time middleware
     - Added agent and response length to HTTP request logging
+    - Removed Query Model and Server Status commands
+    - RPC Client now uses Retry-After header on 429 and 503
 
 - 0.2.0-beta
     - Update to Rubix ML 0.2.0

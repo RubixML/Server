@@ -7,9 +7,9 @@ use Rubix\Server\Responses\Response;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\ClientException;
 use InvalidArgumentException;
 use RuntimeException;
-use Exception;
 
 use const Rubix\Server\Http\SERVICE_UNAVAILABLE;
 use const Rubix\Server\Http\TOO_MANY_REQUESTS;
@@ -33,8 +33,6 @@ class RPCClient implements Client
     public const HTTP_METHOD = 'POST';
 
     public const HTTP_ENDPOINT = '/commands';
-
-    public const MAX_DELAY = 5000000;
 
     /**
      * The Guzzle client.
@@ -60,7 +58,7 @@ class RPCClient implements Client
     /**
      * The initial delay between request retries.
      *
-     * @var int
+     * @var float
      */
     protected $delay;
 
@@ -90,7 +88,7 @@ class RPCClient implements Client
         array $headers = [],
         ?Serializer $serializer = null,
         float $timeout = 0.0,
-        int $retries = 2,
+        int $retries = 3,
         float $delay = 0.3
     ) {
         if ($port < 0) {
@@ -115,17 +113,19 @@ class RPCClient implements Client
 
         $serializer = $serializer ?? new JSON();
 
+        $baseUri = ($secure ? 'https' : 'http') . "://$host:$port";
+
         $headers += self::HTTP_HEADERS + $serializer->headers();
 
         $this->client = new Guzzle([
-            'base_uri' => ($secure ? 'https' : 'http') . "://$host:$port",
+            'base_uri' => $baseUri,
             'headers' => $headers,
         ]);
 
+        $this->serializer = $serializer;
         $this->timeout = $timeout;
         $this->retries = $retries;
-        $this->delay = (int) round($delay * 1e6);
-        $this->serializer = $serializer;
+        $this->delay = $delay;
     }
 
     /**
@@ -139,11 +139,13 @@ class RPCClient implements Client
     {
         $data = $this->serializer->serialize($command);
 
+        $maxTries = 1 + $this->retries;
+
         $delay = $this->delay;
 
         $lastException = null;
 
-        for ($tries = 1 + $this->retries; $tries > 0; --$tries) {
+        for ($tries = 1; $tries <= $maxTries; ++$tries) {
             try {
                 $payload = $this->client->request(self::HTTP_METHOD, self::HTTP_ENDPOINT, [
                     'body' => $data,
@@ -151,20 +153,28 @@ class RPCClient implements Client
                 ])->getBody();
 
                 break 1;
-            } catch (Exception $e) {
-                $lastException = $e;
-
+            } catch (ClientException $e) {
                 $code = $e->getCode();
 
-                if ($code === SERVICE_UNAVAILABLE or $code === TOO_MANY_REQUESTS) {
-                    usleep($delay);
+                $lastException = $e;
 
-                    if ($delay < self::MAX_DELAY) {
-                        $delay *= 2;
+                if ($code === SERVICE_UNAVAILABLE or $code === TOO_MANY_REQUESTS) {
+                    $response = $e->getResponse();
+
+                    if ($response->hasHeader('Retry-After')) {
+                        $wait = (float) $response->getHeader('Retry-After')[0] ?? $delay;
+                    } else {
+                        $wait = $delay;
                     }
-                } else {
-                    break 1;
+
+                    $delay *= 2.0;
+
+                    usleep(intval($wait * 1e6));
+
+                    continue 1;
                 }
+
+                break 1;
             }
         }
 

@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Tests\Serializers;
 
-use Rubix\Server\Commands\QueryModel;
+use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
@@ -41,7 +41,7 @@ class JSONTest extends TestCase
      */
     public function serializeUnserialize() : void
     {
-        $command = new QueryModel();
+        $command = new PredictSample(['beef']);
 
         $data = $this->serializer->serialize($command);
 
@@ -50,7 +50,7 @@ class JSONTest extends TestCase
 
         $command = $this->serializer->unserialize($data);
 
-        $this->assertInstanceOf(QueryModel::class, $command);
+        $this->assertInstanceOf(PredictSample::class, $command);
         $this->assertInstanceOf(Command::class, $command);
     }
 }

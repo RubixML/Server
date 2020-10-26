@@ -87,21 +87,6 @@ class RPCServer implements Server
     protected $controller;
 
     /**
-     * The timestamp from when the server went up.
-     *
-     * @var int|null
-     */
-    protected $start;
-
-    /**
-     * The number of requests that have been handled during this
-     * run of the server.
-     *
-     * @var int
-     */
-    protected $requests = 0;
-
-    /**
      * @param string $host
      * @param int $port
      * @param string|null $cert
@@ -142,26 +127,6 @@ class RPCServer implements Server
         $this->cert = $cert;
         $this->middlewares = array_values($middlewares);
         $this->serializer = $serializer ?? new JSON();
-    }
-
-    /**
-     * Return the number of requests that have been received.
-     *
-     * @var int
-     */
-    public function requests() : int
-    {
-        return $this->requests;
-    }
-
-    /**
-     * Return the uptime of the server in seconds.
-     *
-     * @return int
-     */
-    public function uptime() : int
-    {
-        return $this->start ? (time() - $this->start) ?: 1 : 0;
     }
 
     /**
@@ -206,9 +171,6 @@ class RPCServer implements Server
         $server = new HTTPServer($loop, ...$stack);
 
         $server->listen($socket);
-
-        $this->start = time();
-        $this->requests = 0;
 
         if ($this->logger) {
             $this->logger->info('HTTP RPC Server running at'
@@ -270,8 +232,6 @@ class RPCServer implements Server
 
             $this->logger->log($level, $record);
         }
-
-        ++$this->requests;
 
         return $response;
     }
