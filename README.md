@@ -25,6 +25,7 @@ $ composer require rubix/server
 - [Clients](#clients)
 	- [RPC Client](#rpc-client)
 - [HTTP Middleware](#http-middeware)
+	- [Access Log](#access-log)
 	- [Basic Authenticator](#basic-authenticator)
 	- [Response Time](#response-time)
 	- [Shared Token Authenticator](#shared-token-authenticator)
@@ -94,14 +95,12 @@ A standalone JSON over HTTP and secure HTTP server exposing a [REST](https://en.
 
 | Method | URI | JSON Params | Description |
 |--|--|--|--|
-| GET | /model | | Query information about the model. |
 | POST | /model/predictions | `samples` | Return the predictions given by the model. |
 | POST | /model/sample_prediction | `sample` | Make a prediction on a single sample. |
 | POST | /model/probabilities | `samples` | Predict the probabilities of each outcome. |
 | POST | /model/sample_probabilities | `sample` | Return the probabilities of a single sample. |
 | POST | /model/scores | `samples` | Assign an anomaly score to each sample. |
 | POST | /model/sample_score | `sample` | Assign an anomaly score to a single sample. |
-| GET | /server/status | | Query the status of the server. |
 
 **Example**
 
@@ -209,6 +208,24 @@ $client = new RPCClient('127.0.0.1', 8888, false, [
 ---
 ### HTTP Middleware
 HTTP middleware are objects that process incoming HTTP requests before they are handled by a controller.
+
+### Access Log
+Generates an HTTP access log similar to the Apache log format.
+
+**Parameters:**
+
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | logger | | LoggerInterface | A PSR-3 logger instance. |
+
+**Example:**
+
+```php
+use Rubix\Server\Http\Middleware\AccessLog;
+use Rubix\ML\Other\Loggers\Screen;
+
+$middleware = new AccessLog(new Screen());
+```
 
 ### Basic Authenticator
 An implementation of HTTP Basic Auth as described in RFC7617.

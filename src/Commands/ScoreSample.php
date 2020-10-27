@@ -70,4 +70,14 @@ class ScoreSample extends Command
             'sample' => $this->sample,
         ];
     }
+
+    /**
+     * Return the string representation of the object.
+     *
+     * @return string
+     */
+    public function __toString() : string
+    {
+        return 'Score Sample';
+    }
 }

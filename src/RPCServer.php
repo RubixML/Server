@@ -16,12 +16,10 @@ use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Log\LogLevel;
 use InvalidArgumentException;
 
 use const Rubix\Server\Http\NOT_FOUND;
 use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
-use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
 /**
  * RPC Server
@@ -144,13 +142,13 @@ class RPCServer implements Server
             }
         }
 
-        $bus = CommandBus::boot($estimator, $this);
+        $bus = CommandBus::boot($estimator, $this->logger);
 
         $this->controller = new RPCController($bus, $this->serializer);
 
         $loop = Loop::create();
 
-        $socket = new Socket("$this->host:$this->port", $loop);
+        $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
         if ($this->cert) {
             $socket = new SecureSocket($socket, $loop, [
@@ -158,14 +156,13 @@ class RPCServer implements Server
             ]);
         }
 
-        $stack = [
-            function (Request $request, callable $next) {
-                return $next($request)->withHeader('Server', self::SERVER_NAME);
-            },
-        ];
+        $addServerHeaders = function (Request $request, callable $next) {
+            return $next($request)->withHeader('Server', self::SERVER_NAME);
+        };
 
-        $stack = array_merge($stack, $this->middlewares);
+        $stack = $this->middlewares;
 
+        $stack[] = $addServerHeaders;
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -207,30 +204,6 @@ class RPCServer implements Server
 
             default:
                 $response = $this->controller->handle($request);
-        }
-
-        if ($this->logger) {
-            $server = $request->getServerParams();
-
-            $ip = $server['REMOTE_ADDR'] ?? '-';
-
-            $version = 'HTTP/' . $request->getProtocolVersion();
-
-            $status = $response->getStatusCode();
-
-            $size = $response->getBody()->getSize();
-
-            $headers = $request->getHeaders();
-
-            $agent = $headers['User-Agent'][0] ?? '-';
-
-            $record = "$ip '$method $uri $version' $status $size $agent";
-
-            $level = $status === INTERNAL_SERVER_ERROR
-                ? LogLevel::ERROR
-                : LogLevel::INFO;
-
-            $this->logger->log($level, $record);
         }
 
         return $response;

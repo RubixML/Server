@@ -72,4 +72,14 @@ class PredictSample extends Command
             'sample' => $this->sample,
         ];
     }
+
+    /**
+     * Return the string representation of the object.
+     *
+     * @return string
+     */
+    public function __toString() : string
+    {
+        return 'Predict Sample';
+    }
 }

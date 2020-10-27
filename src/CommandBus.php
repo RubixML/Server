@@ -20,8 +20,11 @@ use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\ScoreSampleHandler;
 use Rubix\Server\Responses\Response;
+use Rubix\Server\Exceptions\HandlerNotFound;
+use Rubix\Server\Exceptions\DomainException;
+use Psr\Log\LoggerInterface;
 use InvalidArgumentException;
-use RuntimeException;
+use Exception;
 
 use function get_class;
 use function call_user_func;
@@ -48,13 +51,20 @@ class CommandBus
     protected $mapping;
 
     /**
+     * A PSR-3 logger instance.
+     *
+     * @var \Psr\Log\LoggerInterface|null
+     */
+    protected $logger;
+
+    /**
      * Boot the command bus.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\Server $server
+     * @param \Psr\Log\LoggerInterface|null $logger
      * @return self
      */
-    public static function boot(Estimator $estimator, Server $server) : self
+    public static function boot(Estimator $estimator, ?LoggerInterface $logger = null) : self
     {
         $mapping = [];
 
@@ -84,14 +94,15 @@ class CommandBus
             ];
         }
 
-        return new self($mapping);
+        return new self($mapping, $logger);
     }
 
     /**
      * @param callable[] $mapping
+     * @param \Psr\Log\LoggerInterface|null $logger
      * @throws \InvalidArgumentException
      */
-    public function __construct(array $mapping)
+    public function __construct(array $mapping, ?LoggerInterface $logger = null)
     {
         foreach ($mapping as $command => $handler) {
             if (!class_exists($command)) {
@@ -104,13 +115,15 @@ class CommandBus
         }
 
         $this->mapping = $mapping;
+        $this->logger = $logger;
     }
 
     /**
      * Dispatch the command to a handler.
      *
      * @param \Rubix\Server\Commands\Command $command
-     * @throws \RuntimeException
+     * @throws \Rubix\Server\Exceptions\HandlerNotFound
+     * @throws \Rubix\Server\Exceptions\DomainException
      * @return \Rubix\Server\Responses\Response
      */
     public function dispatch(Command $command) : Response
@@ -118,10 +131,19 @@ class CommandBus
         $class = get_class($command);
 
         if (!isset($this->mapping[$class])) {
-            throw new RuntimeException('A handler could'
-                . " not be found for $class.");
+            throw new HandlerNotFound($command);
         }
 
-        return call_user_func($this->mapping[$class], $command);
+        $handler = $this->mapping[$class];
+
+        try {
+            return call_user_func($handler, $command);
+        } catch (Exception $exception) {
+            if ($this->logger) {
+                $this->logger->error((string) $exception);
+            }
+
+            throw new DomainException($exception);
+        }
     }
 }

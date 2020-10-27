@@ -1,3 +1,6 @@
+- 0.2.2-beta
+    - Added HTTP Access Log middleware
+
 - 0.2.1-beta
     - Support PSR-15 Server Request Handler interface
     - Implemented HTTP Basic Auth middleware

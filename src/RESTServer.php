@@ -13,10 +13,9 @@ use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoreController;
-use Rubix\Server\Traits\LoggerAware;
-use Psr\Log\LogLevel;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Rubix\Server\Traits\LoggerAware;
 use React\Http\Server as HTTPServer;
 use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
@@ -31,7 +30,6 @@ use InvalidArgumentException;
 
 use const Rubix\Server\Http\NOT_FOUND;
 use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
-use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
 /**
  * HTTP Server
@@ -154,13 +152,13 @@ class RESTServer implements Server
             }
         }
 
-        $bus = CommandBus::boot($estimator, $this);
+        $bus = CommandBus::boot($estimator, $this->logger);
 
         $this->router = $this->bootRouter($estimator, $bus);
 
         $loop = Loop::create();
 
-        $socket = new Socket("$this->host:$this->port", $loop);
+        $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
         if ($this->cert) {
             $socket = new SecureSocket($socket, $loop, [
@@ -168,14 +166,13 @@ class RESTServer implements Server
             ]);
         }
 
-        $stack = [
-            function (Request $request, callable $next) {
-                return $next($request)->withHeader('Server', self::SERVER_NAME);
-            },
-        ];
+        $addServerHeaders = function (Request $request, callable $next) {
+            return $next($request)->withHeader('Server', self::SERVER_NAME);
+        };
 
-        $stack = array_merge($stack, $this->middlewares);
+        $stack = $this->middlewares;
 
+        $stack[] = $addServerHeaders;
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -224,30 +221,6 @@ class RESTServer implements Server
 
             default:
                 $response = $controller->handle($request, $params);
-        }
-
-        if ($this->logger) {
-            $server = $request->getServerParams();
-
-            $ip = $server['REMOTE_ADDR'] ?? '-';
-
-            $version = 'HTTP/' . $request->getProtocolVersion();
-
-            $status = $response->getStatusCode();
-
-            $size = $response->getBody()->getSize();
-
-            $headers = $request->getHeaders();
-
-            $agent = $headers['User-Agent'][0] ?? '-';
-
-            $record = "$ip '$method $uri $version' $status $size $agent";
-
-            $level = $status === INTERNAL_SERVER_ERROR
-                ? LogLevel::ERROR
-                : LogLevel::INFO;
-
-            $this->logger->log($level, $record);
         }
 
         return $response;

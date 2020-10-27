@@ -10,7 +10,6 @@ use React\Http\Message\Response as ReactResponse;
 use Exception;
 
 use const Rubix\Server\Http\HTTP_OK;
-use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
 class SamplePredictionController extends RESTController
 {
@@ -31,10 +30,10 @@ class SamplePredictionController extends RESTController
             $response = $this->bus->dispatch($command);
 
             $status = HTTP_OK;
-        } catch (Exception $e) {
-            $response = new ErrorResponse($e->getMessage());
+        } catch (Exception $exception) {
+            $response = new ErrorResponse($exception->getMessage());
 
-            $status = INTERNAL_SERVER_ERROR;
+            $status = $exception->getCode();
         }
 
         $data = json_encode($response->asArray()) ?: '';

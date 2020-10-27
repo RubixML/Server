@@ -3,6 +3,7 @@
 include __DIR__ . '../../../vendor/autoload.php';
 
 use Rubix\Server\RPCServer;
+use Rubix\Server\Http\Middleware\AccessLog;
 use Rubix\Server\Http\Middleware\TrustedClients;
 use Rubix\Server\Http\Middleware\BasicAuthenticator;
 use Rubix\ML\Datasets\Generators\Blob;
@@ -18,11 +19,12 @@ $generator = new Agglomerate([
 
 $dataset = $generator->generate(100);
 
-$estimator = new KNearestNeighbors(3);
+$estimator = new KNearestNeighbors(5);
 
 $estimator->train($dataset);
 
 $server = new RPCServer('127.0.0.1', 8888, null, [
+    new AccessLog(new Screen()),
     new TrustedClients(['127.0.0.1']),
     new BasicAuthenticator([
         'test' => 'secret',

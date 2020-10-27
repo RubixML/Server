@@ -67,4 +67,14 @@ class Score extends Command
             'samples' => $this->dataset->samples(),
         ];
     }
+
+    /**
+     * Return the string representation of the object.
+     *
+     * @return string
+     */
+    public function __toString() : string
+    {
+        return 'Score';
+    }
 }

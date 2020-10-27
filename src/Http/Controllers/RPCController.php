@@ -13,7 +13,6 @@ use React\Http\Message\Response as ReactResponse;
 use Exception;
 
 use const Rubix\Server\Http\HTTP_OK;
-use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
 class RPCController implements Controller
 {
@@ -30,13 +29,6 @@ class RPCController implements Controller
      * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
-
-    /**
-     * The headers to send with each HTTP response.
-     *
-     * @var string[]
-     */
-    protected $headers;
 
     /**
      * @param \Rubix\Server\CommandBus $bus
@@ -69,10 +61,10 @@ class RPCController implements Controller
             $response = $this->bus->dispatch($command);
 
             $status = HTTP_OK;
-        } catch (Exception $e) {
-            $response = new ErrorResponse($e->getMessage());
+        } catch (Exception $exception) {
+            $response = new ErrorResponse($exception->getMessage());
 
-            $status = INTERNAL_SERVER_ERROR;
+            $status = $exception->getCode();
         }
 
         $data = $this->serializer->serialize($response);
