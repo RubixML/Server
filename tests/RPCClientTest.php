@@ -2,7 +2,6 @@
 
 namespace Rubix\Server\Tests;
 
-use Rubix\Server\Client;
 use Rubix\Server\RPCClient;
 use Rubix\Server\Serializers\Native;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +22,7 @@ class RPCClientTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->client = new RPCClient('127.0.0.1', 8888, false, [], new Native());
+        $this->client = new RPCClient('127.0.0.1', 8888, false, [], new Native(), 0.0, 3, 0.3);
     }
 
     /**
@@ -32,6 +31,5 @@ class RPCClientTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(RPCClient::class, $this->client);
-        $this->assertInstanceOf(Client::class, $this->client);
     }
 }

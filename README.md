@@ -160,12 +160,6 @@ use Rubix\Server\Commands\Predict;
 use Rubix\ML\Datasets\Unlabeled;
 
 $client = new RPCClient('127.0.0.1', 8888);
-
-$response = $client->send(new Predict(new Unlabeled($samples)));
-
-$predictions = $response->predictions();
-
-var_dump($predictions);
 ```
 
 **Output:**

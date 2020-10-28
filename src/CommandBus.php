@@ -22,8 +22,8 @@ use Rubix\Server\Handlers\ScoreSampleHandler;
 use Rubix\Server\Responses\Response;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use Rubix\Server\Exceptions\DomainException;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use InvalidArgumentException;
 use Exception;
 
 use function get_class;
@@ -100,7 +100,7 @@ class CommandBus
     /**
      * @param callable[] $mapping
      * @param \Psr\Log\LoggerInterface|null $logger
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(array $mapping, ?LoggerInterface $logger = null)
     {
@@ -139,11 +139,13 @@ class CommandBus
         try {
             return call_user_func($handler, $command);
         } catch (Exception $exception) {
+            $exception = new DomainException($exception);
+
             if ($this->logger) {
                 $this->logger->error((string) $exception);
             }
 
-            throw new DomainException($exception);
+            throw $exception;
         }
     }
 }

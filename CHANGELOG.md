@@ -1,5 +1,7 @@
 - 0.2.2-beta
     - Added HTTP Access Log middleware
+    - Added command methods to RPC Client
+    - Removed Client interface
 
 - 0.2.1-beta
     - Support PSR-15 Server Request Handler interface

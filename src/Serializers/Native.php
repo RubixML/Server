@@ -4,7 +4,7 @@ namespace Rubix\Server\Serializers;
 
 use Rubix\Server\Message;
 use __PHP_Incomplete_Class;
-use RuntimeException;
+use Rubix\Server\Exceptions\RuntimeException;
 
 class Native implements Serializer
 {

@@ -62,7 +62,7 @@ class RPCController implements Controller
 
             $status = HTTP_OK;
         } catch (Exception $exception) {
-            $response = new ErrorResponse($exception->getMessage());
+            $response = ErrorResponse::fromException($exception);
 
             $status = $exception->getCode();
         }

@@ -6,6 +6,7 @@ use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
+use Rubix\Server\Traits\LoggerAware;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\SamplePredictionController;
@@ -13,9 +14,9 @@ use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoreController;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Rubix\Server\Traits\LoggerAware;
 use React\Http\Server as HTTPServer;
 use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
@@ -26,7 +27,7 @@ use FastRoute\RouteParser\Std;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use FastRoute\Dispatcher;
-use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
 
 use const Rubix\Server\Http\NOT_FOUND;
 use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
@@ -41,7 +42,7 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RESTServer implements Server
+class RESTServer implements Server, LoggerAwareInterface
 {
     use LoggerAware;
 
@@ -102,7 +103,7 @@ class RESTServer implements Server
      * @param int $port
      * @param string|null $cert
      * @param mixed[] $middlewares
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
@@ -141,7 +142,7 @@ class RESTServer implements Server
      * Serve a model.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function serve(Estimator $estimator) : void
     {

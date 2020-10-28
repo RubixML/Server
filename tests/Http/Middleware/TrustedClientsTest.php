@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\Http\Middleware;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Middleware\TrustedClients;
 use PHPUnit\Framework\TestCase;
-use InvalidArgumentException;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 
 /**
  * @group Middleware

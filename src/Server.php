@@ -3,9 +3,8 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
-use Psr\Log\LoggerAwareInterface;
 
-interface Server extends LoggerAwareInterface
+interface Server
 {
     /**
      * Serve a model.

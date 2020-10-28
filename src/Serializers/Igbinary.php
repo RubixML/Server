@@ -4,7 +4,7 @@ namespace Rubix\Server\Serializers;
 
 use Rubix\Server\Message;
 use __PHP_Incomplete_Class;
-use RuntimeException;
+use Rubix\Server\Exceptions\RuntimeException;
 
 /**
  * Igbinary
@@ -19,7 +19,7 @@ use RuntimeException;
 class Igbinary implements Serializer
 {
     /**
-     * @throws \RuntimeException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      */
     public function __construct()
     {

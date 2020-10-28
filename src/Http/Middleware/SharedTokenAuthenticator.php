@@ -5,7 +5,7 @@ namespace Rubix\Server\Http\Middleware;
 use React\Http\Message\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use InvalidArgumentException;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 
 use const Rubix\Server\Http\UNAUTHORIZED;
 
@@ -45,7 +45,7 @@ class SharedTokenAuthenticator implements Middleware
     /**
      * @param string[] $tokens
      * @param string $realm
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(array $tokens, string $realm = 'auth')
     {

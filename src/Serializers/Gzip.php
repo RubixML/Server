@@ -3,8 +3,8 @@
 namespace Rubix\Server\Serializers;
 
 use Rubix\Server\Message;
-use InvalidArgumentException;
-use RuntimeException;
+use Rubix\Server\Exceptions\InvalidArgumentException;
+use Rubix\Server\Exceptions\RuntimeException;
 
 /**
  * Gzip
@@ -38,7 +38,7 @@ class Gzip implements Serializer
     /**
      * @param int $level
      * @param \Rubix\Server\Serializers\Serializer|null $serializer
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(int $level = 1, ?Serializer $serializer = null)
     {
@@ -73,7 +73,7 @@ class Gzip implements Serializer
      * Serialize a Message.
      *
      * @param \Rubix\Server\Message $message
-     * @throws \RuntimeException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      * @return string
      */
     public function serialize(Message $message) : string
@@ -93,7 +93,7 @@ class Gzip implements Serializer
      * Unserialize a Message.
      *
      * @param string $data
-     * @throws \RuntimeException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      * @return \Rubix\Server\Message
      */
     public function unserialize(string $data) : Message

@@ -3,7 +3,7 @@
 namespace Rubix\Server\Serializers;
 
 use Rubix\Server\Message;
-use RuntimeException;
+use Rubix\Server\Exceptions\RuntimeException;
 
 class JSON implements Serializer
 {
@@ -35,7 +35,7 @@ class JSON implements Serializer
      * Unserialize a message.
      *
      * @param string $data
-     * @throws \RuntimeException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      * @return \Rubix\Server\Message
      */
     public function unserialize(string $data) : Message

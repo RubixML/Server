@@ -2,6 +2,8 @@
 
 namespace Rubix\Server\Responses;
 
+use Exception;
+
 /**
  * Error Response
  *
@@ -23,6 +25,17 @@ class ErrorResponse extends Response
     protected $message;
 
     /**
+     * Build the response from an exception instance.
+     *
+     * @param \Exception $exception
+     * @return self
+     */
+    public static function fromException(Exception $exception) : self
+    {
+        return new self($exception->getMessage());
+    }
+
+    /**
      * Build the response from an associative array of data.
      *
      * @param mixed[] $data
@@ -30,7 +43,7 @@ class ErrorResponse extends Response
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['message'] ?? '');
+        return new self($data['message']);
     }
 
     /**

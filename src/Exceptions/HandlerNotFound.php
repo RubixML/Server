@@ -6,7 +6,7 @@ use Rubix\Server\Commands\Command;
 
 use const Rubix\Server\Http\BAD_REQUEST;
 
-class HandlerNotFound extends RubixServerException
+class HandlerNotFound extends RuntimeException
 {
     /**
      * @param \Rubix\Server\Commands\Command $command

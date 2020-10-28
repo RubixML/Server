@@ -5,7 +5,7 @@ namespace Rubix\Server\Http\Middleware;
 use React\Http\Message\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use InvalidArgumentException;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 
 use const Rubix\Server\Http\UNAUTHORIZED;
 
@@ -20,7 +20,7 @@ use const Rubix\Server\Http\UNAUTHORIZED;
  */
 class TrustedClients implements Middleware
 {
-    protected const FLAGS = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
+    protected const IP_FLAGS = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
 
     /**
      * An array of trusted client ip addresses.
@@ -31,7 +31,7 @@ class TrustedClients implements Middleware
 
     /**
      * @param string[] $ips
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(array $ips = ['127.0.0.1'])
     {
@@ -40,7 +40,7 @@ class TrustedClients implements Middleware
         }
 
         foreach ($ips as $ip) {
-            if (filter_var($ip, FILTER_VALIDATE_IP, self::FLAGS) === false) {
+            if (filter_var($ip, FILTER_VALIDATE_IP, self::IP_FLAGS) === false) {
                 throw new InvalidArgumentException('Invalid IP address given.');
             }
         }

@@ -6,15 +6,13 @@ use Exception;
 
 use const Rubix\Server\Http\INTERNAL_SERVER_ERROR;
 
-class DomainException extends RubixServerException
+class DomainException extends RuntimeException
 {
     /**
-     * @param \Exception $previous
+     * @param \Exception $exception
      */
-    public function __construct(Exception $previous)
+    public function __construct(Exception $exception)
     {
-        $message = 'Error emitted from the domain model.';
-
-        parent::__construct($message, INTERNAL_SERVER_ERROR, $previous);
+        parent::__construct($exception->getMessage(), INTERNAL_SERVER_ERROR, $exception);
     }
 }

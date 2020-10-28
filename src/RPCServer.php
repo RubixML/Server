@@ -4,11 +4,12 @@ namespace Rubix\Server;
 
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
+use Rubix\Server\Traits\LoggerAware;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
-use Rubix\Server\Traits\LoggerAware;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Http\Server as HTTPServer;
 use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
@@ -16,7 +17,7 @@ use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
 
 use const Rubix\Server\Http\NOT_FOUND;
 use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
@@ -24,14 +25,14 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 /**
  * RPC Server
  *
- * A lightweight Remote Procedure Call (RPC) server over HTTP and HTTPS
- * that responds to serialized messages called commands.
+ * A lightweight Remote Procedure Call (RPC) server over HTTP and HTTPS that responds to
+ * serialized messages called commands.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RPCServer implements Server
+class RPCServer implements Server, LoggerAwareInterface
 {
     use LoggerAware;
 
@@ -90,7 +91,7 @@ class RPCServer implements Server
      * @param string|null $cert
      * @param \Rubix\Server\Http\Middleware\Middleware[] $middlewares
      * @param \Rubix\Server\Serializers\Serializer $serializer
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
@@ -131,7 +132,7 @@ class RPCServer implements Server
      * Serve a model.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @throws \InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function serve(Estimator $estimator) : void
     {

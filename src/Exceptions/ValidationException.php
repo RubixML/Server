@@ -2,15 +2,15 @@
 
 namespace Rubix\Server\Exceptions;
 
-use const Rubix\Server\Http\BAD_REQUEST;
+use const Rubix\Server\Http\UNPROCESSABLE_ENTITY;
 
-class ValidationException extends RubixServerException
+class ValidationException extends RuntimeException
 {
     /**
      * @param string $message
      */
     public function __construct(string $message)
     {
-        parent::__construct($message, BAD_REQUEST);
+        parent::__construct($message, UNPROCESSABLE_ENTITY);
     }
 }

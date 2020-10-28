@@ -12,6 +12,8 @@ namespace Rubix\Server\Http
 
     const METHOD_NOT_ALLOWED = 405;
 
+    const UNPROCESSABLE_ENTITY = 422;
+
     const TOO_MANY_REQUESTS = 429;
 
     const INTERNAL_SERVER_ERROR = 500;
