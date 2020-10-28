@@ -13,6 +13,7 @@ $ composer require rubix/server
 
 #### Optional
 - [Event extension](https://pecl.php.net/package/event) for high volume servers
+- [Bzip2 extension](https://www.php.net/manual/en/book.bzip2.php) for Bzip2 compression
 - [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
 
 ## Documentation
