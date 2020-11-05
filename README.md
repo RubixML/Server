@@ -30,7 +30,7 @@ $ composer require rubix/server
 	- [Shared Token Authenticator](#shared-token-authenticator)
 	- [Trusted Clients](#trusted-clients)
 
---
+---
 ### Servers
 Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implements their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache. By utilizing concurrency, each server instance is able to handle thousands of connections at the same time. Need more inference throughput? Model servers scale by adding more instances behind a load balancer.
 
