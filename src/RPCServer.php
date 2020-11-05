@@ -110,8 +110,7 @@ class RPCServer implements Server, LoggerAwareInterface
         }
 
         if (isset($cert) and empty($cert)) {
-            throw new InvalidArgumentException('Certificate cannot be'
-                . ' empty.');
+            throw new InvalidArgumentException('Certificate cannot be empty.');
         }
 
         foreach ($middlewares as $middleware) {
@@ -157,13 +156,9 @@ class RPCServer implements Server, LoggerAwareInterface
             ]);
         }
 
-        $addServerHeaders = function (Request $request, callable $next) {
-            return $next($request)->withHeader('Server', self::SERVER_NAME);
-        };
-
         $stack = $this->middlewares;
 
-        $stack[] = $addServerHeaders;
+        $stack[] = [$this, 'addServerHeaders'];
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -188,18 +183,18 @@ class RPCServer implements Server, LoggerAwareInterface
     {
         $method = $request->getMethod();
 
-        $uri = $request->getUri()->getPath();
+        $path = $request->getUri()->getPath();
 
         switch (true) {
-            case $uri !== self::HTTP_ENDPOINT:
-                $response = new ReactResponse(NOT_FOUND);
-
-                break 1;
-
             case $method !== self::HTTP_METHOD:
                 $response = new ReactResponse(METHOD_NOT_ALLOWED, [
                     'Allowed' => self::HTTP_METHOD,
                 ]);
+
+                break 1;
+
+            case $path !== self::HTTP_ENDPOINT:
+                $response = new ReactResponse(NOT_FOUND);
 
                 break 1;
 
@@ -208,5 +203,19 @@ class RPCServer implements Server, LoggerAwareInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Add the HTTP headers specific to this server.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function addServerHeaders(Request $request, callable $next) : Response
+    {
+        return $next($request)->withHeader('Server', self::SERVER_NAME);
     }
 }

@@ -21,11 +21,13 @@ use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
-use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Client as Guzzle;
-
-use const Rubix\Server\Http\SERVICE_UNAVAILABLE;
-use const Rubix\Server\Http\TOO_MANY_REQUESTS;
+use GuzzleHttp\HandlerStack;
+use GuzzleRetry\GuzzleRetryMiddleware;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * RPC Client
@@ -37,7 +39,7 @@ use const Rubix\Server\Http\TOO_MANY_REQUESTS;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RPCClient
+class RPCClient implements Client, AsyncClient
 {
     public const HTTP_HEADERS = [
         'User-Agent' => 'Rubix RPC Client',
@@ -59,26 +61,19 @@ class RPCClient
     protected $client;
 
     /**
-     * The number of retries before giving up.
-     *
-     * @var int
-     */
-    protected $retries;
-
-    /**
-     * The initial delay between request retries.
-     *
-     * @var float
-     */
-    protected $delay;
-
-    /**
      * The serializer used to serialize/unserialize messages before
      * and after transit.
      *
      * @var \Rubix\Server\Serializers\Serializer
      */
     protected $serializer;
+
+    /**
+     * The number of retries before giving up.
+     *
+     * @var int
+     */
+    protected $retries;
 
     /**
      * @param string $host
@@ -88,7 +83,6 @@ class RPCClient
      * @param \Rubix\Server\Serializers\Serializer|null $serializer
      * @param float $timeout
      * @param int $retries
-     * @param float $delay
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
@@ -98,13 +92,8 @@ class RPCClient
         array $headers = [],
         ?Serializer $serializer = null,
         float $timeout = 0.0,
-        int $retries = 3,
-        float $delay = 0.3
+        int $retries = 3
     ) {
-        if (filter_var($host, FILTER_VALIDATE_IP, self::IP_FLAGS) === false) {
-            throw new InvalidArgumentException('Invalid IP address for host.');
-        }
-
         if ($port < 0 or $port > self::MAX_TCP_PORT) {
             throw new InvalidArgumentException('Port number must be'
                 . ' between 0 and ' . self::MAX_TCP_PORT . ", $port given.");
@@ -120,195 +109,297 @@ class RPCClient
                 . " must be greater than 0, $retries given.");
         }
 
-        if ($delay < 0.0) {
-            throw new InvalidArgumentException('Retry delay cannot be'
-                . " less than 0, $delay given.");
-        }
-
         $serializer = $serializer ?? new JSON();
 
         $baseUri = ($secure ? 'https' : 'http') . "://$host:$port";
 
         $headers += self::HTTP_HEADERS + $serializer->headers();
 
+        $stack = HandlerStack::create();
+
+        $stack->push(GuzzleRetryMiddleware::factory());
+
         $this->client = new Guzzle([
             'base_uri' => $baseUri,
             'headers' => $headers,
             'timeout' => $timeout,
+            'max_retry_attempts' => $retries,
+            'handler' => $stack,
         ]);
 
         $this->serializer = $serializer;
-        $this->retries = $retries;
-        $this->delay = $delay;
     }
 
     /**
      * Make a set of predictions on a dataset.
      *
      * @param \Rubix\ML\Datasets\Dataset $dataset
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\PredictResponse
+     * @return (string|int|float)[]
      */
-    public function predict(Dataset $dataset) : PredictResponse
+    public function predict(Dataset $dataset) : array
     {
-        $response = $this->send(new Predict($dataset));
+        return $this->predictAsync($dataset)->wait();
+    }
 
-        if (!$response instanceof PredictResponse) {
-            throw new RuntimeException('Invalid response returned.');
-        }
+    /**
+     * Make a set of predictions on a dataset and return a promise.
+     *
+     * @param \Rubix\ML\Datasets\Dataset $dataset
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function predictAsync(Dataset $dataset) : PromiseInterface
+    {
+        $after = function (Response $response) {
+            if (!$response instanceof PredictResponse) {
+                throw new RuntimeException('Invalid response returned.');
+            }
 
-        return $response;
+            $promise = new Promise(function () use (&$promise, $response) {
+                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                $promise->resolve($response->predictions());
+            });
+
+            return $promise;
+        };
+
+        return $this->sendAsync(new Predict($dataset))->then($after);
     }
 
     /**
      * Make a single prediction on a sample.
      *
      * @param (string|int|float)[] $sample
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\PredictSampleResponse
+     * @return string|int|float
      */
-    public function predictSample(array $sample) : PredictSampleResponse
+    public function predictSample(array $sample)
     {
-        $response = $this->send(new PredictSample($sample));
+        return $this->predictSampleAsync($sample)->wait();
+    }
 
-        if (!$response instanceof PredictSampleResponse) {
-            throw new RuntimeException('Invalid response returned.');
-        }
+    /**
+     * Make a single prediction on a sample and return a promise.
+     *
+     * @param (string|int|float)[] $sample
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function predictSampleAsync(array $sample) : PromiseInterface
+    {
+        $after = function (Response $response) {
+            if (!$response instanceof PredictSampleResponse) {
+                throw new RuntimeException('Invalid response returned.');
+            }
 
-        return $response;
+            $promise = new Promise(function () use (&$promise, $response) {
+                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                $promise->resolve($response->prediction());
+            });
+
+            return $promise;
+        };
+
+        return $this->sendAsync(new PredictSample($sample))->then($after);
     }
 
     /**
      * Return the joint probabilities of each sample in a dataset.
      *
      * @param \Rubix\ML\Datasets\Dataset $dataset
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\ProbaResponse
+     * @return array[]
      */
-    public function proba(Dataset $dataset) : ProbaResponse
+    public function proba(Dataset $dataset) : array
     {
-        $response = $this->send(new Proba($dataset));
+        return $this->probaAsync($dataset)->wait();
+    }
 
-        if (!$response instanceof ProbaResponse) {
-            throw new RuntimeException('Invalid response returned.');
-        }
+    /**
+     * Compute the joint probabilities of the samples in a dataset and return a promise.
+     *
+     * @param \Rubix\ML\Datasets\Dataset $dataset
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function probaAsync(Dataset $dataset) : PromiseInterface
+    {
+        $after = function (Response $response) {
+            if (!$response instanceof ProbaResponse) {
+                throw new RuntimeException('Invalid response returned.');
+            }
 
-        return $response;
+            $promise = new Promise(function () use (&$promise, $response) {
+                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                $promise->resolve($response->probabilities());
+            });
+
+            return $promise;
+        };
+
+        return $this->sendAsync(new Proba($dataset))->then($after);
     }
 
     /**
      * Return the joint probabilities of a single sample.
      *
      * @param (string|int|float)[] $sample
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\ProbaSampleResponse
+     * @return float[]
      */
-    public function probaSample(array $sample) : ProbaSampleResponse
+    public function probaSample(array $sample) : array
     {
-        $response = $this->send(new ProbaSample($sample));
-
-        if (!$response instanceof ProbaSampleResponse) {
-            throw new RuntimeException('Invalid response returned.');
-        }
-
-        return $response;
+        return $this->probaSampleAsync($sample)->wait();
     }
 
     /**
-     * Return the anomaly scores of the samples in a dataset.
+     * Compute the joint probabilities of a single sample and return a promise.
+     *
+     * @param (string|int|float)[] $sample
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function probaSampleAsync(array $sample) : PromiseInterface
+    {
+        $after = function (Response $response) {
+            if (!$response instanceof ProbaSampleResponse) {
+                throw new RuntimeException('Invalid response returned.');
+            }
+
+            $promise = new Promise(function () use (&$promise, $response) {
+                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                $promise->resolve($response->probabilities());
+            });
+
+            return $promise;
+        };
+
+        return $this->sendAsync(new ProbaSample($sample))->then($after);
+    }
+
+    /**
+     * Return the anomaly scores of each sample in a dataset.
+     *
+     * @param \Rubix\ML\Datasets\Dataset $dataset
+     * @return float[]
+     */
+    public function score(Dataset $dataset) : array
+    {
+        return $this->scoreAsync($dataset)->wait();
+    }
+
+    /**
+     * Compute the anomaly scores of the samples in a dataset and return a promise.
      *
      * @param \Rubix\ML\Datasets\Dataset $dataset
      * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\ScoreResponse
+     * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function score(Dataset $dataset) : ScoreResponse
+    public function scoreAsync(Dataset $dataset) : PromiseInterface
     {
-        $response = $this->send(new Score($dataset));
+        $after = function (Response $response) {
+            if (!$response instanceof ScoreResponse) {
+                throw new RuntimeException('Invalid response returned.');
+            }
 
-        if (!$response instanceof ScoreResponse) {
-            throw new RuntimeException('Invalid response returned.');
-        }
+            $promise = new Promise(function () use (&$promise, $response) {
+                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                $promise->resolve($response->scores());
+            });
 
-        return $response;
+            return $promise;
+        };
+
+        return $this->sendAsync(new Score($dataset))->then($after);
     }
 
     /**
      * Return the anomaly score of a single sample.
      *
      * @param (string|int|float)[] $sample
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\ScoreSampleResponse
+     * @return float
      */
-    public function scoreSample(array $sample) : ScoreSampleResponse
+    public function scoreSample(array $sample) : float
     {
-        $response = $this->send(new ScoreSample($sample));
+        return $this->scoreSampleAsync($sample)->wait();
+    }
 
-        if (!$response instanceof ScoreSampleResponse) {
-            throw new RuntimeException('Invalid response returned.');
-        }
+    /**
+     * Compute the anomaly scores of a single sample and return a promise.
+     *
+     * @param (string|int|float)[] $sample
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function scoreSampleAsync(array $sample) : PromiseInterface
+    {
+        $after = function (Response $response) {
+            if (!$response instanceof ScoreSampleResponse) {
+                throw new RuntimeException('Invalid response returned.');
+            }
 
-        return $response;
+            $promise = new Promise(function () use (&$promise, $response) {
+                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                $promise->resolve($response->score());
+            });
+
+            return $promise;
+        };
+
+        return $this->sendAsync(new ScoreSample($sample))->then($after);
+    }
+
+    /**
+     * The callback to execute when the request promise is fulfilled.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\Promise
+     */
+    public function onFulfilled(ResponseInterface $response) : Promise
+    {
+        $promise = new Promise(function () use (&$promise, $response) {
+            $response = $this->serializer->unserialize($response->getBody());
+
+            if (!$response instanceof Response) {
+                throw new RuntimeException('Message is not a valid response.');
+            }
+
+            /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+            $promise->resolve($response);
+        });
+
+        return $promise;
+    }
+
+    /**
+     * The callback to execute when the request promise is rejected.
+     *
+     * @internal
+     *
+     * @param \GuzzleHttp\Exception\GuzzleException $exception
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @return \GuzzleHttp\Promise\Promise
+     */
+    public function onRejected(GuzzleException $exception) : Promise
+    {
+        throw $exception;
     }
 
     /**
      * Send a command to the server and return the results.
      *
      * @param \Rubix\Server\Commands\Command $command
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \Rubix\Server\Responses\Response
+     * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function send(Command $command) : Response
+    protected function sendAsync(Command $command) : PromiseInterface
     {
         $data = $this->serializer->serialize($command);
 
-        $maxTries = 1 + $this->retries;
-
-        $delay = $this->delay;
-
-        for ($tries = 0; $tries < $maxTries; ++$tries) {
-            try {
-                $response = $this->client->request(self::HTTP_METHOD, self::HTTP_ENDPOINT, [
-                    'body' => $data,
-                ]);
-
-                break 1;
-            } catch (BadResponseException $exception) {
-                $code = $exception->getCode();
-
-                if ($tries >= $maxTries) {
-                    break 1;
-                }
-
-                if ($code === SERVICE_UNAVAILABLE or $code === TOO_MANY_REQUESTS) {
-                    $response = $exception->getResponse();
-
-                    if ($response->hasHeader('Retry-After')) {
-                        $wait = (float) $response->getHeader('Retry-After')[0] ?? $delay;
-                    } else {
-                        $wait = $delay;
-                    }
-
-                    usleep((int) ($wait * 1e6));
-
-                    $delay *= 2.0;
-
-                    continue 1;
-                }
-
-                throw $exception;
-            }
-        }
-
-        if (empty($response)) {
-            throw new RuntimeException('No response from the server.');
-        }
-
-        $response = $this->serializer->unserialize($response->getBody());
-
-        if (!$response instanceof Response) {
-            throw new RuntimeException('Message is not a valid response.');
-        }
-
-        return $response;
+        return $this->client->requestAsync(self::HTTP_METHOD, self::HTTP_ENDPOINT, [
+            'body' => $data,
+        ])->then(
+            [$this, 'onFulfilled'],
+            [$this, 'onRejected']
+        );
     }
 }

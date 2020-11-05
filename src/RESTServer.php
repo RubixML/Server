@@ -35,8 +35,8 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 /**
  * HTTP Server
  *
- * A standalone JSON over HTTP and secure HTTP server exposing a REST
- * (Representational State Transfer) API.
+ * A standalone JSON over HTTP and secure HTTP server exposing a REST (Representational State
+ * Transfer) API.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -48,19 +48,14 @@ class RESTServer implements Server, LoggerAwareInterface
 
     public const SERVER_NAME = 'Rubix REST Server';
 
-    public const MODEL_PREFIX = '/model';
-
-    public const PREDICT_ENDPOINT = '/predictions';
-
-    public const PREDICT_SAMPLE_ENDPOINT = '/sample_prediction';
-
-    public const PROBA_ENDPOINT = '/probabilities';
-
-    public const PROBA_SAMPLE_ENDPOINT = '/sample_probabilities';
-
-    public const SCORE_ENDPOINT = '/scores';
-
-    public const SCORE_SAMPLE_ENDPOINT = '/sample_score';
+    public const ENDPOINTS = [
+        'predict' => '/model/predictions',
+        'predict_sample' => '/model/predictions/sample',
+        'proba' => '/model/probabilities',
+        'proba_sample' => '/model/probabilities/sample',
+        'score' => '/model/scores',
+        'score_sample' => '/model/scores/sample',
+    ];
 
     /**
      * The host address to bind the server to.
@@ -121,8 +116,7 @@ class RESTServer implements Server, LoggerAwareInterface
         }
 
         if (isset($cert) and empty($cert)) {
-            throw new InvalidArgumentException('Certificate cannot be'
-                . ' empty.');
+            throw new InvalidArgumentException('Certificate cannot be empty.');
         }
 
         foreach ($middlewares as $middleware) {
@@ -167,13 +161,9 @@ class RESTServer implements Server, LoggerAwareInterface
             ]);
         }
 
-        $addServerHeaders = function (Request $request, callable $next) {
-            return $next($request)->withHeader('Server', self::SERVER_NAME);
-        };
-
         $stack = $this->middlewares;
 
-        $stack[] = $addServerHeaders;
+        $stack[] = [$this, 'addServerHeaders'];
         $stack[] = [$this, 'handle'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -198,9 +188,9 @@ class RESTServer implements Server, LoggerAwareInterface
     {
         $method = $request->getMethod();
 
-        $uri = $request->getUri()->getPath();
+        $path = $request->getUri()->getPath();
 
-        $route = $this->router->dispatch($method, $uri);
+        $route = $this->router->dispatch($method, $path);
 
         [$status, $controller, $params] = array_pad($route, 3, null);
 
@@ -228,6 +218,20 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
+     * Add the HTTP headers specific to this server.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function addServerHeaders(Request $request, callable $next) : Response
+    {
+        return $next($request)->withHeader('Server', self::SERVER_NAME);
+    }
+
+    /**
      * Boot up the RESTful router.
      *
      * @param \Rubix\ML\Estimator $estimator
@@ -238,43 +242,41 @@ class RESTServer implements Server, LoggerAwareInterface
     {
         $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
 
-        $collector->addGroup(self::MODEL_PREFIX, function ($group) use ($estimator, $bus) {
-            $group->post(
-                self::PREDICT_ENDPOINT,
-                new PredictionsController($bus)
+        $collector->post(
+            self::ENDPOINTS['predict'],
+            new PredictionsController($bus)
+        );
+
+        if ($estimator instanceof Learner) {
+            $collector->post(
+                self::ENDPOINTS['predict_sample'],
+                new SamplePredictionController($bus)
+            );
+        }
+
+        if ($estimator instanceof Probabilistic) {
+            $collector->post(
+                self::ENDPOINTS['proba'],
+                new ProbabilitiesController($bus)
             );
 
-            if ($estimator instanceof Learner) {
-                $group->post(
-                    self::PREDICT_SAMPLE_ENDPOINT,
-                    new SamplePredictionController($bus)
-                );
-            }
+            $collector->post(
+                self::ENDPOINTS['proba_sample'],
+                new SampleProbabilitiesController($bus)
+            );
+        }
 
-            if ($estimator instanceof Probabilistic) {
-                $group->post(
-                    self::PROBA_ENDPOINT,
-                    new ProbabilitiesController($bus)
-                );
+        if ($estimator instanceof Ranking) {
+            $collector->post(
+                self::ENDPOINTS['score'],
+                new ScoresController($bus)
+            );
 
-                $group->post(
-                    self::PROBA_SAMPLE_ENDPOINT,
-                    new SampleProbabilitiesController($bus)
-                );
-            }
-
-            if ($estimator instanceof Ranking) {
-                $group->post(
-                    self::SCORE_ENDPOINT,
-                    new ScoresController($bus)
-                );
-
-                $group->post(
-                    self::SCORE_SAMPLE_ENDPOINT,
-                    new SampleScoreController($bus)
-                );
-            }
-        });
+            $collector->post(
+                self::ENDPOINTS['score_sample'],
+                new SampleScoreController($bus)
+            );
+        }
 
         return new GroupCountBasedDispatcher($collector->getData());
     }

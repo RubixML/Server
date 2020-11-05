@@ -1,7 +1,7 @@
 - 0.2.2-beta
-    - Added HTTP Access Log middleware
-    - Added command methods to RPC Client
-    - Removed Client interface
+    - Added Async Client interface
+    - Added HTTP Access Log Generator middleware
+    - Added command methods to client interfaces
     - Added Bzip2 message serializer
 
 - 0.2.1-beta

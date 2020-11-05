@@ -12,7 +12,7 @@ use const Rubix\Server\Http\UNAUTHORIZED;
 /**
  * Trusted Clients
  *
- * A whitelist of trusted clients - all other clients will be dropped.
+ * A whitelist of clients that can access the server - all other connections will be dropped.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -57,10 +57,10 @@ class TrustedClients implements Middleware
      */
     public function __invoke(Request $request, callable $next) : Response
     {
-        $params = $request->getServerParams();
+        $server = $request->getServerParams();
 
-        if (isset($params['REMOTE_ADDR'])) {
-            $ip = (string) trim(explode(':', $params['REMOTE_ADDR'], 2)[0]);
+        if (isset($server['REMOTE_ADDR'])) {
+            $ip = (string) trim(current(explode(':', $server['REMOTE_ADDR'], 2)));
 
             if (isset($this->ips[$ip])) {
                 return $next($request);

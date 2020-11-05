@@ -17,8 +17,8 @@ use const Rubix\Server\Http\UNAUTHORIZED;
  *
  * An implementation of HTTP Basic Auth as described in RFC7617.
  *
- * > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with
- * Secure Socket Layer (SSL) or Transport Layer Security (TLS).
+ * > **Note**: This authorization strategy is only secure over an encrypted communication
+ * channel such as HTTPS with SSL or TLS.
  *
  * References:
  * [1] J. Reschke. (2015). The 'Basic' HTTP Authentication Scheme.
@@ -82,12 +82,12 @@ class BasicAuthenticator implements Middleware
      */
     public function __invoke(Request $request, callable $next) : Response
     {
-        $data = $request->getHeaderLine(self::AUTH_HEADER);
+        $auth = $request->getHeaderLine(self::AUTH_HEADER);
 
-        if (strpos($data, self::SCHEME) === 0) {
-            $credentials = base64_decode(trim(substr($data, strlen(self::SCHEME))));
+        if (strpos($auth, self::SCHEME) === 0) {
+            $credentials = base64_decode(trim(substr($auth, strlen(self::SCHEME))));
 
-            [$username, $password] = array_pad(explode(self::CREDENTIALS_SEPARATOR, $credentials, 2), 2, '');
+            [$username, $password] = array_pad(explode(self::CREDENTIALS_SEPARATOR, $credentials, 2), 2, null);
 
             if (isset($this->passwords[$username])) {
                 if ($password === $this->passwords[$username]) {

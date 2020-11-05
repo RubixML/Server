@@ -12,11 +12,12 @@ use const Rubix\Server\Http\UNAUTHORIZED;
 /**
  * Shared Token Authenticator
  *
- * Authenticates incoming requests using a shared key that is kept secret between the
- * client and server.
+ * Authenticates incoming requests using a shared key that is kept secret between the client
+ * and server. It uses the `Authorization` header with the `Bearer` prefix to indicate the
+ * shared key.
  *
- * > **Note**: This strategy is only secure over an encrypted channel such as HTTPS with
- * Secure Socket Layer (SSL) or Transport Layer Security (TLS).
+ * > **Note**: This authorization strategy is only secure over an encrypted communication
+ * channel such as HTTPS with SSL or TLS.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -66,10 +67,10 @@ class SharedTokenAuthenticator implements Middleware
      */
     public function __invoke(Request $request, callable $next) : Response
     {
-        $data = $request->getHeaderLine(self::AUTH_HEADER);
+        $auth = $request->getHeaderLine(self::AUTH_HEADER);
 
-        if (strpos($data, self::SCHEME) === 0) {
-            $token = trim(substr($data, strlen(self::SCHEME)));
+        if (strpos($auth, self::SCHEME) === 0) {
+            $token = trim(substr($auth, strlen(self::SCHEME)));
 
             if (isset($this->tokens[$token])) {
                 return $next($request);

@@ -4,17 +4,17 @@ namespace Rubix\Server\Tests\Http\Middleware;
 
 use Rubix\ML\Other\Loggers\BlackHole;
 use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Middleware\AccessLog;
+use Rubix\Server\Http\Middleware\AccessLogGenerator;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Middleware
- * @covers \Rubix\Server\Http\Middleware\AccessLog
+ * @covers \Rubix\Server\Http\Middleware\AccessLogGenerator
  */
-class AccessLogTest extends TestCase
+class AccessLogGeneratorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Http\Middleware\AccessLog
+     * @var \Rubix\Server\Http\Middleware\AccessLogGenerator
      */
     protected $middleware;
 
@@ -23,7 +23,7 @@ class AccessLogTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->middleware = new AccessLog(new BlackHole());
+        $this->middleware = new AccessLogGenerator(new BlackHole());
     }
 
     /**
@@ -31,7 +31,7 @@ class AccessLogTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(AccessLog::class, $this->middleware);
+        $this->assertInstanceOf(AccessLogGenerator::class, $this->middleware);
         $this->assertInstanceOf(Middleware::class, $this->middleware);
     }
 }

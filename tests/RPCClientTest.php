@@ -22,7 +22,7 @@ class RPCClientTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->client = new RPCClient('127.0.0.1', 8888, false, [], new Native(), 0.0, 3, 0.3);
+        $this->client = new RPCClient('127.0.0.1', 8888, false, [], new Native(), 0.0, 3);
     }
 
     /**

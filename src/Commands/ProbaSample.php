@@ -18,7 +18,7 @@ class ProbaSample extends Command
     /**
      * The sample to predict.
      *
-     * @var mixed[]
+     * @var (string|int|float)[]
      */
     protected $sample;
 
@@ -39,7 +39,7 @@ class ProbaSample extends Command
     }
 
     /**
-     * @param mixed[] $sample
+     * @param (string|int|float)[] $sample
      * @throws \Rubix\Server\Exceptions\ValidationException
      */
     public function __construct(array $sample)
@@ -54,7 +54,7 @@ class ProbaSample extends Command
     /**
      * Return the sample to predict.
      *
-     * @return mixed[]
+     * @return (string|int|float)[]
      */
     public function sample() : array
     {
