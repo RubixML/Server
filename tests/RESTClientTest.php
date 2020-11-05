@@ -2,20 +2,19 @@
 
 namespace Rubix\Server\Tests;
 
-use Rubix\Server\RPCClient;
+use Rubix\Server\RESTClient;
 use Rubix\Server\Client;
 use Rubix\Server\AsyncClient;
-use Rubix\Server\Serializers\Native;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Clients
- * @covers \Rubix\Server\RPCClient
+ * @covers \Rubix\Server\RESTClient
  */
-class RPCClientTest extends TestCase
+class RESTClientTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\RPCClient
+     * @var \Rubix\Server\RESTClient
      */
     protected $client;
 
@@ -24,7 +23,7 @@ class RPCClientTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->client = new RPCClient('127.0.0.1', 8888, false, [], new Native(), 0.0, 3);
+        $this->client = new RESTClient('127.0.0.1', 8888, false, [], 0.0, 3);
     }
 
     /**
@@ -32,7 +31,7 @@ class RPCClientTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RPCClient::class, $this->client);
+        $this->assertInstanceOf(RESTClient::class, $this->client);
         $this->assertInstanceOf(Client::class, $this->client);
         $this->assertInstanceOf(AsyncClient::class, $this->client);
     }

@@ -1,5 +1,6 @@
 - 0.2.2-beta
     - Added Async Client interface
+    - Added REST client
     - Added HTTP Access Log Generator middleware
     - Added command methods to client interfaces
     - Added Bzip2 message serializer

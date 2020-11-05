@@ -25,8 +25,9 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 /**
  * RPC Server
  *
- * A lightweight Remote Procedure Call (RPC) server over HTTP and HTTPS that responds to
- * serialized messages called commands.
+ * A fast Remote Procedure Call (RPC) over HTTP(S) server that responds to messages called
+ * commands. Commands are serialized over the wire using one of numerous lightweight
+ * encodings including JSON, Gzipped JSON, and Igbinary.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -41,6 +42,8 @@ class RPCServer implements Server, LoggerAwareInterface
     public const HTTP_ENDPOINT = '/commands';
 
     public const HTTP_METHOD = 'POST';
+
+    protected const MAX_TCP_PORT = 65535;
 
     /**
      * The host address to bind the server to.
@@ -104,9 +107,9 @@ class RPCServer implements Server, LoggerAwareInterface
             throw new InvalidArgumentException('Host cannot be empty.');
         }
 
-        if ($port < 0) {
+        if ($port < 0 or $port > self::MAX_TCP_PORT) {
             throw new InvalidArgumentException('Port number must be'
-                . " a positive integer, $port given.");
+                . ' between 0 and ' . self::MAX_TCP_PORT . ", $port given.");
         }
 
         if (isset($cert) and empty($cert)) {

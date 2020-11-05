@@ -62,7 +62,7 @@ Or, you can load a previously trained estimator from storage and serve it like i
 use Rubix\ML\PersistentModel;
 use Rubix\ML\Persisters\Filesystem;
 
-$estimator = PersitentModel::load(new Filesystem('example.model'));
+$estimator = PersistentModel::load(new Filesystem('example.model'));
 
 $server->serve($estimator);
 ```
@@ -70,13 +70,15 @@ $server->serve($estimator);
 ### REST Server
 A JSON over HTTP(S) server exposing a [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) (Representational State Transfer) API. The REST server exposes one endpoint (resource) per command and can be queried using any standard HTTP client.
 
+Interfaces: [Server](#servers)
+
 #### Parameters
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middleware | | array | The HTTP middleware stack to run on each request. |
+| 4 | middlewares | | array | The HTTP middleware stack to run on each request. |
 
 #### HTTP Routes
 | Method | URI | JSON Params | Description |
@@ -97,7 +99,7 @@ use Rubix\Server\Http\Middleware\BasicAuthenticator;
 
 $server = new RESTServer('127.0.0.1', 443, '/cert.pem', [
 	new AccessLogGenerator(new Screen()),
-    new BasicAuthenticator([
+	new BasicAuthenticator([
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
@@ -107,13 +109,15 @@ $server = new RESTServer('127.0.0.1', 443, '/cert.pem', [
 ### RPC Server
 A fast [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) over HTTP(S) server that responds to messages called commands. Commands are serialized over the wire using one of numerous lightweight encodings including JSON, Gzipped JSON, and Igbinary.
 
+Interfaces: [Server](#servers)
+
 #### Parameters
 | # | Param | Default | Type | Description |
 |--|--|--|--|--|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middleware | | array | The HTTP middleware stack to run on each request. |
+| 4 | middlewares | | array | The HTTP middleware stack to run on each request. |
 | 5 | serializer | JSON | object | The message serializer. |
 
 #### Example
@@ -137,8 +141,110 @@ $server = new RPCServer('127.0.0.1', 8888, null, [
 ### Clients
 Clients allow you to communicate directly with a model server over the wire using a friendly object-oriented interface inside your PHP applications.
 
+Return the predictions from the model:
+```php
+public predict(Dataset $dataset) : array
+```
+
+```php
+use Rubix\Server\RPCClient;
+
+$client = new RPCClient('127.0.0.1', 8888);
+
+$predictions = $client->predict($dataset);
+```
+
+Predict a single sample:
+```php
+public predictSample(array $sample) : array
+```
+
+Calculate the joint probabilities of each sample in a dataset:
+```php
+public proba(Dataset $dataset) : array
+```
+
+Calculate the joint probabilities of a single sample:
+```php
+public probaSample(array $sample) : array
+```
+
+Calculate the anomaly scores of each sample in a dataset:
+```php
+public score(Dataset $dataset) : array
+```
+
+Calculate the anomaly score of a single sample:
+```php
+public scoreSample(array $sample) : array
+```
+
+#### Async Clients
+Clients that implement the Async Client interface have asynchronous versions of all the command methods. All asynchronous methods return a [Promises/A+](https://promisesaplus.com/) promise that resolves to the return value of the response.
+
+```php
+public predictAsync(Dataset $dataset) : Promise
+```
+
+Promises allow you to concurrently perform additional work while the request is processing or to execute multiple requests in parallel. Calling the `wait()` method on the promise will block until the promise is resolved and return the value.
+
+```php
+$promise = $client->predictAsync($dataset);
+
+// Do something else
+
+$predictions = $promise->wait();
+```
+
+```php
+public predictSampleAsync(array $sample) : Promise
+```
+
+```php
+public probaAsync(Dataset $dataset) : Promise
+```
+
+```php
+public probaSampleAsync(array $sample) : Promise
+```
+
+```php
+public scoreAsync(Dataset $dataset) : Promise
+```
+
+```php
+public scoreSampleAsync(array $sample) : Promise
+```
+
+### REST Client
+The REST (Representational State Transfer) client communicates with a [REST Server](#rest-server).
+
+Interfaces: [Client](#clients), [AsyncClient](#async-clients)
+
+#### Parameters
+| # | Param | Default | Type | Description |
+|--|--|--|--|--|
+| 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
+| 2 | port | 8888 | int | The network port that the HTTP server is running on. |
+| 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
+| 4 | headers | | array | Additional HTTP headers to send along with each request. |
+| 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
+| 6 | retries | 3 | int | The number of retries before giving up on the request. |
+
+#### Example
+
+```php
+use Rubix\Server\RESTClient;
+
+$client = new RESTClient('127.0.0.1', 443, true, [
+    'Authorization' => 'Basic ' . base64_encode('morgan:secret'),
+], 0.0, 5);
+```
+
 ### RPC Client
-The RPC Client provides methods for querying an [RPC Server](#rpc-server) over HTTP or Secure HTTP (HTTPS). Asynchronous commands return a [Promises/A+](https://promisesaplus.com) compatible promise that resolves to the value of the response allowing you to execute multiple concurrent queries. In addition, the RPC client uses a back-pressure mechanism to ensure that clients do not overwhelm the server under heavy load.
+The RPC Client provides methods for querying an [RPC Server](#rpc-server) over HTTP or Secure HTTP (HTTPS). In addition, the RPC client uses a back-pressure mechanism to ensure that clients do not overwhelm the server under heavy load.
+
+Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 
 #### Parameters
 | # | Param | Default | Type | Description |
@@ -161,75 +267,6 @@ use Rubix\Server\Serializers\JSON;
 $client = new RPCClient('127.0.0.1', 8888, false, [
     'Authorization' => 'Bearer secret',
 ], new Gzip(5, new JSON()), 3.5, 10);
-```
-
-#### Additional Methods
-Return the predictions from the model:
-```php
-public predict(Dataset $dataset) : array
-```
-
-```php
-$predictions = $client->predict($dataset);
-```
-
-Or, you can send an asynchronous request that returns a Promises/A+ promise:
-
-```php
-public predictAsync(Dataset $dataset) : Promise
-```
-
-```php
-$promise = $client->predictAsync($dataset);
-
-// Do something else
-
-$predictions = $promise->wait();
-```
-
-Predict a single sample:
-```php
-public predictSample(array $sample) : array
-```
-
-```php
-public predictSampleAsync(array $sample) : array
-```
-
-Calculate the joint probabilities of each sample in a dataset:
-```php
-public proba(Dataset $dataset) : array
-```
-
-```php
-public probaAsync(Dataset $dataset) : array
-```
-
-Calculate the joint probabilities of a single sample:
-```php
-public probaSample(array $sample) : array
-```
-
-```php
-public probaSampleAsync(array $sample) : array
-```
-
-Calculate the anomaly scores of each sample in a dataset:
-```php
-public score(Dataset $dataset) : array
-```
-
-```php
-public scoreAsync(Dataset $dataset) : array
-```
-
-Calculate the anomaly score of a single sample:
-```php
-public scoreSample(array $sample) : array
-```
-
-```php
-public scoreSampleAsync(array $sample) : array
 ```
 
 ---

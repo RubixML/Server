@@ -35,8 +35,9 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 /**
  * HTTP Server
  *
- * A standalone JSON over HTTP and secure HTTP server exposing a REST (Representational State
- * Transfer) API.
+ * A JSON over HTTP(S) server exposing a REST (Representational State Transfer) API. The REST
+ * server exposes one endpoint (resource) per command and can be queried using any standard
+ * HTTP client.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -56,6 +57,8 @@ class RESTServer implements Server, LoggerAwareInterface
         'score' => '/model/scores',
         'score_sample' => '/model/scores/sample',
     ];
+
+    protected const MAX_TCP_PORT = 65535;
 
     /**
      * The host address to bind the server to.
@@ -110,9 +113,9 @@ class RESTServer implements Server, LoggerAwareInterface
             throw new InvalidArgumentException('Host cannot be empty.');
         }
 
-        if ($port < 0) {
+        if ($port < 0 or $port > self::MAX_TCP_PORT) {
             throw new InvalidArgumentException('Port number must be'
-                . " a positive integer, $port given.");
+                . ' between 0 and ' . self::MAX_TCP_PORT . ", $port given.");
         }
 
         if (isset($cert) and empty($cert)) {
@@ -195,11 +198,6 @@ class RESTServer implements Server, LoggerAwareInterface
         [$status, $controller, $params] = array_pad($route, 3, null);
 
         switch ($status) {
-            case Dispatcher::NOT_FOUND:
-                $response = new ReactResponse(NOT_FOUND);
-
-                break 1;
-
             case Dispatcher::METHOD_NOT_ALLOWED:
                 /** @var string[] $allowed */
                 $allowed = $controller;
@@ -207,6 +205,11 @@ class RESTServer implements Server, LoggerAwareInterface
                 $response = new ReactResponse(METHOD_NOT_ALLOWED, [
                     'Allowed' => implode(', ', $allowed),
                 ]);
+
+                break 1;
+
+            case Dispatcher::NOT_FOUND:
+                $response = new ReactResponse(NOT_FOUND);
 
                 break 1;
 

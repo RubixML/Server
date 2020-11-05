@@ -2,12 +2,12 @@
 
 include __DIR__ . '../../../vendor/autoload.php';
 
-use Rubix\Server\RPCClient;
+use Rubix\Server\RESTClient;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 
-$client = new RPCClient('127.0.0.1', 8888, false, [
-    'Authorization' => 'Bearer secret',
+$client = new RESTClient('127.0.0.1', 8080, false, [
+    'Authorization' => 'Basic ' . base64_encode('user:secret'),
 ]);
 
 $generator = new Agglomerate([

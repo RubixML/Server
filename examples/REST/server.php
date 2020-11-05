@@ -7,6 +7,7 @@ use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 use Rubix\Server\RESTServer;
 use Rubix\Server\Http\Middleware\AccessLogGenerator;
+use Rubix\Server\Http\Middleware\BasicAuthenticator;
 use Rubix\ML\Other\Loggers\Screen;
 
 $generator = new Agglomerate([
@@ -23,6 +24,9 @@ $estimator->train($dataset);
 
 $server = new RESTServer('127.0.0.1', 8080, null, [
     new AccessLogGenerator(new Screen()),
+    new BasicAuthenticator([
+        'user' => 'secret',
+    ]),
 ]);
 
 $server->setLogger(new Screen());

@@ -3,6 +3,7 @@
 namespace Rubix\Server\Serializers;
 
 use Rubix\Server\Message;
+use Rubix\Server\Helpers\JSON as JSONHelper;
 use Rubix\Server\Exceptions\RuntimeException;
 
 class JSON implements Serializer
@@ -28,7 +29,7 @@ class JSON implements Serializer
      */
     public function serialize(Message $message) : string
     {
-        return json_encode($message) ?: '';
+        return JSONHelper::encode($message);
     }
 
     /**
@@ -40,7 +41,7 @@ class JSON implements Serializer
      */
     public function unserialize(string $data) : Message
     {
-        $json = json_decode($data, true);
+        $json = JSONHelper::decode($data);
 
         if (isset($json['name']) and isset($json['data'])) {
             $class = $json['name'];

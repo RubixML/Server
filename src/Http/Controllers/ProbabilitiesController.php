@@ -3,6 +3,7 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Commands\Proba;
+use Rubix\Server\Helpers\JSON;
 use Rubix\Server\Responses\ErrorResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -23,7 +24,7 @@ class ProbabilitiesController extends RESTController
     public function handle(Request $request, ?array $params = null) : Response
     {
         try {
-            $payload = json_decode($request->getBody()->getContents(), true);
+            $payload = JSON::decode($request->getBody()->getContents());
 
             $command = Proba::fromArray($payload);
 
@@ -36,7 +37,7 @@ class ProbabilitiesController extends RESTController
             $status = $exception->getCode();
         }
 
-        $data = json_encode($response->asArray()) ?: '';
+        $data = JSON::encode($response->asArray());
 
         return new ReactResponse($status, self::HEADERS, $data);
     }
