@@ -6,7 +6,7 @@ use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Http\Controllers\RPCController;
+use Rubix\Server\Http\Controllers\CommandsController;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
@@ -143,7 +143,7 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $this->router = new Router([
             '/commands' => [
-                'POST' => new RPCController($bus, $this->serializer),
+                'POST' => new CommandsController($bus, $this->serializer),
             ],
         ]);
 

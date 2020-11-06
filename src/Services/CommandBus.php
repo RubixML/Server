@@ -50,7 +50,7 @@ class CommandBus
      *
      * @var callable[]
      */
-    protected $mapping;
+    protected $handlers;
 
     /**
      * A PSR-3 logger instance.
@@ -68,41 +68,41 @@ class CommandBus
      */
     public static function boot(Estimator $estimator, ?LoggerInterface $logger = null) : self
     {
-        $mapping = [
+        $handlers = [
             Predict::class => new PredictHandler($estimator),
         ];
 
         if ($estimator instanceof Learner) {
-            $mapping += [
+            $handlers += [
                 PredictSample::class => new PredictSampleHandler($estimator),
             ];
         }
 
         if ($estimator instanceof Probabilistic) {
-            $mapping += [
+            $handlers += [
                 Proba::class => new ProbaHandler($estimator),
                 ProbaSample::class => new ProbaSampleHandler($estimator),
             ];
         }
 
         if ($estimator instanceof Ranking) {
-            $mapping += [
+            $handlers += [
                 Score::class => new ScoreHandler($estimator),
                 ScoreSample::class => new ScoreSampleHandler($estimator),
             ];
         }
 
-        return new self($mapping, $logger);
+        return new self($handlers, $logger);
     }
 
     /**
-     * @param callable[] $mapping
+     * @param callable[] $handlers
      * @param \Psr\Log\LoggerInterface|null $logger
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
-    public function __construct(array $mapping, ?LoggerInterface $logger = null)
+    public function __construct(array $handlers, ?LoggerInterface $logger = null)
     {
-        foreach ($mapping as $class => $handler) {
+        foreach ($handlers as $class => $handler) {
             if (!class_exists($class)) {
                 throw new InvalidArgumentException("Class $class does not exist.");
             }
@@ -112,7 +112,7 @@ class CommandBus
             }
         }
 
-        $this->mapping = $mapping;
+        $this->handlers = $handlers;
         $this->logger = $logger;
     }
 
@@ -128,11 +128,11 @@ class CommandBus
     {
         $class = get_class($command);
 
-        if (empty($this->mapping[$class])) {
+        if (empty($this->handlers[$class])) {
             throw new HandlerNotFound($command);
         }
 
-        $handler = $this->mapping[$class];
+        $handler = $this->handlers[$class];
 
         try {
             return call_user_func($handler, $command);

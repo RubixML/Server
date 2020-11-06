@@ -6,11 +6,11 @@
     "license": "MIT",
     "readme": "README.md",
     "keywords": [
-        "api", "cloud", "distributed", "inference", "inference engine", "inference server",
+        "ai", "api", "cloud", "distributed", "inference", "inference engine", "inference server",
         "infrastructure", "json api", "machine learning", "microservice", "ml", "ml infrastructure",
-        "model server", "model deployment", "php", "php machine learning", "php ml", "prediction",
-        "rest api", "rest server", "rpc client", "rpc server", "rubix", "rubix ml", "rubixml",
-        "server"
+        "ml server", "model server", "model deployment", "php", "pap ai", "php machine learning",
+        "php ml", "prediction", "rest api", "rest server", "rest client", "rpc client", "rpc server",
+        "rubix", "rubix ml", "rubixml", "server"
     ],
     "authors": [
         {

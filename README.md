@@ -23,6 +23,7 @@ $ composer require rubix/server
 	- [REST Server](#rest-server)
 	- [RPC Server](#rpc-server)
 - [Clients](#clients)
+	- [REST Client](#rest-client)
 	- [RPC Client](#rpc-client)
 - [HTTP Middleware](#http-middleware)
 	- [Access Log Generator](#access-log-generator)
@@ -47,7 +48,7 @@ $server = new RESTServer('127.0.0.1', 8080);
 
 $estimator = new KNearestNeighbors(5);
 
-// Import the training set
+// Import a dataset
 
 $estimator->train($dataset);
 
@@ -83,12 +84,12 @@ Interfaces: [Server](#servers)
 #### HTTP Routes
 | Method | URI | JSON Params | Description |
 |--|--|--|--|
-| POST | /model/predictions | `samples` | Return the predictions given by the model. |
-| POST | /model/predictions/sample | `sample` | Make a prediction on a single sample. |
-| POST | /model/probabilities | `samples` | Predict the probabilities of each outcome. |
-| POST | /model/probabilities/sample | `sample` | Return the probabilities of a single sample. |
-| POST | /model/scores | `samples` | Assign an anomaly score to each sample. |
-| POST | /model/scores/sample | `sample` | Assign an anomaly score to a single sample. |
+| POST | /model/predictions | `samples` | Make a set of predictions on a dataset. |
+| POST | /model/predictions/sample | `sample` | Make a single prediction on a sample. |
+| POST | /model/probabilities | `samples` | Return the joint probabilities of each sample in a dataset. |
+| POST | /model/probabilities/sample | `sample` | Return the joint probabilities of a single sample. |
+| POST | /model/scores | `samples` | Return the anomaly scores of each sample in a dataset. |
+| POST | /model/scores/sample | `sample` | Return the anomaly score of a single sample. |
 
 #### Example
 
@@ -139,7 +140,7 @@ $server = new RPCServer('127.0.0.1', 8888, null, [
 
 ---
 ### Clients
-Clients allow you to communicate directly with a model server over the wire using a friendly object-oriented interface inside your PHP applications.
+Clients allow you to communicate directly with a model server using a friendly object-oriented interface inside your PHP applications. Under the hood, clients handle all the networking communication and content negotiation for you so you can write programs *as if* the model was directly accessible in your applications.
 
 Return the predictions from the model:
 ```php
@@ -150,6 +151,8 @@ public predict(Dataset $dataset) : array
 use Rubix\Server\RPCClient;
 
 $client = new RPCClient('127.0.0.1', 8888);
+
+// Import a dataset
 
 $predictions = $client->predict($dataset);
 ```
@@ -180,7 +183,7 @@ public scoreSample(array $sample) : array
 ```
 
 #### Async Clients
-Clients that implement the Async Client interface have asynchronous versions of all the command methods. All asynchronous methods return a [Promises/A+](https://promisesaplus.com/) promise that resolves to the return value of the response.
+Clients that implement the Async Client interface have asynchronous versions of all the standard client methods. All asynchronous methods return a [Promises/A+](https://promisesaplus.com/) object that resolves to the return value of the response.
 
 ```php
 public predictAsync(Dataset $dataset) : Promise
@@ -298,7 +301,7 @@ $middleware = new AccessLog(new Screen());
 ### Basic Authenticator
 An implementation of HTTP Basic Auth as described in [RFC7617](https://tools.ietf.org/html/rfc7617).
 
-> **Note**: This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
 
 #### Parameters
 | # | Param | Default | Type | Description |
@@ -320,7 +323,7 @@ $middleware = new BasicAuthenticator([
 ### Shared Token Authenticator
 Authenticates incoming requests using a shared key that is kept secret between the client and server. It uses the `Authorization` header with the `Bearer` prefix to indicate the shared key.
 
-> **Note**: This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
 
 #### Parameters
 | # | Param | Default | Type | Description |

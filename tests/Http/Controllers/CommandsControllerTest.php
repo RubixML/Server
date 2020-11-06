@@ -6,7 +6,7 @@ use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Serializers\JSON;
-use Rubix\Server\Http\Controllers\RPCController;
+use Rubix\Server\Http\Controllers\CommandsController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\PredictResponse;
 use React\Http\Message\ServerRequest;
@@ -15,16 +15,16 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @group Controllers
- * @covers \Rubix\Server\Http\Controllers\RPCController
+ * @covers \Rubix\Server\Http\Controllers\CommandsController
  */
-class RPCControllerTest extends TestCase
+class CommandsControllerTest extends TestCase
 {
     protected const SAMPLES = [
         ['The first step is to establish that something is possible, then probability will occur.'],
     ];
 
     /**
-     * @var \Rubix\Server\Http\Controllers\RPCController
+     * @var \Rubix\Server\Http\Controllers\CommandsController
      */
     protected $controller;
 
@@ -38,7 +38,7 @@ class RPCControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new PredictResponse([]));
 
-        $this->controller = new RPCController($commandBus, new JSON());
+        $this->controller = new CommandsController($commandBus, new JSON());
     }
 
     /**
@@ -46,7 +46,7 @@ class RPCControllerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RPCController::class, $this->controller);
+        $this->assertInstanceOf(CommandsController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 

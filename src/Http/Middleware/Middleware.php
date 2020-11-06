@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 interface Middleware
 {
     /**
-     * Allow an instance to be called like a function.
+     * Process the request and return a response.
      *
      * @param Request $request
      * @param callable $next

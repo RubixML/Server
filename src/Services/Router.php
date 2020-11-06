@@ -16,7 +16,7 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 
 class Router
 {
-    public const HTTP_METHODS = [
+    public const AVAILABLE_METHODS = [
         'OPTIONS', 'GET', 'HEAD', 'POST',
     ];
 
@@ -25,21 +25,21 @@ class Router
      *
      * @var array[]
      */
-    protected $mapping;
+    protected $routes;
 
     /**
-     * @param array[] $mapping
+     * @param array[] $routes
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
-    public function __construct(array $mapping)
+    public function __construct(array $routes)
     {
-        foreach ($mapping as $uri => $actions) {
+        foreach ($routes as $uri => $actions) {
             if (!is_string($uri)) {
                 throw new InvalidArgumentException('URI must be a string.');
             }
 
             foreach ($actions as $method => $controller) {
-                if (!in_array($method, self::HTTP_METHODS)) {
+                if (!in_array($method, self::AVAILABLE_METHODS)) {
                     throw new InvalidArgumentException('Invalid HTTP method.');
                 }
 
@@ -50,7 +50,7 @@ class Router
             }
         }
 
-        $this->mapping = $mapping;
+        $this->routes = $routes;
     }
 
     /**
@@ -63,11 +63,11 @@ class Router
     {
         $uri = $request->getUri()->getPath();
 
-        if (empty($this->mapping[$uri])) {
+        if (empty($this->routes[$uri])) {
             return new ReactResponse(NOT_FOUND);
         }
 
-        $actions = $this->mapping[$uri];
+        $actions = $this->routes[$uri];
 
         $method = $request->getMethod();
 
