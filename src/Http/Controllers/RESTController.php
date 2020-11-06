@@ -2,9 +2,9 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\CommandBus;
+use Rubix\Server\Services\CommandBus;
 
-abstract class RESTController implements Controller
+abstract class RESTController extends Controller
 {
     public const HEADERS = [
         'Content-Type' => 'application/json',
@@ -14,12 +14,12 @@ abstract class RESTController implements Controller
     /**
      * The command bus.
      *
-     * @var \Rubix\Server\CommandBus
+     * @var \Rubix\Server\Services\CommandBus
      */
     protected $bus;
 
     /**
-     * @param \Rubix\Server\CommandBus $bus
+     * @param \Rubix\Server\Services\CommandBus $bus
      */
     public function __construct(CommandBus $bus)
     {

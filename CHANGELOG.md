@@ -4,6 +4,7 @@
     - Added HTTP Access Log Generator middleware
     - Added command methods to client interfaces
     - Added Bzip2 message serializer
+    - Optimize HTTP routing
 
 - 0.2.1-beta
     - Support PSR-15 Server Request Handler interface

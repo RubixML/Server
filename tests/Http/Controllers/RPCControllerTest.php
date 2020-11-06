@@ -3,7 +3,7 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\CommandBus;
+use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\RPCController;

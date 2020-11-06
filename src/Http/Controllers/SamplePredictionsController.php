@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Commands\ScoreSample;
+use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Helpers\JSON;
 use Rubix\Server\Responses\ErrorResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,7 +12,7 @@ use Exception;
 
 use const Rubix\Server\Http\HTTP_OK;
 
-class SampleScoreController extends RESTController
+class SamplePredictionsController extends RESTController
 {
     /**
      * Handle the request.
@@ -26,7 +26,7 @@ class SampleScoreController extends RESTController
         try {
             $payload = JSON::decode($request->getBody()->getContents());
 
-            $command = ScoreSample::fromArray($payload);
+            $command = PredictSample::fromArray($payload);
 
             $response = $this->bus->dispatch($command);
 

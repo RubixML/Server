@@ -46,9 +46,9 @@ class RPCClient implements Client, AsyncClient
         'User-Agent' => 'Rubix RPC Client',
     ];
 
-    public const HTTP_METHOD = 'POST';
-
-    public const HTTP_ENDPOINT = '/commands';
+    public const ROUTES = [
+        'commands' => ['POST', '/commands'],
+    ];
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -152,14 +152,14 @@ class RPCClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($response->predictions());
             });
 
             return $promise;
         };
 
-        return $this->sendAsync(new Predict($dataset))->then($after);
+        return $this->sendCommandAsync(new Predict($dataset))->then($after);
     }
 
     /**
@@ -188,14 +188,14 @@ class RPCClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($response->prediction());
             });
 
             return $promise;
         };
 
-        return $this->sendAsync(new PredictSample($sample))->then($after);
+        return $this->sendCommandAsync(new PredictSample($sample))->then($after);
     }
 
     /**
@@ -224,14 +224,14 @@ class RPCClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($response->probabilities());
             });
 
             return $promise;
         };
 
-        return $this->sendAsync(new Proba($dataset))->then($after);
+        return $this->sendCommandAsync(new Proba($dataset))->then($after);
     }
 
     /**
@@ -260,14 +260,14 @@ class RPCClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($response->probabilities());
             });
 
             return $promise;
         };
 
-        return $this->sendAsync(new ProbaSample($sample))->then($after);
+        return $this->sendCommandAsync(new ProbaSample($sample))->then($after);
     }
 
     /**
@@ -296,14 +296,14 @@ class RPCClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($response->scores());
             });
 
             return $promise;
         };
 
-        return $this->sendAsync(new Score($dataset))->then($after);
+        return $this->sendCommandAsync(new Score($dataset))->then($after);
     }
 
     /**
@@ -332,14 +332,14 @@ class RPCClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($response->score());
             });
 
             return $promise;
         };
 
-        return $this->sendAsync(new ScoreSample($sample))->then($after);
+        return $this->sendCommandAsync(new ScoreSample($sample))->then($after);
     }
 
     /**
@@ -360,7 +360,7 @@ class RPCClient implements Client, AsyncClient
                 throw new RuntimeException('Message is not a valid response.');
             }
 
-            /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+            /** @var \GuzzleHttp\Promise\Promise $promise */
             $promise->resolve($response);
         });
 
@@ -387,11 +387,13 @@ class RPCClient implements Client, AsyncClient
      * @param \Rubix\Server\Commands\Command $command
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    protected function sendAsync(Command $command) : PromiseInterface
+    protected function sendCommandAsync(Command $command) : PromiseInterface
     {
         $data = $this->serializer->serialize($command);
 
-        return $this->client->requestAsync(self::HTTP_METHOD, self::HTTP_ENDPOINT, [
+        [$method, $uri] = self::ROUTES['commands'];
+
+        return $this->client->requestAsync($method, $uri, [
             'body' => $data,
         ])->then(
             [$this, 'onFulfilled'],

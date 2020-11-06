@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server;
+namespace Rubix\Server\Services;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
@@ -27,6 +27,8 @@ use Psr\Log\LoggerInterface;
 use Exception;
 
 use function get_class;
+use function class_exists;
+use function is_callable;
 use function call_user_func;
 
 /**
@@ -66,13 +68,9 @@ class CommandBus
      */
     public static function boot(Estimator $estimator, ?LoggerInterface $logger = null) : self
     {
-        $mapping = [];
-
-        if ($estimator instanceof Estimator) {
-            $mapping += [
-                Predict::class => new PredictHandler($estimator),
-            ];
-        }
+        $mapping = [
+            Predict::class => new PredictHandler($estimator),
+        ];
 
         if ($estimator instanceof Learner) {
             $mapping += [
@@ -104,9 +102,9 @@ class CommandBus
      */
     public function __construct(array $mapping, ?LoggerInterface $logger = null)
     {
-        foreach ($mapping as $command => $handler) {
-            if (!class_exists($command)) {
-                throw new InvalidArgumentException("$command does not exist.");
+        foreach ($mapping as $class => $handler) {
+            if (!class_exists($class)) {
+                throw new InvalidArgumentException("Class $class does not exist.");
             }
 
             if (!is_callable($handler)) {
@@ -130,7 +128,7 @@ class CommandBus
     {
         $class = get_class($command);
 
-        if (!isset($this->mapping[$class])) {
+        if (empty($this->mapping[$class])) {
             throw new HandlerNotFound($command);
         }
 

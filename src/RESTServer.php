@@ -6,31 +6,24 @@ use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
-use Rubix\Server\Traits\LoggerAware;
+use Rubix\Server\Services\Router;
+use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\PredictionsController;
-use Rubix\Server\Http\Controllers\SamplePredictionController;
+use Rubix\Server\Http\Controllers\SamplePredictionsController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\ScoresController;
-use Rubix\Server\Http\Controllers\SampleScoreController;
+use Rubix\Server\Http\Controllers\SampleScoresController;
 use Rubix\Server\Exceptions\InvalidArgumentException;
+use Rubix\Server\Traits\LoggerAware;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Server as HTTPServer;
-use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
-use FastRoute\RouteCollector;
-use FastRoute\RouteParser\Std;
-use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
-use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
-use FastRoute\Dispatcher;
 use Psr\Log\LoggerAwareInterface;
-
-use const Rubix\Server\Http\NOT_FOUND;
-use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 
 /**
  * HTTP Server
@@ -48,15 +41,6 @@ class RESTServer implements Server, LoggerAwareInterface
     use LoggerAware;
 
     public const SERVER_NAME = 'Rubix REST Server';
-
-    public const ENDPOINTS = [
-        'predict' => '/model/predictions',
-        'predict_sample' => '/model/predictions/sample',
-        'proba' => '/model/probabilities',
-        'proba_sample' => '/model/probabilities/sample',
-        'score' => '/model/scores',
-        'score_sample' => '/model/scores/sample',
-    ];
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -90,9 +74,9 @@ class RESTServer implements Server, LoggerAwareInterface
     protected $middlewares;
 
     /**
-     * The controller dispatcher i.e the router.
+     * The router.
      *
-     * @var \FastRoute\Dispatcher
+     * @var \Rubix\Server\Services\Router
      */
     protected $router;
 
@@ -167,7 +151,7 @@ class RESTServer implements Server, LoggerAwareInterface
         $stack = $this->middlewares;
 
         $stack[] = [$this, 'addServerHeaders'];
-        $stack[] = [$this, 'handle'];
+        $stack[] = [$this->router, 'dispatch'];
 
         $server = new HTTPServer($loop, ...$stack);
 
@@ -179,45 +163,6 @@ class RESTServer implements Server, LoggerAwareInterface
         }
 
         $loop->run();
-    }
-
-    /**
-     * Handle an incoming request.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function handle(Request $request) : Response
-    {
-        $method = $request->getMethod();
-
-        $path = $request->getUri()->getPath();
-
-        $route = $this->router->dispatch($method, $path);
-
-        [$status, $controller, $params] = array_pad($route, 3, null);
-
-        switch ($status) {
-            case Dispatcher::METHOD_NOT_ALLOWED:
-                /** @var string[] $allowed */
-                $allowed = $controller;
-
-                $response = new ReactResponse(METHOD_NOT_ALLOWED, [
-                    'Allowed' => implode(', ', $allowed),
-                ]);
-
-                break 1;
-
-            case Dispatcher::NOT_FOUND:
-                $response = new ReactResponse(NOT_FOUND);
-
-                break 1;
-
-            default:
-                $response = $controller->handle($request, $params);
-        }
-
-        return $response;
     }
 
     /**
@@ -235,52 +180,50 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Boot up the RESTful router.
+     * Boot the RESTful router.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\CommandBus $bus
-     * @return \FastRoute\Dispatcher
+     * @param \Rubix\Server\Services\CommandBus $bus
+     * @return \Rubix\Server\Services\Router $router
      */
-    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Dispatcher
+    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Router
     {
-        $collector = new RouteCollector(new Std(), new GroupCountBasedDataGenerator());
-
-        $collector->post(
-            self::ENDPOINTS['predict'],
-            new PredictionsController($bus)
-        );
+        $mapping = [
+            '/model/predictions' => [
+                'POST' => new PredictionsController($bus),
+            ],
+        ];
 
         if ($estimator instanceof Learner) {
-            $collector->post(
-                self::ENDPOINTS['predict_sample'],
-                new SamplePredictionController($bus)
-            );
+            $mapping += [
+                '/model/predictions/sample' => [
+                    'POST' => new SamplePredictionsController($bus),
+                ],
+            ];
         }
 
         if ($estimator instanceof Probabilistic) {
-            $collector->post(
-                self::ENDPOINTS['proba'],
-                new ProbabilitiesController($bus)
-            );
-
-            $collector->post(
-                self::ENDPOINTS['proba_sample'],
-                new SampleProbabilitiesController($bus)
-            );
+            $mapping += [
+                '/model/probabilities' => [
+                    'POST' => new ProbabilitiesController($bus),
+                ],
+                '/model/probabilities/sample' => [
+                   'POST' => new SampleProbabilitiesController($bus),
+                ],
+            ];
         }
 
         if ($estimator instanceof Ranking) {
-            $collector->post(
-                self::ENDPOINTS['score'],
-                new ScoresController($bus)
-            );
-
-            $collector->post(
-                self::ENDPOINTS['score_sample'],
-                new SampleScoreController($bus)
-            );
+            $mapping += [
+                '/model/scores' => [
+                    'POST' => new ScoresController($bus),
+                ],
+                '/model/scores/sample' => [
+                    'POST' => new SampleScoresController($bus),
+                ],
+            ];
         }
 
-        return new GroupCountBasedDispatcher($collector->getData());
+        return new Router($mapping);
     }
 }

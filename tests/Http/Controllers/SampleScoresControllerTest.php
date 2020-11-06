@@ -2,8 +2,8 @@
 
 namespace Rubix\Server\Tests\Http\Controllers;
 
-use Rubix\Server\CommandBus;
-use Rubix\Server\Http\Controllers\SampleScoreController;
+use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Http\Controllers\SampleScoresController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\ScoreSampleResponse;
 use React\Http\Message\ServerRequest;
@@ -12,12 +12,12 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @group Controllers
- * @covers \Rubix\Server\Http\Controllers\SampleScoreController
+ * @covers \Rubix\Server\Http\Controllers\SampleScoresController
  */
-class SampleScoreControllerTest extends TestCase
+class SampleScoresControllerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Http\Controllers\SampleScoreController
+     * @var \Rubix\Server\Http\Controllers\SampleScoresController
      */
     protected $controller;
 
@@ -31,7 +31,7 @@ class SampleScoreControllerTest extends TestCase
         $commandBus->method('dispatch')
             ->willReturn(new ScoreSampleResponse(6.8));
 
-        $this->controller = new SampleScoreController($commandBus);
+        $this->controller = new SampleScoresController($commandBus);
     }
 
     /**
@@ -39,7 +39,7 @@ class SampleScoreControllerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(SampleScoreController::class, $this->controller);
+        $this->assertInstanceOf(SampleScoresController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 

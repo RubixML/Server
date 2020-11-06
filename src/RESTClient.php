@@ -29,6 +29,15 @@ class RESTClient implements Client, AsyncClient
         'User-Agent' => 'Rubix REST Client',
     ];
 
+    public const ROUTES = [
+        'predict' => ['POST', '/model/predictions'],
+        'predict_sample' => ['POST', '/model/predictions/sample'],
+        'proba' => ['POST', '/model/probabilities'],
+        'proba_sample' => ['POST', '/model/probabilities/sample'],
+        'score' => ['POST', '/model/scores'],
+        'score_sample' => ['POST', '/model/scores/sample'],
+    ];
+
     protected const MAX_TCP_PORT = 65535;
 
     /**
@@ -116,14 +125,16 @@ class RESTClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $payload) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload['predictions']);
             });
 
             return $promise;
         };
 
-        return $this->client->postAsync(RESTServer::ENDPOINTS['predict'], [
+        [$method, $uri] = self::ROUTES['predict'];
+
+        return $this->client->requestAsync($method, $uri, [
             'json' => [
                 'samples' => $dataset->samples(),
             ],
@@ -158,14 +169,16 @@ class RESTClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $payload) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload['prediction']);
             });
 
             return $promise;
         };
 
-        return $this->client->postAsync(RESTServer::ENDPOINTS['predict_sample'], [
+        [$method, $uri] = self::ROUTES['predict_sample'];
+
+        return $this->client->requestAsync($method, $uri, [
             'json' => [
                 'sample' => $sample,
             ],
@@ -200,18 +213,24 @@ class RESTClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $payload) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload['probabilities']);
             });
 
             return $promise;
         };
 
-        return $this->client->postAsync(RESTServer::ENDPOINTS['proba'], [
-            'json' => [
-                'samples' => $dataset->samples(),
-            ],
-        ])->then(
+        [$method, $uri] = self::ROUTES['proba'];
+
+        return $this->client->requestAsync(
+            $method,
+            $uri,
+            [
+                'json' => [
+                    'samples' => $dataset->samples(),
+                ],
+            ]
+        )->then(
             [$this, 'onFulfilled'],
             [$this, 'onRejected']
         )->then($after);
@@ -242,14 +261,16 @@ class RESTClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $payload) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload['probabilities']);
             });
 
             return $promise;
         };
 
-        return $this->client->postAsync(RESTServer::ENDPOINTS['proba_sample'], [
+        [$method, $uri] = self::ROUTES['proba_sample'];
+
+        return $this->client->requestAsync($method, $uri, [
             'json' => [
                 'sample' => $sample,
             ],
@@ -284,14 +305,16 @@ class RESTClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $payload) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload['scores']);
             });
 
             return $promise;
         };
 
-        return $this->client->postAsync(RESTServer::ENDPOINTS['score'], [
+        [$method, $uri] = self::ROUTES['score'];
+
+        return $this->client->requestAsync($method, $uri, [
             'json' => [
                 'samples' => $dataset->samples(),
             ],
@@ -326,14 +349,16 @@ class RESTClient implements Client, AsyncClient
             }
 
             $promise = new Promise(function () use (&$promise, $payload) {
-                /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+                /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload['score']);
             });
 
             return $promise;
         };
 
-        return $this->client->postAsync(RESTServer::ENDPOINTS['score_sample'], [
+        [$method, $uri] = self::ROUTES['score_sample'];
+
+        return $this->client->requestAsync($method, $uri, [
             'json' => [
                 'sample' => $sample,
             ],
@@ -357,7 +382,7 @@ class RESTClient implements Client, AsyncClient
         $promise = new Promise(function () use (&$promise, $response) {
             $payload = JSON::decode($response->getBody());
 
-            /** @var \GuzzleHttp\Promise\PromiseInterface $promise */
+            /** @var \GuzzleHttp\Promise\Promise $promise */
             $promise->resolve($payload);
         });
 

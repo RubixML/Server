@@ -4,6 +4,8 @@ namespace Rubix\Server\Helpers;
 
 use Rubix\Server\Exceptions\JSONException;
 
+use const JSON_ERROR_NONE;
+
 /**
  * JSON
  *

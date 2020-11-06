@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Tests\Http\Controllers;
 
-use Rubix\Server\CommandBus;
+use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Responses\PredictResponse;

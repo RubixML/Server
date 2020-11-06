@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\CommandBus;
+use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Responses\ErrorResponse;
@@ -14,12 +14,12 @@ use Exception;
 
 use const Rubix\Server\Http\HTTP_OK;
 
-class RPCController implements Controller
+class RPCController extends Controller
 {
     /**
      * The command bus.
      *
-     * @var \Rubix\Server\CommandBus
+     * @var \Rubix\Server\Services\CommandBus
      */
     protected $bus;
 
@@ -31,7 +31,7 @@ class RPCController implements Controller
     protected $serializer;
 
     /**
-     * @param \Rubix\Server\CommandBus $bus
+     * @param \Rubix\Server\Services\CommandBus $bus
      * @param \Rubix\Server\Serializers\Serializer $serializer
      */
     public function __construct(CommandBus $bus, Serializer $serializer)

@@ -28,7 +28,6 @@
         "php": ">=7.2",
         "caseyamcl/guzzle_retry_middleware": "^2.5",
         "guzzlehttp/guzzle": "^7.2",
-        "nikic/fast-route": "^1.3",
         "psr/http-message": "^1.0",
         "psr/http-server-handler": "^1.0",
         "psr/log": "^1.1",
@@ -45,6 +44,7 @@
     },
     "suggest": {
         "ext-event": "For high volume servers",
+        "ext-bzip2": "For Bzip2 compression support",
         "ext-igbinary": "For binary message serialization"
     },
     "autoload": {

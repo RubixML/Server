@@ -4,23 +4,21 @@ namespace Rubix\Server;
 
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
-use Rubix\Server\Traits\LoggerAware;
+use Rubix\Server\Services\Router;
+use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
+use Rubix\Server\Traits\LoggerAware;
 use React\Http\Server as HTTPServer;
-use React\Http\Message\Response as ReactResponse;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface;
-
-use const Rubix\Server\Http\NOT_FOUND;
-use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 
 /**
  * RPC Server
@@ -38,10 +36,6 @@ class RPCServer implements Server, LoggerAwareInterface
     use LoggerAware;
 
     public const SERVER_NAME = 'Rubix RPC Server';
-
-    public const HTTP_ENDPOINT = '/commands';
-
-    public const HTTP_METHOD = 'POST';
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -82,11 +76,11 @@ class RPCServer implements Server, LoggerAwareInterface
     protected $serializer;
 
     /**
-     * The RPC controller.
+     * The router.
      *
-     * @var \Rubix\Server\Http\Controllers\Controller
+     * @var \Rubix\Server\Services\Router
      */
-    protected $controller;
+    protected $router;
 
     /**
      * @param string $host
@@ -147,7 +141,11 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $bus = CommandBus::boot($estimator, $this->logger);
 
-        $this->controller = new RPCController($bus, $this->serializer);
+        $this->router = new Router([
+            '/commands' => [
+                'POST' => new RPCController($bus, $this->serializer),
+            ],
+        ]);
 
         $loop = Loop::create();
 
@@ -162,7 +160,7 @@ class RPCServer implements Server, LoggerAwareInterface
         $stack = $this->middlewares;
 
         $stack[] = [$this, 'addServerHeaders'];
-        $stack[] = [$this, 'handle'];
+        $stack[] = [$this->router, 'dispatch'];
 
         $server = new HTTPServer($loop, ...$stack);
 
@@ -174,38 +172,6 @@ class RPCServer implements Server, LoggerAwareInterface
         }
 
         $loop->run();
-    }
-
-    /**
-     * Handle an incoming request.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function handle(Request $request) : Response
-    {
-        $method = $request->getMethod();
-
-        $path = $request->getUri()->getPath();
-
-        switch (true) {
-            case $method !== self::HTTP_METHOD:
-                $response = new ReactResponse(METHOD_NOT_ALLOWED, [
-                    'Allowed' => self::HTTP_METHOD,
-                ]);
-
-                break 1;
-
-            case $path !== self::HTTP_ENDPOINT:
-                $response = new ReactResponse(NOT_FOUND);
-
-                break 1;
-
-            default:
-                $response = $this->controller->handle($request);
-        }
-
-        return $response;
     }
 
     /**
