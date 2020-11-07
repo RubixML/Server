@@ -132,9 +132,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $uri] = self::ROUTES['predict'];
+        [$method, $path] = self::ROUTES['predict'];
 
-        return $this->client->requestAsync($method, $uri, [
+        return $this->client->requestAsync($method, $path, [
             'json' => [
                 'samples' => $dataset->samples(),
             ],
@@ -176,9 +176,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $uri] = self::ROUTES['predict_sample'];
+        [$method, $path] = self::ROUTES['predict_sample'];
 
-        return $this->client->requestAsync($method, $uri, [
+        return $this->client->requestAsync($method, $path, [
             'json' => [
                 'sample' => $sample,
             ],
@@ -220,11 +220,11 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $uri] = self::ROUTES['proba'];
+        [$method, $path] = self::ROUTES['proba'];
 
         return $this->client->requestAsync(
             $method,
-            $uri,
+            $path,
             [
                 'json' => [
                     'samples' => $dataset->samples(),
@@ -268,9 +268,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $uri] = self::ROUTES['proba_sample'];
+        [$method, $path] = self::ROUTES['proba_sample'];
 
-        return $this->client->requestAsync($method, $uri, [
+        return $this->client->requestAsync($method, $path, [
             'json' => [
                 'sample' => $sample,
             ],
@@ -312,9 +312,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $uri] = self::ROUTES['score'];
+        [$method, $path] = self::ROUTES['score'];
 
-        return $this->client->requestAsync($method, $uri, [
+        return $this->client->requestAsync($method, $path, [
             'json' => [
                 'samples' => $dataset->samples(),
             ],
@@ -356,9 +356,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $uri] = self::ROUTES['score_sample'];
+        [$method, $path] = self::ROUTES['score_sample'];
 
-        return $this->client->requestAsync($method, $uri, [
+        return $this->client->requestAsync($method, $path, [
             'json' => [
                 'sample' => $sample,
             ],

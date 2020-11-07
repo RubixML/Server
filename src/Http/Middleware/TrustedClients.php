@@ -4,7 +4,6 @@ namespace Rubix\Server\Http\Middleware;
 
 use React\Http\Message\Response as ReactResponse;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 
 use const Rubix\Server\Http\UNAUTHORIZED;
@@ -51,11 +50,11 @@ class TrustedClients implements Middleware
     /**
      * Run the middleware over the request.
      *
-     * @param Request $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
-     * @return Response
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request, callable $next) : Response
+    public function __invoke(Request $request, callable $next)
     {
         $server = $request->getServerParams();
 

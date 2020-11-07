@@ -38,10 +38,9 @@ class CommandsController extends RPCController
      * Handle the request.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param mixed[]|null $params
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function handle(Request $request, ?array $params = null) : Response
+    public function handle(Request $request) : Response
     {
         try {
             $payload = $request->getBody()->getContents();

@@ -7,6 +7,7 @@ use Rubix\Server\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Message\Response as ReactResponse;
+use React\Promise\Promise;
 
 use function in_array;
 use function is_string;
@@ -33,9 +34,9 @@ class Router
      */
     public function __construct(array $routes)
     {
-        foreach ($routes as $uri => $actions) {
-            if (!is_string($uri)) {
-                throw new InvalidArgumentException('URI must be a string.');
+        foreach ($routes as $path => $actions) {
+            if (!is_string($path)) {
+                throw new InvalidArgumentException('Path must be a string.');
             }
 
             foreach ($actions as $method => $controller) {
@@ -54,20 +55,20 @@ class Router
     }
 
     /**
-     * Dispatch the request to a controller and return a response.
+     * Dispatch the request to a controller and return an immediate or deferred response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function dispatch(Request $request) : Response
+    public function dispatch(Request $request)
     {
-        $uri = $request->getUri()->getPath();
+        $path = $request->getUri()->getPath();
 
-        if (empty($this->routes[$uri])) {
+        if (empty($this->routes[$path])) {
             return new ReactResponse(NOT_FOUND);
         }
 
-        $actions = $this->routes[$uri];
+        $actions = $this->routes[$path];
 
         $method = $request->getMethod();
 
@@ -79,6 +80,8 @@ class Router
 
         $controller = $actions[$method];
 
-        return $controller->handle($request);
+        return new Promise(function ($resolve) use ($controller, $request) {
+            $resolve($controller->handle($request));
+        });
     }
 }

@@ -391,9 +391,9 @@ class RPCClient implements Client, AsyncClient
     {
         $data = $this->serializer->serialize($command);
 
-        [$method, $uri] = self::ROUTES['commands'];
+        [$method, $path] = self::ROUTES['commands'];
 
-        return $this->client->requestAsync($method, $uri, [
+        return $this->client->requestAsync($method, $path, [
             'body' => $data,
         ])->then(
             [$this, 'onFulfilled'],

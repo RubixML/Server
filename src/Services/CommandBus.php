@@ -29,7 +29,6 @@ use Exception;
 use function get_class;
 use function class_exists;
 use function is_callable;
-use function call_user_func;
 
 /**
  * Command Bus
@@ -135,7 +134,7 @@ class CommandBus
         $handler = $this->handlers[$class];
 
         try {
-            return call_user_func($handler, $command);
+            return $handler($command);
         } catch (Exception $exception) {
             $exception = new DomainException($exception);
 

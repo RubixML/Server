@@ -10,9 +10,9 @@ interface Middleware
     /**
      * Process the request and return a response.
      *
-     * @param Request $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
-     * @return Response
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request, callable $next) : Response;
+    public function __invoke(Request $request, callable $next);
 }

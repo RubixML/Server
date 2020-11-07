@@ -20,6 +20,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface;
 
+use function React\Promise\resolve;
+
 /**
  * RPC Server
  *
@@ -159,7 +161,7 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $stack = $this->middlewares;
 
-        $stack[] = [$this, 'addServerHeaders'];
+        $stack[] = [$this, 'addServerHeader'];
         $stack[] = [$this->router, 'dispatch'];
 
         $server = new HTTPServer($loop, ...$stack);
@@ -175,16 +177,20 @@ class RPCServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Add the HTTP headers specific to this server.
+     * Add the HTTP server header.
      *
      * @internal
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function addServerHeaders(Request $request, callable $next) : Response
+    public function addServerHeader(Request $request, callable $next)
     {
-        return $next($request)->withHeader('Server', self::SERVER_NAME);
+        $promise = resolve($next($request));
+
+        return $promise->then(function (Response $response) {
+            return $response->withHeader('Server', self::SERVER_NAME);
+        });
     }
 }
