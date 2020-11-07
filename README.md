@@ -75,21 +75,11 @@ Interfaces: [Server](#servers)
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | | array | The HTTP middleware stack to run on each request. |
-
-#### HTTP Routes
-| Method | URI | JSON Params | Description |
-|--|--|--|--|
-| POST | /model/predictions | `samples` | Make a set of predictions on a dataset. |
-| POST | /model/predictions/sample | `sample` | Make a single prediction on a sample. |
-| POST | /model/probabilities | `samples` | Return the joint probabilities of each sample in a dataset. |
-| POST | /model/probabilities/sample | `sample` | Return the joint probabilities of a single sample. |
-| POST | /model/scores | `samples` | Return the anomaly scores of each sample in a dataset. |
-| POST | /model/scores/sample | `sample` | Return the anomaly score of a single sample. |
 
 #### Example
 
@@ -107,6 +97,27 @@ $server = new RESTServer('127.0.0.1', 443, '/cert.pem', [
 ]);
 ```
 
+#### PHP Configuration
+This server respects the following `php.ini` configuration variables.
+
+| Name | Default | Description |
+|---|---|---|
+| memory_limit | 128M | The total amount of memory available to the server to handle requests. |
+| post_max_size | 8M | The maximum size of a request body to handle. |
+| enable_post_data_reading | 1 | Disabling this will force the request body to be read in a stream. |
+
+#### HTTP Routes
+This server exposes the following HTTP resources and their methods.
+
+| Method | URI | JSON Params | Description |
+|---|---|---|---|
+| POST | /model/predictions | `samples` | Make a set of predictions on a dataset. |
+| POST | /model/predictions/sample | `sample` | Make a single prediction on a sample. |
+| POST | /model/probabilities | `samples` | Return the joint probabilities of each sample in a dataset. |
+| POST | /model/probabilities/sample | `sample` | Return the joint probabilities of a single sample. |
+| POST | /model/scores | `samples` | Return the anomaly scores of each sample in a dataset. |
+| POST | /model/scores/sample | `sample` | Return the anomaly score of a single sample. |
+
 ### RPC Server
 A fast [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) over HTTP(S) server that responds to messages called commands. Commands are serialized over the wire using one of numerous lightweight encodings including JSON, Gzipped JSON, and Igbinary.
 
@@ -114,7 +125,7 @@ Interfaces: [Server](#servers)
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 8888 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
@@ -137,6 +148,22 @@ $server = new RPCServer('127.0.0.1', 8888, null, [
 	]),
 ], new Gzip(5, new JSON()));
 ```
+
+#### PHP Configuration
+This server respects the following `php.ini` configuration variables.
+
+| Name | Default | Description |
+|---|---|---|
+| memory_limit | 128M | The total amount of memory available to the server to handle requests. |
+| post_max_size | 8M | The maximum size of a request body to handle. |
+| enable_post_data_reading | 1 | Disabling this will force the request body to be read in a stream. |
+
+#### HTTP Routes
+This server exposes the following HTTP resources and their methods.
+
+| Method | URI | Description |
+|---|---|---|---|
+| POST | /commands | Execute a command on the server. |
 
 ---
 ### Clients
@@ -182,7 +209,7 @@ Calculate the anomaly score of a single sample:
 public scoreSample(array $sample) : array
 ```
 
-#### Async Clients
+### Async Clients
 Clients that implement the Async Client interface have asynchronous versions of all the standard client methods. All asynchronous methods return a [Promises/A+](https://promisesaplus.com/) object that resolves to the return value of the response.
 
 ```php
@@ -226,7 +253,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
@@ -251,7 +278,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
 | 2 | port | 8888 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
@@ -281,7 +308,7 @@ Generates an HTTP access log using a format similar to the Apache log format.
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | logger | | LoggerInterface | A PSR-3 logger instance. |
 
 #### Example
@@ -305,7 +332,7 @@ An implementation of HTTP Basic Auth as described in [RFC7617](https://tools.iet
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | passwords | | array | An associative map from usernames to their passwords. |
 | 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
 
@@ -327,7 +354,7 @@ Authenticates incoming requests using a shared key that is kept secret between t
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | tokens | | array | The shared secret keys (bearer tokens) used to authorize requests. |
 | 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
 
@@ -346,7 +373,7 @@ A whitelist of clients that can access the server - all other connections will b
 
 #### Parameters
 | # | Param | Default | Type | Description |
-|--|--|--|--|--|
+|---|---|---|---|---|
 | 1 | ips | ['127.0.0.1'] | array | An array of trusted client ip addresses. |
 
 #### Example
