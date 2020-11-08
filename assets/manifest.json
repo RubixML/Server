@@ -1,0 +1,21 @@
+{
+    "name": "Tank Robot",
+    "short_name": "Tank Robot",
+    "start_url": "/",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "app-icon-small.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "app-icon-large.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
+    "scope": "/"
+}
