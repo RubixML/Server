@@ -6,8 +6,8 @@ use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
-use Rubix\Server\Services\Router;
 use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\SamplePredictionsController;
@@ -79,7 +79,7 @@ class RESTServer implements Server, LoggerAwareInterface
     /**
      * The router.
      *
-     * @var \Rubix\Server\Services\Router
+     * @var \Rubix\Server\Http\Router
      */
     protected $router;
 
@@ -191,7 +191,7 @@ class RESTServer implements Server, LoggerAwareInterface
      *
      * @param \Rubix\ML\Estimator $estimator
      * @param \Rubix\Server\Services\CommandBus $bus
-     * @return \Rubix\Server\Services\Router $router
+     * @return \Rubix\Server\Http\Router $router
      */
     protected function bootRouter(Estimator $estimator, CommandBus $bus) : Router
     {

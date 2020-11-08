@@ -4,10 +4,10 @@ namespace Rubix\Server;
 
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
-use Rubix\Server\Services\Router;
 use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Http\Controllers\CommandsController;
+use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Controllers\CommandsController;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -81,7 +81,7 @@ class RPCServer implements Server, LoggerAwareInterface
     /**
      * The router.
      *
-     * @var \Rubix\Server\Services\Router
+     * @var \Rubix\Server\Http\Router
      */
     protected $router;
 

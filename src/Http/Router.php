@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Services;
+namespace Rubix\Server\Http;
 
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -11,9 +11,6 @@ use React\Promise\Promise;
 
 use function in_array;
 use function is_string;
-
-use const Rubix\Server\Http\NOT_FOUND;
-use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 
 class Router
 {
