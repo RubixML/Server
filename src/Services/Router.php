@@ -17,7 +17,7 @@ use const Rubix\Server\Http\METHOD_NOT_ALLOWED;
 
 class Router
 {
-    public const AVAILABLE_METHODS = [
+    public const SUPPORTED_METHODS = [
         'OPTIONS', 'GET', 'HEAD', 'POST',
     ];
 
@@ -40,8 +40,8 @@ class Router
             }
 
             foreach ($actions as $method => $controller) {
-                if (!in_array($method, self::AVAILABLE_METHODS)) {
-                    throw new InvalidArgumentException('Invalid HTTP method.');
+                if (!in_array($method, self::SUPPORTED_METHODS)) {
+                    throw new InvalidArgumentException('HTTP method not supported.');
                 }
 
                 if (!$controller instanceof Controller) {

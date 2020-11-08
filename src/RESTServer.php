@@ -17,12 +17,13 @@ use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoresController;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
+use React\Promise\PromiseInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface;
 
 use function React\Promise\resolve;
@@ -174,9 +175,9 @@ class RESTServer implements Server, LoggerAwareInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
-     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     * @return \React\Promise\PromiseInterface
      */
-    public function addServerHeader(Request $request, callable $next)
+    public function addServerHeader(Request $request, callable $next) : PromiseInterface
     {
         $promise = resolve($next($request));
 

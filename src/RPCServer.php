@@ -16,6 +16,7 @@ use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
+use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface;
@@ -183,9 +184,9 @@ class RPCServer implements Server, LoggerAwareInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
-     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     * @return \React\Promise\PromiseInterface
      */
-    public function addServerHeader(Request $request, callable $next)
+    public function addServerHeader(Request $request, callable $next) : PromiseInterface
     {
         $promise = resolve($next($request));
 
