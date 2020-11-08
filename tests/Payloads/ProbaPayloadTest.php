@@ -1,12 +1,16 @@
 <?php
 
-namespace Rubix\Server\Tests\Responses;
+namespace Rubix\Server\Tests\Payloads;
 
-use Rubix\Server\Responses\Response;
-use Rubix\Server\Responses\ProbaResponse;
+use Rubix\Server\Payloads\Payload;
+use Rubix\Server\Payloads\ProbaPayload;
 use PHPUnit\Framework\TestCase;
 
-class ProbaResponseTest extends TestCase
+/**
+ * @group Payloads
+ * @covers \Rubix\Server\Payloads\ProbaPayload
+ */
+class ProbaPayloadTest extends TestCase
 {
     protected const EXPECTED_PROBABILITIES = [
         [
@@ -16,16 +20,16 @@ class ProbaResponseTest extends TestCase
     ];
 
     /**
-     * @var \Rubix\Server\Responses\ProbaResponse
+     * @var \Rubix\Server\Payloads\ProbaPayload
      */
-    protected $response;
+    protected $payload;
 
     /**
      * @before
      */
     protected function setUp() : void
     {
-        $this->response = new ProbaResponse(self::EXPECTED_PROBABILITIES);
+        $this->payload = new ProbaPayload(self::EXPECTED_PROBABILITIES);
     }
 
     /**
@@ -33,8 +37,8 @@ class ProbaResponseTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(ProbaResponse::class, $this->response);
-        $this->assertInstanceOf(Response::class, $this->response);
+        $this->assertInstanceOf(ProbaPayload::class, $this->payload);
+        $this->assertInstanceOf(Payload::class, $this->payload);
     }
 
     /**
@@ -46,7 +50,7 @@ class ProbaResponseTest extends TestCase
             'probabilities' => self::EXPECTED_PROBABILITIES,
         ];
 
-        $payload = $this->response->asArray();
+        $payload = $this->payload->asArray();
 
         $this->assertIsArray($payload);
         $this->assertEquals($expected, $payload);

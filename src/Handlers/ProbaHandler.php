@@ -4,7 +4,7 @@ namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Probabilistic;
 use Rubix\Server\Commands\Proba;
-use Rubix\Server\Responses\ProbaResponse;
+use Rubix\Server\Payloads\ProbaPayload;
 
 class ProbaHandler
 {
@@ -27,12 +27,12 @@ class ProbaHandler
      * Handle the command.
      *
      * @param \Rubix\Server\Commands\Proba $command
-     * @return \Rubix\Server\Responses\ProbaResponse
+     * @return \Rubix\Server\Payloads\ProbaPayload
      */
-    public function __invoke(Proba $command) : ProbaResponse
+    public function __invoke(Proba $command) : ProbaPayload
     {
         $probabilities = $this->estimator->proba($command->dataset());
 
-        return new ProbaResponse($probabilities);
+        return new ProbaPayload($probabilities);
     }
 }

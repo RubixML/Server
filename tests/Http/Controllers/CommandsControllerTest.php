@@ -8,7 +8,7 @@ use Rubix\Server\Commands\Predict;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\CommandsController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Payloads\PredictPayload;
 use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -36,7 +36,7 @@ class CommandsControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new PredictResponse([]));
+            ->willReturn(new PredictPayload([]));
 
         $this->controller = new CommandsController($commandBus, new JSON());
     }

@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Payloads\PredictPayload;
 use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,7 @@ class PredictionsControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new PredictResponse([]));
+            ->willReturn(new PredictPayload([]));
 
         $this->controller = new PredictionsController($commandBus);
     }

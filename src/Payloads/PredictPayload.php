@@ -1,9 +1,9 @@
 <?php
 
-namespace Rubix\Server\Responses;
+namespace Rubix\Server\Payloads;
 
 /**
- * Predict Response
+ * Predict Payload
  *
  * This is the response returned from a predict command containing the
  * predictions returned from the model.
@@ -12,7 +12,7 @@ namespace Rubix\Server\Responses;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class PredictResponse extends Response
+class PredictPayload extends Payload
 {
     /**
      * The preditions returned from the model.

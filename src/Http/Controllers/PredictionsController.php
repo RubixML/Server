@@ -4,7 +4,7 @@ namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Helpers\JSON;
-use Rubix\Server\Responses\ErrorResponse;
+use Rubix\Server\Payloads\ErrorPayload;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use React\Http\Message\Response as ReactResponse;
@@ -31,7 +31,7 @@ class PredictionsController extends RESTController
 
             $status = HTTP_OK;
         } catch (Exception $exception) {
-            $response = ErrorResponse::fromException($exception);
+            $response = ErrorPayload::fromException($exception);
 
             $status = $exception->getCode();
         }

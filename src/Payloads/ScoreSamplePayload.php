@@ -1,15 +1,15 @@
 <?php
 
-namespace Rubix\Server\Responses;
+namespace Rubix\Server\Payloads;
 
 /**
- * Score Sample Response
+ * Score Sample Payload
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ScoreSampleResponse extends Response
+class ScoreSamplePayload extends Payload
 {
     /**
      * The anomaly score returned from the model.

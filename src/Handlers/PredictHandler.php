@@ -4,7 +4,7 @@ namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Estimator;
 use Rubix\Server\Commands\Predict;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Payloads\PredictPayload;
 
 class PredictHandler
 {
@@ -27,12 +27,12 @@ class PredictHandler
      * Handle the command.
      *
      * @param \Rubix\Server\Commands\Predict $command
-     * @return \Rubix\Server\Responses\PredictResponse
+     * @return \Rubix\Server\Payloads\PredictPayload
      */
-    public function __invoke(Predict $command) : PredictResponse
+    public function __invoke(Predict $command) : PredictPayload
     {
         $predictions = $this->estimator->predict($command->dataset());
 
-        return new PredictResponse($predictions);
+        return new PredictPayload($predictions);
     }
 }

@@ -4,7 +4,7 @@ namespace Rubix\Server\Tests\Handlers;
 
 use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Handlers\PredictSampleHandler;
-use Rubix\Server\Responses\PredictSampleResponse;
+use Rubix\Server\Payloads\PredictSamplePayload;
 use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
 
@@ -52,9 +52,9 @@ class PredictSampleHandlerTest extends TestCase
     {
         $command = new PredictSample(self::SAMPLE);
 
-        $response = call_user_func($this->handler, $command);
+        $payload = call_user_func($this->handler, $command);
 
-        $this->assertInstanceOf(PredictSampleResponse::class, $response);
-        $this->assertEquals(self::EXPECTED_PREDICTION, $response->prediction());
+        $this->assertInstanceOf(PredictSamplePayload::class, $payload);
+        $this->assertEquals(self::EXPECTED_PREDICTION, $payload->prediction());
     }
 }

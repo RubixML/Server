@@ -1,9 +1,9 @@
 <?php
 
-namespace Rubix\Server\Responses;
+namespace Rubix\Server\Payloads;
 
 /**
- * Proba Response
+ * Proba Payload
  *
  * This is the response from a Proba command containing the
  * probabilities obtained from the model.
@@ -12,7 +12,7 @@ namespace Rubix\Server\Responses;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ProbaResponse extends Response
+class ProbaPayload extends Payload
 {
     /**
      * The probabilities returned from the model.

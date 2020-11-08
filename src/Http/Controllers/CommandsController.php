@@ -5,7 +5,7 @@ namespace Rubix\Server\Http\Controllers;
 use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Serializers\Serializer;
-use Rubix\Server\Responses\ErrorResponse;
+use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Exceptions\ValidationException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -55,7 +55,7 @@ class CommandsController extends RPCController
 
             $status = HTTP_OK;
         } catch (Exception $exception) {
-            $response = ErrorResponse::fromException($exception);
+            $response = ErrorPayload::fromException($exception);
 
             $status = $exception->getCode();
         }

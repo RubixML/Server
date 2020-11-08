@@ -1,16 +1,16 @@
 <?php
 
-namespace Rubix\Server\Tests\Responses;
+namespace Rubix\Server\Tests\Payloads;
 
-use Rubix\Server\Responses\Response;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Payloads\Payload;
+use Rubix\Server\Payloads\PredictPayload;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group Responses
- * @covers \Rubix\Server\Responses\PredictResponse
+ * @group Payloads
+ * @covers \Rubix\Server\Payloads\PredictPayload
  */
-class PredictResponseTest extends TestCase
+class PredictPayloadTest extends TestCase
 {
     protected const EXPECTED_PREDICTIONS = [
         'not monster',
@@ -19,16 +19,16 @@ class PredictResponseTest extends TestCase
     ];
 
     /**
-     * @var \Rubix\Server\Responses\PredictResponse
+     * @var \Rubix\Server\Payloads\PredictPayload
      */
-    protected $response;
+    protected $payload;
 
     /**
      * @before
      */
     protected function setUp() : void
     {
-        $this->response = new PredictResponse(self::EXPECTED_PREDICTIONS);
+        $this->payload = new PredictPayload(self::EXPECTED_PREDICTIONS);
     }
 
     /**
@@ -36,8 +36,8 @@ class PredictResponseTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(PredictResponse::class, $this->response);
-        $this->assertInstanceOf(Response::class, $this->response);
+        $this->assertInstanceOf(PredictPayload::class, $this->payload);
+        $this->assertInstanceOf(Payload::class, $this->payload);
     }
 
     /**
@@ -49,7 +49,7 @@ class PredictResponseTest extends TestCase
             'predictions' => self::EXPECTED_PREDICTIONS,
         ];
 
-        $payload = $this->response->asArray();
+        $payload = $this->payload->asArray();
 
         $this->assertIsArray($payload);
         $this->assertEquals($expected, $payload);

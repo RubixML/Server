@@ -4,7 +4,7 @@ namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Ranking;
 use Rubix\Server\Commands\Score;
-use Rubix\Server\Responses\ScoreResponse;
+use Rubix\Server\Payloads\ScorePayload;
 
 class ScoreHandler
 {
@@ -27,12 +27,12 @@ class ScoreHandler
      * Handle the command.
      *
      * @param \Rubix\Server\Commands\Score $command
-     * @return \Rubix\Server\Responses\ScoreResponse
+     * @return \Rubix\Server\Payloads\ScorePayload
      */
-    public function __invoke(Score $command) : ScoreResponse
+    public function __invoke(Score $command) : ScorePayload
     {
         $scores = $this->estimator->score($command->dataset());
 
-        return new ScoreResponse($scores);
+        return new ScorePayload($scores);
     }
 }

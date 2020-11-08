@@ -19,7 +19,7 @@ use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\ScoreSampleHandler;
-use Rubix\Server\Responses\Response;
+use Rubix\Server\Payloads\Payload;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use Rubix\Server\Exceptions\DomainException;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -121,9 +121,9 @@ class CommandBus
      * @param \Rubix\Server\Commands\Command $command
      * @throws \Rubix\Server\Exceptions\HandlerNotFound
      * @throws \Rubix\Server\Exceptions\DomainException
-     * @return \Rubix\Server\Responses\Response
+     * @return \Rubix\Server\Payloads\Payload
      */
-    public function dispatch(Command $command) : Response
+    public function dispatch(Command $command) : Payload
     {
         $class = get_class($command);
 

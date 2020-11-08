@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\Handlers;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Commands\Predict;
 use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Payloads\PredictPayload;
 use Rubix\ML\Classifiers\DummyClassifier;
 use PHPUnit\Framework\TestCase;
 
@@ -61,9 +61,9 @@ class PredictHandlerTest extends TestCase
     {
         $command = new Predict(new Unlabeled(self::SAMPLES));
 
-        $response = call_user_func($this->handler, $command);
+        $payload = call_user_func($this->handler, $command);
 
-        $this->assertInstanceOf(PredictResponse::class, $response);
-        $this->assertEquals(self::EXPECTED_PREDICTIONS, $response->predictions());
+        $this->assertInstanceOf(PredictPayload::class, $payload);
+        $this->assertEquals(self::EXPECTED_PREDICTIONS, $payload->predictions());
     }
 }

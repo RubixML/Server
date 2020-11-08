@@ -1,11 +1,11 @@
 <?php
 
-namespace Rubix\Server\Responses;
+namespace Rubix\Server\Payloads;
 
 use Exception;
 
 /**
- * Error Response
+ * Error Payload
  *
  * This is the response from the server when something went wrong in
  * attempting to fulfill the request. It contains an error message that
@@ -15,7 +15,7 @@ use Exception;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ErrorResponse extends Response
+class ErrorPayload extends Payload
 {
     /**
      * The error message.

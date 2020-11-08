@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Controllers\SampleScoresController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\ScoreSampleResponse;
+use Rubix\Server\Payloads\ScoreSamplePayload;
 use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,7 @@ class SampleScoresControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new ScoreSampleResponse(6.8));
+            ->willReturn(new ScoreSamplePayload(6.8));
 
         $this->controller = new SampleScoresController($commandBus);
     }

@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\Http\Controllers;
 use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\ProbaResponse;
+use Rubix\Server\Payloads\ProbaPayload;
 use React\Http\Message\ServerRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,7 @@ class ProbabilitiesControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new ProbaResponse([]));
+            ->willReturn(new ProbaPayload([]));
 
         $this->controller = new ProbabilitiesController($commandBus);
     }

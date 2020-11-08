@@ -1,5 +1,6 @@
 - 0.2.3-beta
     - Non-error responses deferred for better concurrency
+    - Rename internal command Response objects to Payload
 
 - 0.2.2-beta
     - Added Async Client interface
