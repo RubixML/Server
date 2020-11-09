@@ -4,8 +4,6 @@ namespace Rubix\Server\Exceptions;
 
 use Rubix\Server\Commands\Command;
 
-use const Rubix\Server\Http\BAD_REQUEST;
-
 class HandlerNotFound extends RuntimeException
 {
     /**
@@ -13,6 +11,6 @@ class HandlerNotFound extends RuntimeException
      */
     public function __construct(Command $command)
     {
-        parent::__construct("The $command command is not supported.", BAD_REQUEST);
+        parent::__construct("The $command command is not supported.");
     }
 }

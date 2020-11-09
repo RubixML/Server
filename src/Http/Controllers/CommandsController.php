@@ -2,17 +2,13 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Commands\Command;
+use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Payloads\ErrorPayload;
-use Rubix\Server\Exceptions\ValidationException;
+use Rubix\Server\Http\Responses\UnprocessableEntity;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Message\Response as ReactResponse;
-use Exception;
-
-use const Rubix\Server\Http\HTTP_OK;
 
 class CommandsController extends RPCController
 {
@@ -35,33 +31,26 @@ class CommandsController extends RPCController
     }
 
     /**
-     * Handle the request.
+     * Handle the request and return a response or a deferred response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function handle(Request $request) : Response
+    public function __invoke(Request $request)
     {
-        try {
-            $payload = $request->getBody()->getContents();
+        $command = $request->getParsedBody();
 
-            $command = $this->serializer->unserialize($payload);
+        if (!$command instanceof Command) {
+            $payload = new ErrorPayload('Message must be a command.');
 
-            if (!$command instanceof Command) {
-                throw new ValidationException('Command could not be reconstituted.');
-            }
+            $data = $this->serializer->serialize($payload);
 
-            $response = $this->bus->dispatch($command);
-
-            $status = HTTP_OK;
-        } catch (Exception $exception) {
-            $response = ErrorPayload::fromException($exception);
-
-            $status = $exception->getCode();
+            return new UnprocessableEntity($this->serializer->headers(), $data);
         }
 
-        $data = $this->serializer->serialize($response);
-
-        return new ReactResponse($status, $this->serializer->headers(), $data);
+        return $this->bus->dispatch($command)->then(
+            [$this, 'respondSuccess'],
+            [$this, 'respondServerError']
+        );
     }
 }

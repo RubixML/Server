@@ -3,11 +3,11 @@
 namespace Rubix\Server\Http;
 
 use Rubix\Server\Http\Controllers\Controller;
+use Rubix\Server\Http\Responses\NotFound;
+use Rubix\Server\Http\Responses\MethodNotAllowed;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Message\Response as ReactResponse;
-use React\Promise\Promise;
 
 use function in_array;
 use function is_string;
@@ -15,7 +15,7 @@ use function is_string;
 class Router
 {
     public const SUPPORTED_METHODS = [
-        'OPTIONS', 'GET', 'HEAD', 'POST',
+        'OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE',
     ];
 
     /**
@@ -62,7 +62,7 @@ class Router
         $path = $request->getUri()->getPath();
 
         if (empty($this->routes[$path])) {
-            return new ReactResponse(NOT_FOUND);
+            return new NotFound();
         }
 
         $actions = $this->routes[$path];
@@ -70,15 +70,11 @@ class Router
         $method = $request->getMethod();
 
         if (empty($actions[$method])) {
-            return new ReactResponse(METHOD_NOT_ALLOWED, [
-                'Allowed' => implode(', ', array_keys($actions)),
-            ]);
+            return new MethodNotAllowed(array_keys($actions));
         }
 
         $controller = $actions[$method];
 
-        return new Promise(function ($resolve) use ($controller, $request) {
-            $resolve($controller->handle($request));
-        });
+        return $controller($request);
     }
 }

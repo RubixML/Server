@@ -3,8 +3,13 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Payloads\Payload;
+use Rubix\Server\Http\Responses\Success;
+use Rubix\Server\Http\Responses\InternalServerError;
+use Rubix\Server\Helpers\JSON;
+use Exception;
 
-abstract class RESTController extends Controller
+abstract class RESTController implements Controller
 {
     public const HEADERS = [
         'Content-Type' => 'application/json',
@@ -24,5 +29,29 @@ abstract class RESTController extends Controller
     public function __construct(CommandBus $bus)
     {
         $this->bus = $bus;
+    }
+
+    /**
+     * Send the payload in a successful response.
+     *
+     * @param \Rubix\Server\Payloads\Payload $payload
+     * @return \Rubix\Server\Http\Responses\Success
+     */
+    public function respondSuccess(Payload $payload) : Success
+    {
+        $data = JSON::encode($payload->asArray());
+
+        return new Success(self::HEADERS, $data);
+    }
+
+    /**
+     * Respond with an internal server error.
+     *
+     * @param \Exception $exception
+     * @return \Rubix\Server\Http\Responses\InternalServerError
+     */
+    public function respondServerError(Exception $exception) : InternalServerError
+    {
+        return new InternalServerError();
     }
 }

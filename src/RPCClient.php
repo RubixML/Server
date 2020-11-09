@@ -21,13 +21,13 @@ use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\HandlerStack;
 use GuzzleRetry\GuzzleRetryMiddleware;
 use Psr\Http\Message\ResponseInterface;
+use Exception;
 
 /**
  * RPC Client
@@ -343,7 +343,7 @@ class RPCClient implements Client, AsyncClient
     }
 
     /**
-     * The callback to execute when the request promise is fulfilled.
+     * Parse the response body and return a promise that resolves to a payload object.
      *
      * @internal
      *
@@ -351,7 +351,7 @@ class RPCClient implements Client, AsyncClient
      * @throws \Rubix\Server\Exceptions\RuntimeException
      * @return \GuzzleHttp\Promise\Promise
      */
-    public function onFulfilled(ResponseInterface $response) : Promise
+    public function parseResponseBody(ResponseInterface $response) : Promise
     {
         $promise = new Promise(function () use (&$promise, $response) {
             $payload = $this->serializer->unserialize($response->getBody());
@@ -361,24 +361,23 @@ class RPCClient implements Client, AsyncClient
             }
 
             /** @var \GuzzleHttp\Promise\Promise $promise */
-            $promise->resolve($response);
+            $promise->resolve($payload);
         });
 
         return $promise;
     }
 
     /**
-     * The callback to execute when the request promise is rejected.
+     * Rethrow a client exception from the server namespace.
      *
      * @internal
      *
-     * @param \GuzzleHttp\Exception\GuzzleException $exception
+     * @param \Exception $exception
      * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \GuzzleHttp\Promise\Promise
      */
-    public function onRejected(GuzzleException $exception) : Promise
+    public function handleException(Exception $exception) : void
     {
-        throw $exception;
+        throw new RuntimeException($exception->getMessage(), $exception->getCode(), $exception);
     }
 
     /**
@@ -396,8 +395,8 @@ class RPCClient implements Client, AsyncClient
         return $this->client->requestAsync($method, $path, [
             'body' => $data,
         ])->then(
-            [$this, 'onFulfilled'],
-            [$this, 'onRejected']
+            [$this, 'parseResponseBody'],
+            [$this, 'handleException']
         );
     }
 }

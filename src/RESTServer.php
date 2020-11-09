@@ -9,14 +9,19 @@ use Rubix\ML\Ranking;
 use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Controllers\PredictionsController;
 use Rubix\Server\Http\Controllers\SamplePredictionsController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\ScoresController;
 use Rubix\Server\Http\Controllers\SampleScoresController;
+use Rubix\Server\Http\Responses\BadRequest;
+use Rubix\Server\Http\Responses\UnsupportedMediaType;
+use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
+use Rubix\Server\Helpers\JSON;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
@@ -25,6 +30,7 @@ use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface;
+use Exception;
 
 use function React\Promise\resolve;
 
@@ -153,6 +159,7 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $stack = $this->middlewares;
 
+        $stack[] = [$this, 'parseRequestBody'];
         $stack[] = [$this, 'addServerHeader'];
         $stack[] = [$this->router, 'dispatch'];
 
@@ -166,6 +173,40 @@ class RESTServer implements Server, LoggerAwareInterface
         }
 
         $loop->run();
+    }
+
+    /**
+     * Parse the request body content.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function parseRequestBody(Request $request, callable $next)
+    {
+        $contentType = $request->getHeaderLine('Content-Type');
+
+        $acceptedContentType = RESTController::HEADERS['Accept'];
+
+        if ($contentType !== $acceptedContentType) {
+            return new UnsupportedMediaType($acceptedContentType);
+        }
+
+        try {
+            $json = JSON::decode($request->getBody());
+
+            $request = $request->withParsedBody($json);
+        } catch (Exception $exception) {
+            $payload = ErrorPayload::fromException($exception);
+
+            $data = JSON::encode($payload->asArray());
+
+            return new BadRequest(RESTController::HEADERS, $data);
+        }
+
+        return $next($request);
     }
 
     /**

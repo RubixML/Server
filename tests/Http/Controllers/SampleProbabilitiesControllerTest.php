@@ -7,7 +7,8 @@ use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Payloads\ProbaSamplePayload;
 use React\Http\Message\ServerRequest;
-use Psr\Http\Message\ResponseInterface as Response;
+use React\Promise\PromiseInterface;
+use React\Promise\Promise;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,7 +30,9 @@ class SampleProbabilitiesControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new ProbaSamplePayload([]));
+            ->willReturn(new Promise(function ($resolve) {
+                $resolve(new ProbaSamplePayload(['positive' => 0.8, 'negative' => 0.2]));
+            }));
 
         $this->controller = new SampleProbabilitiesController($commandBus);
     }
@@ -48,13 +51,16 @@ class SampleProbabilitiesControllerTest extends TestCase
      */
     public function handle() : void
     {
-        $request = new ServerRequest('POST', '/example', [], json_encode([
+        $payload = [
             'sample' => ['The first step is to establish that something is possible, then probability will occur.'],
-        ]) ?: '');
+        ];
 
-        $response = $this->controller->handle($request);
+        $request = new ServerRequest('POST', '/example', [], json_encode($payload) ?: '');
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
+        $request = $request->withParsedBody($payload);
+
+        $promise = call_user_func($this->controller, $request);
+
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

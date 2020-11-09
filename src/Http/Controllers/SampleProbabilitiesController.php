@@ -3,42 +3,39 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Commands\ProbaSample;
-use Rubix\Server\Helpers\JSON;
 use Rubix\Server\Payloads\ErrorPayload;
+use Rubix\Server\Http\Responses\UnprocessableEntity;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use React\Http\Message\Response as ReactResponse;
+use Rubix\Server\Helpers\JSON;
 use Exception;
-
-use const Rubix\Server\Http\HTTP_OK;
 
 class SampleProbabilitiesController extends RESTController
 {
     /**
-     * Handle the request.
+     * Handle the request and return a response or a deferred response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param Request $request
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function handle(Request $request) : Response
+    public function __invoke(Request $request)
     {
         try {
-            $payload = JSON::decode($request->getBody()->getContents());
+            /** @var mixed[] $json */
+            $json = $request->getParsedBody();
 
-            $command = ProbaSample::fromArray($payload);
-
-            $response = $this->bus->dispatch($command);
-
-            $status = HTTP_OK;
+            $command = ProbaSample::fromArray($json);
         } catch (Exception $exception) {
-            $response = ErrorPayload::fromException($exception);
+            $payload = ErrorPayload::fromException($exception);
 
-            $status = $exception->getCode();
+            $data = JSON::encode($payload->asArray());
+
+            return new UnprocessableEntity(self::HEADERS, $data);
         }
 
-        $data = JSON::encode($response->asArray());
-
-        return new ReactResponse($status, self::HEADERS, $data);
+        return $this->bus->dispatch($command)->then(
+            [$this, 'respondSuccess'],
+            [$this, 'respondServerError']
+        );
     }
 }

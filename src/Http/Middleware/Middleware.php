@@ -3,7 +3,6 @@
 namespace Rubix\Server\Http\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 
 interface Middleware
 {

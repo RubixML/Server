@@ -1,5 +1,5 @@
 - 0.2.3-beta
-    - Non-error responses deferred for better concurrency
+    - Non 4xx error responses deferred for better concurrency
     - Rename internal command Response objects to Payload
     - Trusted Clients middleware now returns Forbidden (403) response
 

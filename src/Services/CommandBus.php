@@ -19,10 +19,10 @@ use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\ScoreSampleHandler;
-use Rubix\Server\Payloads\Payload;
 use Rubix\Server\Exceptions\HandlerNotFound;
-use Rubix\Server\Exceptions\DomainException;
 use Rubix\Server\Exceptions\InvalidArgumentException;
+use React\Promise\PromiseInterface;
+use React\Promise\Promise;
 use Psr\Log\LoggerInterface;
 use Exception;
 
@@ -33,10 +33,9 @@ use function is_callable;
 /**
  * Command Bus
  *
- * The command pattern is a behavioral design pattern in which a command
- * object is used to encapsulate all information needed to perform an
- * action. The command bus is responsible for dispatching the commands to
- * their appropriate handlers.
+ * The command pattern is a behavioral design pattern in which a command object is used to encapsulate
+ * all the information needed to perform an action. The command bus is responsible for dispatching the
+ * commands to their appropriate handlers.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -120,10 +119,9 @@ class CommandBus
      *
      * @param \Rubix\Server\Commands\Command $command
      * @throws \Rubix\Server\Exceptions\HandlerNotFound
-     * @throws \Rubix\Server\Exceptions\DomainException
-     * @return \Rubix\Server\Payloads\Payload
+     * @return \React\Promise\PromiseInterface
      */
-    public function dispatch(Command $command) : Payload
+    public function dispatch(Command $command) : PromiseInterface
     {
         $class = get_class($command);
 
@@ -133,16 +131,25 @@ class CommandBus
 
         $handler = $this->handlers[$class];
 
-        try {
-            return $handler($command);
-        } catch (Exception $exception) {
-            $exception = new DomainException($exception);
+        $promise = new Promise(function ($resolve) use ($command, $handler) {
+            $resolve($handler($command));
+        });
 
-            if ($this->logger) {
-                $this->logger->error((string) $exception);
-            }
+        return $promise->otherwise([$this, 'logError']);
+    }
 
-            throw $exception;
+    /**
+     * Log and rethrow exception.
+     *
+     * @param \Exception $exception
+     * @throws \Exception
+     */
+    public function logError(Exception $exception) : void
+    {
+        if ($this->logger) {
+            $this->logger->error((string) $exception);
         }
+
+        throw $exception;
     }
 }
