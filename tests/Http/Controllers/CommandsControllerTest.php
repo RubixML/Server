@@ -8,9 +8,10 @@ use Rubix\Server\Commands\Predict;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Http\Controllers\CommandsController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Responses\PredictResponse;
+use Rubix\Server\Payloads\PredictPayload;
 use React\Http\Message\ServerRequest;
-use Psr\Http\Message\ResponseInterface as Response;
+use React\Promise\PromiseInterface;
+use React\Promise\Promise;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,7 +37,9 @@ class CommandsControllerTest extends TestCase
         $commandBus = $this->createMock(CommandBus::class);
 
         $commandBus->method('dispatch')
-            ->willReturn(new PredictResponse([]));
+            ->willReturn(new Promise(function ($resolve) {
+                $resolve(new PredictPayload(['positive']));
+            }));
 
         $this->controller = new CommandsController($commandBus, new JSON());
     }
@@ -57,15 +60,18 @@ class CommandsControllerTest extends TestCase
     {
         $dataset = new Unlabeled(self::SAMPLES);
 
+        $command = new Predict($dataset);
+
         $serializer = new JSON();
 
-        $data = $serializer->serialize(new Predict($dataset));
+        $data = $serializer->serialize($command);
 
         $request = new ServerRequest('POST', '/', [], $data);
 
-        $response = $this->controller->handle($request);
+        $request = $request->withParsedBody($command);
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
+        $promise = call_user_func($this->controller, $request);
+
+        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

@@ -9,15 +9,27 @@ use Rubix\Server\Exceptions\RuntimeException;
 class JSON implements Serializer
 {
     /**
+     * Return the MIME type of the encoding.
+     *
+     * @return string
+     */
+    public function mime() : string
+    {
+        return 'application/json';
+    }
+
+    /**
      * The HTTP headers to be send with each request or response in an associative array.
      *
      * @return string[]
      */
     public function headers() : array
     {
+        $mime = $this->mime();
+
         return [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
+            'Content-Type' => $mime,
+            'Accept' => $mime,
         ];
     }
 

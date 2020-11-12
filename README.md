@@ -112,14 +112,11 @@ This server exposes the following HTTP resources and their methods.
 | Method | URI | JSON Params | Description |
 |---|---|---|---|
 | POST | /model/predictions | `samples` | Make a set of predictions on a dataset. |
-| POST | /model/predictions/sample | `sample` | Make a single prediction on a sample. |
 | POST | /model/probabilities | `samples` | Return the joint probabilities of each sample in a dataset. |
-| POST | /model/probabilities/sample | `sample` | Return the joint probabilities of a single sample. |
-| POST | /model/scores | `samples` | Return the anomaly scores of each sample in a dataset. |
-| POST | /model/scores/sample | `sample` | Return the anomaly score of a single sample. |
+| POST | /model/anomaly_scores | `samples` | Return the anomaly scores of each sample in a dataset. |
 
 ### RPC Server
-A fast [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) over HTTP(S) server that responds to messages called commands. Commands are serialized over the wire using one of numerous lightweight encodings including JSON, Gzipped JSON, and Igbinary.
+A lightweight [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) over HTTP(S) server that responds to messages called commands. Commands are serialized over the wire using one of numerous encodings including JSON, Gzipped JSON, and Igbinary.
 
 Interfaces: [Server](#servers)
 
@@ -184,29 +181,14 @@ $client = new RPCClient('127.0.0.1', 8888);
 $predictions = $client->predict($dataset);
 ```
 
-Predict a single sample:
-```php
-public predictSample(array $sample) : array
-```
-
 Calculate the joint probabilities of each sample in a dataset:
 ```php
 public proba(Dataset $dataset) : array
 ```
 
-Calculate the joint probabilities of a single sample:
-```php
-public probaSample(array $sample) : array
-```
-
 Calculate the anomaly scores of each sample in a dataset:
 ```php
 public score(Dataset $dataset) : array
-```
-
-Calculate the anomaly score of a single sample:
-```php
-public scoreSample(array $sample) : array
 ```
 
 ### Async Clients
@@ -227,23 +209,11 @@ $predictions = $promise->wait();
 ```
 
 ```php
-public predictSampleAsync(array $sample) : Promise
-```
-
-```php
 public probaAsync(Dataset $dataset) : Promise
 ```
 
 ```php
-public probaSampleAsync(array $sample) : Promise
-```
-
-```php
 public scoreAsync(Dataset $dataset) : Promise
-```
-
-```php
-public scoreSampleAsync(array $sample) : Promise
 ```
 
 ### REST Client

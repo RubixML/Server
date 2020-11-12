@@ -3,31 +3,26 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Datasets\Dataset;
+use Rubix\Server\Http\Requests\CommandRequest;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Score;
-use Rubix\Server\Commands\ScoreSample;
-use Rubix\Server\Responses\Response;
-use Rubix\Server\Responses\PredictResponse;
-use Rubix\Server\Responses\PredictSampleResponse;
-use Rubix\Server\Responses\ProbaResponse;
-use Rubix\Server\Responses\ProbaSampleResponse;
-use Rubix\Server\Responses\ScoreResponse;
-use Rubix\Server\Responses\ScoreSampleResponse;
+use Rubix\Server\Payloads\Payload;
+use Rubix\Server\Payloads\PredictPayload;
+use Rubix\Server\Payloads\ProbaPayload;
+use Rubix\Server\Payloads\ScorePayload;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\HandlerStack;
 use GuzzleRetry\GuzzleRetryMiddleware;
 use Psr\Http\Message\ResponseInterface;
+use Exception;
 
 /**
  * RPC Client
@@ -109,7 +104,7 @@ class RPCClient implements Client, AsyncClient
 
         $baseUri = ($secure ? 'https' : 'http') . "://$host:$port";
 
-        $headers += self::HTTP_HEADERS + $serializer->headers();
+        $headers += self::HTTP_HEADERS;
 
         $stack = HandlerStack::create();
 
@@ -146,56 +141,20 @@ class RPCClient implements Client, AsyncClient
      */
     public function predictAsync(Dataset $dataset) : PromiseInterface
     {
-        $after = function (Response $response) : Promise {
-            if (!$response instanceof PredictResponse) {
+        $after = function (Payload $payload) : Promise {
+            if (!$payload instanceof PredictPayload) {
                 throw new RuntimeException('Invalid response returned.');
             }
 
-            $promise = new Promise(function () use (&$promise, $response) {
+            $promise = new Promise(function () use (&$promise, $payload) {
                 /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($response->predictions());
+                $promise->resolve($payload->predictions());
             });
 
             return $promise;
         };
 
         return $this->sendCommandAsync(new Predict($dataset))->then($after);
-    }
-
-    /**
-     * Make a single prediction on a sample.
-     *
-     * @param (string|int|float)[] $sample
-     * @return string|int|float
-     */
-    public function predictSample(array $sample)
-    {
-        return $this->predictSampleAsync($sample)->wait();
-    }
-
-    /**
-     * Make a single prediction on a sample and return a promise.
-     *
-     * @param (string|int|float)[] $sample
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function predictSampleAsync(array $sample) : PromiseInterface
-    {
-        $after = function (Response $response) : Promise {
-            if (!$response instanceof PredictSampleResponse) {
-                throw new RuntimeException('Invalid response returned.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($response->prediction());
-            });
-
-            return $promise;
-        };
-
-        return $this->sendCommandAsync(new PredictSample($sample))->then($after);
     }
 
     /**
@@ -218,56 +177,20 @@ class RPCClient implements Client, AsyncClient
      */
     public function probaAsync(Dataset $dataset) : PromiseInterface
     {
-        $after = function (Response $response) : Promise {
-            if (!$response instanceof ProbaResponse) {
+        $after = function (Payload $payload) : Promise {
+            if (!$payload instanceof ProbaPayload) {
                 throw new RuntimeException('Invalid response returned.');
             }
 
-            $promise = new Promise(function () use (&$promise, $response) {
+            $promise = new Promise(function () use (&$promise, $payload) {
                 /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($response->probabilities());
+                $promise->resolve($payload->probabilities());
             });
 
             return $promise;
         };
 
         return $this->sendCommandAsync(new Proba($dataset))->then($after);
-    }
-
-    /**
-     * Return the joint probabilities of a single sample.
-     *
-     * @param (string|int|float)[] $sample
-     * @return float[]
-     */
-    public function probaSample(array $sample) : array
-    {
-        return $this->probaSampleAsync($sample)->wait();
-    }
-
-    /**
-     * Compute the joint probabilities of a single sample and return a promise.
-     *
-     * @param (string|int|float)[] $sample
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function probaSampleAsync(array $sample) : PromiseInterface
-    {
-        $after = function (Response $response) : Promise {
-            if (!$response instanceof ProbaSampleResponse) {
-                throw new RuntimeException('Invalid response returned.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($response->probabilities());
-            });
-
-            return $promise;
-        };
-
-        return $this->sendCommandAsync(new ProbaSample($sample))->then($after);
     }
 
     /**
@@ -290,14 +213,14 @@ class RPCClient implements Client, AsyncClient
      */
     public function scoreAsync(Dataset $dataset) : PromiseInterface
     {
-        $after = function (Response $response) : Promise {
-            if (!$response instanceof ScoreResponse) {
+        $after = function (Payload $payload) : Promise {
+            if (!$payload instanceof ScorePayload) {
                 throw new RuntimeException('Invalid response returned.');
             }
 
-            $promise = new Promise(function () use (&$promise, $response) {
+            $promise = new Promise(function () use (&$promise, $payload) {
                 /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($response->scores());
+                $promise->resolve($payload->scores());
             });
 
             return $promise;
@@ -307,43 +230,7 @@ class RPCClient implements Client, AsyncClient
     }
 
     /**
-     * Return the anomaly score of a single sample.
-     *
-     * @param (string|int|float)[] $sample
-     * @return float
-     */
-    public function scoreSample(array $sample) : float
-    {
-        return $this->scoreSampleAsync($sample)->wait();
-    }
-
-    /**
-     * Compute the anomaly scores of a single sample and return a promise.
-     *
-     * @param (string|int|float)[] $sample
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function scoreSampleAsync(array $sample) : PromiseInterface
-    {
-        $after = function (Response $response) : Promise {
-            if (!$response instanceof ScoreSampleResponse) {
-                throw new RuntimeException('Invalid response returned.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $response) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($response->score());
-            });
-
-            return $promise;
-        };
-
-        return $this->sendCommandAsync(new ScoreSample($sample))->then($after);
-    }
-
-    /**
-     * The callback to execute when the request promise is fulfilled.
+     * Parse the response body and return a promise that resolves to a payload object.
      *
      * @internal
      *
@@ -351,34 +238,33 @@ class RPCClient implements Client, AsyncClient
      * @throws \Rubix\Server\Exceptions\RuntimeException
      * @return \GuzzleHttp\Promise\Promise
      */
-    public function onFulfilled(ResponseInterface $response) : Promise
+    public function parseResponseBody(ResponseInterface $response) : Promise
     {
         $promise = new Promise(function () use (&$promise, $response) {
-            $response = $this->serializer->unserialize($response->getBody());
+            $payload = $this->serializer->unserialize($response->getBody());
 
-            if (!$response instanceof Response) {
+            if (!$payload instanceof Payload) {
                 throw new RuntimeException('Message is not a valid response.');
             }
 
             /** @var \GuzzleHttp\Promise\Promise $promise */
-            $promise->resolve($response);
+            $promise->resolve($payload);
         });
 
         return $promise;
     }
 
     /**
-     * The callback to execute when the request promise is rejected.
+     * Rethrow a client exception from the server namespace.
      *
      * @internal
      *
-     * @param \GuzzleHttp\Exception\GuzzleException $exception
+     * @param \Exception $exception
      * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return \GuzzleHttp\Promise\Promise
      */
-    public function onRejected(GuzzleException $exception) : Promise
+    public function handleException(Exception $exception) : void
     {
-        throw $exception;
+        throw new RuntimeException($exception->getMessage(), $exception->getCode(), $exception);
     }
 
     /**
@@ -389,15 +275,11 @@ class RPCClient implements Client, AsyncClient
      */
     protected function sendCommandAsync(Command $command) : PromiseInterface
     {
-        $data = $this->serializer->serialize($command);
+        $request = new CommandRequest($command, $this->serializer);
 
-        [$method, $path] = self::ROUTES['commands'];
-
-        return $this->client->requestAsync($method, $path, [
-            'body' => $data,
-        ])->then(
-            [$this, 'onFulfilled'],
-            [$this, 'onRejected']
+        return $this->client->sendAsync($request)->then(
+            [$this, 'parseResponseBody'],
+            [$this, 'handleException']
         );
     }
 }

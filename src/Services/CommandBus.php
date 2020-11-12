@@ -3,26 +3,19 @@
 namespace Rubix\Server\Services;
 
 use Rubix\ML\Estimator;
-use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Score;
-use Rubix\Server\Commands\ScoreSample;
 use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\ScoreSampleHandler;
-use Rubix\Server\Responses\Response;
 use Rubix\Server\Exceptions\HandlerNotFound;
-use Rubix\Server\Exceptions\DomainException;
 use Rubix\Server\Exceptions\InvalidArgumentException;
+use React\Promise\PromiseInterface;
+use React\Promise\Promise;
 use Psr\Log\LoggerInterface;
 use Exception;
 
@@ -33,10 +26,9 @@ use function is_callable;
 /**
  * Command Bus
  *
- * The command pattern is a behavioral design pattern in which a command
- * object is used to encapsulate all information needed to perform an
- * action. The command bus is responsible for dispatching the commands to
- * their appropriate handlers.
+ * The command pattern is a behavioral design pattern in which a command object is used to encapsulate
+ * all the information needed to perform an action. The command bus is responsible for dispatching the
+ * commands to their appropriate handlers.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -71,24 +63,12 @@ class CommandBus
             Predict::class => new PredictHandler($estimator),
         ];
 
-        if ($estimator instanceof Learner) {
-            $handlers += [
-                PredictSample::class => new PredictSampleHandler($estimator),
-            ];
-        }
-
         if ($estimator instanceof Probabilistic) {
-            $handlers += [
-                Proba::class => new ProbaHandler($estimator),
-                ProbaSample::class => new ProbaSampleHandler($estimator),
-            ];
+            $handlers[Proba::class] = new ProbaHandler($estimator);
         }
 
         if ($estimator instanceof Ranking) {
-            $handlers += [
-                Score::class => new ScoreHandler($estimator),
-                ScoreSample::class => new ScoreSampleHandler($estimator),
-            ];
+            $handlers[Score::class] = new ScoreHandler($estimator);
         }
 
         return new self($handlers, $logger);
@@ -120,10 +100,9 @@ class CommandBus
      *
      * @param \Rubix\Server\Commands\Command $command
      * @throws \Rubix\Server\Exceptions\HandlerNotFound
-     * @throws \Rubix\Server\Exceptions\DomainException
-     * @return \Rubix\Server\Responses\Response
+     * @return \React\Promise\PromiseInterface
      */
-    public function dispatch(Command $command) : Response
+    public function dispatch(Command $command) : PromiseInterface
     {
         $class = get_class($command);
 
@@ -133,16 +112,25 @@ class CommandBus
 
         $handler = $this->handlers[$class];
 
-        try {
-            return $handler($command);
-        } catch (Exception $exception) {
-            $exception = new DomainException($exception);
+        $promise = new Promise(function ($resolve) use ($command, $handler) {
+            $resolve($handler($command));
+        });
 
-            if ($this->logger) {
-                $this->logger->error((string) $exception);
-            }
+        return $promise->otherwise([$this, 'logError']);
+    }
 
-            throw $exception;
+    /**
+     * Log and rethrow exception.
+     *
+     * @param \Exception $exception
+     * @throws \Exception
+     */
+    public function logError(Exception $exception) : void
+    {
+        if ($this->logger) {
+            $this->logger->error((string) $exception);
         }
+
+        throw $exception;
     }
 }

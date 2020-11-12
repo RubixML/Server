@@ -1,0 +1,78 @@
+<?php
+
+namespace Rubix\Server\Payloads;
+
+use Exception;
+
+/**
+ * Error Payload
+ *
+ * This is the response from the server when something went wrong in
+ * attempting to fulfill the request. It contains an error message that
+ * describes what went wrong.
+ *
+ * @category    Machine Learning
+ * @package     Rubix/Server
+ * @author      Andrew DalPino
+ */
+class ErrorPayload extends Payload
+{
+    /**
+     * The error message.
+     *
+     * @var string
+     */
+    protected $message;
+
+    /**
+     * Build the response from an exception instance.
+     *
+     * @param \Exception $exception
+     * @return self
+     */
+    public static function fromException(Exception $exception) : self
+    {
+        return new self($exception->getMessage());
+    }
+
+    /**
+     * Build the response from an associative array of data.
+     *
+     * @param mixed[] $data
+     * @return self
+     */
+    public static function fromArray(array $data) : self
+    {
+        return new self($data['message']);
+    }
+
+    /**
+     * @param string $message
+     */
+    public function __construct(string $message)
+    {
+        $this->message = $message;
+    }
+
+    /**
+     * Return the error message.
+     *
+     * @return string
+     */
+    public function message() : string
+    {
+        return $this->message;
+    }
+
+    /**
+     * Return the message as an array.
+     *
+     * @return mixed[]
+     */
+    public function asArray() : array
+    {
+        return [
+            'message' => $this->message,
+        ];
+    }
+}

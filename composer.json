@@ -28,8 +28,8 @@
         "php": ">=7.2",
         "caseyamcl/guzzle_retry_middleware": "^2.5",
         "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/psr7": "^1.7",
         "psr/http-message": "^1.0",
-        "psr/http-server-handler": "^1.0",
         "psr/log": "^1.1",
         "react/filesystem": "^0.1.2",
         "react/http": "^1.1",
@@ -51,10 +51,7 @@
     "autoload": {
         "psr-4": {
             "Rubix\\Server\\": "src/"
-        },
-        "files": [
-            "src/constants.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

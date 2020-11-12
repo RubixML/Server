@@ -57,6 +57,16 @@ class Gzip implements Serializer
     }
 
     /**
+     * Return the MIME type of the encoding.
+     *
+     * @return string
+     */
+    public function mime() : string
+    {
+        return $this->serializer->mime();
+    }
+
+    /**
      * The HTTP headers to be send with each request or response in an associative array.
      *
      * @return string[]

@@ -2,11 +2,9 @@
 
 namespace Rubix\Server\Http\Middleware;
 
-use React\Http\Message\Response as ReactResponse;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Rubix\Server\Http\Responses\Unauthorized;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-
-use const Rubix\Server\Http\UNAUTHORIZED;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
  * Shared Token Authenticator
@@ -76,8 +74,6 @@ class SharedTokenAuthenticator implements Middleware
             }
         }
 
-        return new ReactResponse(UNAUTHORIZED, [
-            'WWW-Authenticate' => "Bearer realm={$this->realm}",
-        ]);
+        return new Unauthorized($this->realm);
     }
 }

@@ -4,6 +4,9 @@ namespace Rubix\Server\Commands;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Specifications\SpecificationChain;
+use Rubix\Server\Specifications\DatasetIsNotEmpty;
+use Rubix\Server\Specifications\DatasetDoesNotContainImages;
 use Rubix\Server\Exceptions\ValidationException;
 
 /**
@@ -35,7 +38,7 @@ class Predict extends Command
     public static function fromArray(array $data) : self
     {
         if (!isset($data['samples'])) {
-            throw new ValidationException('Samples property must be present.');
+            throw new ValidationException("The 'samples' property is missing.");
         }
 
         return new self(new Unlabeled($data['samples']));
@@ -46,6 +49,11 @@ class Predict extends Command
      */
     public function __construct(Dataset $dataset)
     {
+        SpecificationChain::with([
+            new DatasetIsNotEmpty($dataset),
+            new DatasetDoesNotContainImages($dataset),
+        ])->check();
+
         $this->dataset = $dataset;
     }
 

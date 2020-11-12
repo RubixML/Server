@@ -4,10 +4,13 @@ namespace Rubix\Server;
 
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
-use Rubix\Server\Services\Router;
 use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Http\Controllers\CommandsController;
+use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Controllers\CommandsController;
+use Rubix\Server\Http\Responses\BadRequest;
+use Rubix\Server\Http\Responses\UnsupportedMediaType;
+use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -20,6 +23,7 @@ use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerAwareInterface;
+use Exception;
 
 use function React\Promise\resolve;
 
@@ -81,7 +85,7 @@ class RPCServer implements Server, LoggerAwareInterface
     /**
      * The router.
      *
-     * @var \Rubix\Server\Services\Router
+     * @var \Rubix\Server\Http\Router
      */
     protected $router;
 
@@ -162,6 +166,7 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $stack = $this->middlewares;
 
+        $stack[] = [$this, 'parseRequestBody'];
         $stack[] = [$this, 'addServerHeader'];
         $stack[] = [$this->router, 'dispatch'];
 
@@ -175,6 +180,40 @@ class RPCServer implements Server, LoggerAwareInterface
         }
 
         $loop->run();
+    }
+
+    /**
+     * Parse the request body content.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function parseRequestBody(Request $request, callable $next)
+    {
+        $contentType = $request->getHeaderLine('Content-Type');
+
+        $acceptedContentType = $this->serializer->mime();
+
+        if ($contentType !== $acceptedContentType) {
+            return new UnsupportedMediaType($acceptedContentType);
+        }
+
+        try {
+            $message = $this->serializer->unserialize($request->getBody());
+
+            $request = $request->withParsedBody($message);
+        } catch (Exception $exception) {
+            $payload = ErrorPayload::fromException($exception);
+
+            $data = $this->serializer->serialize($payload);
+
+            return new BadRequest($this->serializer->headers(), $data);
+        }
+
+        return $next($request);
     }
 
     /**

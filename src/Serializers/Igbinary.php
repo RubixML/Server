@@ -30,15 +30,27 @@ class Igbinary implements Serializer
     }
 
     /**
+     * Return the MIME type of the encoding.
+     *
+     * @return string
+     */
+    public function mime() : string
+    {
+        return 'application/octet-stream';
+    }
+
+    /**
      * The HTTP headers to be send with each request or response in an associative array.
      *
      * @return string[]
      */
     public function headers() : array
     {
+        $mime = $this->mime();
+
         return [
-            'Content-Type' => 'application/octet-stream',
-            'Accept' => 'application/octet-stream',
+            'Content-Type' => $mime,
+            'Accept' => $mime,
         ];
     }
 

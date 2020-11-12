@@ -2,11 +2,9 @@
 
 namespace Rubix\Server\Http\Middleware;
 
-use React\Http\Message\Response as ReactResponse;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Rubix\Server\Http\Responses\Forbidden;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-
-use const Rubix\Server\Http\UNAUTHORIZED;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
  * Trusted Clients
@@ -66,6 +64,6 @@ class TrustedClients implements Middleware
             }
         }
 
-        return new ReactResponse(UNAUTHORIZED);
+        return new Forbidden();
     }
 }
