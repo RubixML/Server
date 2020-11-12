@@ -11,11 +11,8 @@ use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Controllers\PredictionsController;
-use Rubix\Server\Http\Controllers\SamplePredictionsController;
 use Rubix\Server\Http\Controllers\ProbabilitiesController;
-use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
-use Rubix\Server\Http\Controllers\ScoresController;
-use Rubix\Server\Http\Controllers\SampleScoresController;
+use Rubix\Server\Http\Controllers\AnomalyScoresController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
 use Rubix\Server\Payloads\ErrorPayload;
@@ -188,7 +185,7 @@ class RESTServer implements Server, LoggerAwareInterface
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
-        $acceptedContentType = RESTController::HEADERS['Accept'];
+        $acceptedContentType = RESTController::HEADERS['Content-Type'];
 
         if ($contentType !== $acceptedContentType) {
             return new UnsupportedMediaType($acceptedContentType);
@@ -236,42 +233,24 @@ class RESTServer implements Server, LoggerAwareInterface
      */
     protected function bootRouter(Estimator $estimator, CommandBus $bus) : Router
     {
-        $mapping = [
+        $routes = [
             '/model/predictions' => [
                 'POST' => new PredictionsController($bus),
             ],
         ];
 
-        if ($estimator instanceof Learner) {
-            $mapping += [
-                '/model/predictions/sample' => [
-                    'POST' => new SamplePredictionsController($bus),
-                ],
-            ];
-        }
-
         if ($estimator instanceof Probabilistic) {
-            $mapping += [
-                '/model/probabilities' => [
-                    'POST' => new ProbabilitiesController($bus),
-                ],
-                '/model/probabilities/sample' => [
-                   'POST' => new SampleProbabilitiesController($bus),
-                ],
+            $routes['/model/probabilities'] = [
+                'POST' => new ProbabilitiesController($bus),
             ];
         }
 
         if ($estimator instanceof Ranking) {
-            $mapping += [
-                '/model/scores' => [
-                    'POST' => new ScoresController($bus),
-                ],
-                '/model/scores/sample' => [
-                    'POST' => new SampleScoresController($bus),
-                ],
+            $routes['/model/anomaly_scores'] = [
+                'POST' => new AnomalyScoresController($bus),
             ];
         }
 
-        return new Router($mapping);
+        return new Router($routes);
     }
 }

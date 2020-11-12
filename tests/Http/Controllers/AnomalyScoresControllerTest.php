@@ -3,9 +3,9 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Http\Controllers\SampleProbabilitiesController;
+use Rubix\Server\Http\Controllers\AnomalyScoresController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Payloads\ProbaSamplePayload;
+use Rubix\Server\Payloads\ScorePayload;
 use React\Http\Message\ServerRequest;
 use React\Promise\PromiseInterface;
 use React\Promise\Promise;
@@ -13,12 +13,12 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @group Controllers
- * @covers \Rubix\Server\Http\Controllers\SampleProbabilitiesController
+ * @covers \Rubix\Server\Http\Controllers\AnomalyScoresController
  */
-class SampleProbabilitiesControllerTest extends TestCase
+class ScoresControllerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Http\Controllers\SampleProbabilitiesController
+     * @var \Rubix\Server\Http\Controllers\AnomalyScoresController
      */
     protected $controller;
 
@@ -31,10 +31,10 @@ class SampleProbabilitiesControllerTest extends TestCase
 
         $commandBus->method('dispatch')
             ->willReturn(new Promise(function ($resolve) {
-                $resolve(new ProbaSamplePayload(['positive' => 0.8, 'negative' => 0.2]));
+                $resolve(new ScorePayload([0.9]));
             }));
 
-        $this->controller = new SampleProbabilitiesController($commandBus);
+        $this->controller = new AnomalyScoresController($commandBus);
     }
 
     /**
@@ -42,7 +42,7 @@ class SampleProbabilitiesControllerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(SampleProbabilitiesController::class, $this->controller);
+        $this->assertInstanceOf(AnomalyScoresController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
@@ -52,7 +52,9 @@ class SampleProbabilitiesControllerTest extends TestCase
     public function handle() : void
     {
         $payload = [
-            'sample' => ['The first step is to establish that something is possible, then probability will occur.'],
+            'samples' => [
+                ['The first step is to establish that something is possible, then probability will occur.'],
+            ],
         ];
 
         $request = new ServerRequest('POST', '/example', [], json_encode($payload) ?: '');

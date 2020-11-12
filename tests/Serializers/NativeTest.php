@@ -2,7 +2,8 @@
 
 namespace Rubix\Server\Tests\Serializers;
 
-use Rubix\Server\Commands\PredictSample;
+use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Serializers\Native;
 use Rubix\Server\Serializers\Serializer;
@@ -41,7 +42,7 @@ class NativeTest extends TestCase
      */
     public function serializeUnserialize() : void
     {
-        $command = new PredictSample(['beef']);
+        $command = new Predict(new Unlabeled(['beef']));
 
         $data = $this->serializer->serialize($command);
 
@@ -50,7 +51,7 @@ class NativeTest extends TestCase
 
         $command = $this->serializer->unserialize($data);
 
-        $this->assertInstanceOf(PredictSample::class, $command);
+        $this->assertInstanceOf(Predict::class, $command);
         $this->assertInstanceOf(Command::class, $command);
     }
 }

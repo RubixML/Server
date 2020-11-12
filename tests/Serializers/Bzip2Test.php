@@ -2,7 +2,8 @@
 
 namespace Rubix\Server\Tests\Serializers;
 
-use Rubix\Server\Commands\PredictSample;
+use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Commands\Predict;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Serializers\Bzip2;
 use Rubix\Server\Serializers\Serializer;
@@ -42,7 +43,7 @@ class Bzip2Test extends TestCase
      */
     public function serializeUnserialize() : void
     {
-        $command = new PredictSample(['beef']);
+        $command = new Predict(new Unlabeled(['beef']));
 
         $data = $this->serializer->serialize($command);
 
@@ -51,7 +52,7 @@ class Bzip2Test extends TestCase
 
         $command = $this->serializer->unserialize($data);
 
-        $this->assertInstanceOf(PredictSample::class, $command);
+        $this->assertInstanceOf(Predict::class, $command);
         $this->assertInstanceOf(Command::class, $command);
     }
 }

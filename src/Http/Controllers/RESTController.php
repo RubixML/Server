@@ -34,6 +34,8 @@ abstract class RESTController implements Controller
     /**
      * Send the payload in a successful response.
      *
+     * @internal
+     *
      * @param \Rubix\Server\Payloads\Payload $payload
      * @return \Rubix\Server\Http\Responses\Success
      */

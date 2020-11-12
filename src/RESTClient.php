@@ -3,9 +3,12 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Datasets\Dataset;
-use Rubix\Server\Helpers\JSON;
+use Rubix\Server\Http\Requests\PredictRequest;
+use Rubix\Server\Http\Requests\ProbaRequest;
+use Rubix\Server\Http\Requests\ScoreRequest;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
+use Rubix\Server\Helpers\JSON;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Client as Guzzle;
@@ -27,15 +30,6 @@ class RESTClient implements Client, AsyncClient
 {
     public const HTTP_HEADERS = [
         'User-Agent' => 'Rubix REST Client',
-    ];
-
-    public const ROUTES = [
-        'predict' => ['POST', '/model/predictions'],
-        'predict_sample' => ['POST', '/model/predictions/sample'],
-        'proba' => ['POST', '/model/probabilities'],
-        'proba_sample' => ['POST', '/model/probabilities/sample'],
-        'score' => ['POST', '/model/scores'],
-        'score_sample' => ['POST', '/model/scores/sample'],
     ];
 
     protected const MAX_TCP_PORT = 65535;
@@ -119,9 +113,10 @@ class RESTClient implements Client, AsyncClient
      */
     public function predictAsync(Dataset $dataset) : PromiseInterface
     {
-        $after = function (array $json) : Promise {
-            if (!isset($json['predictions'])) {
-                throw new RuntimeException('Invalid response returned.');
+        $validateResponse = function (array $json) : Promise {
+            if (empty($json['predictions'])) {
+                throw new RuntimeException('Predictions missing'
+                    . ' in response payload.');
             }
 
             $promise = new Promise(function () use (&$promise, $json) {
@@ -132,60 +127,12 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $path] = self::ROUTES['predict'];
+        $request = new PredictRequest($dataset);
 
-        return $this->client->requestAsync($method, $path, [
-            'json' => [
-                'samples' => $dataset->samples(),
-            ],
-        ])->then(
+        return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
             [$this, 'handleException']
-        )->then($after);
-    }
-
-    /**
-     * Make a single prediction on a sample.
-     *
-     * @param (string|int|float)[] $sample
-     * @return string|int|float
-     */
-    public function predictSample(array $sample)
-    {
-        return $this->predictSampleAsync($sample)->wait();
-    }
-
-    /**
-     * Make a single prediction on a sample and return a promise.
-     *
-     * @param (string|int|float)[] $sample
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function predictSampleAsync(array $sample) : PromiseInterface
-    {
-        $after = function (array $json) : Promise {
-            if (!isset($json['prediction'])) {
-                throw new RuntimeException('Invalid response returned.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $json) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($json['prediction']);
-            });
-
-            return $promise;
-        };
-
-        [$method, $path] = self::ROUTES['predict_sample'];
-
-        return $this->client->requestAsync($method, $path, [
-            'json' => [
-                'sample' => $sample,
-            ],
-        ])->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'handleException']
-        )->then($after);
+        )->then($validateResponse);
     }
 
     /**
@@ -207,9 +154,10 @@ class RESTClient implements Client, AsyncClient
      */
     public function probaAsync(Dataset $dataset) : PromiseInterface
     {
-        $after = function (array $json) : Promise {
-            if (!isset($json['probabilities'])) {
-                throw new RuntimeException('Invalid response returned.');
+        $validateResponse = function (array $json) : Promise {
+            if (empty($json['probabilities'])) {
+                throw new RuntimeException('Probabilities missing'
+                    . ' in response payload.');
             }
 
             $promise = new Promise(function () use (&$promise, $json) {
@@ -220,60 +168,12 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $path] = self::ROUTES['proba'];
+        $request = new ProbaRequest($dataset);
 
-        return $this->client->requestAsync($method, $path, [
-            'json' => [
-                'samples' => $dataset->samples(),
-            ],
-        ])->then(
+        return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
             [$this, 'handleException']
-        )->then($after);
-    }
-
-    /**
-     * Return the joint probabilities of a single sample.
-     *
-     * @param (string|int|float)[] $sample
-     * @return float[]
-     */
-    public function probaSample(array $sample) : array
-    {
-        return $this->probaSampleAsync($sample)->wait();
-    }
-
-    /**
-     * Compute the joint probabilities of a single sample and return a promise.
-     *
-     * @param (string|int|float)[] $sample
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function probaSampleAsync(array $sample) : PromiseInterface
-    {
-        $after = function (array $json) : Promise {
-            if (!isset($json['probabilities'])) {
-                throw new RuntimeException('Invalid response returned.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $json) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($json['probabilities']);
-            });
-
-            return $promise;
-        };
-
-        [$method, $path] = self::ROUTES['proba_sample'];
-
-        return $this->client->requestAsync($method, $path, [
-            'json' => [
-                'sample' => $sample,
-            ],
-        ])->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'handleException']
-        )->then($after);
+        )->then($validateResponse);
     }
 
     /**
@@ -295,9 +195,10 @@ class RESTClient implements Client, AsyncClient
      */
     public function scoreAsync(Dataset $dataset) : PromiseInterface
     {
-        $after = function (array $json) : Promise {
-            if (!isset($json['scores'])) {
-                throw new RuntimeException('Invalid response returned.');
+        $validateResponse = function (array $json) : Promise {
+            if (empty($json['scores'])) {
+                throw new RuntimeException('Anomaly scores missing'
+                    . ' in response payload.');
             }
 
             $promise = new Promise(function () use (&$promise, $json) {
@@ -308,60 +209,12 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        [$method, $path] = self::ROUTES['score'];
+        $request = new ScoreRequest($dataset);
 
-        return $this->client->requestAsync($method, $path, [
-            'json' => [
-                'samples' => $dataset->samples(),
-            ],
-        ])->then(
+        return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
             [$this, 'handleException']
-        )->then($after);
-    }
-
-    /**
-     * Return the anomaly score of a single sample.
-     *
-     * @param (string|int|float)[] $sample
-     * @return float
-     */
-    public function scoreSample(array $sample) : float
-    {
-        return $this->scoreSampleAsync($sample)->wait();
-    }
-
-    /**
-     * Compute the anomaly scores of a single sample and return a promise.
-     *
-     * @param (string|int|float)[] $sample
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function scoreSampleAsync(array $sample) : PromiseInterface
-    {
-        $after = function (array $json) : Promise {
-            if (!isset($json['score'])) {
-                throw new RuntimeException('Invalid response returned.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $json) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($json['score']);
-            });
-
-            return $promise;
-        };
-
-        [$method, $path] = self::ROUTES['score_sample'];
-
-        return $this->client->requestAsync($method, $path, [
-            'json' => [
-                'sample' => $sample,
-            ],
-        ])->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'handleException']
-        )->then($after);
+        )->then($validateResponse);
     }
 
     /**

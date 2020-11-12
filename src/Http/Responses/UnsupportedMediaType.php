@@ -10,7 +10,7 @@ class UnsupportedMediaType extends Response
     public function __construct(string $acceptedContentType)
     {
         parent::__construct(415, [
-            'Accept' => "$acceptedContentType",
+            'Accept' => $acceptedContentType,
         ]);
     }
 }

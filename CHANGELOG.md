@@ -2,6 +2,7 @@
     - Non 4xx error responses deferred for better concurrency
     - Rename internal command Response objects to Payload
     - Trusted Clients middleware now returns Forbidden (403) response
+    - Removed single sample commands
 
 - 0.2.2-beta
     - Added Async Client interface

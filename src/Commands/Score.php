@@ -4,6 +4,9 @@ namespace Rubix\Server\Commands;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Specifications\SpecificationChain;
+use Rubix\Server\Specifications\DatasetIsNotEmpty;
+use Rubix\Server\Specifications\DatasetDoesNotContainImages;
 use Rubix\Server\Exceptions\ValidationException;
 
 /**
@@ -43,6 +46,11 @@ class Score extends Command
      */
     public function __construct(Dataset $dataset)
     {
+        SpecificationChain::with([
+            new DatasetIsNotEmpty($dataset),
+            new DatasetDoesNotContainImages($dataset),
+        ])->check();
+
         $this->dataset = $dataset;
     }
 

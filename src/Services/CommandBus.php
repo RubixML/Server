@@ -3,22 +3,15 @@
 namespace Rubix\Server\Services;
 
 use Rubix\ML\Estimator;
-use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
 use Rubix\Server\Commands\Command;
 use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\PredictSample;
 use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\ProbaSample;
 use Rubix\Server\Commands\Score;
-use Rubix\Server\Commands\ScoreSample;
 use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Handlers\PredictSampleHandler;
 use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\ProbaSampleHandler;
 use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\ScoreSampleHandler;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Promise\PromiseInterface;
@@ -70,24 +63,12 @@ class CommandBus
             Predict::class => new PredictHandler($estimator),
         ];
 
-        if ($estimator instanceof Learner) {
-            $handlers += [
-                PredictSample::class => new PredictSampleHandler($estimator),
-            ];
-        }
-
         if ($estimator instanceof Probabilistic) {
-            $handlers += [
-                Proba::class => new ProbaHandler($estimator),
-                ProbaSample::class => new ProbaSampleHandler($estimator),
-            ];
+            $handlers[Proba::class] = new ProbaHandler($estimator);
         }
 
         if ($estimator instanceof Ranking) {
-            $handlers += [
-                Score::class => new ScoreHandler($estimator),
-                ScoreSample::class => new ScoreSampleHandler($estimator),
-            ];
+            $handlers[Score::class] = new ScoreHandler($estimator);
         }
 
         return new self($handlers, $logger);

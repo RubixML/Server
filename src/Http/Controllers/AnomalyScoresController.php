@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Rubix\Server\Helpers\JSON;
 use Exception;
 
-class ScoresController extends RESTController
+class AnomalyScoresController extends RESTController
 {
     /**
      * Handle the request and return a response or a deferred response.
