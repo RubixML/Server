@@ -1,4 +1,4 @@
-# Rubix Server
+# Rubix ML Server
 Bring your [Rubix ML](https://github.com/RubixML/RubixML) models into production by serving them with one of our high-performance stand-alone model servers. Model severs wrap your trained estimators in an API such as REST or RPC that can be queried over a network in real-time. In addition, the library provides client implementations that make querying models from your application fast and easy.
 
 ## Installation
