@@ -2,7 +2,6 @@
 
 namespace Rubix\Server\Http;
 
-use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Http\Responses\NotFound;
 use Rubix\Server\Http\Responses\MethodNotAllowed;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -41,9 +40,8 @@ class Router
                     throw new InvalidArgumentException('HTTP method not supported.');
                 }
 
-                if (!$controller instanceof Controller) {
-                    throw new InvalidArgumentException('Controller must'
-                        . ' implement the Controller interface.');
+                if (!is_callable($controller)) {
+                    throw new InvalidArgumentException('Controller must be callable.');
                 }
             }
         }

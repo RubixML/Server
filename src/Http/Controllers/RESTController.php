@@ -9,7 +9,7 @@ use Rubix\Server\Http\Responses\InternalServerError;
 use Rubix\Server\Helpers\JSON;
 use Exception;
 
-abstract class RESTController implements Controller
+abstract class RESTController
 {
     public const HEADERS = [
         'Content-Type' => 'application/json',

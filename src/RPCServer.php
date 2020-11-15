@@ -4,12 +4,13 @@ namespace Rubix\Server;
 
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
-use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\CommandsController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
+use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Services\EventBus;
 use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;

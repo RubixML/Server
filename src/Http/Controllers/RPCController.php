@@ -8,7 +8,7 @@ use Rubix\Server\Http\Responses\Success;
 use Rubix\Server\Http\Responses\InternalServerError;
 use Exception;
 
-abstract class RPCController implements Controller
+abstract class RPCController
 {
     /**
      * The message serializer.

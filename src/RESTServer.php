@@ -6,7 +6,6 @@ use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
-use Rubix\Server\Services\CommandBus;
 use Rubix\Server\Http\Router;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\RESTController;
@@ -15,7 +14,13 @@ use Rubix\Server\Http\Controllers\ProbabilitiesController;
 use Rubix\Server\Http\Controllers\AnomalyScoresController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
+use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Services\EventBus;
 use Rubix\Server\Payloads\ErrorPayload;
+use Rubix\Server\Events\RequestReceived;
+use Rubix\Server\Events\ResponseSent;
+use Rubix\Server\Listeners\IncrementResponseCounter;
+use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\Server\Helpers\JSON;
@@ -140,9 +145,17 @@ class RESTServer implements Server, LoggerAwareInterface
             }
         }
 
-        $bus = CommandBus::boot($estimator, $this->logger);
+        $dashboard = new Dashboard();
 
-        $this->router = $this->bootRouter($estimator, $bus);
+        $eventBus = new EventBus([
+            ResponseSent::class => [
+                new IncrementResponseCounter($dashboard),
+            ],
+        ]);
+
+        $commandBus = CommandBus::boot($estimator, $eventBus, $this->logger);
+
+        $this->router = $this->bootRouter($estimator, $commandBus, $dashboard);
 
         $loop = Loop::create();
 
@@ -154,7 +167,11 @@ class RESTServer implements Server, LoggerAwareInterface
             ]);
         }
 
-        $stack = $this->middlewares;
+        $stack = [];
+
+        $stack[] = [$this, 'dispatchEvents'];
+
+        $stack = array_merge($stack, $this->middlewares);
 
         $stack[] = [$this, 'parseRequestBody'];
         $stack[] = [$this, 'addServerHeader'];
@@ -170,6 +187,26 @@ class RESTServer implements Server, LoggerAwareInterface
         }
 
         $loop->run();
+    }
+
+    /**
+     * Dispatch events related to the request/response cycle.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function dispatchEvents(Request $request, callable $next)
+    {
+        $this->eventBus->dispatch(new RequestReceived($request));
+
+        $response = $next($request);
+
+        $this->eventBus->dispatch(new ResponseSent($response));
+
+        return $response;
     }
 
     /**
@@ -228,26 +265,32 @@ class RESTServer implements Server, LoggerAwareInterface
      * Boot the RESTful router.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\Services\CommandBus $bus
+     * @param \Rubix\Server\Services\CommandBus $commandBus
+     * @param \Rubix\Server\Models\Dashboard $dashboard
      * @return \Rubix\Server\Http\Router $router
      */
-    protected function bootRouter(Estimator $estimator, CommandBus $bus) : Router
+    protected function bootRouter(Estimator $estimator, CommandBus $commandBus, Dashboard $dashboard) : Router
     {
+        $dashboardController = new DashboardController($dashboard);
+
         $routes = [
             '/model/predictions' => [
-                'POST' => new PredictionsController($bus),
+                'POST' => new PredictionsController($commandBus),
+            ],
+            '/server/dashboard' => [
+                'GET' => new DashboardController($dashboard),
             ],
         ];
 
         if ($estimator instanceof Probabilistic) {
             $routes['/model/probabilities'] = [
-                'POST' => new ProbabilitiesController($bus),
+                'POST' => new ProbabilitiesController($commandBus),
             ];
         }
 
         if ($estimator instanceof Ranking) {
             $routes['/model/anomaly_scores'] = [
-                'POST' => new AnomalyScoresController($bus),
+                'POST' => new AnomalyScoresController($commandBus),
             ];
         }
 
