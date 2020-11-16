@@ -2,8 +2,9 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\Proba;
+use Rubix\Server\Queries\Predict;
+use Rubix\Server\Queries\Proba;
+use Rubix\Server\Queries\Score;
 use Psr\Http\Message\ServerRequestInterface;
 use Exception;
 
@@ -40,12 +41,12 @@ class ModelController extends RESTController
         $json = (array) $request->getParsedBody();
 
         try {
-            $command = Predict::fromArray($json);
+            $query = Predict::fromArray($json);
         } catch (Exception $exception) {
             $this->responseInvalid($exception);
         }
 
-        return $this->bus->dispatch($command)->then(
+        return $this->queryBus->dispatch($query)->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );
@@ -62,12 +63,12 @@ class ModelController extends RESTController
         $json = (array) $request->getParsedBody();
 
         try {
-            $command = Proba::fromArray($json);
+            $query = Proba::fromArray($json);
         } catch (Exception $exception) {
             $this->respondInvalid($exception);
         }
 
-        return $this->bus->dispatch($command)->then(
+        return $this->queryBus->dispatch($query)->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );
@@ -84,14 +85,29 @@ class ModelController extends RESTController
         $json = (array) $request->getParsedBody();
 
         try {
-            $command = Score::fromArray($json);
+            $query = Score::fromArray($json);
         } catch (Exception $exception) {
             $this->respondInvalid($exception);
         }
 
-        return $this->bus->dispatch($command)->then(
+        return $this->queryBus->dispatch($query)->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );
+    }
+
+    /**
+     * Send the payload in a successful response.
+     *
+     * @internal
+     *
+     * @param \Rubix\Server\Payloads\Payload $payload
+     * @return \Rubix\Server\Http\Responses\Success
+     */
+    public function respondSuccess(Payload $payload) : Success
+    {
+        $data = JSON::encode($payload->asArray());
+
+        return new Success(self::HEADERS, $data);
     }
 }

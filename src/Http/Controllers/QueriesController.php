@@ -2,30 +2,30 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Commands\Command;
-use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Queries\Query;
+use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Http\Responses\UnprocessableEntity;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class CommandsController extends RPCController
+class QueriesController extends RPCController
 {
     /**
-     * The command bus.
+     * The query bus.
      *
-     * @var \Rubix\Server\Services\CommandBus
+     * @var \Rubix\Server\Services\QueryBus
      */
-    protected $bus;
+    protected $queryBus;
 
     /**
-     * @param \Rubix\Server\Services\CommandBus $bus
+     * @param \Rubix\Server\Services\QueryBus $queryBus
      * @param \Rubix\Server\Serializers\Serializer $serializer
      */
-    public function __construct(CommandBus $bus, Serializer $serializer)
+    public function __construct(QueryBus $queryBus, Serializer $serializer)
     {
-        $this->bus = $bus;
+        $this->queryBus = $queryBus;
 
         parent::__construct($serializer);
     }
@@ -38,7 +38,7 @@ class CommandsController extends RPCController
     public function routes() : array
     {
         return [
-            '/commands' => ['POST' => $this],
+            '/queries' => ['POST' => $this],
         ];
     }
 
@@ -48,19 +48,19 @@ class CommandsController extends RPCController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request)
+    public function __invoke(ServerRequestInterface $request)
     {
-        $command = $request->getParsedBody();
+        $query = $request->getParsedBody();
 
-        if (!$command instanceof Command) {
-            $payload = new ErrorPayload('Message must be a command.');
+        if (!$query instanceof Query) {
+            $payload = new ErrorPayload('Message must be a query.');
 
             $data = $this->serializer->serialize($payload);
 
             return new UnprocessableEntity($this->serializer->headers(), $data);
         }
 
-        return $this->bus->dispatch($command)->then(
+        return $this->queryBus->dispatch($query)->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );

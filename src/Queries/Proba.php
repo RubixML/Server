@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Commands;
+namespace Rubix\Server\Queries;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
@@ -18,7 +18,7 @@ use Rubix\Server\Exceptions\ValidationException;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class Proba extends Command
+class Proba extends Query
 {
     /**
      * The dataset to predict.
@@ -28,7 +28,7 @@ class Proba extends Command
     protected $dataset;
 
     /**
-     * Build the command from an associative array of data.
+     * Build the query from an associative array of data.
      *
      * @param mixed[] $data
      * @throws \Rubix\Server\Exceptions\ValidationException

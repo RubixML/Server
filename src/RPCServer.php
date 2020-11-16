@@ -5,11 +5,15 @@ namespace Rubix\Server;
 use Rubix\ML\Learner;
 use Rubix\ML\Estimator;
 use Rubix\Server\Http\Router;
+use Rubix\Server\Http\RoutingSchema;
 use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Controllers\CommandsController;
+use Rubix\Server\Http\Controllers\ModelController;
+use Rubix\Server\Http\Controllers\StaticAssetsController;
+use Rubix\Server\Http\Controllers\DashboardController;
+use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
-use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
@@ -20,8 +24,8 @@ use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\EventLoop\Factory as Loop;
 use React\Promise\PromiseInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Exception;
 
@@ -145,16 +149,21 @@ class RPCServer implements Server, LoggerAwareInterface
                     . ' an untrained learner.');
             }
         }
+        $loop = Loop::create();
 
-        $bus = CommandBus::boot($estimator, $this->logger);
+        $queryBus = QueryBus::boot($estimator, $this->logger);
 
-        $this->router = new Router([
-            '/commands' => [
-                'POST' => new CommandsController($bus, $this->serializer),
-            ],
+        $filesystem = Filesystem::create($loop);
+
+        $dashboard = new Dashboard();
+
+        $schema = RoutingSchema::collect([
+            new QueriesController($queryBus),
+            new DashboardController($queryBus),
+            new StaticAssetsController($filesystem),
         ]);
 
-        $loop = Loop::create();
+        $router = new Router($schema);
 
         $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
@@ -191,7 +200,7 @@ class RPCServer implements Server, LoggerAwareInterface
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function parseRequestBody(Request $request, callable $next)
+    public function parseRequestBody(ServerRequestInterface $request, callable $next)
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
@@ -225,7 +234,7 @@ class RPCServer implements Server, LoggerAwareInterface
      * @param callable $next
      * @return \React\Promise\PromiseInterface
      */
-    public function addServerHeader(Request $request, callable $next) : PromiseInterface
+    public function addServerHeader(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
         $promise = resolve($next($request));
 

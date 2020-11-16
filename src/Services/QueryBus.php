@@ -5,13 +5,15 @@ namespace Rubix\Server\Services;
 use Rubix\ML\Estimator;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
-use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\Score;
+use Rubix\Server\Queries\Query;
+use Rubix\Server\Queries\Predict;
+use Rubix\Server\Queries\Proba;
+use Rubix\Server\Queries\Score;
+use Rubix\Server\Queries\GetServerStats;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
+use Rubix\Server\Handlers\GetServerStatsHandler;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Promise\PromiseInterface;
@@ -24,20 +26,20 @@ use function class_exists;
 use function is_callable;
 
 /**
- * Command Bus
+ * Query Bus
  *
- * The command pattern is a behavioral design pattern in which a command object is used to encapsulate
- * all the information needed to perform an action. The command bus is responsible for dispatching the
- * commands to their appropriate handlers.
+ * The command pattern is a behavioral design pattern in which a message object is used to
+ * encapsulate all the information needed to perform an action. The query bus is responsible
+ * for dispatching queries to their appropriate handlers.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class CommandBus
+class QueryBus
 {
     /**
-     * The mapping of commands to their handlers.
+     * The mapping of queries to their handlers.
      *
      * @var callable[]
      */
@@ -51,16 +53,18 @@ class CommandBus
     protected $logger;
 
     /**
-     * Boot the command bus.
+     * Boot the query bus.
      *
      * @param \Rubix\ML\Estimator $estimator
+     * @param \Rubix\Server\Models\Dashboard $dashboard
      * @param \Psr\Log\LoggerInterface|null $logger
      * @return self
      */
-    public static function boot(Estimator $estimator, ?LoggerInterface $logger = null) : self
+    public static function boot(Estimator $estimator, Dashboard $dashboard, ?LoggerInterface $logger = null) : self
     {
         $handlers = [
             Predict::class => new PredictHandler($estimator),
+            GetServerStats::class => new GetServerStatsHandler($dashboard),
         ];
 
         if ($estimator instanceof Probabilistic) {
@@ -96,24 +100,24 @@ class CommandBus
     }
 
     /**
-     * Dispatch the command to a handler.
+     * Dispatch the query to a handler.
      *
-     * @param \Rubix\Server\Commands\Command $command
+     * @param \Rubix\Server\Queries\Query $query
      * @throws \Rubix\Server\Exceptions\HandlerNotFound
      * @return \React\Promise\PromiseInterface
      */
-    public function dispatch(Command $command) : PromiseInterface
+    public function dispatch(Query $query) : PromiseInterface
     {
-        $class = get_class($command);
+        $class = get_class($query);
 
         if (empty($this->handlers[$class])) {
-            throw new HandlerNotFound($command);
+            throw new HandlerNotFound($query);
         }
 
         $handler = $this->handlers[$class];
 
-        $promise = new Promise(function ($resolve) use ($command, $handler) {
-            $resolve($handler($command));
+        $promise = new Promise(function ($resolve) use ($query, $handler) {
+            $resolve($handler($query));
         });
 
         return $promise->otherwise([$this, 'logError']);

@@ -13,7 +13,7 @@ use Rubix\Server\Http\Controllers\DashboardController;
 use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
-use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -25,8 +25,8 @@ use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\Filesystem\Filesystem;
 use React\Promise\PromiseInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Exception;
 
@@ -150,16 +150,14 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $loop = Loop::create();
 
-        $commandBus = CommandBus::boot($estimator, $this->logger);
+        $queryBus = QueryBus::boot($estimator, new Dashboard(), $this->logger);
 
         $filesystem = Filesystem::create($loop);
 
-        $dashboard = new Dashboard();
-
         $schema = RoutingSchema::collect([
-            new ModelController($commandBus),
+            new ModelController($queryBus),
+            new DashboardController($queryBus),
             new StaticAssetsController($filesystem),
-            new DashboardController($dashboard),
         ]);
 
         $router = new Router($schema);
@@ -205,7 +203,7 @@ class RESTServer implements Server, LoggerAwareInterface
      * @param callable $next
      * @return \React\Promise\PromiseInterface
      */
-    public function updateDashboard(Request $request, callable $next) : PromiseInterface
+    public function updateDashboard(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
         return resolve($next($request))->then(function (Response $response) {
             $this->dashboard->incrementResponseCounter($response);
@@ -223,7 +221,7 @@ class RESTServer implements Server, LoggerAwareInterface
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function parseRequestBody(Request $request, callable $next)
+    public function parseRequestBody(ServerRequestInterface $request, callable $next)
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
@@ -259,7 +257,7 @@ class RESTServer implements Server, LoggerAwareInterface
      * @param callable $next
      * @return \React\Promise\PromiseInterface
      */
-    public function addServerHeader(Request $request, callable $next) : PromiseInterface
+    public function addServerHeader(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
         return resolve($next($request))->then(function (Response $response) {
             return $response->withHeader('Server', self::SERVER_NAME);

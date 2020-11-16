@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Payloads\Payload;
 use Rubix\Server\Http\Responses\Success;
 use Rubix\Server\Http\Responses\InternalServerError;
@@ -14,22 +14,21 @@ abstract class RESTController implements Controller
 {
     public const HEADERS = [
         'Content-Type' => 'application/json',
-        'Accept' => 'application/json',
     ];
 
     /**
-     * The command bus.
+     * The query bus.
      *
-     * @var \Rubix\Server\Services\CommandBus
+     * @var \Rubix\Server\Services\QueryBus
      */
-    protected $bus;
+    protected $queryBus;
 
     /**
-     * @param \Rubix\Server\Services\CommandBus $bus
+     * @param \Rubix\Server\Services\QueryBus $queryBus
      */
-    public function __construct(CommandBus $bus)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->bus = $bus;
+        $this->queryBus = $queryBus;
     }
 
     /**
@@ -42,9 +41,7 @@ abstract class RESTController implements Controller
      */
     public function respondSuccess(Payload $payload) : Success
     {
-        $data = JSON::encode($payload->asArray());
-
-        return new Success(self::HEADERS, $data);
+        return new Success(self::HEADERS, JSON::encode($payload->asArray()));
     }
 
     /**
@@ -66,10 +63,8 @@ abstract class RESTController implements Controller
      */
     public function responseInvalid(Exception $exception) : UnprocessableEntity
     {
-        $payload = ErrorPayload::fromException($exception);
-
-        $data = JSON::encode($payload->asArray());
-
-        return new UnprocessableEntity(self::HEADERS, $data);
+        return new UnprocessableEntity(self::HEADERS, JSON::encode([
+            'message' => $exception->getMessage(),
+        ]));
     }
 }

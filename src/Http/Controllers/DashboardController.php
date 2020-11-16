@@ -3,28 +3,14 @@
 namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Services\QueryBus;
+use Rubix\Server\Queries\GetServerStats;
 use Rubix\Server\Http\Responses\Success;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class DashboardController extends RESTController
 {
-    /**
-     * The dashboard model.
-     *
-     * @var \Rubix\Server\Models\Dashboard
-     */
-    protected $dashboard;
-
-    /**
-     * @param \React\Filesystem\FilesystemInterface $filesystem
-     * @param Dashboard $dashboard
-     */
-    public function __construct(Dashboard $dashboard)
-    {
-        $this->dashboard = $dashboard;
-    }
-
     /**
      * Return the routes this controller handles.
      *
@@ -34,7 +20,7 @@ class DashboardController extends RESTController
     {
         return [
             '/server/dashboard' => [
-                'GET' => [$this, 'getStats'],
+                'GET' => [$this, 'getServerStats'],
             ],
         ];
     }
@@ -45,8 +31,19 @@ class DashboardController extends RESTController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function getStats(Request $request)
+    public function getServerStats(ServerRequestInterface $request)
     {
-        return new Success(self::HEADERS, JSON::encode($this->dashboard));
+        $json = (array) $request->getParsedBody();
+
+        try {
+            $query = GetServerStats::fromArray($json);
+        } catch (Exception $exception) {
+            $this->responseInvalid($exception);
+        }
+
+        return $this->queryBus->dispatch($query)->then(
+            [$this, 'respondSuccess'],
+            [$this, 'respondServerError']
+        );
     }
 }
