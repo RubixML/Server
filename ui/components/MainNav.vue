@@ -1,8 +1,10 @@
 <template>
-    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-white is-fixed-top" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <img src="/images/rubix-ml-logo.png" width="48" height="48" loading="eager" alt="The Rubix ML logo" />
-            <h1 class="navbar-item is-size-5 is-uppercase">Rubix ML Server</h1>
+            <a href="/" class="navbar-item">
+                <img src="/images/app-icon-small.png" width="28" height="28" loading="eager" alt="The Rubix ML logo" />
+            </a>
+            <h1 class="navbar-item">Rubix ML Server</h1>
         </div>
     </nav>
 </template>

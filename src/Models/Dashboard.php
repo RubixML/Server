@@ -3,26 +3,27 @@
 namespace Rubix\Server\Models;
 
 use Psr\Http\Message\ResponseInterface;
+use JSONSerializable;
 
-class Dashboard
+class Dashboard implements JSONSerializable
 {
     /**
      * The number of successful requests handled by the server.
-     * 
+     *
      * @var int
      */
     protected $numSuccessful;
 
     /**
      * The number of failed requests handled by the server.
-     * 
+     *
      * @var int
      */
     protected $numFailed;
 
     /**
      * The timestamp from when the server went up.
-     * 
+     *
      * @var int
      */
     protected $start;
@@ -35,7 +36,8 @@ class Dashboard
 
     /**
      * Increment the response counter for a given response.
-     * 
+     *
+     * @param ResponseInterface $response
      * @return self
      */
     public function incrementResponseCounter(ResponseInterface $response) : self
@@ -55,7 +57,7 @@ class Dashboard
 
     /**
      * Return the total number of requests handled by the server.
-     * 
+     *
      * @return int
      */
     public function numRequests() : int
@@ -65,7 +67,7 @@ class Dashboard
 
     /**
      * Return the number of successful requests handled by the server.
-     * 
+     *
      * @return int
      */
     public function numSuccessful() : int
@@ -75,7 +77,7 @@ class Dashboard
 
     /**
      * Return the number of failed requests handled by the server.
-     * 
+     *
      * @return int
      */
     public function numFailed() : int
@@ -85,7 +87,7 @@ class Dashboard
 
     /**
      * Return the number of seconds the server has been up.
-     * 
+     *
      * @return int
      */
     public function uptime() : int
@@ -95,11 +97,28 @@ class Dashboard
 
     /**
      * Return the current requests per minute.
-     * 
+     *
      * @return float
      */
     public function requestsPerMinute() : float
     {
         return $this->numRequests() / ($this->uptime() / 60);
+    }
+
+    /**
+     * Return the payload for JSON serialization.
+     *
+     * @return mixed
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'response_counts' => [
+                'total' => $this->numRequests(),
+                'successful' => $this->numSuccessful,
+                'failed' => $this->numFailed,
+            ],
+            'uptime' => $this->uptime(),
+        ];
     }
 }

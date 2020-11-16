@@ -31,6 +31,18 @@ class CommandsController extends RPCController
     }
 
     /**
+     * Return the routes this controller handles.
+     *
+     * @return array[]
+     */
+    public function routes() : array
+    {
+        return [
+            '/commands' => ['POST' => $this],
+        ];
+    }
+
+    /**
      * Handle the request and return a response or a deferred response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request

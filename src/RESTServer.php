@@ -4,30 +4,26 @@ namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
-use Rubix\ML\Probabilistic;
-use Rubix\ML\Ranking;
 use Rubix\Server\Http\Router;
+use Rubix\Server\Http\RoutingSchema;
 use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Controllers\ModelController;
+use Rubix\Server\Http\Controllers\StaticAssetsController;
+use Rubix\Server\Http\Controllers\DashboardController;
 use Rubix\Server\Http\Controllers\RESTController;
-use Rubix\Server\Http\Controllers\PredictionsController;
-use Rubix\Server\Http\Controllers\ProbabilitiesController;
-use Rubix\Server\Http\Controllers\AnomalyScoresController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
 use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Services\EventBus;
 use Rubix\Server\Payloads\ErrorPayload;
-use Rubix\Server\Events\RequestReceived;
-use Rubix\Server\Events\ResponseSent;
-use Rubix\Server\Listeners\IncrementResponseCounter;
 use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\Server\Helpers\JSON;
+use React\EventLoop\Factory as Loop;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
-use React\EventLoop\Factory as Loop;
+use React\Filesystem\Filesystem;
 use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -70,8 +66,8 @@ class RESTServer implements Server, LoggerAwareInterface
     protected $port;
 
     /**
-     * The path to the certificate used to authenticate and encrypt the
-     * secure (HTTPS) communication channel.
+     * The path to the certificate used to authenticate and encrypt the secure (HTTPS)
+     * communication channel.
      *
      * @var string|null
      */
@@ -87,9 +83,16 @@ class RESTServer implements Server, LoggerAwareInterface
     /**
      * The router.
      *
-     * @var \Rubix\Server\Http\Router
+     * @var \Rubix\Server\Http\Router|null
      */
     protected $router;
+
+    /**
+     * The dashboard model.
+     *
+     * @var \Rubix\Server\Models\Dashboard|null
+     */
+    protected $dashboard;
 
     /**
      * @param string $host
@@ -145,19 +148,21 @@ class RESTServer implements Server, LoggerAwareInterface
             }
         }
 
+        $loop = Loop::create();
+
+        $commandBus = CommandBus::boot($estimator, $this->logger);
+
+        $filesystem = Filesystem::create($loop);
+
         $dashboard = new Dashboard();
 
-        $eventBus = new EventBus([
-            ResponseSent::class => [
-                new IncrementResponseCounter($dashboard),
-            ],
+        $schema = RoutingSchema::collect([
+            new ModelController($commandBus),
+            new StaticAssetsController($filesystem),
+            new DashboardController($dashboard),
         ]);
 
-        $commandBus = CommandBus::boot($estimator, $eventBus, $this->logger);
-
-        $this->router = $this->bootRouter($estimator, $commandBus, $dashboard);
-
-        $loop = Loop::create();
+        $router = new Router($schema);
 
         $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
@@ -169,17 +174,19 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $stack = [];
 
-        $stack[] = [$this, 'dispatchEvents'];
+        $stack[] = [$this, 'updateDashboard'];
 
         $stack = array_merge($stack, $this->middlewares);
 
         $stack[] = [$this, 'parseRequestBody'];
         $stack[] = [$this, 'addServerHeader'];
-        $stack[] = [$this->router, 'dispatch'];
+        $stack[] = [$router, 'dispatch'];
 
         $server = new HTTPServer($loop, ...$stack);
 
         $server->listen($socket);
+
+        $this->dashboard = $dashboard;
 
         if ($this->logger) {
             $this->logger->info('HTTP REST Server running at'
@@ -190,23 +197,21 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Dispatch events related to the request/response cycle.
+     * Update the dashboard model.
      *
      * @internal
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
-     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     * @return \React\Promise\PromiseInterface
      */
-    public function dispatchEvents(Request $request, callable $next)
+    public function updateDashboard(Request $request, callable $next) : PromiseInterface
     {
-        $this->eventBus->dispatch(new RequestReceived($request));
+        return resolve($next($request))->then(function (Response $response) {
+            $this->dashboard->incrementResponseCounter($response);
 
-        $response = $next($request);
-
-        $this->eventBus->dispatch(new ResponseSent($response));
-
-        return $response;
+            return $response;
+        });
     }
 
     /**
@@ -222,22 +227,24 @@ class RESTServer implements Server, LoggerAwareInterface
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
-        $acceptedContentType = RESTController::HEADERS['Content-Type'];
+        if ($contentType) {
+            $acceptedContentType = RESTController::HEADERS['Content-Type'];
 
-        if ($contentType !== $acceptedContentType) {
-            return new UnsupportedMediaType($acceptedContentType);
-        }
+            if ($contentType !== $acceptedContentType) {
+                return new UnsupportedMediaType($acceptedContentType);
+            }
 
-        try {
-            $json = JSON::decode($request->getBody());
+            try {
+                $json = JSON::decode($request->getBody());
+            } catch (Exception $exception) {
+                $payload = ErrorPayload::fromException($exception);
+
+                $data = JSON::encode($payload->asArray());
+
+                return new BadRequest(RESTController::HEADERS, $data);
+            }
 
             $request = $request->withParsedBody($json);
-        } catch (Exception $exception) {
-            $payload = ErrorPayload::fromException($exception);
-
-            $data = JSON::encode($payload->asArray());
-
-            return new BadRequest(RESTController::HEADERS, $data);
         }
 
         return $next($request);
@@ -254,46 +261,8 @@ class RESTServer implements Server, LoggerAwareInterface
      */
     public function addServerHeader(Request $request, callable $next) : PromiseInterface
     {
-        $promise = resolve($next($request));
-
-        return $promise->then(function (Response $response) {
+        return resolve($next($request))->then(function (Response $response) {
             return $response->withHeader('Server', self::SERVER_NAME);
         });
-    }
-
-    /**
-     * Boot the RESTful router.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\Services\CommandBus $commandBus
-     * @param \Rubix\Server\Models\Dashboard $dashboard
-     * @return \Rubix\Server\Http\Router $router
-     */
-    protected function bootRouter(Estimator $estimator, CommandBus $commandBus, Dashboard $dashboard) : Router
-    {
-        $dashboardController = new DashboardController($dashboard);
-
-        $routes = [
-            '/model/predictions' => [
-                'POST' => new PredictionsController($commandBus),
-            ],
-            '/server/dashboard' => [
-                'GET' => new DashboardController($dashboard),
-            ],
-        ];
-
-        if ($estimator instanceof Probabilistic) {
-            $routes['/model/probabilities'] = [
-                'POST' => new ProbabilitiesController($commandBus),
-            ];
-        }
-
-        if ($estimator instanceof Ranking) {
-            $routes['/model/anomaly_scores'] = [
-                'POST' => new AnomalyScoresController($commandBus),
-            ];
-        }
-
-        return new Router($routes);
     }
 }
