@@ -4,7 +4,7 @@ namespace Rubix\Server\Http\Middleware;
 
 use Rubix\Server\Http\Responses\Unauthorized;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Shared Token Authenticator
@@ -62,7 +62,7 @@ class SharedTokenAuthenticator implements Middleware
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request, callable $next)
+    public function __invoke(ServerRequestInterface $request, callable $next)
     {
         $auth = $request->getHeaderLine(self::AUTH_HEADER);
 

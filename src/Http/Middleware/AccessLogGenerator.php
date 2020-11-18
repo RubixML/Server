@@ -2,8 +2,8 @@
 
 namespace Rubix\Server\Http\Middleware;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 use function React\Promise\resolve;
@@ -43,40 +43,39 @@ class AccessLogGenerator implements Middleware
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request, callable $next)
+    public function __invoke(ServerRequestInterface $request, callable $next)
     {
-        $promise = resolve($next($request));
+        return resolve($next($request))
+            ->then(function (ResponseInterface $response) use ($request) : ResponseInterface {
+                $server = $request->getServerParams();
 
-        return $promise->then(function (Response $response) use ($request) {
-            $server = $request->getServerParams();
+                $ip = $server['REMOTE_ADDR'] ?? self::UNKNOWN;
 
-            $ip = $server['REMOTE_ADDR'] ?? self::UNKNOWN;
+                $method = $request->getMethod();
 
-            $method = $request->getMethod();
+                $path = $request->getUri();
 
-            $path = $request->getUri();
+                $version = "HTTP/{$request->getProtocolVersion()}";
 
-            $version = "HTTP/{$request->getProtocolVersion()}";
+                $requestString = "\"$method {$path->getPath()} $version\"";
 
-            $requestString = "\"$method {$path->getPath()} $version\"";
+                $status = $response->getStatusCode();
 
-            $status = $response->getStatusCode();
+                $size = $response->getBody()->getSize();
 
-            $size = $response->getBody()->getSize();
+                $referrer = $request->hasHeader('Referer')
+                    ? "\"{$request->getHeaderLine('Referer')}\""
+                    : self::UNKNOWN;
 
-            $referrer = $request->hasHeader('Referer')
-                ? "\"{$request->getHeaderLine('Referer')}\""
-                : self::UNKNOWN;
+                $agent = $request->hasHeader('User-Agent')
+                    ? "\"{$request->getHeaderLine('User-Agent')}\""
+                    : self::UNKNOWN;
 
-            $agent = $request->hasHeader('User-Agent')
-                ? "\"{$request->getHeaderLine('User-Agent')}\""
-                : self::UNKNOWN;
+                $entry = "$ip $requestString $status $size $referrer $agent";
 
-            $entry = "$ip $requestString $status $size $referrer $agent";
+                $this->logger->info($entry);
 
-            $this->logger->info($entry);
-
-            return $response;
-        });
+                return $response;
+            });
     }
 }

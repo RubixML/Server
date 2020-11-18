@@ -2,18 +2,7 @@
 
 namespace Rubix\Server\Services;
 
-use Rubix\ML\Estimator;
-use Rubix\ML\Probabilistic;
-use Rubix\ML\Ranking;
 use Rubix\Server\Queries\Query;
-use Rubix\Server\Queries\Predict;
-use Rubix\Server\Queries\Proba;
-use Rubix\Server\Queries\Score;
-use Rubix\Server\Queries\GetServerStats;
-use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\GetServerStatsHandler;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Promise\PromiseInterface;
@@ -51,32 +40,6 @@ class QueryBus
      * @var \Psr\Log\LoggerInterface|null
      */
     protected $logger;
-
-    /**
-     * Boot the query bus.
-     *
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\Models\Dashboard $dashboard
-     * @param \Psr\Log\LoggerInterface|null $logger
-     * @return self
-     */
-    public static function boot(Estimator $estimator, Dashboard $dashboard, ?LoggerInterface $logger = null) : self
-    {
-        $handlers = [
-            Predict::class => new PredictHandler($estimator),
-            GetServerStats::class => new GetServerStatsHandler($dashboard),
-        ];
-
-        if ($estimator instanceof Probabilistic) {
-            $handlers[Proba::class] = new ProbaHandler($estimator);
-        }
-
-        if ($estimator instanceof Ranking) {
-            $handlers[Score::class] = new ScoreHandler($estimator);
-        }
-
-        return new self($handlers, $logger);
-    }
 
     /**
      * @param callable[] $handlers

@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Payloads;
 
-use Exception;
+use Rubix\Server\Models\Dashboard;
 
 /**
  * Get Server Stats Payload
@@ -14,11 +14,48 @@ use Exception;
 class GetServerStatsPayload extends Payload
 {
     /**
-     * The dashboard model.
+     * The request stats.
      *
-     * @var \Rubix\Server\Models\Dashboard
+     * @var mixed[]
      */
-    protected $dashboard;
+    protected $requests;
+
+    /**
+     * The memory stats.
+     *
+     * @var mixed[]
+     */
+    protected $memory;
+
+    /**
+     * The uptime of the server.
+     *
+     * @var int
+     */
+    protected $uptime;
+
+    /**
+     * Build the payload from a dashboard model.
+     *
+     * @param \Rubix\Server\Models\Dashboard $dashboard
+     * @return self
+     */
+    public static function fromDashboard(Dashboard $dashboard) : self
+    {
+        return self::fromArray([
+            'requests' => [
+                'received' => $dashboard->numRequests(),
+                'rate' => $dashboard->requestsPerMinute(),
+                'successful' => $dashboard->successfulResponses(),
+                'failed' => $dashboard->failedResponses(),
+            ],
+            'memory' => [
+                'usage' => $dashboard->memoryUsage(),
+                'peak' => $dashboard->memoryPeak(),
+            ],
+            'uptime' => $dashboard->uptime(),
+        ]);
+    }
 
     /**
      * Build the response from an associative array of data.
@@ -28,25 +65,19 @@ class GetServerStatsPayload extends Payload
      */
     public static function fromArray(array $data) : self
     {
-        return new self();
+        return new self($data['requests'], $data['memory'], $data['uptime']);
     }
 
     /**
-     * @param string $message
+     * @param mixed[] $requests
+     * @param mixed[] $memory
+     * @param int $uptime
      */
-    public function __construct(string $message)
+    public function __construct(array $requests, array $memory, int $uptime)
     {
-        $this->message = $message;
-    }
-
-    /**
-     * Return the error message.
-     *
-     * @return string
-     */
-    public function message() : string
-    {
-        return $this->message;
+        $this->requests = $requests;
+        $this->memory = $memory;
+        $this->uptime = $uptime;
     }
 
     /**
@@ -57,7 +88,9 @@ class GetServerStatsPayload extends Payload
     public function asArray() : array
     {
         return [
-            'message' => $this->message,
+            'requests' => $this->requests,
+            'memory' => $this->memory,
+            'uptime' => $this->uptime,
         ];
     }
 }

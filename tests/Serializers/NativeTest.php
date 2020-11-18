@@ -3,8 +3,8 @@
 namespace Rubix\Server\Tests\Serializers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\Command;
+use Rubix\Server\Queries\Predict;
+use Rubix\Server\Queries\Query;
 use Rubix\Server\Serializers\Native;
 use Rubix\Server\Serializers\Serializer;
 use PHPUnit\Framework\TestCase;
@@ -42,16 +42,16 @@ class NativeTest extends TestCase
      */
     public function serializeUnserialize() : void
     {
-        $command = new Predict(new Unlabeled(['beef']));
+        $query = new Predict(new Unlabeled(['beef']));
 
-        $data = $this->serializer->serialize($command);
+        $data = $this->serializer->serialize($query);
 
         $this->assertIsString($data);
         $this->assertNotEmpty($data);
 
-        $command = $this->serializer->unserialize($data);
+        $query = $this->serializer->unserialize($data);
 
-        $this->assertInstanceOf(Predict::class, $command);
-        $this->assertInstanceOf(Command::class, $command);
+        $this->assertInstanceOf(Predict::class, $query);
+        $this->assertInstanceOf(Query::class, $query);
     }
 }

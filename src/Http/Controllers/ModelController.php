@@ -43,7 +43,7 @@ class ModelController extends RESTController
         try {
             $query = Predict::fromArray($json);
         } catch (Exception $exception) {
-            $this->responseInvalid($exception);
+            return $this->respondInvalid($exception);
         }
 
         return $this->queryBus->dispatch($query)->then(
@@ -65,7 +65,7 @@ class ModelController extends RESTController
         try {
             $query = Proba::fromArray($json);
         } catch (Exception $exception) {
-            $this->respondInvalid($exception);
+            return $this->respondInvalid($exception);
         }
 
         return $this->queryBus->dispatch($query)->then(
@@ -87,27 +87,12 @@ class ModelController extends RESTController
         try {
             $query = Score::fromArray($json);
         } catch (Exception $exception) {
-            $this->respondInvalid($exception);
+            return $this->respondInvalid($exception);
         }
 
         return $this->queryBus->dispatch($query)->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );
-    }
-
-    /**
-     * Send the payload in a successful response.
-     *
-     * @internal
-     *
-     * @param \Rubix\Server\Payloads\Payload $payload
-     * @return \Rubix\Server\Http\Responses\Success
-     */
-    public function respondSuccess(Payload $payload) : Success
-    {
-        $data = JSON::encode($payload->asArray());
-
-        return new Success(self::HEADERS, $data);
     }
 }

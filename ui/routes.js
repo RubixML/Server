@@ -1,7 +1,12 @@
 export default [
-    {
-        name: 'dashboard',
+    { 
+        name: 'home',
         path: '/',
-        component: require('./pages/Dashboard.vue').default,
+        redirect: { name: 'server' }
+    },
+    {
+        name: 'server',
+        path: '/server',
+        component: require('./pages/Server.vue').default,
     },
 ];

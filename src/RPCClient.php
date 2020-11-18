@@ -3,11 +3,11 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Datasets\Dataset;
-use Rubix\Server\Http\Requests\CommandRequest;
-use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\Predict;
-use Rubix\Server\Commands\Proba;
-use Rubix\Server\Commands\Score;
+use Rubix\Server\Http\Requests\QueryRequest;
+use Rubix\Server\Queries\Query;
+use Rubix\Server\Queries\Predict;
+use Rubix\Server\Queries\Proba;
+use Rubix\Server\Queries\Score;
 use Rubix\Server\Payloads\Payload;
 use Rubix\Server\Payloads\PredictPayload;
 use Rubix\Server\Payloads\ProbaPayload;
@@ -38,11 +38,7 @@ use Exception;
 class RPCClient implements Client, AsyncClient
 {
     public const HTTP_HEADERS = [
-        'User-Agent' => 'Rubix RPC Client',
-    ];
-
-    public const ROUTES = [
-        'commands' => ['POST', '/commands'],
+        'User-Agent' => 'Rubix ML RPC Client',
     ];
 
     protected const MAX_TCP_PORT = 65535;
@@ -154,7 +150,7 @@ class RPCClient implements Client, AsyncClient
             return $promise;
         };
 
-        return $this->sendCommandAsync(new Predict($dataset))->then($after);
+        return $this->sendQueryAsync(new Predict($dataset))->then($after);
     }
 
     /**
@@ -190,7 +186,7 @@ class RPCClient implements Client, AsyncClient
             return $promise;
         };
 
-        return $this->sendCommandAsync(new Proba($dataset))->then($after);
+        return $this->sendQueryAsync(new Proba($dataset))->then($after);
     }
 
     /**
@@ -226,7 +222,7 @@ class RPCClient implements Client, AsyncClient
             return $promise;
         };
 
-        return $this->sendCommandAsync(new Score($dataset))->then($after);
+        return $this->sendQueryAsync(new Score($dataset))->then($after);
     }
 
     /**
@@ -270,12 +266,12 @@ class RPCClient implements Client, AsyncClient
     /**
      * Send a command to the server and return the results.
      *
-     * @param \Rubix\Server\Commands\Command $command
+     * @param \Rubix\Server\Queries\Query $command
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    protected function sendCommandAsync(Command $command) : PromiseInterface
+    protected function sendQueryAsync(Query $command) : PromiseInterface
     {
-        $request = new CommandRequest($command, $this->serializer);
+        $request = new QueryRequest($command, $this->serializer);
 
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],

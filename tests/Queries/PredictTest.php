@@ -1,16 +1,16 @@
 <?php
 
-namespace Rubix\Server\Tests\Commands;
+namespace Rubix\Server\Tests\Queries;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\Predict;
+use Rubix\Server\Queries\Query;
+use Rubix\Server\Queries\Predict;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group Commands
- * @covers \Rubix\Server\Commands\Predict
+ * @group Queries
+ * @covers \Rubix\Server\Queries\Predict
  */
 class PredictTest extends TestCase
 {
@@ -19,16 +19,16 @@ class PredictTest extends TestCase
     ];
 
     /**
-     * @var \Rubix\Server\Commands\Predict
+     * @var \Rubix\Server\Queries\Predict
      */
-    protected $command;
+    protected $query;
 
     /**
      * @before
      */
     protected function setUp() : void
     {
-        $this->command = new Predict(new Unlabeled(self::SAMPLES));
+        $this->query = new Predict(new Unlabeled(self::SAMPLES));
     }
 
     /**
@@ -36,8 +36,8 @@ class PredictTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(Predict::class, $this->command);
-        $this->assertInstanceOf(Command::class, $this->command);
+        $this->assertInstanceOf(Predict::class, $this->query);
+        $this->assertInstanceOf(Query::class, $this->query);
     }
 
     /**
@@ -45,7 +45,7 @@ class PredictTest extends TestCase
      */
     public function dataset() : void
     {
-        $this->assertInstanceOf(Dataset::class, $this->command->dataset());
+        $this->assertInstanceOf(Dataset::class, $this->query->dataset());
     }
 
     /**
@@ -59,7 +59,7 @@ class PredictTest extends TestCase
             ],
         ];
 
-        $payload = $this->command->asArray();
+        $payload = $this->query->asArray();
 
         $this->assertIsArray($payload);
         $this->assertEquals($expected, $payload);

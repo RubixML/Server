@@ -31,6 +31,6 @@ class GetServerStatsHandler
      */
     public function __invoke(GetServerStats $query) : GetServerStatsPayload
     {
-        return new GetServerStatsPayload($this->dashboard);
+        return GetServerStatsPayload::fromDashboard($this->dashboard);
     }
 }

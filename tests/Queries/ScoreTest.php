@@ -1,34 +1,34 @@
 <?php
 
-namespace Rubix\Server\Tests\Commands;
+namespace Rubix\Server\Tests\Queries;
 
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Command;
-use Rubix\Server\Commands\Proba;
+use Rubix\Server\Queries\Query;
+use Rubix\Server\Queries\Score;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group Commands
- * @covers \Rubix\Server\Commands\Proba
+ * @group Queries
+ * @covers \Rubix\Server\Queries\Score
  */
-class ProbaTest extends TestCase
+class ScoreTest extends TestCase
 {
     protected const SAMPLES = [
         ['mean', 'furry', 'friendly'],
     ];
 
     /**
-     * @var \Rubix\Server\Commands\Proba
+     * @var \Rubix\Server\Queries\Score
      */
-    protected $command;
+    protected $query;
 
     /**
      * @before
      */
     protected function setUp() : void
     {
-        $this->command = new Proba(new Unlabeled(self::SAMPLES));
+        $this->query = new Score(new Unlabeled(self::SAMPLES));
     }
 
     /**
@@ -36,8 +36,8 @@ class ProbaTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(Proba::class, $this->command);
-        $this->assertInstanceOf(Command::class, $this->command);
+        $this->assertInstanceOf(Score::class, $this->query);
+        $this->assertInstanceOf(Query::class, $this->query);
     }
 
     /**
@@ -45,7 +45,7 @@ class ProbaTest extends TestCase
      */
     public function dataset() : void
     {
-        $this->assertInstanceOf(Dataset::class, $this->command->dataset());
+        $this->assertInstanceOf(Dataset::class, $this->query->dataset());
     }
 
     /**
@@ -59,7 +59,7 @@ class ProbaTest extends TestCase
             ],
         ];
 
-        $payload = $this->command->asArray();
+        $payload = $this->query->asArray();
 
         $this->assertIsArray($payload);
         $this->assertEquals($expected, $payload);

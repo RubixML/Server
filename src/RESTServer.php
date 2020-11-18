@@ -4,6 +4,12 @@ namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
+use Rubix\ML\Probabilistic;
+use Rubix\ML\Ranking;
+use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Services\QueryBus;
+use Rubix\Server\Services\EventMapping;
+use Rubix\Server\Services\EventBus;
 use Rubix\Server\Http\Router;
 use Rubix\Server\Http\RoutingSchema;
 use Rubix\Server\Http\Middleware\Middleware;
@@ -13,9 +19,17 @@ use Rubix\Server\Http\Controllers\DashboardController;
 use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
-use Rubix\Server\Services\QueryBus;
-use Rubix\Server\Payloads\ErrorPayload;
-use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Queries\Predict;
+use Rubix\Server\Queries\Proba;
+use Rubix\Server\Queries\Score;
+use Rubix\Server\Queries\GetServerStats;
+use Rubix\Server\Handlers\PredictHandler;
+use Rubix\Server\Handlers\ProbaHandler;
+use Rubix\Server\Handlers\ScoreHandler;
+use Rubix\Server\Handlers\GetServerStatsHandler;
+use Rubix\Server\Events\RequestReceived;
+use Rubix\Server\Events\ResponseSent;
+use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\Server\Helpers\JSON;
@@ -47,7 +61,7 @@ class RESTServer implements Server, LoggerAwareInterface
 {
     use LoggerAware;
 
-    public const SERVER_NAME = 'Rubix REST Server';
+    public const SERVER_NAME = 'Rubix ML REST Server';
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -81,18 +95,25 @@ class RESTServer implements Server, LoggerAwareInterface
     protected $middlewares;
 
     /**
-     * The router.
+     * The event bus.
      *
-     * @var \Rubix\Server\Http\Router|null
+     * @var \Rubix\Server\Services\EventBus|null
      */
-    protected $router;
+    protected $eventBus;
 
     /**
-     * The dashboard model.
+     * The socket.
      *
-     * @var \Rubix\Server\Models\Dashboard|null
+     * @var \React\Socket\ServerInterface
      */
-    protected $dashboard;
+    protected $socket;
+
+    /**
+     * The event loop.
+     *
+     * @var \React\EventLoop\LoopInterface
+     */
+    protected $loop;
 
     /**
      * @param string $host
@@ -150,7 +171,28 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $loop = Loop::create();
 
-        $queryBus = QueryBus::boot($estimator, new Dashboard(), $this->logger);
+        $dashboard = new Dashboard();
+
+        $handlers = [
+            Predict::class => new PredictHandler($estimator),
+            GetServerStats::class => new GetServerStatsHandler($dashboard),
+        ];
+
+        if ($estimator instanceof Probabilistic) {
+            $handlers[Proba::class] = new ProbaHandler($estimator);
+        }
+
+        if ($estimator instanceof Ranking) {
+            $handlers[Score::class] = new ScoreHandler($estimator);
+        }
+
+        $queryBus = new QueryBus($handlers, $this->logger);
+
+        $mapping = EventMapping::subscribe([
+            new UpdateDashboard($dashboard),
+        ]);
+
+        $eventBus = new EventBus($mapping, $loop, $this->logger);
 
         $filesystem = Filesystem::create($loop);
 
@@ -172,7 +214,7 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $stack = [];
 
-        $stack[] = [$this, 'updateDashboard'];
+        $stack[] = [$this, 'dispatchEvents'];
 
         $stack = array_merge($stack, $this->middlewares);
 
@@ -184,7 +226,11 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $server->listen($socket);
 
-        $this->dashboard = $dashboard;
+        $loop->addSignal(SIGINT, [$this, 'shutdown']);
+
+        $this->eventBus = $eventBus;
+        $this->socket = $socket;
+        $this->loop = $loop;
 
         if ($this->logger) {
             $this->logger->info('HTTP REST Server running at'
@@ -195,7 +241,7 @@ class RESTServer implements Server, LoggerAwareInterface
     }
 
     /**
-     * Update the dashboard model.
+     * Dispatch events related to the request/response cycle.
      *
      * @internal
      *
@@ -203,10 +249,12 @@ class RESTServer implements Server, LoggerAwareInterface
      * @param callable $next
      * @return \React\Promise\PromiseInterface
      */
-    public function updateDashboard(ServerRequestInterface $request, callable $next) : PromiseInterface
+    public function dispatchEvents(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
-        return resolve($next($request))->then(function (Response $response) {
-            $this->dashboard->incrementResponseCounter($response);
+        $this->eventBus->dispatch(new RequestReceived($request));
+
+        return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
+            $this->eventBus->dispatch(new ResponseSent($response));
 
             return $response;
         });
@@ -223,23 +271,23 @@ class RESTServer implements Server, LoggerAwareInterface
      */
     public function parseRequestBody(ServerRequestInterface $request, callable $next)
     {
-        $contentType = $request->getHeaderLine('Content-Type');
+        $stream = $request->getBody();
 
-        if ($contentType) {
-            $acceptedContentType = RESTController::HEADERS['Content-Type'];
+        if ($stream->getSize()) {
+            $contentType = $request->getHeaderLine('Content-Type');
+
+            $acceptedContentType = RESTController::HEADERS['Accept'];
 
             if ($contentType !== $acceptedContentType) {
                 return new UnsupportedMediaType($acceptedContentType);
             }
 
             try {
-                $json = JSON::decode($request->getBody());
+                $json = JSON::decode($stream->getContents());
             } catch (Exception $exception) {
-                $payload = ErrorPayload::fromException($exception);
-
-                $data = JSON::encode($payload->asArray());
-
-                return new BadRequest(RESTController::HEADERS, $data);
+                return new BadRequest(RESTController::HEADERS, JSON::encode([
+                    'message' => $exception->getMessage(),
+                ]));
             }
 
             $request = $request->withParsedBody($json);
@@ -259,8 +307,26 @@ class RESTServer implements Server, LoggerAwareInterface
      */
     public function addServerHeader(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
-        return resolve($next($request))->then(function (Response $response) {
+        return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
             return $response->withHeader('Server', self::SERVER_NAME);
         });
+    }
+
+    /**
+     * Shut down the server.
+     *
+     * @internal
+     *
+     * @param int $signal
+     */
+    public function shutdown(int $signal) : void
+    {
+        $this->loop->removeSignal($signal, [$this, 'shutdown']);
+
+        $this->socket->close();
+
+        if ($this->logger) {
+            $this->logger->info('Server shutting down');
+        }
     }
 }

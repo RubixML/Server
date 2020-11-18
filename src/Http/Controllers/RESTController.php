@@ -14,6 +14,7 @@ abstract class RESTController implements Controller
 {
     public const HEADERS = [
         'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
     ];
 
     /**
@@ -59,9 +60,9 @@ abstract class RESTController implements Controller
      * Respond with an unprocessable entity error.
      *
      * @param \Exception $exception
-     * @return \Rubix\Server\Http\Responses\Unprocessable
+     * @return \Rubix\Server\Http\Responses\UnprocessableEntity
      */
-    public function responseInvalid(Exception $exception) : UnprocessableEntity
+    public function respondInvalid(Exception $exception) : UnprocessableEntity
     {
         return new UnprocessableEntity(self::HEADERS, JSON::encode([
             'message' => $exception->getMessage(),

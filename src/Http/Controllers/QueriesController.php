@@ -8,7 +8,6 @@ use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Http\Responses\UnprocessableEntity;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class QueriesController extends RPCController
 {

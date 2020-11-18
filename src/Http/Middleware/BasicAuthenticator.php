@@ -4,7 +4,7 @@ namespace Rubix\Server\Http\Middleware;
 
 use Rubix\Server\Http\Responses\Unauthorized;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface;
 
 use function is_string;
 use function strlen;
@@ -77,7 +77,7 @@ class BasicAuthenticator implements Middleware
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\Promise
      */
-    public function __invoke(Request $request, callable $next)
+    public function __invoke(ServerRequestInterface $request, callable $next)
     {
         $auth = $request->getHeaderLine(self::AUTH_HEADER);
 

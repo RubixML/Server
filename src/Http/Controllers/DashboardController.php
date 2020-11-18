@@ -2,12 +2,9 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Models\Dashboard;
-use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Queries\GetServerStats;
-use Rubix\Server\Http\Responses\Success;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Exception;
 
 class DashboardController extends RESTController
 {
@@ -38,7 +35,7 @@ class DashboardController extends RESTController
         try {
             $query = GetServerStats::fromArray($json);
         } catch (Exception $exception) {
-            $this->responseInvalid($exception);
+            return $this->respondInvalid($exception);
         }
 
         return $this->queryBus->dispatch($query)->then(

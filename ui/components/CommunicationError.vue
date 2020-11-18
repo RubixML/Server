@@ -12,7 +12,7 @@
                             </span>
                         </span>
                         <p class="is-size-5">
-                            There was an error communicating with the robot. Check to make sure you are connected.
+                            There was an error communicating with the server. Check to make sure you are connected.
                         </p>
                         <p class="error-message is-size-7">
                             {{ message }}
@@ -39,28 +39,28 @@
 </template>
 
 <script>
-    import bus from '../bus';
+import bus from '../bus';
 
-    const VIBRATE_PATTERN = [100, 30, 100];
+const VIBRATE_PATTERN = [100, 30, 100];
 
-    export default {
-        data() {
-            return {
-                open: false,
-                message: '',
-            };
-        },
-        created() {
-            bus.$on('communication-error', (payload) => {
-                if (!this.open) {
-                    this.open = true;
-                    this.message = payload.error.message;
+export default {
+    data() {
+        return {
+            open: false,
+            message: '',
+        };
+    },
+    created() {
+        bus.$on('communication-error', (payload) => {
+            if (!this.open) {
+                this.open = true;
+                this.message = payload.error.message;
 
-                    document.getElementById('sharp').play();
+                document.getElementById('sharp').play();
 
-                    window.navigator.vibrate(VIBRATE_PATTERN);
-                }
-            });
-        }
+                window.navigator.vibrate(VIBRATE_PATTERN);
+            }
+        });
     }
+}
 </script>

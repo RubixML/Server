@@ -9,6 +9,9 @@ use ArrayAccess;
 use function in_array;
 use function is_string;
 
+/**
+ * @implements ArrayAccess<string, array>
+ */
 class RoutingSchema implements ArrayAccess
 {
     public const SUPPORTED_METHODS = [
@@ -25,23 +28,26 @@ class RoutingSchema implements ArrayAccess
     /**
      * Collect the routes from an array of controllers.
      *
-     * @param \Rubix\Server\Http\Controllers\Controller[]
-     * @param array $controllers
+     * @param \Rubix\Server\Http\Controllers\Controller[] $controllers
+     * @return self
      */
-    public static function collect(array $controllers)
+    public static function collect(array $controllers) : self
     {
         $routes = [];
 
         foreach ($controllers as $controller) {
-            $routes += $controller->routes();
+            foreach ($controller->routes() as $path => $actions) {
+                foreach ($actions as $method => $handler) {
+                    $routes[$path][$method] = $handler;
+                }
+            }
         }
 
         return new self($routes);
     }
 
     /**
-     * @param \Rubix\Server\Http\RouteSchema $schema
-     * @param array $routes
+     * @param array[] $routes
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(array $routes)
@@ -79,7 +85,7 @@ class RoutingSchema implements ArrayAccess
      * Return a route from the schema.
      *
      * @param string $path
-     * @throws \Rubix\ML\Exceptions\InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      * @return mixed[]
      */
     public function offsetGet($path) : array
@@ -94,7 +100,7 @@ class RoutingSchema implements ArrayAccess
     /**
      * @param string $path
      * @param mixed[] $actions
-     * @throws \Rubix\ML\Exceptions\RuntimeException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      */
     public function offsetSet($path, $actions) : void
     {
@@ -114,7 +120,7 @@ class RoutingSchema implements ArrayAccess
 
     /**
      * @param string $path
-     * @throws \Rubix\ML\Exceptions\RuntimeException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      */
     public function offsetUnset($path) : void
     {

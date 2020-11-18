@@ -8,12 +8,15 @@ use Rubix\Server\Http\Responses\NotFound;
 use Rubix\Server\Exceptions\RuntimeException;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Filesystem\FilesystemInterface;
+use React\Filesystem\Node\FileInterface;
 use React\Promise\PromiseInterface;
 use Exception;
 
-class StaticAssetsController
+class StaticAssetsController implements Controller
 {
     public const ASSETS_PATH = '../../assets';
+
+    public const CACHE_AGE = 'max-age=604800';
 
     /**
      * The filesystem.
@@ -32,7 +35,7 @@ class StaticAssetsController
     {
         $pathInfo = pathinfo($file->getPath());
 
-        switch ($pathInfo['extension']) {
+        switch ($pathInfo['extension'] ?? null) {
             case 'html':
                 return 'text/html';
 
@@ -81,11 +84,11 @@ class StaticAssetsController
     public function routes() : array
     {
         return [
-            '/' => [
-                'GET' => [$this, 'index'],
-            ],
+            '/' => ['GET' => [$this, 'index']],
+            '/server' => ['GET' => [$this, 'index']],
             '/app.js' => ['GET' => $this],
             '/app.css' => ['GET' => $this],
+            '/manifest.json' => ['GET' => $this],
             '/images/app-icon-small.png' => ['GET' => $this],
             '/images/app-icon-large.png' => ['GET' => $this],
             '/fonts/fa-solid-900.woff' => ['GET' => $this],
@@ -107,6 +110,7 @@ class StaticAssetsController
             ->then(function ($data) {
                 return new Success([
                     'Content-Type' => 'text/html',
+                    'Cache-Control' => self::CACHE_AGE,
                 ], $data);
             });
     }
@@ -127,6 +131,7 @@ class StaticAssetsController
             return $file->getContents()->then(function ($data) use ($file) {
                 return new Success([
                     'Content-Type' => self::mime($file),
+                    'Cache-Control' => self::CACHE_AGE,
                 ], $data);
             });
         }, function (Exception $exception) {

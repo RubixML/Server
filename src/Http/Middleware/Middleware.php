@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Http\Middleware;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface Middleware
 {
@@ -13,5 +13,5 @@ interface Middleware
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request, callable $next);
+    public function __invoke(ServerRequestInterface $request, callable $next);
 }
