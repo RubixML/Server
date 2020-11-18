@@ -31,6 +31,7 @@
         "vue-axios": "^2.1.5",
         "vue-loader": "^15.9.3",
         "vue-router": "^3.4.3",
+        "vue-sse": "^1.0.2",
         "vue-style-loader": "^4.1.2",
         "vue-template-compiler": "^2.6.12",
         "webpack": "^4.4.0",

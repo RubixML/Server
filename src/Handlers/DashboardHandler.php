@@ -6,7 +6,7 @@ use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Queries\GetServerStats;
 use Rubix\Server\Payloads\GetServerStatsPayload;
 
-class GetServerStatsHandler
+class DashboardHandler implements Handler
 {
     /**
      * The dashboard model.
@@ -24,12 +24,24 @@ class GetServerStatsHandler
     }
 
     /**
+     * Return the queries that this handler is bound to.
+     *
+     * @return callable[]
+     */
+    public function queries() : array
+    {
+        return [
+            GetServerStats::class => [$this, 'stats'],
+        ];
+    }
+
+    /**
      * Handle the command.
      *
      * @param \Rubix\Server\Queries\GetServerStats $query
      * @return \Rubix\Server\Payloads\GetServerStatsPayload
      */
-    public function __invoke(GetServerStats $query) : GetServerStatsPayload
+    public function stats(GetServerStats $query) : GetServerStatsPayload
     {
         return GetServerStatsPayload::fromDashboard($this->dashboard);
     }

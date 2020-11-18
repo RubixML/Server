@@ -7,11 +7,12 @@ use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
 use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Services\Bindings;
 use Rubix\Server\Services\QueryBus;
-use Rubix\Server\Services\EventMapping;
+use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Http\Router;
-use Rubix\Server\Http\RoutingSchema;
+use Rubix\Server\Http\Routes;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\ModelController;
 use Rubix\Server\Http\Controllers\StaticAssetsController;
@@ -19,14 +20,10 @@ use Rubix\Server\Http\Controllers\DashboardController;
 use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Responses\BadRequest;
 use Rubix\Server\Http\Responses\UnsupportedMediaType;
-use Rubix\Server\Queries\Predict;
-use Rubix\Server\Queries\Proba;
-use Rubix\Server\Queries\Score;
-use Rubix\Server\Queries\GetServerStats;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\GetServerStatsHandler;
+use Rubix\Server\Handlers\DashboardHandler;
 use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Listeners\UpdateDashboard;
@@ -97,7 +94,7 @@ class RESTServer implements Server, LoggerAwareInterface
     /**
      * The event bus.
      *
-     * @var \Rubix\Server\Services\EventBus|null
+     * @var \Rubix\Server\Services\EventBus
      */
     protected $eventBus;
 
@@ -173,36 +170,32 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $dashboard = new Dashboard();
 
+        $filesystem = Filesystem::create($loop);
+
+        $eventBus = new EventBus(Subscriptions::subscribe([
+            new UpdateDashboard($dashboard),
+        ]), $loop, $this->logger);
+
         $handlers = [
-            Predict::class => new PredictHandler($estimator),
-            GetServerStats::class => new GetServerStatsHandler($dashboard),
+            new PredictHandler($estimator),
+            new DashboardHandler($dashboard),
         ];
 
         if ($estimator instanceof Probabilistic) {
-            $handlers[Proba::class] = new ProbaHandler($estimator);
+            $handlers[] = new ProbaHandler($estimator);
         }
 
         if ($estimator instanceof Ranking) {
-            $handlers[Score::class] = new ScoreHandler($estimator);
+            $handlers[] = new ScoreHandler($estimator);
         }
 
-        $queryBus = new QueryBus($handlers, $this->logger);
+        $queryBus = new QueryBus(Bindings::bind($handlers), $eventBus, $this->logger);
 
-        $mapping = EventMapping::subscribe([
-            new UpdateDashboard($dashboard),
-        ]);
-
-        $eventBus = new EventBus($mapping, $loop, $this->logger);
-
-        $filesystem = Filesystem::create($loop);
-
-        $schema = RoutingSchema::collect([
+        $router = new Router(Routes::collect([
             new ModelController($queryBus),
             new DashboardController($queryBus),
             new StaticAssetsController($filesystem),
-        ]);
-
-        $router = new Router($schema);
+        ]));
 
         $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
@@ -283,7 +276,7 @@ class RESTServer implements Server, LoggerAwareInterface
             }
 
             try {
-                $json = JSON::decode($stream->getContents());
+                $json = JSON::decode($stream);
             } catch (Exception $exception) {
                 return new BadRequest(RESTController::HEADERS, JSON::encode([
                     'message' => $exception->getMessage(),

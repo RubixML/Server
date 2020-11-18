@@ -12,14 +12,14 @@ use function is_callable;
 /**
  * @implements ArrayAccess<string, array>
  */
-class EventMapping implements ArrayAccess
+class Subscriptions implements ArrayAccess
 {
     /**
-     * The events and their handlers.
+     * The mapping of events to their handlers.
      *
      * @var array[]
      */
-    protected $mapping;
+    protected $subscriptions;
 
     /**
      * Subscribe an array of listeners to their events.
@@ -29,26 +29,26 @@ class EventMapping implements ArrayAccess
      */
     public static function subscribe(array $listeners) : self
     {
-        $mapping = [];
+        $subscriptions = [];
 
         foreach ($listeners as $listener) {
             foreach ($listener->events() as $class => $handlers) {
                 foreach ($handlers as $handler) {
-                    $mapping[$class][] = $handler;
+                    $subscriptions[$class][] = $handler;
                 }
             }
         }
 
-        return new self($mapping);
+        return new self($subscriptions);
     }
 
     /**
-     * @param array[] $mapping
+     * @param array[] $subscriptions
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
-    public function __construct(array $mapping)
+    public function __construct(array $subscriptions)
     {
-        foreach ($mapping as $class => $handlers) {
+        foreach ($subscriptions as $class => $handlers) {
             if (!class_exists($class)) {
                 throw new InvalidArgumentException("Class $class does not exist.");
             }
@@ -60,7 +60,7 @@ class EventMapping implements ArrayAccess
             }
         }
 
-        $this->mapping = $mapping;
+        $this->subscriptions = $subscriptions;
     }
 
     /**
@@ -72,8 +72,8 @@ class EventMapping implements ArrayAccess
      */
     public function offsetGet($class) : array
     {
-        if (isset($this->mapping[$class])) {
-            return $this->mapping[$class];
+        if (isset($this->subscriptions[$class])) {
+            return $this->subscriptions[$class];
         }
 
         throw new InvalidArgumentException("Event $class not found.");
@@ -97,7 +97,7 @@ class EventMapping implements ArrayAccess
      */
     public function offsetExists($class) : bool
     {
-        return isset($this->mapping[$class]);
+        return isset($this->subscriptions[$class]);
     }
 
     /**

@@ -47,7 +47,8 @@ class UpdateDashboard implements Listener
      */
     public function incrementRequestCount(RequestReceived $event) : void
     {
-        $this->dashboard->incrementRequestCount($event->request());
+        $this->dashboard->httpStats()
+            ->incrementRequestCount($event->request());
     }
 
     /**
@@ -57,6 +58,7 @@ class UpdateDashboard implements Listener
      */
     public function incrementResponseCount(ResponseSent $event) : void
     {
-        $this->dashboard->incrementResponseCount($event->response());
+        $this->dashboard->httpStats()
+            ->incrementResponseCount($event->response());
     }
 }

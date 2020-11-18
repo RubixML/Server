@@ -2,10 +2,11 @@
 
 namespace Rubix\Server\Tests\Http\Controllers;
 
-use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Http\Controllers\AnomalyScoresController;
+use Rubix\Server\Services\QueryBus;
+use Rubix\Server\Http\Controllers\ModelController;
+use Rubix\Server\Http\Controllers\RESTController;
 use Rubix\Server\Http\Controllers\Controller;
-use Rubix\Server\Payloads\ScorePayload;
+use Rubix\Server\Payloads\PredictPayload;
 use React\Http\Message\ServerRequest;
 use React\Promise\PromiseInterface;
 use React\Promise\Promise;
@@ -13,12 +14,12 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @group Controllers
- * @covers \Rubix\Server\Http\Controllers\AnomalyScoresController
+ * @covers \Rubix\Server\Http\Controllers\ModelController
  */
-class ScoresControllerTest extends TestCase
+class ModelControllerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Http\Controllers\AnomalyScoresController
+     * @var \Rubix\Server\Http\Controllers\ModelController
      */
     protected $controller;
 
@@ -27,14 +28,14 @@ class ScoresControllerTest extends TestCase
      */
     protected function setUp() : void
     {
-        $commandBus = $this->createMock(CommandBus::class);
+        $queryBus = $this->createMock(QueryBus::class);
 
-        $commandBus->method('dispatch')
+        $queryBus->method('dispatch')
             ->willReturn(new Promise(function ($resolve) {
-                $resolve(new ScorePayload([0.9]));
+                $resolve(new PredictPayload(['positive']));
             }));
 
-        $this->controller = new AnomalyScoresController($commandBus);
+        $this->controller = new ModelController($queryBus);
     }
 
     /**
@@ -42,7 +43,8 @@ class ScoresControllerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(AnomalyScoresController::class, $this->controller);
+        $this->assertInstanceOf(ModelController::class, $this->controller);
+        $this->assertInstanceOf(RESTController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
@@ -61,7 +63,7 @@ class ScoresControllerTest extends TestCase
 
         $request = $request->withParsedBody($payload);
 
-        $promise = call_user_func($this->controller, $request);
+        $promise = call_user_func([$this->controller, 'predict'], $request);
 
         $this->assertInstanceOf(PromiseInterface::class, $promise);
     }

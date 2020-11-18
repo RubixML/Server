@@ -2,33 +2,23 @@
 
 namespace Rubix\Server\Models;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
 class Dashboard
 {
-    protected const MEGA_BYTE = 1000000;
+    protected const ONE_MINUTE = 60;
 
     /**
-     * The number of requests received so far.
+     * The request/response statistics.
      *
-     * @var int
+     * @var \Rubix\Server\Models\HTTPStats
      */
-    protected $numRequests;
+    protected $httpStats;
 
     /**
-     * The number of successful requests handled by the server.
+     * The memory model.
      *
-     * @var int
+     * @var \Rubix\Server\Models\Memory
      */
-    protected $successfulResponses;
-
-    /**
-     * The number of failed requests handled by the server.
-     *
-     * @var int
-     */
-    protected $failedResponses;
+    protected $memory;
 
     /**
      * The timestamp from when the server went up.
@@ -39,64 +29,19 @@ class Dashboard
 
     public function __construct()
     {
-        $this->numRequests = 0;
-        $this->successfulResponses = 0;
-        $this->failedResponses = 0;
+        $this->httpStats = new HTTPStats();
+        $this->memory = new Memory();
         $this->start = time();
     }
 
     /**
-     * Increment the request counter.
+     * Return the HTTP stats model.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $response
-     * @return self
+     * @return \Rubix\Server\Models\HTTPStats
      */
-    public function incrementRequestCount(ServerRequestInterface $response) : self
+    public function httpStats() : HTTPStats
     {
-        ++$this->numRequests;
-
-        return $this;
-    }
-
-    /**
-     * Increment the response counter for a given response.
-     *
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return self
-     */
-    public function incrementResponseCount(ResponseInterface $response) : self
-    {
-        switch ($response->getStatusCode()) {
-            case 200:
-                ++$this->successfulResponses;
-
-                break 1;
-
-            default:
-                ++$this->failedResponses;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Return the number of requests received so far.
-     *
-     * @return int
-     */
-    public function numRequests() : int
-    {
-        return $this->numRequests;
-    }
-
-    /**
-     * Return the total number of requests handled by the server.
-     *
-     * @return int
-     */
-    public function handledRequests() : int
-    {
-        return $this->successfulResponses + $this->failedResponses;
+        return $this->httpStats;
     }
 
     /**
@@ -106,47 +51,17 @@ class Dashboard
      */
     public function requestsPerMinute() : float
     {
-        return $this->handledRequests() / ($this->uptime() / 60);
+        return $this->httpStats->handledRequests() / ($this->uptime() / self::ONE_MINUTE);
     }
 
     /**
-     * Return the number of successful requests handled by the server.
+     * Return the memory model.
      *
-     * @return int
+     * @return \Rubix\Server\Models\Memory
      */
-    public function successfulResponses() : int
+    public function memory() : Memory
     {
-        return $this->successfulResponses;
-    }
-
-    /**
-     * Return the number of failed requests handled by the server.
-     *
-     * @return int
-     */
-    public function failedResponses() : int
-    {
-        return $this->failedResponses;
-    }
-
-    /**
-     * Return the current memory usage of the server in mega bytes (MB).
-     *
-     * @return float
-     */
-    public function memoryUsage() : float
-    {
-        return memory_get_usage() / self::MEGA_BYTE;
-    }
-
-    /**
-     * Return the peak memory usage of the server in mega bytes (MB).
-     *
-     * @return float
-     */
-    public function memoryPeak() : float
-    {
-        return memory_get_peak_usage() / self::MEGA_BYTE;
+        return $this->memory;
     }
 
     /**

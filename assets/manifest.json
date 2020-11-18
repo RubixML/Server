@@ -1,8 +1,11 @@
 {
     "name": "Rubix ML Server",
     "short_name": "Server",
+    "description": "The Rubix ML Server user interface (UI).",
     "start_url": "/",
     "display": "standalone",
+    "orientation": "any",
+    "lang": "en-US",
     "icons": [
         {
             "src": "/images/app-icon-small.png",

@@ -45,7 +45,7 @@
     },
     "suggest": {
         "ext-event": "For high volume servers",
-        "ext-bzip2": "For Bzip2 compression support",
+        "ext-bzip2": "For Bzip2 message compression",
         "ext-igbinary": "For binary message serialization"
     },
     "autoload": {

@@ -3,10 +3,11 @@
 namespace Rubix\Server\Tests\Http\Controllers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Services\CommandBus;
-use Rubix\Server\Commands\Predict;
+use Rubix\Server\Services\QueryBus;
+use Rubix\Server\Queries\Predict;
 use Rubix\Server\Serializers\JSON;
-use Rubix\Server\Http\Controllers\CommandsController;
+use Rubix\Server\Http\Controllers\QueriesController;
+use Rubix\Server\Http\Controllers\RPCController;
 use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Payloads\PredictPayload;
 use React\Http\Message\ServerRequest;
@@ -16,16 +17,16 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @group Controllers
- * @covers \Rubix\Server\Http\Controllers\CommandsController
+ * @covers \Rubix\Server\Http\Controllers\QueriesController
  */
-class CommandsControllerTest extends TestCase
+class QueriesControllerTest extends TestCase
 {
     protected const SAMPLES = [
         ['The first step is to establish that something is possible, then probability will occur.'],
     ];
 
     /**
-     * @var \Rubix\Server\Http\Controllers\CommandsController
+     * @var \Rubix\Server\Http\Controllers\QueriesController
      */
     protected $controller;
 
@@ -34,14 +35,14 @@ class CommandsControllerTest extends TestCase
      */
     protected function setUp() : void
     {
-        $commandBus = $this->createMock(CommandBus::class);
+        $queryBus = $this->createMock(QueryBus::class);
 
-        $commandBus->method('dispatch')
+        $queryBus->method('dispatch')
             ->willReturn(new Promise(function ($resolve) {
                 $resolve(new PredictPayload(['positive']));
             }));
 
-        $this->controller = new CommandsController($commandBus, new JSON());
+        $this->controller = new QueriesController($queryBus, new JSON());
     }
 
     /**
@@ -49,7 +50,8 @@ class CommandsControllerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(CommandsController::class, $this->controller);
+        $this->assertInstanceOf(QueriesController::class, $this->controller);
+        $this->assertInstanceOf(RPCController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 
@@ -60,15 +62,15 @@ class CommandsControllerTest extends TestCase
     {
         $dataset = new Unlabeled(self::SAMPLES);
 
-        $command = new Predict($dataset);
+        $query = new Predict($dataset);
 
         $serializer = new JSON();
 
-        $data = $serializer->serialize($command);
+        $data = $serializer->serialize($query);
 
         $request = new ServerRequest('POST', '/', [], $data);
 
-        $request = $request->withParsedBody($command);
+        $request = $request->withParsedBody($query);
 
         $promise = call_user_func($this->controller, $request);
 

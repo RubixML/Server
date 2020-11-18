@@ -6,7 +6,7 @@ use Rubix\ML\Estimator;
 use Rubix\Server\Queries\Predict;
 use Rubix\Server\Payloads\PredictPayload;
 
-class PredictHandler
+class PredictHandler implements Handler
 {
     /**
      * The model that is being served.
@@ -21,6 +21,18 @@ class PredictHandler
     public function __construct(Estimator $estimator)
     {
         $this->estimator = $estimator;
+    }
+
+    /**
+     * Return the queries that this handler is bound to.
+     *
+     * @return callable[]
+     */
+    public function queries() : array
+    {
+        return [
+            Predict::class => $this,
+        ];
     }
 
     /**

@@ -6,7 +6,7 @@ use Rubix\ML\Probabilistic;
 use Rubix\Server\Queries\Proba;
 use Rubix\Server\Payloads\ProbaPayload;
 
-class ProbaHandler
+class ProbaHandler implements Handler
 {
     /**
      * The probabilistic model that is being served.
@@ -21,6 +21,18 @@ class ProbaHandler
     public function __construct(Probabilistic $estimator)
     {
         $this->estimator = $estimator;
+    }
+
+    /**
+     * Return the queries that this handler is bound to.
+     *
+     * @return callable[]
+     */
+    public function queries() : array
+    {
+        return [
+            Proba::class => $this,
+        ];
     }
 
     /**

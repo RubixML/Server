@@ -12,14 +12,14 @@ class Router
     /**
      * The mapping of URIs to their method/controller pairs.
      *
-     * @var \Rubix\Server\Http\RoutingSchema
+     * @var \Rubix\Server\Http\Routes
      */
     protected $schema;
 
     /**
-     * @param \Rubix\Server\Http\RoutingSchema $schema
+     * @param \Rubix\Server\Http\Routes $schema
      */
-    public function __construct(RoutingSchema $schema)
+    public function __construct(Routes $schema)
     {
         $this->schema = $schema;
     }

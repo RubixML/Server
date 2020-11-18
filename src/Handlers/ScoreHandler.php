@@ -6,7 +6,7 @@ use Rubix\ML\Ranking;
 use Rubix\Server\Queries\Score;
 use Rubix\Server\Payloads\ScorePayload;
 
-class ScoreHandler
+class ScoreHandler implements Handler
 {
     /**
      * The ranking model that is being served.
@@ -21,6 +21,18 @@ class ScoreHandler
     public function __construct(Ranking $estimator)
     {
         $this->estimator = $estimator;
+    }
+
+    /**
+     * Return the queries that this handler is bound to.
+     *
+     * @return callable[]
+     */
+    public function queries() : array
+    {
+        return [
+            Score::class => $this,
+        ];
     }
 
     /**

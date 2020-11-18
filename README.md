@@ -13,7 +13,7 @@ $ composer require rubix/server
 
 #### Optional
 - [Event extension](https://pecl.php.net/package/event) for high-volume servers
-- [Bzip2 extension](https://www.php.net/manual/en/book.bzip2.php) for Bzip2 compression support
+- [Bzip2 extension](https://www.php.net/manual/en/book.bzip2.php) for Bzip2 message compression
 - [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
 
 ## Documentation
@@ -111,6 +111,7 @@ This server exposes the following HTTP resources and their methods.
 
 | Method | URI | JSON Params | Description |
 |---|---|---|---|
+| GET | / | | The web client user interface. |
 | POST | /model/predictions | `samples` | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | `samples` | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | `samples` | Return the anomaly scores of each sample in a dataset. |
@@ -158,9 +159,10 @@ This server respects the following `php.ini` configuration variables.
 #### HTTP Routes
 This server exposes the following HTTP resources and their methods.
 
-| Method | URI | Description |
+| Method | URI | JSON Params | Description |
 |---|---|---|---|
-| POST | /commands | Execute a command on the server. |
+| GET | / | | The web client user interface. |
+| POST | /queries | `class`, `data` | Send a query to the server. |
 
 ---
 ### Clients

@@ -3,16 +3,17 @@
 namespace Rubix\Server\Services;
 
 use Rubix\Server\Queries\Query;
+use Rubix\Server\Payloads\Payload;
+use Rubix\Server\Events\QueryAccepted;
+use Rubix\Server\Events\QueryFulfilled;
+use Rubix\Server\Events\QueryFailed;
 use Rubix\Server\Exceptions\HandlerNotFound;
-use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Promise\PromiseInterface;
 use React\Promise\Promise;
 use Psr\Log\LoggerInterface;
 use Exception;
 
 use function get_class;
-use function class_exists;
-use function is_callable;
 
 /**
  * Query Bus
@@ -28,11 +29,18 @@ use function is_callable;
 class QueryBus
 {
     /**
-     * The mapping of queries to their handlers.
+     * The query/handler bindings.
      *
-     * @var callable[]
+     * @var \Rubix\Server\Services\Bindings
      */
-    protected $handlers;
+    protected $bindings;
+
+    /**
+     * The event bus.
+     *
+     * @var \Rubix\Server\Services\EventBus
+     */
+    protected $eventBus;
 
     /**
      * A PSR-3 logger instance.
@@ -42,23 +50,15 @@ class QueryBus
     protected $logger;
 
     /**
-     * @param callable[] $handlers
+     * @param \Rubix\Server\Services\Bindings $bindings
+     * @param \Rubix\Server\Services\EventBus $eventBus
      * @param \Psr\Log\LoggerInterface|null $logger
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
-    public function __construct(array $handlers, ?LoggerInterface $logger = null)
+    public function __construct(Bindings $bindings, EventBus $eventBus, ?LoggerInterface $logger = null)
     {
-        foreach ($handlers as $class => $handler) {
-            if (!class_exists($class)) {
-                throw new InvalidArgumentException("Class $class does not exist.");
-            }
-
-            if (!is_callable($handler)) {
-                throw new InvalidArgumentException('Handler must be callable.');
-            }
-        }
-
-        $this->handlers = $handlers;
+        $this->bindings = $bindings;
+        $this->eventBus = $eventBus;
         $this->logger = $logger;
     }
 
@@ -73,17 +73,34 @@ class QueryBus
     {
         $class = get_class($query);
 
-        if (empty($this->handlers[$class])) {
+        if (empty($this->bindings[$class])) {
             throw new HandlerNotFound($query);
         }
 
-        $handler = $this->handlers[$class];
+        $handler = $this->bindings[$class];
 
         $promise = new Promise(function ($resolve) use ($query, $handler) {
             $resolve($handler($query));
         });
 
-        return $promise->otherwise([$this, 'logError']);
+        $this->eventBus->dispatch(new QueryAccepted($query));
+
+        return $promise->then(
+            [$this, 'onSuccess'],
+            [$this, 'onError']
+        );
+    }
+
+    /**
+     * Dispatch a query fulfilled event.
+     *
+     * @param \Rubix\Server\Payloads\Payload $payload
+     */
+    public function onSuccess(Payload $payload) : Payload
+    {
+        $this->eventBus->dispatch(new QueryFulfilled($payload));
+
+        return $payload;
     }
 
     /**
@@ -92,8 +109,10 @@ class QueryBus
      * @param \Exception $exception
      * @throws \Exception
      */
-    public function logError(Exception $exception) : void
+    public function onError(Exception $exception) : void
     {
+        $this->eventBus->dispatch(new QueryFailed($exception));
+
         if ($this->logger) {
             $this->logger->error((string) $exception);
         }

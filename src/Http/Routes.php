@@ -12,7 +12,7 @@ use function is_string;
 /**
  * @implements ArrayAccess<string, array>
  */
-class RoutingSchema implements ArrayAccess
+class Routes implements ArrayAccess
 {
     public const SUPPORTED_METHODS = [
         'OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE',
@@ -69,16 +69,6 @@ class RoutingSchema implements ArrayAccess
         }
 
         $this->routes = $routes;
-    }
-
-    /**
-     * Return the routes in the schema.
-     *
-     * @return array[]
-     */
-    public function routes() : array
-    {
-        return $this->routes;
     }
 
     /**
