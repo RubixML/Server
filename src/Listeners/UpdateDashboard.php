@@ -3,7 +3,6 @@
 namespace Rubix\Server\Listeners;
 
 use Rubix\Server\Models\Dashboard;
-use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
 
 class UpdateDashboard implements Listener
@@ -31,24 +30,10 @@ class UpdateDashboard implements Listener
     public function events() : array
     {
         return [
-            RequestReceived::class => [
-                [$this, 'incrementRequestCount'],
-            ],
             ResponseSent::class => [
                 [$this, 'incrementResponseCount'],
             ],
         ];
-    }
-
-    /**
-     * Increment the request count.
-     *
-     * @param \Rubix\Server\Events\RequestReceived $event
-     */
-    public function incrementRequestCount(RequestReceived $event) : void
-    {
-        $this->dashboard->httpStats()
-            ->incrementRequestCount($event->request());
     }
 
     /**
@@ -58,7 +43,6 @@ class UpdateDashboard implements Listener
      */
     public function incrementResponseCount(ResponseSent $event) : void
     {
-        $this->dashboard->httpStats()
-            ->incrementResponseCount($event->response());
+        $this->dashboard->httpStats()->incrementResponseCount($event->response());
     }
 }

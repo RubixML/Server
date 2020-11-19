@@ -2,13 +2,19 @@
     <canvas id="canvas" width="900" height="300"></canvas>
 </template>
 
-
 <script>
 import Chart from 'chart.js';
 
 const DATASET_SIZE = 60;
+const UPDATE_INTERVAL = 1000;
 
 export default {
+    data() {
+        return {
+            chart: null,
+            old: null,
+        };
+    },
     props: {
         requests: {
             type: Object,
@@ -18,10 +24,10 @@ export default {
     mounted() {
         let context = document.getElementById('canvas').getContext('2d');
 
-        window.chart = new Chart(context, {
+        this.chart = new Chart(context, {
             type: 'line',
             data: {
-                labels: [...Array(DATASET_SIZE)].map((_, i) => i * 2).reverse(),
+                labels: [...Array(DATASET_SIZE).keys()].reverse(),
                 datasets: [
                     {
                         label: 'Successful',
@@ -33,13 +39,22 @@ export default {
                         fill: false,
                     },
                     {
-                        label: 'Failed',
+                        label: 'Rejected',
                         data: Array(DATASET_SIZE).fill(0.0),
                         borderColor: 'hsl(204, 86%, 53%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0.1,
                         fill: true,
+                    },
+                    {
+                        label: 'Failed',
+                        data: Array(DATASET_SIZE).fill(0.0),
+                        borderColor: 'hsl(347, 100%, 69%)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        lineTension: 0.1,
+                        fill: false,
                     },
                 ],
             },
@@ -86,30 +101,31 @@ export default {
                 },
             },
         });
+
+        setInterval(this.update, UPDATE_INTERVAL);
     },
-    watch: { 
-        requests: (newValue, oldValue) => {
-            let datasets = window.chart.data.datasets;
+    methods: { 
+        update() {
+            let datasets = this.chart.data.datasets;
 
-            if (oldValue.successful === undefined) {
-               oldValue.successful = newValue.successful; 
+            if (this.old === null) {
+                this.old = Object.assign({}, this.requests);
             }
 
-            if (oldValue.failed === undefined) {
-               oldValue.failed = newValue.failed; 
-            }
-
-            datasets[0].data.push(newValue.successful - oldValue.successful);
-            datasets[1].data.push(newValue.failed - oldValue.failed);
-
+            datasets[0].data.push(Math.max(0, this.requests.successful - this.old.successful));
+            datasets[1].data.push(Math.max(0, this.requests.rejected - this.old.rejected));
+            datasets[2].data.push(Math.max(0, this.requests.failed - this.old.failed));
+ 
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
                     dataset.data = dataset.data.slice(-DATASET_SIZE);
                 }
             });
 
-            window.chart.update(0);
-        },
+            this.old = Object.assign({}, this.requests);
+
+            this.chart.update(0);
+        }
     },
 }
 </script>

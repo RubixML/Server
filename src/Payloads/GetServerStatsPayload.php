@@ -44,10 +44,9 @@ class GetServerStatsPayload extends Payload
     {
         return self::fromArray([
             'requests' => [
-                'received' => $dashboard->httpStats()->numRequests(),
-                'rate' => $dashboard->requestsPerMinute(),
-                'successful' => $dashboard->httpStats()->successfulResponses(),
-                'failed' => $dashboard->httpStats()->failedResponses(),
+                'successful' => $dashboard->httpStats()->numSuccessful(),
+                'rejected' => $dashboard->httpStats()->numRejected(),
+                'failed' => $dashboard->httpStats()->numFailed(),
             ],
             'memory' => [
                 'usage' => $dashboard->memory()->usage(),

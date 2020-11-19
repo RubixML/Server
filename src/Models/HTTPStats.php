@@ -2,40 +2,45 @@
 
 namespace Rubix\Server\Models;
 
-use Psr\Http\Message\ServerRequestInterface;
+use Rubix\Server\Services\SSEChannel;
 use Psr\Http\Message\ResponseInterface;
 
 class HTTPStats
 {
     /**
-     * The number of requests received so far.
+     * The server-sent events emitter.
      *
-     * @var int
+     * @var \Rubix\Server\Services\SSEChannel
      */
-    protected $numRequests = 0;
+    protected $channel;
 
     /**
      * The number of successful requests handled by the server.
      *
      * @var int
      */
-    protected $successfulResponses = 0;
+    protected $numSuccessful = 0;
 
     /**
-     * The number of failed requests handled by the server.
+     * The number of rejected requests.
      *
      * @var int
      */
-    protected $failedResponses = 0;
+    protected $numRejected = 0;
 
     /**
-     * Increment the request counter.
+     * The number of failed requests.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @var int
      */
-    public function incrementRequestCount(ServerRequestInterface $request) : void
+    protected $numFailed = 0;
+
+    /**
+     * @param \Rubix\Server\Services\SSEChannel $channel
+     */
+    public function __construct(SSEChannel $channel)
     {
-        ++$this->numRequests;
+        $this->channel = $channel;
     }
 
     /**
@@ -45,25 +50,21 @@ class HTTPStats
      */
     public function incrementResponseCount(ResponseInterface $response) : void
     {
-        switch ($response->getStatusCode()) {
-            case 200:
-                ++$this->successfulResponses;
+        $code = $response->getStatusCode();
 
-                break 1;
+        if ($code >= 100 and $code < 400) {
+            ++$this->numSuccessful;
 
-            default:
-                ++$this->failedResponses;
+            $this->channel->emit('http-stats-successful-incremented');
+        } elseif ($code >= 400 and $code < 500) {
+            ++$this->numRejected;
+
+            $this->channel->emit('http-stats-rejected-incremented');
+        } elseif ($code >= 500) {
+            ++$this->numFailed;
+
+            $this->channel->emit('http-stats-failed-incremented');
         }
-    }
-
-    /**
-     * Return the number of requests received so far.
-     *
-     * @return int
-     */
-    public function numRequests() : int
-    {
-        return $this->numRequests;
     }
 
     /**
@@ -71,9 +72,9 @@ class HTTPStats
      *
      * @return int
      */
-    public function handledRequests() : int
+    public function numResponses() : int
     {
-        return $this->successfulResponses + $this->failedResponses;
+        return $this->numSuccessful + $this->numRejected + $this->numFailed;
     }
 
     /**
@@ -81,18 +82,28 @@ class HTTPStats
      *
      * @return int
      */
-    public function successfulResponses() : int
+    public function numSuccessful() : int
     {
-        return $this->successfulResponses;
+        return $this->numSuccessful;
     }
 
     /**
-     * Return the number of failed requests handled by the server.
+     * Return the number of rejected requests.
      *
      * @return int
      */
-    public function failedResponses() : int
+    public function numRejected() : int
     {
-        return $this->failedResponses;
+        return $this->numRejected;
+    }
+
+    /**
+     * Return the number of failed requests.
+     *
+     * @return int
+     */
+    public function numFailed() : int
+    {
+        return $this->numFailed;
     }
 }

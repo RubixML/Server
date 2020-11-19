@@ -11,8 +11,9 @@ use Rubix\Server\Services\Bindings;
 use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
-use Rubix\Server\Http\Router;
-use Rubix\Server\Http\Routes;
+use Rubix\Server\Services\Router;
+use Rubix\Server\Services\Routes;
+use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\QueriesController;
 use Rubix\Server\Http\Controllers\StaticAssetsController;
@@ -26,11 +27,13 @@ use Rubix\Server\Handlers\DashboardHandler;
 use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Listeners\UpdateDashboard;
+use Rubix\Server\Listeners\LogFailures;
 use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
+use Rubix\ML\Other\Loggers\BlackHole;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
@@ -39,7 +42,6 @@ use React\Filesystem\Filesystem;
 use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerAwareInterface;
 use Exception;
 
 use function React\Promise\resolve;
@@ -55,7 +57,7 @@ use function React\Promise\resolve;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RPCServer implements Server, LoggerAwareInterface
+class RPCServer implements Server, Verbose
 {
     use LoggerAware;
 
@@ -160,6 +162,7 @@ class RPCServer implements Server, LoggerAwareInterface
         $this->cert = $cert;
         $this->middlewares = array_values($middlewares);
         $this->serializer = $serializer ?? new JSON();
+        $this->logger = new BlackHole();
     }
 
     /**
@@ -181,10 +184,13 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $filesystem = Filesystem::create($loop);
 
-        $dashboard = new Dashboard();
+        $dashboardChannel = new SSEChannel(50);
+
+        $dashboard = new Dashboard($dashboardChannel);
 
         $eventBus = new EventBus(Subscriptions::subscribe([
             new UpdateDashboard($dashboard),
+            new LogFailures($this->logger),
         ]), $loop, $this->logger);
 
         $handlers = [
@@ -200,11 +206,11 @@ class RPCServer implements Server, LoggerAwareInterface
             $handlers[] = new ScoreHandler($estimator);
         }
 
-        $queryBus = new QueryBus(Bindings::bind($handlers), $eventBus, $this->logger);
+        $queryBus = new QueryBus(Bindings::bind($handlers), $eventBus);
 
         $router = new Router(Routes::collect([
             new QueriesController($queryBus, $this->serializer),
-            new DashboardController($queryBus),
+            new DashboardController($queryBus, $dashboardChannel),
             new StaticAssetsController($filesystem),
         ]));
 
@@ -232,10 +238,8 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $loop->addSignal(SIGINT, [$this, 'shutdown']);
 
-        if ($this->logger) {
-            $this->logger->info('HTTP RPC Server running at'
-                . " {$this->host} on port {$this->port}");
-        }
+        $this->logger->info('HTTP RPC Server running at'
+            . " {$this->host} on port {$this->port}");
 
         $loop->run();
     }
@@ -327,8 +331,6 @@ class RPCServer implements Server, LoggerAwareInterface
 
         $this->socket->close();
 
-        if ($this->logger) {
-            $this->logger->info('Server shutting down');
-        }
+        $this->logger->info('Server shutting down');
     }
 }

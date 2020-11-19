@@ -11,8 +11,9 @@ use Rubix\Server\Services\Bindings;
 use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
-use Rubix\Server\Http\Router;
-use Rubix\Server\Http\Routes;
+use Rubix\Server\Services\Router;
+use Rubix\Server\Services\Routes;
+use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\Http\Middleware\Middleware;
 use Rubix\Server\Http\Controllers\ModelController;
 use Rubix\Server\Http\Controllers\StaticAssetsController;
@@ -27,9 +28,11 @@ use Rubix\Server\Handlers\DashboardHandler;
 use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Listeners\UpdateDashboard;
+use Rubix\Server\Listeners\LogFailures;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\Server\Helpers\JSON;
+use Rubix\ML\Other\Loggers\BlackHole;
 use React\EventLoop\Factory as Loop;
 use React\Http\Server as HTTPServer;
 use React\Socket\Server as Socket;
@@ -38,7 +41,6 @@ use React\Filesystem\Filesystem;
 use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerAwareInterface;
 use Exception;
 
 use function React\Promise\resolve;
@@ -54,7 +56,7 @@ use function React\Promise\resolve;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RESTServer implements Server, LoggerAwareInterface
+class RESTServer implements Server, Verbose
 {
     use LoggerAware;
 
@@ -149,6 +151,7 @@ class RESTServer implements Server, LoggerAwareInterface
         $this->port = $port;
         $this->cert = $cert;
         $this->middlewares = array_values($middlewares);
+        $this->logger = new BlackHole();
     }
 
     /**
@@ -168,12 +171,15 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $loop = Loop::create();
 
-        $dashboard = new Dashboard();
-
         $filesystem = Filesystem::create($loop);
+
+        $dashboardChannel = new SSEChannel(50);
+
+        $dashboard = new Dashboard($dashboardChannel);
 
         $eventBus = new EventBus(Subscriptions::subscribe([
             new UpdateDashboard($dashboard),
+            new LogFailures($this->logger),
         ]), $loop, $this->logger);
 
         $handlers = [
@@ -189,11 +195,11 @@ class RESTServer implements Server, LoggerAwareInterface
             $handlers[] = new ScoreHandler($estimator);
         }
 
-        $queryBus = new QueryBus(Bindings::bind($handlers), $eventBus, $this->logger);
+        $queryBus = new QueryBus(Bindings::bind($handlers), $eventBus);
 
         $router = new Router(Routes::collect([
             new ModelController($queryBus),
-            new DashboardController($queryBus),
+            new DashboardController($queryBus, $dashboardChannel),
             new StaticAssetsController($filesystem),
         ]));
 
@@ -225,10 +231,8 @@ class RESTServer implements Server, LoggerAwareInterface
         $this->socket = $socket;
         $this->loop = $loop;
 
-        if ($this->logger) {
-            $this->logger->info('HTTP REST Server running at'
-                . " {$this->host} on port {$this->port}");
-        }
+        $this->logger->info('HTTP REST Server running at'
+            . " {$this->host} on port {$this->port}");
 
         $loop->run();
     }
@@ -318,8 +322,6 @@ class RESTServer implements Server, LoggerAwareInterface
 
         $this->socket->close();
 
-        if ($this->logger) {
-            $this->logger->info('Server shutting down');
-        }
+        $this->logger->info('Server shutting down');
     }
 }

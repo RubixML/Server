@@ -16,7 +16,7 @@ class StaticAssetsController implements Controller
 
     protected const INDEX_PATH = self::ASSETS_PATH . '/index.html';
 
-    protected const CACHE_AGE = 'max-age=604800';
+    protected const CACHE_MAX_AGE = 'max-age=604800';
 
     /**
      * The filesystem.
@@ -68,7 +68,7 @@ class StaticAssetsController implements Controller
             ->then(function ($data) {
                 return new Success([
                     'Content-Type' => 'text/html',
-                    'Cache-Control' => self::CACHE_AGE,
+                    'Cache-Control' => self::CACHE_MAX_AGE,
                 ], $data);
             });
     }
@@ -89,7 +89,7 @@ class StaticAssetsController implements Controller
             return $file->getContents()->then(function ($data) use ($file) {
                 return new Success([
                     'Content-Type' => File::mime($file),
-                    'Cache-Control' => self::CACHE_AGE,
+                    'Cache-Control' => self::CACHE_MAX_AGE,
                 ], $data);
             });
         }, function (Exception $exception) {

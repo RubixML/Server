@@ -10,7 +10,6 @@ use Rubix\Server\Events\QueryFailed;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use React\Promise\PromiseInterface;
 use React\Promise\Promise;
-use Psr\Log\LoggerInterface;
 use Exception;
 
 use function get_class;
@@ -43,23 +42,13 @@ class QueryBus
     protected $eventBus;
 
     /**
-     * A PSR-3 logger instance.
-     *
-     * @var \Psr\Log\LoggerInterface|null
-     */
-    protected $logger;
-
-    /**
      * @param \Rubix\Server\Services\Bindings $bindings
      * @param \Rubix\Server\Services\EventBus $eventBus
-     * @param \Psr\Log\LoggerInterface|null $logger
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
-    public function __construct(Bindings $bindings, EventBus $eventBus, ?LoggerInterface $logger = null)
+    public function __construct(Bindings $bindings, EventBus $eventBus)
     {
         $this->bindings = $bindings;
         $this->eventBus = $eventBus;
-        $this->logger = $logger;
     }
 
     /**
@@ -77,17 +66,17 @@ class QueryBus
             throw new HandlerNotFound($query);
         }
 
+        $this->eventBus->dispatch(new QueryAccepted($query));
+
         $handler = $this->bindings[$class];
 
         $promise = new Promise(function ($resolve) use ($query, $handler) {
             $resolve($handler($query));
         });
 
-        $this->eventBus->dispatch(new QueryAccepted($query));
-
         return $promise->then(
-            [$this, 'onSuccess'],
-            [$this, 'onError']
+            [$this, 'dispatchFulfilledEvent'],
+            [$this, 'dispatchFailedEvent']
         );
     }
 
@@ -96,7 +85,7 @@ class QueryBus
      *
      * @param \Rubix\Server\Payloads\Payload $payload
      */
-    public function onSuccess(Payload $payload) : Payload
+    public function dispatchFulfilledEvent(Payload $payload) : Payload
     {
         $this->eventBus->dispatch(new QueryFulfilled($payload));
 
@@ -104,18 +93,14 @@ class QueryBus
     }
 
     /**
-     * Log and rethrow exception.
+     * Dispatch a query failed event and rethrow exception.
      *
      * @param \Exception $exception
      * @throws \Exception
      */
-    public function onError(Exception $exception) : void
+    public function dispatchFailedEvent(Exception $exception) : void
     {
         $this->eventBus->dispatch(new QueryFailed($exception));
-
-        if ($this->logger) {
-            $this->logger->error((string) $exception);
-        }
 
         throw $exception;
     }

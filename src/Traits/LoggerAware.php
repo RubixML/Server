@@ -7,8 +7,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Logger Aware
  *
- * This trait fulfills the psr-3 logger aware interface as well as provides
- * additional helper methods.
+ * This trait fulfills the psr-3 logger aware interface.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -19,7 +18,7 @@ trait LoggerAware
     /**
      * A PSR-3 logger instance.
      *
-     * @var \Psr\Log\LoggerInterface|null
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 

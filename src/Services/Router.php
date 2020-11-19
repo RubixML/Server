@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Http;
+namespace Rubix\Server\Services;
 
 use Rubix\Server\Http\Responses\NotFound;
 use Rubix\Server\Http\Responses\MethodNotAllowed;
@@ -12,12 +12,12 @@ class Router
     /**
      * The mapping of URIs to their method/controller pairs.
      *
-     * @var \Rubix\Server\Http\Routes
+     * @var \Rubix\Server\Services\Routes
      */
     protected $schema;
 
     /**
-     * @param \Rubix\Server\Http\Routes $schema
+     * @param \Rubix\Server\Services\Routes $schema
      */
     public function __construct(Routes $schema)
     {

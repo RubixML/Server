@@ -1,5 +1,3 @@
 <template>
-    <section class="section">
-        <dashboard></dashboard>
-    </section>
+    <dashboard></dashboard>
 </template>

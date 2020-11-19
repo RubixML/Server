@@ -2,16 +2,23 @@
 
 namespace Rubix\Server\Models;
 
+use Rubix\Server\Services\SSEChannel;
+
 class Dashboard
 {
-    protected const ONE_MINUTE = 60;
-
     /**
      * The request/response statistics.
      *
      * @var \Rubix\Server\Models\HTTPStats
      */
     protected $httpStats;
+
+    /**
+     * The query statistics.
+     *
+     * @var \Rubix\Server\Models\QueryStats
+     */
+    protected $queryStats;
 
     /**
      * The memory model.
@@ -27,9 +34,13 @@ class Dashboard
      */
     protected $start;
 
-    public function __construct()
+    /**
+     * @param \Rubix\Server\Services\SSEChannel $channel
+     */
+    public function __construct(SSEChannel $channel)
     {
-        $this->httpStats = new HTTPStats();
+        $this->httpStats = new HTTPStats($channel);
+        $this->queryStats = new QueryStats($channel);
         $this->memory = new Memory();
         $this->start = time();
     }
@@ -45,13 +56,23 @@ class Dashboard
     }
 
     /**
-     * Return the current number of requests handled per minute.
+     * Return the query stats model.
+     *
+     * @return \Rubix\Server\Models\QueryStats
+     */
+    public function queryStats() : QueryStats
+    {
+        return $this->queryStats;
+    }
+
+    /**
+     * Return the current number of requests handled per second.
      *
      * @return float
      */
-    public function requestsPerMinute() : float
+    public function responseRate() : float
     {
-        return $this->httpStats->handledRequests() / ($this->uptime() / self::ONE_MINUTE);
+        return $this->httpStats->numResponses() / $this->uptime();
     }
 
     /**

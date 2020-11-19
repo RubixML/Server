@@ -2,20 +2,14 @@
     <nav class="level is-mobile">
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Requests</p>
-                <p class="title">{{ received }}</p>
-            </div>
-        </div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="heading">Request Rate</p>
-                <p><span class="title">{{ rate }}</span>/min</p>
-            </div>
-        </div>
-        <div class="level-item has-text-centered">
-            <div>
                 <p class="heading">Successful</p>
                 <p class="title">{{ successful }}</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Rejected</p>
+                <p class="title">{{ rejected }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
@@ -36,14 +30,11 @@ export default {
         },
     },
     computed: {
-        received() {
-            return this.requests.received ? this.requests.received.toLocaleString() : 0;
-        },
-        rate() {
-            return this.requests.rate ? this.requests.rate.toFixed(1) : 0.0;
-        },
         successful() {
             return this.requests.successful ? this.requests.successful.toLocaleString() : 0;
+        },
+        rejected() {
+            return this.requests.rejected ? this.requests.rejected.toLocaleString() : 0;
         },
         failed() {
             return this.requests.failed ? this.requests.failed.toLocaleString() : 0;

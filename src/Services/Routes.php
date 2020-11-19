@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Http;
+namespace Rubix\Server\Services;
 
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;

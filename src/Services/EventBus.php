@@ -23,7 +23,7 @@ class EventBus
      *
      * @var \Rubix\Server\Services\Subscriptions
      */
-    protected $mapping;
+    protected $subscriptions;
 
     /**
      * The event loop.
@@ -35,19 +35,19 @@ class EventBus
     /**
      * A PSR-3 logger instance.
      *
-     * @var \Psr\Log\LoggerInterface|null
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
     /**
-     * @param \Rubix\Server\Services\Subscriptions $mapping
+     * @param \Rubix\Server\Services\Subscriptions $subscriptions
      * @param \React\EventLoop\LoopInterface $loop
-     * @param \Psr\Log\LoggerInterface|null $logger
-     * @param Subscriptions $mapping
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param Subscriptions $subscriptions
      */
-    public function __construct(Subscriptions $mapping, LoopInterface $loop, ?LoggerInterface $logger = null)
+    public function __construct(Subscriptions $subscriptions, LoopInterface $loop, LoggerInterface $logger)
     {
-        $this->mapping = $mapping;
+        $this->subscriptions = $subscriptions;
         $this->loop = $loop;
         $this->logger = $logger;
     }
@@ -61,17 +61,15 @@ class EventBus
     {
         $class = get_class($event);
 
-        if (isset($this->mapping[$class])) {
-            $handlers = $this->mapping[$class];
+        if (isset($this->subscriptions[$class])) {
+            $handlers = $this->subscriptions[$class];
 
             foreach ($handlers as $handler) {
                 $job = function () use ($event, $handler) {
                     try {
                         $handler($event);
                     } catch (Exception $exception) {
-                        if ($this->logger) {
-                            $this->logger->error((string) $exception);
-                        }
+                        $this->logger->error((string) $exception);
                     }
                 };
 
