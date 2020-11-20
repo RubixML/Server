@@ -3,9 +3,7 @@
 namespace Rubix\Server\Services;
 
 use Rubix\Server\Queries\Query;
-use Rubix\Server\Payloads\Payload;
 use Rubix\Server\Events\QueryAccepted;
-use Rubix\Server\Events\QueryFulfilled;
 use Rubix\Server\Events\QueryFailed;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use React\Promise\PromiseInterface;
@@ -52,6 +50,16 @@ class QueryBus
     }
 
     /**
+     * Return the query/handler bindings.
+     *
+     * @return \Rubix\Server\Services\Bindings
+     */
+    public function bindings() : Bindings
+    {
+        return $this->bindings;
+    }
+
+    /**
      * Dispatch the query to a handler.
      *
      * @param \Rubix\Server\Queries\Query $query
@@ -74,22 +82,7 @@ class QueryBus
             $resolve($handler($query));
         });
 
-        return $promise->then(
-            [$this, 'dispatchFulfilledEvent'],
-            [$this, 'dispatchFailedEvent']
-        );
-    }
-
-    /**
-     * Dispatch a query fulfilled event.
-     *
-     * @param \Rubix\Server\Payloads\Payload $payload
-     */
-    public function dispatchFulfilledEvent(Payload $payload) : Payload
-    {
-        $this->eventBus->dispatch(new QueryFulfilled($payload));
-
-        return $payload;
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -98,7 +91,7 @@ class QueryBus
      * @param \Exception $exception
      * @throws \Exception
      */
-    public function dispatchFailedEvent(Exception $exception) : void
+    public function onError(Exception $exception) : void
     {
         $this->eventBus->dispatch(new QueryFailed($exception));
 

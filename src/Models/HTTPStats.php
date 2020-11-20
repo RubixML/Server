@@ -55,26 +55,16 @@ class HTTPStats
         if ($code >= 100 and $code < 400) {
             ++$this->numSuccessful;
 
-            $this->channel->emit('http-stats-successful-incremented');
+            $this->channel->emit('http-successful-incremented');
         } elseif ($code >= 400 and $code < 500) {
             ++$this->numRejected;
 
-            $this->channel->emit('http-stats-rejected-incremented');
+            $this->channel->emit('http-rejected-incremented');
         } elseif ($code >= 500) {
             ++$this->numFailed;
 
-            $this->channel->emit('http-stats-failed-incremented');
+            $this->channel->emit('http-failed-incremented');
         }
-    }
-
-    /**
-     * Return the total number of requests handled by the server.
-     *
-     * @return int
-     */
-    public function numResponses() : int
-    {
-        return $this->numSuccessful + $this->numRejected + $this->numFailed;
     }
 
     /**
@@ -105,5 +95,19 @@ class HTTPStats
     public function numFailed() : int
     {
         return $this->numFailed;
+    }
+
+    /**
+     * Return the model as an associative array.
+     *
+     * @return mixed[]
+     */
+    public function asArray() : array
+    {
+        return [
+            'successful' => $this->numSuccessful,
+            'rejected' => $this->numRejected,
+            'failed' => $this->numFailed,
+        ];
     }
 }

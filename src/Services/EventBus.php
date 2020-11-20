@@ -53,6 +53,16 @@ class EventBus
     }
 
     /**
+     * Return the mapping of events to their listeners.
+     *
+     * @return \Rubix\Server\Services\Subscriptions
+     */
+    public function subscriptions() : Subscriptions
+    {
+        return $this->subscriptions;
+    }
+
+    /**
      * Dispatch an event and call any handlers listening for it.
      *
      * @param \Rubix\Server\Events\Event $event

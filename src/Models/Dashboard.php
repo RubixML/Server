@@ -14,11 +14,11 @@ class Dashboard
     protected $httpStats;
 
     /**
-     * The query statistics.
+     * The query log model.
      *
-     * @var \Rubix\Server\Models\QueryStats
+     * @var \Rubix\Server\Models\QueryLog
      */
-    protected $queryStats;
+    protected $queryLog;
 
     /**
      * The memory model.
@@ -40,7 +40,7 @@ class Dashboard
     public function __construct(SSEChannel $channel)
     {
         $this->httpStats = new HTTPStats($channel);
-        $this->queryStats = new QueryStats($channel);
+        $this->queryLog = new QueryLog($channel);
         $this->memory = new Memory();
         $this->start = time();
     }
@@ -56,23 +56,13 @@ class Dashboard
     }
 
     /**
-     * Return the query stats model.
+     * Return the query log model.
      *
-     * @return \Rubix\Server\Models\QueryStats
+     * @return \Rubix\Server\Models\QueryLog
      */
-    public function queryStats() : QueryStats
+    public function queryLog() : QueryLog
     {
-        return $this->queryStats;
-    }
-
-    /**
-     * Return the current number of requests handled per second.
-     *
-     * @return float
-     */
-    public function responseRate() : float
-    {
-        return $this->httpStats->numResponses() / $this->uptime();
+        return $this->queryLog;
     }
 
     /**
@@ -93,5 +83,20 @@ class Dashboard
     public function uptime() : int
     {
         return time() - $this->start;
+    }
+
+    /**
+     * Return the model as an associative array.
+     *
+     * @return mixed[]
+     */
+    public function asArray() : array
+    {
+        return [
+            'requests' => $this->httpStats->asArray(),
+            'queries' => $this->queryLog->asArray(),
+            'memory' => $this->memory->asArray(),
+            'uptime' => $this->uptime(),
+        ];
     }
 }

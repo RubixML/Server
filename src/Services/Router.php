@@ -14,14 +14,24 @@ class Router
      *
      * @var \Rubix\Server\Services\Routes
      */
-    protected $schema;
+    protected $routes;
 
     /**
-     * @param \Rubix\Server\Services\Routes $schema
+     * @param \Rubix\Server\Services\Routes $routes
      */
-    public function __construct(Routes $schema)
+    public function __construct(Routes $routes)
     {
-        $this->schema = $schema;
+        $this->routes = $routes;
+    }
+
+    /**
+     * Return the routing schema.
+     *
+     * @return \Rubix\Server\Services\Routes
+     */
+    public function routes() : Routes
+    {
+        return $this->routes;
     }
 
     /**
@@ -34,11 +44,11 @@ class Router
     {
         $path = $request->getUri()->getPath();
 
-        if (empty($this->schema[$path])) {
+        if (empty($this->routes[$path])) {
             return new NotFound();
         }
 
-        $actions = $this->schema[$path];
+        $actions = $this->routes[$path];
 
         $method = $request->getMethod();
 

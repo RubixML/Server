@@ -36,7 +36,7 @@ class PredictHandler implements Handler
     }
 
     /**
-     * Handle the command.
+     * Handle the query.
      *
      * @param \Rubix\Server\Queries\Predict $query
      * @return \Rubix\Server\Payloads\PredictPayload

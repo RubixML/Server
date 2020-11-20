@@ -3,6 +3,7 @@
 namespace Rubix\Server\Listeners;
 
 use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Events\QueryAccepted;
 use Rubix\Server\Events\ResponseSent;
 
 class UpdateDashboard implements Listener
@@ -30,10 +31,23 @@ class UpdateDashboard implements Listener
     public function events() : array
     {
         return [
+            QueryAccepted::class => [
+                [$this, 'recordQuery'],
+            ],
             ResponseSent::class => [
                 [$this, 'incrementResponseCount'],
             ],
         ];
+    }
+
+    /**
+     * Record a query.
+     *
+     * @param \Rubix\Server\Events\QueryAccepted $event
+     */
+    public function recordQuery(QueryAccepted $event) : void
+    {
+        $this->dashboard->queryLog()->record($event->query());
     }
 
     /**

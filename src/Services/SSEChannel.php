@@ -107,7 +107,7 @@ class SSEChannel
     public function emit(string $name, array $json = []) : void
     {
         $message = "id: {$this->counter}" . self::EOL;
-        $message .= "event: {$name}" . self::EOL;
+        $message .= "event: $name" . self::EOL;
 
         $data = JSON::encode($json);
 
@@ -125,6 +125,17 @@ class SSEChannel
 
         if (count($this->buffer) > $this->bufferSize) {
             $this->buffer = array_slice($this->buffer, -$this->bufferSize, null, true);
+        }
+    }
+
+    /**
+     * Close the channel.
+     */
+    public function close() : void
+    {
+        foreach ($this->streams as $stream) {
+            /** @var \React\Stream\WritableStreamInterface $stream */
+            $stream->end();
         }
     }
 }

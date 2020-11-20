@@ -3,8 +3,8 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\Server\Models\Dashboard;
-use Rubix\Server\Queries\GetServerStats;
-use Rubix\Server\Payloads\GetServerStatsPayload;
+use Rubix\Server\Queries\GetDashboard;
+use Rubix\Server\Payloads\GetDashboardPayload;
 
 class DashboardHandler implements Handler
 {
@@ -31,18 +31,18 @@ class DashboardHandler implements Handler
     public function queries() : array
     {
         return [
-            GetServerStats::class => [$this, 'stats'],
+            GetDashboard::class => [$this, 'getDashboard'],
         ];
     }
 
     /**
-     * Handle the command.
+     * Handle the query.
      *
-     * @param \Rubix\Server\Queries\GetServerStats $query
-     * @return \Rubix\Server\Payloads\GetServerStatsPayload
+     * @param \Rubix\Server\Queries\GetDashboard $query
+     * @return \Rubix\Server\Payloads\GetDashboardPayload
      */
-    public function stats(GetServerStats $query) : GetServerStatsPayload
+    public function getDashboard(GetDashboard $query) : GetDashboardPayload
     {
-        return GetServerStatsPayload::fromDashboard($this->dashboard);
+        return GetDashboardPayload::fromArray($this->dashboard->asArray());
     }
 }

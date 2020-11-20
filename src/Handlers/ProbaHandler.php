@@ -36,7 +36,7 @@ class ProbaHandler implements Handler
     }
 
     /**
-     * Handle the command.
+     * Handle the query.
      *
      * @param \Rubix\Server\Queries\Proba $query
      * @return \Rubix\Server\Payloads\ProbaPayload

@@ -4,7 +4,7 @@ namespace Rubix\Server\Http\Controllers;
 
 use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Services\SSEChannel;
-use Rubix\Server\Queries\GetServerStats;
+use Rubix\Server\Queries\GetDashboard;
 use Rubix\Server\Http\Responses\Success;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Stream\ThroughStream;
@@ -39,7 +39,7 @@ class DashboardController extends RESTController
     {
         return [
             '/server/dashboard' => [
-                'GET' => [$this, 'getServerStats'],
+                'GET' => [$this, 'getDashboard'],
             ],
             '/server/dashboard/events' => [
                 'GET' => [$this, 'connectEventStream'],
@@ -53,12 +53,12 @@ class DashboardController extends RESTController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function getServerStats(ServerRequestInterface $request)
+    public function getDashboard(ServerRequestInterface $request)
     {
         $json = (array) $request->getParsedBody();
 
         try {
-            $query = GetServerStats::fromArray($json);
+            $query = GetDashboard::fromArray($json);
         } catch (Exception $exception) {
             return $this->respondInvalid($exception);
         }

@@ -36,7 +36,7 @@ class ScoreHandler implements Handler
     }
 
     /**
-     * Handle the command.
+     * Handle the query.
      *
      * @param \Rubix\Server\Queries\Score $query
      * @return \Rubix\Server\Payloads\ScorePayload

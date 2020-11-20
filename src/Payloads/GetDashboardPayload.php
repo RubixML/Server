@@ -5,13 +5,13 @@ namespace Rubix\Server\Payloads;
 use Rubix\Server\Models\Dashboard;
 
 /**
- * Get Server Stats Payload
+ * Get Dashboard Payload
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class GetServerStatsPayload extends Payload
+class GetDashboardPayload extends Payload
 {
     /**
      * The request stats.
@@ -19,6 +19,13 @@ class GetServerStatsPayload extends Payload
      * @var mixed[]
      */
     protected $requests;
+
+    /**
+     * The query log.
+     *
+     * @var mixed[]
+     */
+    protected $queries;
 
     /**
      * The memory stats.
@@ -35,28 +42,6 @@ class GetServerStatsPayload extends Payload
     protected $uptime;
 
     /**
-     * Build the payload from a dashboard model.
-     *
-     * @param \Rubix\Server\Models\Dashboard $dashboard
-     * @return self
-     */
-    public static function fromDashboard(Dashboard $dashboard) : self
-    {
-        return self::fromArray([
-            'requests' => [
-                'successful' => $dashboard->httpStats()->numSuccessful(),
-                'rejected' => $dashboard->httpStats()->numRejected(),
-                'failed' => $dashboard->httpStats()->numFailed(),
-            ],
-            'memory' => [
-                'usage' => $dashboard->memory()->usage(),
-                'peak' => $dashboard->memory()->peak(),
-            ],
-            'uptime' => $dashboard->uptime(),
-        ]);
-    }
-
-    /**
      * Build the response from an associative array of data.
      *
      * @param mixed[] $data
@@ -64,17 +49,19 @@ class GetServerStatsPayload extends Payload
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['requests'], $data['memory'], $data['uptime']);
+        return new self($data['requests'], $data['queries'], $data['memory'], $data['uptime']);
     }
 
     /**
      * @param mixed[] $requests
+     * @param mixed[] $queries
      * @param mixed[] $memory
      * @param int $uptime
      */
-    public function __construct(array $requests, array $memory, int $uptime)
+    public function __construct(array $requests, array $queries, array $memory, int $uptime)
     {
         $this->requests = $requests;
+        $this->queries = $queries;
         $this->memory = $memory;
         $this->uptime = $uptime;
     }
@@ -88,6 +75,7 @@ class GetServerStatsPayload extends Payload
     {
         return [
             'requests' => $this->requests,
+            'queries' => $this->queries,
             'memory' => $this->memory,
             'uptime' => $this->uptime,
         ];

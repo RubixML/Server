@@ -12,7 +12,7 @@ export default {
     data() {
         return {
             chart: null,
-            old: null,
+            last: null,
         };
     },
     props: {
@@ -108,13 +108,13 @@ export default {
         update() {
             let datasets = this.chart.data.datasets;
 
-            if (this.old === null) {
-                this.old = Object.assign({}, this.requests);
+            if (!this.last) {
+                this.last = Object.assign({}, this.requests);
             }
 
-            datasets[0].data.push(Math.max(0, this.requests.successful - this.old.successful));
-            datasets[1].data.push(Math.max(0, this.requests.rejected - this.old.rejected));
-            datasets[2].data.push(Math.max(0, this.requests.failed - this.old.failed));
+            datasets[0].data.push(Math.max(0, this.requests.successful - this.last.successful));
+            datasets[1].data.push(Math.max(0, this.requests.rejected - this.last.rejected));
+            datasets[2].data.push(Math.max(0, this.requests.failed - this.last.failed));
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
@@ -122,7 +122,7 @@ export default {
                 }
             });
 
-            this.old = Object.assign({}, this.requests);
+            this.last = Object.assign({}, this.requests);
 
             this.chart.update(0);
         }

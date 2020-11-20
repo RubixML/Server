@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Services;
 
+use Rubix\Server\Handlers\Handler;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use ArrayAccess;
@@ -24,7 +25,7 @@ class Bindings implements ArrayAccess
     /**
      * Bind queries to their handlers.
      *
-     * @param \Rubix\Server\Handlers\Handler[] $handlers
+     * @param (\Rubix\Server\Handlers\Handler|null)[] $handlers
      * @return self
      */
     public static function bind(array $handlers) : self
@@ -32,8 +33,10 @@ class Bindings implements ArrayAccess
         $bindings = [];
 
         foreach ($handlers as $handler) {
-            foreach ($handler->queries() as $class => $handler) {
-                $bindings[$class] = $handler;
+            if ($handler instanceof Handler) {
+                foreach ($handler->queries() as $class => $handler) {
+                    $bindings[$class] = $handler;
+                }
             }
         }
 

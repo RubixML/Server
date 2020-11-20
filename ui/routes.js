@@ -1,3 +1,5 @@
+import Server from './pages/Server.vue';
+
 export default [
     { 
         name: 'home',
@@ -7,6 +9,6 @@ export default [
     {
         name: 'server',
         path: '/server',
-        component: require('./pages/Server.vue').default,
+        component: Server,
     },
 ];

@@ -25,4 +25,17 @@ class Memory
     {
         return memory_get_peak_usage() / self::MEGA_BYTE;
     }
+
+    /**
+     * Return the model as an associative array.
+     *
+     * @return mixed[]
+     */
+    public function asArray() : array
+    {
+        return [
+            'usage' => $this->usage(),
+            'peak' => $this->peak(),
+        ];
+    }
 }

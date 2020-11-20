@@ -24,7 +24,6 @@ use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\DashboardHandler;
-use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
@@ -102,6 +101,20 @@ class RPCServer implements Server, Verbose
     protected $serializer;
 
     /**
+     * The event loop.
+     *
+     * @var \React\EventLoop\LoopInterface
+     */
+    protected $loop;
+
+    /**
+     * The network socket.
+     *
+     * @var \React\Socket\ServerInterface
+     */
+    protected $socket;
+
+    /**
      * The event bus.
      *
      * @var \Rubix\Server\Services\EventBus
@@ -109,18 +122,13 @@ class RPCServer implements Server, Verbose
     protected $eventBus;
 
     /**
-     * The socket.
+     * The SSE channels.
      *
-     * @var \React\Socket\ServerInterface
+     * @var \Rubix\Server\Services\SSEChannel[]
      */
-    protected $socket;
-
-    /**
-     * The event loop.
-     *
-     * @var \React\EventLoop\LoopInterface
-     */
-    protected $loop;
+    protected $channels = [
+        //
+    ];
 
     /**
      * @param string $host
@@ -182,6 +190,14 @@ class RPCServer implements Server, Verbose
 
         $loop = Loop::create();
 
+        $socket = new Socket("{$this->host}:{$this->port}", $loop);
+
+        if ($this->cert) {
+            $socket = new SecureSocket($socket, $loop, [
+                'local_cert' => $this->cert,
+            ]);
+        }
+
         $filesystem = Filesystem::create($loop);
 
         $dashboardChannel = new SSEChannel(50);
@@ -193,34 +209,18 @@ class RPCServer implements Server, Verbose
             new LogFailures($this->logger),
         ]), $loop, $this->logger);
 
-        $handlers = [
+        $queryBus = new QueryBus(Bindings::bind([
             new PredictHandler($estimator),
             new DashboardHandler($dashboard),
-        ];
-
-        if ($estimator instanceof Probabilistic) {
-            $handlers[] = new ProbaHandler($estimator);
-        }
-
-        if ($estimator instanceof Ranking) {
-            $handlers[] = new ScoreHandler($estimator);
-        }
-
-        $queryBus = new QueryBus(Bindings::bind($handlers), $eventBus);
+            $estimator instanceof Probabilistic ? new ProbaHandler($estimator) : null,
+            $estimator instanceof Ranking ? new ScoreHandler($estimator) : null,
+        ]), $eventBus);
 
         $router = new Router(Routes::collect([
             new QueriesController($queryBus, $this->serializer),
             new DashboardController($queryBus, $dashboardChannel),
             new StaticAssetsController($filesystem),
         ]));
-
-        $socket = new Socket("{$this->host}:{$this->port}", $loop);
-
-        if ($this->cert) {
-            $socket = new SecureSocket($socket, $loop, [
-                'local_cert' => $this->cert,
-            ]);
-        }
 
         $stack = [];
 
@@ -234,9 +234,17 @@ class RPCServer implements Server, Verbose
 
         $server = new HTTPServer($loop, ...$stack);
 
-        $server->listen($socket);
+        $this->loop = $loop;
+        $this->socket = $socket;
+        $this->eventBus = $eventBus;
+
+        $this->channels = [
+            $dashboardChannel,
+        ];
 
         $loop->addSignal(SIGINT, [$this, 'shutdown']);
+
+        $server->listen($socket);
 
         $this->logger->info('HTTP RPC Server running at'
             . " {$this->host} on port {$this->port}");
@@ -255,8 +263,6 @@ class RPCServer implements Server, Verbose
      */
     public function dispatchEvents(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
-        $this->eventBus->dispatch(new RequestReceived($request));
-
         return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
             $this->eventBus->dispatch(new ResponseSent($response));
 
@@ -329,8 +335,12 @@ class RPCServer implements Server, Verbose
     {
         $this->loop->removeSignal($signal, [$this, 'shutdown']);
 
-        $this->socket->close();
-
         $this->logger->info('Server shutting down');
+
+        foreach ($this->channels as $channel) {
+            $channel->close();
+        }
+
+        $this->socket->close();
     }
 }

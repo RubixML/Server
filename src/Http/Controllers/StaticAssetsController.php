@@ -14,7 +14,7 @@ class StaticAssetsController implements Controller
 {
     protected const ASSETS_PATH = '../../assets';
 
-    protected const INDEX_PATH = self::ASSETS_PATH . '/index.html';
+    protected const APP_PATH = self::ASSETS_PATH . '/app.html';
 
     protected const CACHE_MAX_AGE = 'max-age=604800';
 
@@ -41,8 +41,8 @@ class StaticAssetsController implements Controller
     public function routes() : array
     {
         return [
-            '/' => ['GET' => [$this, 'index']],
-            '/server' => ['GET' => [$this, 'index']],
+            '/' => ['GET' => [$this, 'app']],
+            '/server' => ['GET' => [$this, 'app']],
             '/app.js' => ['GET' => $this],
             '/app.css' => ['GET' => $this],
             '/sw.js' => ['GET' => $this],
@@ -61,9 +61,9 @@ class StaticAssetsController implements Controller
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \React\Promise\PromiseInterface
      */
-    public function index(ServerRequestInterface $request) : PromiseInterface
+    public function app(ServerRequestInterface $request) : PromiseInterface
     {
-        return $this->filesystem->file(self::INDEX_PATH)
+        return $this->filesystem->file(self::APP_PATH)
             ->getContents()
             ->then(function ($data) {
                 return new Success([

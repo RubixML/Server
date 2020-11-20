@@ -8,6 +8,8 @@ import MainNav from './components/MainNav.vue';
 import Dashboard from './components/Dashboard.vue';
 import RequestsLevel from './components/RequestsLevel.vue';
 import RequestsChart from './components/RequestsChart.vue';
+import QueriesTable from './components/QueriesTable.vue';
+import QueriesChart from './components/QueriesChart.vue';
 import CommunicationError from './components/CommunicationError.vue';
 
 const axios = require('axios');
@@ -33,6 +35,8 @@ Vue.component('main-nav', MainNav);
 Vue.component('dashboard', Dashboard);
 Vue.component('requests-level', RequestsLevel);
 Vue.component('requests-chart', RequestsChart);
+Vue.component('queries-table', QueriesTable);
+Vue.component('queries-chart', QueriesChart);
 Vue.component('communication-error', CommunicationError);
 
 Vue.use(VueRouter);

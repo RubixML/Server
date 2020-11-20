@@ -3,13 +3,13 @@
 namespace Rubix\Server\Queries;
 
 /**
- * Get Server Stats
+ * Get Dashboard
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class GetServerStats extends Query
+class GetDashboard extends Query
 {
     /**
      * Build the query from an associative array of data.
@@ -41,6 +41,6 @@ class GetServerStats extends Query
      */
     public function __toString() : string
     {
-        return 'Get Server Stats';
+        return 'Get Dashboard';
     }
 }

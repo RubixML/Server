@@ -1,10 +1,10 @@
 <template>
-    <nav class="navbar is-white is-fixed-top" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <span class="navbar-item">
                 <img src="/images/app-icon-small.png" width="28" height="28" loading="eager" alt="The Rubix ML logo" />
             </span>
-            <h1 class="navbar-item">Rubix ML</h1>
+            <h1 class="navbar-item has-text-weight-medium">Rubix ML</h1>
             <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" @click="open = !open">
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
