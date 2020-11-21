@@ -3,15 +3,15 @@
         <thead>
             <tr>
                 <th>Query</th>
-                <th class="has-text-right">Count</th>
-                <th class="has-text-right">Percentage</th>
+                <th class="has-text-right">Fulfilled</th>
+                <th class="has-text-right">Failed</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(count, name, index) in queries.accepted" :key="index">
+            <tr v-for="(counts, name, index) in queries" :key="index">
                 <td>{{ name }}</td>
-                <td class="has-text-right">{{ count.toLocaleString() }}</td>
-                <td class="has-text-right">50%</td>
+                <td class="has-text-right">{{ counts.fulfilled.toLocaleString() }}</td>
+                <td class="has-text-right">{{ counts.failed.toLocaleString() }}</td>
             </tr>
         </tbody>
     </table>

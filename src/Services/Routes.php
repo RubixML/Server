@@ -2,8 +2,11 @@
 
 namespace Rubix\Server\Services;
 
+use Rubix\Server\Http\Controllers\Controller;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
+use Psr\Http\Message\ServerRequestInterface;
+
 use ArrayAccess;
 
 use function in_array;
@@ -29,6 +32,7 @@ class Routes implements ArrayAccess
      * Collect the routes from an array of controllers.
      *
      * @param \Rubix\Server\Http\Controllers\Controller[] $controllers
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      * @return self
      */
     public static function collect(array $controllers) : self
@@ -36,8 +40,25 @@ class Routes implements ArrayAccess
         $routes = [];
 
         foreach ($controllers as $controller) {
+            if (!$controller instanceof Controller) {
+                throw new InvalidArgumentException('Controller must implement'
+                    . ' the Controller interface.');
+            }
+
             foreach ($controller->routes() as $path => $actions) {
                 foreach ($actions as $method => $handler) {
+                    if (is_array($handler) and !is_callable($handler)) {
+                        $next = null;
+
+                        while ($current = array_pop($handler)) {
+                            $next = function (ServerRequestInterface $request) use ($current, $next) {
+                                return $current($request, $next);
+                            };
+                        }
+
+                        $handler = $next;
+                    }
+
                     $routes[$path][$method] = $handler;
                 }
             }

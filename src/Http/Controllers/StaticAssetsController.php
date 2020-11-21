@@ -14,8 +14,6 @@ class StaticAssetsController implements Controller
 {
     protected const ASSETS_PATH = '../../assets';
 
-    protected const APP_PATH = self::ASSETS_PATH . '/app.html';
-
     protected const CACHE_MAX_AGE = 'max-age=604800';
 
     /**
@@ -63,27 +61,15 @@ class StaticAssetsController implements Controller
      */
     public function app(ServerRequestInterface $request) : PromiseInterface
     {
-        return $this->filesystem->file(self::APP_PATH)
-            ->getContents()
-            ->then(function ($data) {
-                return new Success([
-                    'Content-Type' => 'text/html',
-                    'Cache-Control' => self::CACHE_MAX_AGE,
-                ], $data);
-            });
+        return $this->respondWithFile('/app.html');
     }
 
     /**
-     * Handle the request and return a response or a deferred response.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \React\Promise\PromiseInterface
+     * @param string $path
      */
-    public function __invoke(ServerRequestInterface $request) : PromiseInterface
+    public function respondWithFile(string $path) : PromiseInterface
     {
-        $path = self::ASSETS_PATH . $request->getUri()->getPath();
-
-        $file = $this->filesystem->file($path);
+        $file = $this->filesystem->file(self::ASSETS_PATH . $path);
 
         return $file->exists()->then(function () use ($file) {
             return $file->getContents()->then(function ($data) use ($file) {
@@ -95,5 +81,16 @@ class StaticAssetsController implements Controller
         }, function (Exception $exception) {
             return new NotFound();
         });
+    }
+
+    /**
+     * Handle the request and return a response or a deferred response.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \React\Promise\PromiseInterface
+     */
+    public function __invoke(ServerRequestInterface $request) : PromiseInterface
+    {
+        return $this->respondWithFile($request->getUri()->getPath());
     }
 }

@@ -19,13 +19,22 @@ class ModelController extends RESTController
     {
         return [
             '/model/predictions' => [
-                'POST' => [$this, 'predict'],
+                'POST' => [
+                    [$this, 'parseRequestBody'],
+                    [$this, 'predict'],
+                ],
             ],
             '/model/probabilities' => [
-                'POST' => [$this, 'proba'],
+                'POST' => [
+                    [$this, 'parseRequestBody'],
+                    [$this, 'proba'],
+                ],
             ],
             '/model/anomaly_scores' => [
-                'POST' => [$this, 'score'],
+                'POST' => [
+                    [$this, 'parseRequestBody'],
+                    [$this, 'score'],
+                ],
             ],
         ];
     }

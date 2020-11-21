@@ -37,7 +37,12 @@ class QueriesController extends RPCController
     public function routes() : array
     {
         return [
-            '/queries' => ['POST' => $this],
+            '/queries' => [
+                'POST' => [
+                    [$this, 'parseRequestBody'],
+                    $this,
+                ],
+            ],
         ];
     }
 

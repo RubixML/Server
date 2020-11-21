@@ -5,11 +5,11 @@
             <requests-chart :requests="requests"></requests-chart>
             <h2 class="title is-size-4 mt-5">Query Log</h2>
             <div class="columns">
-                <div class="column is-half">
+                <div class="column is-two-thirds">
                     <queries-table :queries="queries"></queries-table>
                 </div>
-                <div class="column is-half">
-                    <!-- <queries-chart :queries="queries"></queries-chart> -->
+                <div class="column is-one-third">
+                    <queries-chart :queries="queries"></queries-chart>
                 </div>
             </div>
         </div>
@@ -63,11 +63,19 @@ export default {
                 this.requests.failed++;
             });
 
-            stream.subscribe('query-accepted', (message) => {
+            stream.subscribe('query-fulfilled', (message) => {
                 if (this.queries.hasOwnProperty(message.name)) {
-                    this.queries[message.name]++;
+                    this.queries[message.name].fulfilled++;
                 } else {
-                    this.queries[message.name] = 1;
+                    this.queries[message.name].fulfilled = 1;
+                }
+            });
+
+            stream.subscribe('query-failed', (message) => {
+                if (this.queries.hasOwnProperty(message.name)) {
+                    this.queries[message.name].failed++;
+                } else {
+                    this.queries[message.name].failed = 1;
                 }
             });
 

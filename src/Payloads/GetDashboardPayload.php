@@ -14,32 +14,11 @@ use Rubix\Server\Models\Dashboard;
 class GetDashboardPayload extends Payload
 {
     /**
-     * The request stats.
+     * The dashboard data.
      *
      * @var mixed[]
      */
-    protected $requests;
-
-    /**
-     * The query log.
-     *
-     * @var mixed[]
-     */
-    protected $queries;
-
-    /**
-     * The memory stats.
-     *
-     * @var mixed[]
-     */
-    protected $memory;
-
-    /**
-     * The uptime of the server.
-     *
-     * @var int
-     */
-    protected $uptime;
+    protected $dashboard;
 
     /**
      * Build the response from an associative array of data.
@@ -49,21 +28,25 @@ class GetDashboardPayload extends Payload
      */
     public static function fromArray(array $data) : self
     {
-        return new self($data['requests'], $data['queries'], $data['memory'], $data['uptime']);
+        return new self($data);
     }
 
     /**
-     * @param mixed[] $requests
-     * @param mixed[] $queries
-     * @param mixed[] $memory
-     * @param int $uptime
+     * @param mixed[] $dashboard
      */
-    public function __construct(array $requests, array $queries, array $memory, int $uptime)
+    public function __construct(array $dashboard)
     {
-        $this->requests = $requests;
-        $this->queries = $queries;
-        $this->memory = $memory;
-        $this->uptime = $uptime;
+        $this->dashboard = $dashboard;
+    }
+
+    /**
+     * Return the dashboard data.
+     *
+     * @return mixed[]
+     */
+    public function dashboard() : array
+    {
+        return $this->dashboard;
     }
 
     /**
@@ -73,11 +56,6 @@ class GetDashboardPayload extends Payload
      */
     public function asArray() : array
     {
-        return [
-            'requests' => $this->requests,
-            'queries' => $this->queries,
-            'memory' => $this->memory,
-            'uptime' => $this->uptime,
-        ];
+        return $this->dashboard;
     }
 }

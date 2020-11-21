@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Models;
 
-class Memory
+class Memory implements Model
 {
     protected const MEGA_BYTE = 1000000;
 

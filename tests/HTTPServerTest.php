@@ -3,19 +3,18 @@
 namespace Rubix\Server\Tests;
 
 use Rubix\Server\Server;
-use Rubix\Server\RPCServer;
-use Rubix\Server\Serializers\Native;
+use Rubix\Server\HTTPServer;
 use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Servers
- * @covers \Rubix\Server\RPCServer
+ * @covers \Rubix\Server\HTTPServer
  */
-class RPCServerTest extends TestCase
+class HTTPServerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\RPCServer
+     * @var \Rubix\Server\HTTPServer
      */
     protected $server;
 
@@ -24,9 +23,9 @@ class RPCServerTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->server = new RPCServer('127.0.0.1', 8080, null, [
+        $this->server = new HTTPServer('127.0.0.1', 8888, null, [
             new SharedTokenAuthenticator(['secret']),
-        ], new Native());
+        ]);
     }
 
     /**
@@ -34,7 +33,7 @@ class RPCServerTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(RPCServer::class, $this->server);
+        $this->assertInstanceOf(HTTPServer::class, $this->server);
         $this->assertInstanceOf(Server::class, $this->server);
     }
 }

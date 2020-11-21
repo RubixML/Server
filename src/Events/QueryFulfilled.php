@@ -3,15 +3,16 @@
 namespace Rubix\Server\Events;
 
 use Rubix\Server\Queries\Query;
+use Rubix\Server\Payloads\Payload;
 
 /**
- * Query Accepted
+ * Query Fulfilled
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class QueryAccepted extends Event
+class QueryFulfilled extends Event
 {
     /**
      * The query.
@@ -21,11 +22,20 @@ class QueryAccepted extends Event
     protected $query;
 
     /**
-     * @param \Rubix\Server\Queries\Query $query
+     * The payload.
+     *
+     * @var \Rubix\Server\Payloads\Payload
      */
-    public function __construct(Query $query)
+    protected $payload;
+
+    /**
+     * @param \Rubix\Server\Queries\Query $query
+     * @param \Rubix\Server\Payloads\Payload $payload
+     */
+    public function __construct(Query $query, Payload $payload)
     {
         $this->query = $query;
+        $this->payload = $payload;
     }
 
     /**
@@ -39,12 +49,22 @@ class QueryAccepted extends Event
     }
 
     /**
+     * Return the payload.
+     *
+     * @return \Rubix\Server\Payloads\Payload
+     */
+    public function payload() : Payload
+    {
+        return $this->payload;
+    }
+
+    /**
      * Return the string representation of the object.
      *
      * @return string
      */
     public function __toString() : string
     {
-        return 'Query Accepted';
+        return 'Query Fulfilled';
     }
 }

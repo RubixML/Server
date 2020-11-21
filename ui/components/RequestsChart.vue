@@ -1,5 +1,5 @@
 <template>
-    <canvas id="canvas" width="900" height="300"></canvas>
+    <canvas id="requests-chart" width="900" height="300"></canvas>
 </template>
 
 <script>
@@ -22,7 +22,7 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('canvas').getContext('2d');
+        let context = document.getElementById('requests-chart').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -62,7 +62,7 @@ export default {
                 responsive: true,
                 title: {
                     display: false,
-                    text: 'Server Requests',
+                    text: 'Requests',
                 },
                 tooltips: {
                     mode: 'index',

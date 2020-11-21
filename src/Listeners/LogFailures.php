@@ -2,8 +2,8 @@
 
 namespace Rubix\Server\Listeners;
 
-use Rubix\Server\Events\Failure;
 use Rubix\Server\Events\QueryFailed;
+use Rubix\Server\Events\Failure;
 use Psr\Log\LoggerInterface;
 
 class LogFailures implements Listener

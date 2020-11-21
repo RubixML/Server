@@ -15,11 +15,10 @@ use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\Http\Middleware\Middleware;
+use Rubix\Server\Http\Controllers\ModelController;
 use Rubix\Server\Http\Controllers\QueriesController;
-use Rubix\Server\Http\Controllers\StaticAssetsController;
 use Rubix\Server\Http\Controllers\DashboardController;
-use Rubix\Server\Http\Responses\BadRequest;
-use Rubix\Server\Http\Responses\UnsupportedMediaType;
+use Rubix\Server\Http\Controllers\StaticAssetsController;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
@@ -27,40 +26,38 @@ use Rubix\Server\Handlers\DashboardHandler;
 use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
-use Rubix\Server\Payloads\ErrorPayload;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\ML\Other\Loggers\BlackHole;
-use React\Http\Server as HTTPServer;
+use React\EventLoop\Factory as Loop;
+use React\Http\Server as HTTP;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
-use React\EventLoop\Factory as Loop;
 use React\Filesystem\Filesystem;
 use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Exception;
 
 use function React\Promise\resolve;
 
 /**
- * RPC Server
+ * HTTP Server
  *
- * A fast Remote Procedure Call (RPC) over HTTP(S) server that responds to messages called
- * commands. Commands are serialized over the wire using one of numerous lightweight
- * encodings including JSON, Gzipped JSON, and Igbinary.
+ * A JSON over HTTP(S) server exposing a REST (Representational State Transfer) API. The REST
+ * server exposes one endpoint (resource) per command and can be queried using any standard
+ * HTTP client.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class RPCServer implements Server, Verbose
+class HTTPServer implements Server, Verbose
 {
     use LoggerAware;
 
-    public const SERVER_NAME = 'Rubix ML RPC Server';
+    public const SERVER_NAME = 'Rubix ML REST Server';
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -79,7 +76,7 @@ class RPCServer implements Server, Verbose
     protected $port;
 
     /**
-     * The path to the certificate used to authenticate and encrypt the
+     * The path to the certificate used to authenticate and encrypt the secure (HTTPS)
      * communication channel.
      *
      * @var string|null
@@ -134,13 +131,13 @@ class RPCServer implements Server, Verbose
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param \Rubix\Server\Http\Middleware\Middleware[] $middlewares
+     * @param mixed[] $middlewares
      * @param \Rubix\Server\Serializers\Serializer $serializer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
-        int $port = 8888,
+        int $port = 8080,
         ?string $cert = null,
         array $middlewares = [],
         ?Serializer $serializer = null
@@ -161,7 +158,7 @@ class RPCServer implements Server, Verbose
         foreach ($middlewares as $middleware) {
             if (!$middleware instanceof Middleware) {
                 throw new InvalidArgumentException('Class must implement'
-                . ' the Middleware interface.');
+                    . ' middleware interface.');
             }
         }
 
@@ -217,6 +214,7 @@ class RPCServer implements Server, Verbose
         ]), $eventBus);
 
         $router = new Router(Routes::collect([
+            new ModelController($queryBus),
             new QueriesController($queryBus, $this->serializer),
             new DashboardController($queryBus, $dashboardChannel),
             new StaticAssetsController($filesystem),
@@ -228,11 +226,10 @@ class RPCServer implements Server, Verbose
 
         $stack = array_merge($stack, $this->middlewares);
 
-        $stack[] = [$this, 'parseRequestBody'];
         $stack[] = [$this, 'addServerHeader'];
         $stack[] = [$router, 'dispatch'];
 
-        $server = new HTTPServer($loop, ...$stack);
+        $server = new HTTP($loop, ...$stack);
 
         $this->loop = $loop;
         $this->socket = $socket;
@@ -246,7 +243,7 @@ class RPCServer implements Server, Verbose
 
         $server->listen($socket);
 
-        $this->logger->info('HTTP RPC Server running at'
+        $this->logger->info('HTTP REST Server running at'
             . " {$this->host} on port {$this->port}");
 
         $loop->run();
@@ -268,44 +265,6 @@ class RPCServer implements Server, Verbose
 
             return $response;
         });
-    }
-
-    /**
-     * Parse the request body content.
-     *
-     * @internal
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param callable $next
-     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
-     */
-    public function parseRequestBody(ServerRequestInterface $request, callable $next)
-    {
-        $stream = $request->getBody();
-
-        if ($stream->getSize()) {
-            $contentType = $request->getHeaderLine('Content-Type');
-
-            $acceptedContentType = $this->serializer->mime();
-
-            if ($contentType !== $acceptedContentType) {
-                return new UnsupportedMediaType($acceptedContentType);
-            }
-
-            try {
-                $message = $this->serializer->unserialize($stream);
-            } catch (Exception $exception) {
-                $payload = ErrorPayload::fromException($exception);
-
-                $data = $this->serializer->serialize($payload);
-
-                return new BadRequest($this->serializer->headers(), $data);
-            }
-
-            $request = $request->withParsedBody($message);
-        }
-
-        return $next($request);
     }
 
     /**

@@ -8,7 +8,6 @@ use Rubix\Server\Queries\GetDashboard;
 use Rubix\Server\Http\Responses\Success;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Stream\ThroughStream;
-use Exception;
 
 class DashboardController extends RESTController
 {
@@ -55,13 +54,7 @@ class DashboardController extends RESTController
      */
     public function getDashboard(ServerRequestInterface $request)
     {
-        $json = (array) $request->getParsedBody();
-
-        try {
-            $query = GetDashboard::fromArray($json);
-        } catch (Exception $exception) {
-            return $this->respondInvalid($exception);
-        }
+        $query = new GetDashboard();
 
         return $this->queryBus->dispatch($query)->then(
             [$this, 'respondSuccess'],

@@ -4,8 +4,14 @@ namespace Rubix\Server\Models;
 
 use Rubix\Server\Queries\Query;
 use Rubix\Server\Services\SSEChannel;
+use Rubix\Server\Exceptions\InvalidArgumentException;
+use Rubix\Server\Exceptions\RuntimeException;
+use ArrayAccess;
 
-class QueryLog
+/**
+ * @implements ArrayAccess<string, array>
+ */
+class QueryLog implements Model, ArrayAccess
 {
     /**
      * The server-sent events emitter.
@@ -15,11 +21,11 @@ class QueryLog
     protected $channel;
 
     /**
-     * The number of queries that have been accepted so far for each query.
+     * The log entries for each query.
      *
-     * @var int[]
+     * @var array[]
      */
-    protected $accepted = [
+    protected $log = [
         //
     ];
 
@@ -32,33 +38,45 @@ class QueryLog
     }
 
     /**
-     * Record a query in the query log.
+     * Record a fulfilled query in the query log.
      *
      * @param \Rubix\Server\Queries\Query $query
      */
-    public function record(Query $query) : void
+    public function recordFulfilled(Query $query) : void
     {
         $name = (string) $query;
 
-        if (isset($this->accepted[$name])) {
-            ++$this->accepted[$name];
+        if (isset($this->log[$name])) {
+            ++$this->log[$name]['fulfilled'];
         } else {
-            $this->accepted[$name] = 1;
+            $this->log[$name]['fulfilled'] = 1;
+            $this->log[$name]['failed'] = 0;
         }
 
-        $this->channel->emit('query-accepted', [
+        $this->channel->emit('query-fulfilled', [
             'name' => $name,
         ]);
     }
 
     /**
-     * Return the a list of queries and their counts.
+     * Record a failed query in the query log.
      *
-     * @return int[]
+     * @param \Rubix\Server\Queries\Query $query
      */
-    public function accepted() : array
+    public function recordFailed(Query $query) : void
     {
-        return $this->accepted;
+        $name = (string) $query;
+
+        if (isset($this->log[$name])) {
+            ++$this->log[$name]['failed'];
+        } else {
+            $this->log[$name]['fulfilled'] = 0;
+            $this->log[$name]['failed'] = 1;
+        }
+
+        $this->channel->emit('query-failed', [
+            'name' => $name,
+        ]);
     }
 
     /**
@@ -68,8 +86,52 @@ class QueryLog
      */
     public function asArray() : array
     {
-        return [
-            'accepted' => $this->accepted,
-        ];
+        return $this->log;
+    }
+
+    /**
+     * Return an array of counts for a query.
+     *
+     * @param string $name
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @return int[]
+     */
+    public function offsetGet($name) : array
+    {
+        if (isset($this->log[$name])) {
+            return $this->log[$name];
+        }
+
+        throw new InvalidArgumentException("Query $name not found.");
+    }
+
+    /**
+     * @param string $name
+     * @param int[] $counts
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     */
+    public function offsetSet($name, $counts) : void
+    {
+        throw new RuntimeException('Log cannot be mutated directly.');
+    }
+
+    /**
+     * Does a query exist in the log?
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function offsetExists($name) : bool
+    {
+        return isset($this->log[$name]);
+    }
+
+    /**
+     * @param string $name
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     */
+    public function offsetUnset($name) : void
+    {
+        throw new RuntimeException('Log cannot be mutated directly.');
     }
 }

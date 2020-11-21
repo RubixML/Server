@@ -18,12 +18,8 @@ $generator = new Agglomerate([
 
 $dataset = $generator->generate(10)->randomize();
 
-for ($i = 0; $i < 10000; ++$i) {
+for ($i = 0; $i < 1000; ++$i) {
     $predictions = $client->predict($dataset);
 }
 
-$probabilities = $client->proba($dataset);
-
 print_r($predictions);
-
-print_r($probabilities);

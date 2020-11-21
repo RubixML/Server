@@ -4,7 +4,7 @@ namespace Rubix\Server\Models;
 
 use Rubix\Server\Services\SSEChannel;
 
-class Dashboard
+class Dashboard implements Model
 {
     /**
      * The request/response statistics.
