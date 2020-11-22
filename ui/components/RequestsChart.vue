@@ -30,9 +30,18 @@ export default {
                 labels: [...Array(DATASET_SIZE).keys()].reverse(),
                 datasets: [
                     {
-                        label: 'Successful',
-                        data: Array(DATASET_SIZE).fill(0.0),
+                        label: 'Average',
+                        data: Array(DATASET_SIZE).fill(0),
                         borderColor: 'hsl(271, 100%, 71%)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        lineTension: 0.1,
+                        fill: 'origin',
+                    },
+                    {
+                        label: 'Successful',
+                        data: Array(DATASET_SIZE).fill(0),
+                        borderColor: 'hsl(141, 71%, 48%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0.1,
@@ -40,16 +49,16 @@ export default {
                     },
                     {
                         label: 'Rejected',
-                        data: Array(DATASET_SIZE).fill(0.0),
+                        data: Array(DATASET_SIZE).fill(0),
                         borderColor: 'hsl(204, 86%, 53%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0.1,
-                        fill: true,
+                        fill: false,
                     },
                     {
                         label: 'Failed',
-                        data: Array(DATASET_SIZE).fill(0.0),
+                        data: Array(DATASET_SIZE).fill(0),
                         borderColor: 'hsl(347, 100%, 69%)',
                         borderWidth: 2,
                         pointRadius: 0,
@@ -112,9 +121,13 @@ export default {
                 this.last = Object.assign({}, this.requests);
             }
 
-            datasets[0].data.push(Math.max(0, this.requests.successful - this.last.successful));
-            datasets[1].data.push(Math.max(0, this.requests.rejected - this.last.rejected));
-            datasets[2].data.push(Math.max(0, this.requests.failed - this.last.failed));
+            datasets[1].data.push(this.requests.successful - this.last.successful);
+            datasets[2].data.push(this.requests.rejected - this.last.rejected);
+            datasets[3].data.push(this.requests.failed - this.last.failed);
+
+            const mu = datasets[1].data.reduce((a, b) => a + b, 0) / datasets[0].data.length;
+
+            datasets[0].data.push(Math.round(mu + 'e2') + 'e-2');
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {

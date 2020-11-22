@@ -28,6 +28,7 @@ use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
 use Rubix\Server\Serializers\JSON;
 use Rubix\Server\Serializers\Serializer;
+use Rubix\Server\Specifications\LearnerIsTrained;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\ML\Other\Loggers\BlackHole;
@@ -57,7 +58,9 @@ class HTTPServer implements Server, Verbose
 {
     use LoggerAware;
 
-    public const SERVER_NAME = 'Rubix ML REST Server';
+    protected const SERVER_NAME = 'Rubix ML REST Server';
+
+    protected const ACCEPTED_ENCODING = 'gzip';
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -119,7 +122,7 @@ class HTTPServer implements Server, Verbose
     protected $eventBus;
 
     /**
-     * The SSE channels.
+     * The server-sent events channels.
      *
      * @var \Rubix\Server\Services\SSEChannel[]
      */
@@ -174,15 +177,11 @@ class HTTPServer implements Server, Verbose
      * Serve a model.
      *
      * @param \Rubix\ML\Estimator $estimator
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function serve(Estimator $estimator) : void
     {
         if ($estimator instanceof Learner) {
-            if (!$estimator->trained()) {
-                throw new InvalidArgumentException('Cannot serve'
-                    . ' an untrained learner.');
-            }
+            LearnerIsTrained::with($estimator)->check();
         }
 
         $loop = Loop::create();

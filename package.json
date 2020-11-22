@@ -1,7 +1,7 @@
 {
     "name": "rubix-server",
     "version": "0.2.3-beta",
-    "description": "The Rubix Server user interface (UI).",
+    "description": "The Rubix ML Server user interface (UI).",
     "author": "Andrew DalPino",
     "license": "MIT",
     "private": true,
@@ -13,12 +13,13 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules"
     },
     "devDependencies": {
-        "@babel/core": "^7.11.6",
-        "@babel/preset-env": "^7.11.5",
+        "@babel/core": "^7.12.7",
+        "@babel/preset-env": "^7.12.7",
         "@fortawesome/fontawesome-free": "^5.14.0",
         "axios": "^0.19",
         "babel-loader": "^8.2.1",
         "bulma": "^0.9.0",
+        "bulma-prefers-dark": "0.1.0-beta.0",
         "chart.js": "^2.9.4",
         "cross-env": "^5.1",
         "css-loader": "^4.3.0",

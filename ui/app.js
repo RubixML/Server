@@ -5,7 +5,7 @@ import VueSSE from 'vue-sse';
 import routes from './routes';
 import App from './App.vue';
 import MainNav from './components/MainNav.vue';
-import Dashboard from './components/Dashboard.vue';
+import MainFooter from './components/MainFooter.vue';
 import RequestsLevel from './components/RequestsLevel.vue';
 import RequestsChart from './components/RequestsChart.vue';
 import QueriesTable from './components/QueriesTable.vue';
@@ -32,7 +32,7 @@ if ('serviceWorker' in navigator) {
 
 Vue.component('app', App);
 Vue.component('main-nav', MainNav);
-Vue.component('dashboard', Dashboard);
+Vue.component('main-footer', MainFooter);
 Vue.component('requests-level', RequestsLevel);
 Vue.component('requests-chart', RequestsChart);
 Vue.component('queries-table', QueriesTable);

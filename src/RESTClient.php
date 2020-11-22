@@ -29,7 +29,7 @@ use Exception;
 class RESTClient implements Client, AsyncClient
 {
     public const HTTP_HEADERS = [
-        'User-Agent' => 'Rubix ML REST Client',
+        'User-Agent' => 'Rubix REST Client',
     ];
 
     protected const MAX_TCP_PORT = 65535;

@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar is-white" role="navigation" aria-label="main navigation">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <span class="navbar-item">
                 <img src="/images/app-icon-small.png" width="28" height="28" loading="eager" alt="The Rubix ML logo" />

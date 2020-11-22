@@ -66,18 +66,27 @@ $estimator = PersistentModel::load(new Filesystem('example.model'));
 $server->serve($estimator);
 ```
 
+#### Verbose Interface
+Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.
+
+```php
+use Rubix\ML\Other\Loggers\Screen;
+
+$server->setLogger(new Screen());
+```
+
 ### HTTP Server
 An HTTP(S) server exposing Representational State Transfer (REST) and Remote Procedure Call (RPC) APIs.
 
-Interfaces: [Server](#servers), [Verbose](#verbose)
+Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 2 | port | 8888 | int | The network port to run the HTTP services on. |
+| 2 | port | 8080 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middlewares | | array | The HTTP middleware stack to run on each request. |
+| 4 | middlewares | | array | The HTTP middleware stack to run on each request/response. |
 | 5 | serializer | JSON | object | The message serializer. |
 
 #### Example
@@ -87,6 +96,7 @@ use Rubix\Server\HTTPServer;
 use Rubix\Server\Http\Middleware\AccessLogGenerator;
 use Rubix\Server\Http\Middleware\BasicAuthenticator;
 use Rubix\Server\Serializers\Gzip;
+use Rubix\Server\Serializers\JSON;
 
 $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 	new AccessLogGenerator(new Screen()),
@@ -94,7 +104,7 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-], new Gzip());
+], new Gzip(1, new JSON()));
 ```
 
 #### Routes
@@ -102,14 +112,19 @@ This server exposes the following HTTP resources and their methods.
 
 | Method | URI | Description |
 |---|---|---|---|
-| GET | / | | The user interface home. |
-| POST | /queries | Send a query to the server and return a payload. |
+| GET | / | | The web interface. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
-| GET | /server | The server UI. |
-| GET | /server/dashboard | Return the dashboard model. |
+| POST | /queries | Send a query to the server. |
+| GET | /server | The server dashboard. |
+| GET | /server/dashboard | Query the server dashboard model. |
 | GET | /server/dashboard/events | Subscribe to the server dashboard event stream. |
+
+#### Web Interface
+The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` using your web browser.
+
+![Server Web UI Screenshot](https://github.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png?raw=true)
 
 #### PHP Configuration
 This server respects the following `php.ini` configuration variables.

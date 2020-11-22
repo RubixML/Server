@@ -21,13 +21,6 @@ class Dashboard implements Model
     protected $queryLog;
 
     /**
-     * The memory model.
-     *
-     * @var \Rubix\Server\Models\Memory
-     */
-    protected $memory;
-
-    /**
      * The timestamp from when the server went up.
      *
      * @var int
@@ -41,7 +34,6 @@ class Dashboard implements Model
     {
         $this->httpStats = new HTTPStats($channel);
         $this->queryLog = new QueryLog($channel);
-        $this->memory = new Memory();
         $this->start = time();
     }
 
@@ -66,23 +58,13 @@ class Dashboard implements Model
     }
 
     /**
-     * Return the memory model.
-     *
-     * @return \Rubix\Server\Models\Memory
-     */
-    public function memory() : Memory
-    {
-        return $this->memory;
-    }
-
-    /**
-     * Return the number of seconds the server has been up.
+     * Return the starting timestamp.
      *
      * @return int
      */
-    public function uptime() : int
+    public function start() : int
     {
-        return time() - $this->start;
+        return $this->start;
     }
 
     /**
@@ -95,8 +77,7 @@ class Dashboard implements Model
         return [
             'requests' => $this->httpStats->asArray(),
             'queries' => $this->queryLog->asArray(),
-            'memory' => $this->memory->asArray(),
-            'uptime' => $this->uptime(),
+            'start' => $this->start,
         ];
     }
 }

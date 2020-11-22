@@ -1,3 +1,0 @@
-<template>
-    <dashboard></dashboard>
-</template>

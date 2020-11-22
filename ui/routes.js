@@ -1,4 +1,4 @@
-import Server from './pages/Server.vue';
+import ServerDashboard from './pages/ServerDashboard.vue';
 
 export default [
     { 
@@ -9,6 +9,6 @@ export default [
     {
         name: 'server',
         path: '/server',
-        component: Server,
+        component: ServerDashboard,
     },
 ];
