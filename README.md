@@ -111,7 +111,7 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 This server exposes the following HTTP resources and their methods.
 
 | Method | URI | Description |
-|---|---|---|---|
+|---|---|---|
 | GET | / | | The web interface. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
@@ -124,7 +124,7 @@ This server exposes the following HTTP resources and their methods.
 #### Web Interface
 The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` using your web browser.
 
-![Server Web UI Screenshot](https://github.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png?raw=true)
+![Server Web UI Screenshot](https://raw.githubusercontent.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png)
 
 #### PHP Configuration
 This server respects the following `php.ini` configuration variables.
