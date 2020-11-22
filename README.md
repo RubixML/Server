@@ -112,7 +112,7 @@ This server exposes the following HTTP resources and their methods.
 
 | Method | URI | Description |
 |---|---|---|
-| GET | / | | The web interface. |
+| GET | / | The web interface. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
