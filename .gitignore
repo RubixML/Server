@@ -1,7 +1,9 @@
 /vendor
+/node_modules
 composer.lock
 .phpunit.result.cache
 .php_cs.cache
+npm-debug.log
 Thumbs.db
 .DS_Store
 /.idea

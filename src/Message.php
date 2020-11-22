@@ -24,7 +24,7 @@ abstract class Message implements JSONSerializable
     abstract public function asArray() : array;
 
     /**
-     * Return the payload for json serialization.
+     * Return the payload for JSON serialization.
      *
      * @return mixed
      */

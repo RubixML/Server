@@ -2,15 +2,12 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-
 interface Controller
 {
     /**
-     * Handle the request and return a response or a deferred response.
+     * Return the routes this controller handles.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     * @return array[]
      */
-    public function __invoke(Request $request);
+    public function routes() : array;
 }

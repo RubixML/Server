@@ -3,7 +3,7 @@
 namespace Rubix\Server\Tests\Handlers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Predict;
+use Rubix\Server\Queries\Predict;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Payloads\PredictPayload;
 use Rubix\ML\Classifiers\DummyClassifier;
@@ -59,9 +59,9 @@ class PredictHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $command = new Predict(new Unlabeled(self::SAMPLES));
+        $query = new Predict(new Unlabeled(self::SAMPLES));
 
-        $payload = call_user_func($this->handler, $command);
+        $payload = call_user_func($this->handler, $query);
 
         $this->assertInstanceOf(PredictPayload::class, $payload);
         $this->assertEquals(self::EXPECTED_PREDICTIONS, $payload->predictions());

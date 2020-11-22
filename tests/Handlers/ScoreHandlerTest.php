@@ -3,7 +3,7 @@
 namespace Rubix\Server\Tests\Handlers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Score;
+use Rubix\Server\Queries\Score;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Payloads\ScorePayload;
 use Rubix\ML\AnomalyDetectors\IsolationForest;
@@ -57,9 +57,9 @@ class ScoreHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $command = new Score(new Unlabeled(self::SAMPLES));
+        $query = new Score(new Unlabeled(self::SAMPLES));
 
-        $payload = call_user_func($this->handler, $command);
+        $payload = call_user_func($this->handler, $query);
 
         $this->assertInstanceOf(ScorePayload::class, $payload);
         $this->assertEquals(self::EXPECTED_SCORES, $payload->scores());

@@ -4,7 +4,7 @@ namespace Rubix\Server\Http\Middleware;
 
 use Rubix\Server\Http\Responses\Forbidden;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Trusted Clients
@@ -52,7 +52,7 @@ class TrustedClients implements Middleware
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(Request $request, callable $next)
+    public function __invoke(ServerRequestInterface $request, callable $next)
     {
         $server = $request->getServerParams();
 

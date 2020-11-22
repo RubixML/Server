@@ -1,8 +1,12 @@
 - 0.2.3-beta
+    - Added web user interface
+    - Added server dashboard view
     - Non 4xx error responses deferred for better concurrency
     - Rename internal command Response objects to Payload
     - Trusted Clients middleware now returns Forbidden (403) response
     - Removed single sample commands
+    - Combined REST and RPC interfaces into one HTTP server
+    - Added Verbose interface for logger-aware servers
 
 - 0.2.2-beta
     - Added Async Client interface

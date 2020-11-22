@@ -3,7 +3,7 @@
 namespace Rubix\Server\Tests\Handlers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Commands\Proba;
+use Rubix\Server\Queries\Proba;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Payloads\ProbaPayload;
 use Rubix\ML\Classifiers\GaussianNB;
@@ -58,9 +58,9 @@ class ProbaHandlerTest extends TestCase
      */
     public function handle() : void
     {
-        $command = new Proba(new Unlabeled(self::SAMPLES));
+        $query = new Proba(new Unlabeled(self::SAMPLES));
 
-        $payload = call_user_func($this->handler, $command);
+        $payload = call_user_func($this->handler, $query);
 
         $this->assertInstanceOf(ProbaPayload::class, $payload);
         $this->assertEquals(self::EXPECTED_PROBABILITIES, $payload->probabilities());

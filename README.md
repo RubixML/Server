@@ -1,4 +1,4 @@
-# Rubix Server
+# Rubix ML Server
 Bring your [Rubix ML](https://github.com/RubixML/RubixML) models into production by serving them with one of our high-performance stand-alone model servers. Model severs wrap your trained estimators in an API such as REST or RPC that can be queried over a network in real-time. In addition, the library provides client implementations that make querying models from your application fast and easy.
 
 ## Installation
@@ -13,15 +13,13 @@ $ composer require rubix/server
 
 #### Optional
 - [Event extension](https://pecl.php.net/package/event) for high-volume servers
-- [Bzip2 extension](https://www.php.net/manual/en/book.bzip2.php) for Bzip2 compression support
 - [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
 
 ## Documentation
 
 ### Table of Contents
 - [Servers](#servers)
-	- [REST Server](#rest-server)
-	- [RPC Server](#rpc-server)
+	- [HTTP Server](#http-server)
 - [Clients](#clients)
 	- [REST Client](#rest-client)
 	- [RPC Client](#rpc-client)
@@ -41,10 +39,10 @@ public function serve(Estimator $estimator) : void
 ```
 
 ```php
-use Rubix\Server\RESTServer;
+use Rubix\Server\HTTPServer;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 
-$server = new RESTServer('127.0.0.1', 8080);
+$server = new HTTPServer('127.0.0.1', 8080);
 
 $estimator = new KNearestNeighbors(5);
 
@@ -68,83 +66,65 @@ $estimator = PersistentModel::load(new Filesystem('example.model'));
 $server->serve($estimator);
 ```
 
-### REST Server
-A JSON over HTTP(S) server exposing a [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) (Representational State Transfer) API. The REST server exposes one endpoint (resource) per command and can be queried using any standard HTTP client.
-
-Interfaces: [Server](#servers)
-
-#### Parameters
-| # | Param | Default | Type | Description |
-|---|---|---|---|---|
-| 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 2 | port | 8888 | int | The network port to run the HTTP services on. |
-| 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middlewares | | array | The HTTP middleware stack to run on each request. |
-
-#### Example
+#### Verbose Interface
+Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.
 
 ```php
-use Rubix\Server\RESTServer;
-use Rubix\Server\Http\Middleware\AccessLogGenerator;
-use Rubix\Server\Http\Middleware\BasicAuthenticator;
+use Rubix\ML\Other\Loggers\Screen;
 
-$server = new RESTServer('127.0.0.1', 443, '/cert.pem', [
-	new AccessLogGenerator(new Screen()),
-	new BasicAuthenticator([
-		'morgan' => 'secret',
-		'taylor' => 'secret',
-	]),
-]);
+$server->setLogger(new Screen());
 ```
 
-#### PHP Configuration
-This server respects the following `php.ini` configuration variables.
+### HTTP Server
+An HTTP(S) server exposing Representational State Transfer (REST) and Remote Procedure Call (RPC) APIs.
 
-| Name | Default | Description |
-|---|---|---|
-| memory_limit | 128M | The total amount of memory available to the server to handle requests. |
-| post_max_size | 8M | The maximum size of a request body to handle. |
-| enable_post_data_reading | 1 | Disabling this will force the request body to be read in a stream. |
-
-#### HTTP Routes
-This server exposes the following HTTP resources and their methods.
-
-| Method | URI | JSON Params | Description |
-|---|---|---|---|
-| POST | /model/predictions | `samples` | Make a set of predictions on a dataset. |
-| POST | /model/probabilities | `samples` | Return the joint probabilities of each sample in a dataset. |
-| POST | /model/anomaly_scores | `samples` | Return the anomaly scores of each sample in a dataset. |
-
-### RPC Server
-A lightweight [Remote Procedure Call](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) over HTTP(S) server that responds to messages called commands. Commands are serialized over the wire using one of numerous encodings including JSON, Gzipped JSON, and Igbinary.
-
-Interfaces: [Server](#servers)
+Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 2 | port | 8888 | int | The network port to run the HTTP services on. |
+| 2 | port | 8080 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middlewares | | array | The HTTP middleware stack to run on each request. |
+| 4 | middlewares | | array | The HTTP middleware stack to run on each request/response. |
 | 5 | serializer | JSON | object | The message serializer. |
 
 #### Example
 
 ```php
-use Rubix\Server\RPCServer;
-use Rubix\Server\Http\Middleware\TrustedClients;
-use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\HTTPServer;
+use Rubix\Server\Http\Middleware\AccessLogGenerator;
+use Rubix\Server\Http\Middleware\BasicAuthenticator;
 use Rubix\Server\Serializers\Gzip;
 use Rubix\Server\Serializers\JSON;
 
-$server = new RPCServer('127.0.0.1', 8888, null, [
-	new TrustedClients(['127.0.0.1', '45.63.67.15']),
-    new SharedTokenAuthenticator([
-		'secret', 'another-secret',
+$server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
+	new AccessLogGenerator(new Screen()),
+	new BasicAuthenticator([
+		'morgan' => 'secret',
+		'taylor' => 'secret',
 	]),
-], new Gzip(5, new JSON()));
+], new Gzip(1, new JSON()));
 ```
+
+#### Routes
+This server exposes the following HTTP resources and their methods.
+
+| Method | URI | Description |
+|---|---|---|---|
+| GET | / | | The web interface. |
+| POST | /model/predictions | Make a set of predictions on a dataset. |
+| POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
+| POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
+| POST | /queries | Send a query to the server. |
+| GET | /server | The server dashboard. |
+| GET | /server/dashboard | Query the server dashboard model. |
+| GET | /server/dashboard/events | Subscribe to the server dashboard event stream. |
+
+#### Web Interface
+The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` using your web browser.
+
+![Server Web UI Screenshot](https://github.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png?raw=true)
 
 #### PHP Configuration
 This server respects the following `php.ini` configuration variables.
@@ -154,13 +134,6 @@ This server respects the following `php.ini` configuration variables.
 | memory_limit | 128M | The total amount of memory available to the server to handle requests. |
 | post_max_size | 8M | The maximum size of a request body to handle. |
 | enable_post_data_reading | 1 | Disabling this will force the request body to be read in a stream. |
-
-#### HTTP Routes
-This server exposes the following HTTP resources and their methods.
-
-| Method | URI | Description |
-|---|---|---|---|
-| POST | /commands | Execute a command on the server. |
 
 ---
 ### Clients
@@ -242,7 +215,7 @@ $client = new RESTClient('127.0.0.1', 443, true, [
 ```
 
 ### RPC Client
-The RPC Client provides methods for querying an [RPC Server](#rpc-server) over HTTP or Secure HTTP (HTTPS). In addition, the RPC client uses a back-pressure mechanism to ensure that clients do not overwhelm the server under heavy load.
+The RPC Client provides methods for querying an [HTTP Server](#http-server) using the lightweight RPC API. In addition, the RPC client uses a back-pressure mechanism to ensure that clients do not overwhelm the server under heavy load.
 
 Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 

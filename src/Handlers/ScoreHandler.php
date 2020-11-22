@@ -3,10 +3,10 @@
 namespace Rubix\Server\Handlers;
 
 use Rubix\ML\Ranking;
-use Rubix\Server\Commands\Score;
+use Rubix\Server\Queries\Score;
 use Rubix\Server\Payloads\ScorePayload;
 
-class ScoreHandler
+class ScoreHandler implements Handler
 {
     /**
      * The ranking model that is being served.
@@ -24,14 +24,26 @@ class ScoreHandler
     }
 
     /**
-     * Handle the command.
+     * Return the queries that this handler is bound to.
      *
-     * @param \Rubix\Server\Commands\Score $command
+     * @return callable[]
+     */
+    public function queries() : array
+    {
+        return [
+            Score::class => $this,
+        ];
+    }
+
+    /**
+     * Handle the query.
+     *
+     * @param \Rubix\Server\Queries\Score $query
      * @return \Rubix\Server\Payloads\ScorePayload
      */
-    public function __invoke(Score $command) : ScorePayload
+    public function __invoke(Score $query) : ScorePayload
     {
-        $scores = $this->estimator->score($command->dataset());
+        $scores = $this->estimator->score($query->dataset());
 
         return new ScorePayload($scores);
     }

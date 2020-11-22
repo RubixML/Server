@@ -2,15 +2,15 @@
 
 namespace Rubix\Server\Exceptions;
 
-use Rubix\Server\Commands\Command;
+use Rubix\Server\Queries\Query;
 
 class HandlerNotFound extends RuntimeException
 {
     /**
-     * @param \Rubix\Server\Commands\Command $command
+     * @param \Rubix\Server\Queries\Query $query
      */
-    public function __construct(Command $command)
+    public function __construct(Query $query)
     {
-        parent::__construct("The $command command is not supported.");
+        parent::__construct("The $query query is not supported.");
     }
 }

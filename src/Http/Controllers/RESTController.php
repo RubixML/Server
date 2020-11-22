@@ -2,11 +2,15 @@
 
 namespace Rubix\Server\Http\Controllers;
 
-use Rubix\Server\Services\CommandBus;
+use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Payloads\Payload;
 use Rubix\Server\Http\Responses\Success;
+use Rubix\Server\Http\Responses\BadRequest;
+use Rubix\Server\Http\Responses\UnsupportedMediaType;
 use Rubix\Server\Http\Responses\InternalServerError;
+use Rubix\Server\Http\Responses\UnprocessableEntity;
 use Rubix\Server\Helpers\JSON;
+use Psr\Http\Message\ServerRequestInterface;
 use Exception;
 
 abstract class RESTController implements Controller
@@ -17,18 +21,50 @@ abstract class RESTController implements Controller
     ];
 
     /**
-     * The command bus.
+     * The query bus.
      *
-     * @var \Rubix\Server\Services\CommandBus
+     * @var \Rubix\Server\Services\QueryBus
      */
-    protected $bus;
+    protected $queryBus;
 
     /**
-     * @param \Rubix\Server\Services\CommandBus $bus
+     * @param \Rubix\Server\Services\QueryBus $queryBus
      */
-    public function __construct(CommandBus $bus)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->bus = $bus;
+        $this->queryBus = $queryBus;
+    }
+
+    /**
+     * Parse the request body content.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function parseRequestBody(ServerRequestInterface $request, callable $next)
+    {
+        $contentType = $request->getHeaderLine('Content-Type');
+
+        $acceptedContentType = self::HEADERS['Accept'];
+
+        if ($contentType !== $acceptedContentType) {
+            return new UnsupportedMediaType($acceptedContentType);
+        }
+
+        try {
+            $json = JSON::decode((string) $request->getBody());
+        } catch (Exception $exception) {
+            return new BadRequest(self::HEADERS, JSON::encode([
+                'message' => $exception->getMessage(),
+            ]));
+        }
+
+        $request = $request->withParsedBody($json);
+
+        return $next($request);
     }
 
     /**
@@ -41,9 +77,7 @@ abstract class RESTController implements Controller
      */
     public function respondSuccess(Payload $payload) : Success
     {
-        $data = JSON::encode($payload->asArray());
-
-        return new Success(self::HEADERS, $data);
+        return new Success(self::HEADERS, JSON::encode($payload->asArray()));
     }
 
     /**
@@ -55,5 +89,18 @@ abstract class RESTController implements Controller
     public function respondServerError(Exception $exception) : InternalServerError
     {
         return new InternalServerError();
+    }
+
+    /**
+     * Respond with an unprocessable entity error.
+     *
+     * @param \Exception $exception
+     * @return \Rubix\Server\Http\Responses\UnprocessableEntity
+     */
+    public function respondInvalid(Exception $exception) : UnprocessableEntity
+    {
+        return new UnprocessableEntity(self::HEADERS, JSON::encode([
+            'message' => $exception->getMessage(),
+        ]));
     }
 }
