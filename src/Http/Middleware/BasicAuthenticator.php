@@ -79,16 +79,18 @@ class BasicAuthenticator implements Middleware
      */
     public function __invoke(ServerRequestInterface $request, callable $next)
     {
-        $auth = $request->getHeaderLine(self::AUTH_HEADER);
+        if ($request->hasHeader(self::AUTH_HEADER)) {
+            $auth = $request->getHeaderLine(self::AUTH_HEADER);
 
-        if (strpos($auth, self::SCHEME) === 0) {
-            $credentials = base64_decode(trim(substr($auth, strlen(self::SCHEME))));
+            if (strpos($auth, self::SCHEME) === 0) {
+                $credentials = base64_decode(trim(substr($auth, strlen(self::SCHEME))));
 
-            [$username, $password] = array_pad(explode(self::CREDENTIALS_SEPARATOR, $credentials, 2), 2, null);
+                [$username, $password] = array_pad(explode(self::CREDENTIALS_SEPARATOR, $credentials, 2), 2, null);
 
-            if (isset($this->passwords[$username])) {
-                if ($password === $this->passwords[$username]) {
-                    return $next($request);
+                if (isset($this->passwords[$username])) {
+                    if ($password === $this->passwords[$username]) {
+                        return $next($request);
+                    }
                 }
             }
         }

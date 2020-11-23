@@ -53,8 +53,6 @@ $estimator->train($dataset);
 $server->serve($estimator);
 ```
 
-> **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case of a failure.
-
 Or, you can load a previously trained estimator from storage and serve it like in the example below.
 
 ```php
@@ -65,6 +63,11 @@ $estimator = PersistentModel::load(new Filesystem('example.model'));
 
 $server->serve($estimator);
 ```
+
+> **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case of a failure.
+
+#### Shutting Down The Server
+To gracefully shut down the server, send a terminate (`SIGTERM`) or interrupt signal (`SIGINT`) to the process. To shut down immediately, without waiting for current connections to close, you can either send a second `SIGTERM` or `SIGINT` signal or you can send a single kill signal (`SIGKILL`) instead.
 
 #### Verbose Interface
 Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.

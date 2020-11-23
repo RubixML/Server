@@ -58,9 +58,7 @@ class HTTPServer implements Server, Verbose
 {
     use LoggerAware;
 
-    protected const SERVER_NAME = 'Rubix ML REST Server';
-
-    protected const ACCEPTED_ENCODING = 'gzip';
+    protected const SERVER_NAME = 'Rubix ML HTTP Server';
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -230,6 +228,8 @@ class HTTPServer implements Server, Verbose
 
         $server = new HTTP($loop, ...$stack);
 
+        $server->listen($socket);
+
         $this->loop = $loop;
         $this->socket = $socket;
         $this->eventBus = $eventBus;
@@ -239,10 +239,9 @@ class HTTPServer implements Server, Verbose
         ];
 
         $loop->addSignal(SIGINT, [$this, 'shutdown']);
+        $loop->addSignal(SIGTERM, [$this, 'shutdown']);
 
-        $server->listen($socket);
-
-        $this->logger->info('HTTP REST Server running at'
+        $this->logger->info('HTTP Server running at'
             . " {$this->host} on port {$this->port}");
 
         $loop->run();
@@ -293,12 +292,12 @@ class HTTPServer implements Server, Verbose
     {
         $this->loop->removeSignal($signal, [$this, 'shutdown']);
 
-        $this->logger->info('Server shutting down');
+        $this->logger->info('Server is shutting down');
+
+        $this->socket->close();
 
         foreach ($this->channels as $channel) {
             $channel->close();
         }
-
-        $this->socket->close();
     }
 }

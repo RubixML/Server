@@ -45,37 +45,36 @@ class AccessLogGenerator implements Middleware
      */
     public function __invoke(ServerRequestInterface $request, callable $next)
     {
-        return resolve($next($request))
-            ->then(function (ResponseInterface $response) use ($request) : ResponseInterface {
-                $server = $request->getServerParams();
+        return resolve($next($request))->then(function (ResponseInterface $response) use ($request) : ResponseInterface {
+            $server = $request->getServerParams();
 
-                $ip = $server['REMOTE_ADDR'] ?? self::UNKNOWN;
+            $ip = $server['REMOTE_ADDR'] ?? self::UNKNOWN;
 
-                $method = $request->getMethod();
+            $method = $request->getMethod();
 
-                $uri = $request->getUri();
+            $uri = $request->getUri();
 
-                $version = "HTTP/{$request->getProtocolVersion()}";
+            $version = "HTTP/{$request->getProtocolVersion()}";
 
-                $requestString = "\"$method {$uri->getPath()} $version\"";
+            $requestString = "\"$method {$uri->getPath()} $version\"";
 
-                $status = $response->getStatusCode();
+            $status = $response->getStatusCode();
 
-                $size = $response->getBody()->getSize();
+            $size = $response->getBody()->getSize();
 
-                $referrer = $request->hasHeader('Referer')
-                    ? "\"{$request->getHeaderLine('Referer')}\""
-                    : self::UNKNOWN;
+            $referrer = $request->hasHeader('Referer')
+                ? "\"{$request->getHeaderLine('Referer')}\""
+                : self::UNKNOWN;
 
-                $agent = $request->hasHeader('User-Agent')
-                    ? "\"{$request->getHeaderLine('User-Agent')}\""
-                    : self::UNKNOWN;
+            $agent = $request->hasHeader('User-Agent')
+                ? "\"{$request->getHeaderLine('User-Agent')}\""
+                : self::UNKNOWN;
 
-                $entry = "$ip $requestString $status $size $referrer $agent";
+            $entry = "$ip $requestString $status $size $referrer $agent";
 
-                $this->logger->info($entry);
+            $this->logger->info($entry);
 
-                return $response;
-            });
+            return $response;
+        });
     }
 }

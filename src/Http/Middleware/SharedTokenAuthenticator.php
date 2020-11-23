@@ -48,7 +48,7 @@ class SharedTokenAuthenticator implements Middleware
     public function __construct(array $tokens, string $realm = 'auth')
     {
         if (empty($tokens)) {
-            throw new InvalidArgumentException('At least 1 token is required.');
+            throw new InvalidArgumentException('Must supply at least one shared token.');
         }
 
         $this->tokens = array_flip($tokens);
@@ -64,13 +64,15 @@ class SharedTokenAuthenticator implements Middleware
      */
     public function __invoke(ServerRequestInterface $request, callable $next)
     {
-        $auth = $request->getHeaderLine(self::AUTH_HEADER);
+        if ($request->hasHeader(self::AUTH_HEADER)) {
+            $auth = $request->getHeaderLine(self::AUTH_HEADER);
 
-        if (strpos($auth, self::SCHEME) === 0) {
-            $token = trim(substr($auth, strlen(self::SCHEME)));
+            if (strpos($auth, self::SCHEME) === 0) {
+                $token = trim(substr($auth, strlen(self::SCHEME)));
 
-            if (isset($this->tokens[$token])) {
-                return $next($request);
+                if (isset($this->tokens[$token])) {
+                    return $next($request);
+                }
             }
         }
 

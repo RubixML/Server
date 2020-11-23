@@ -82,6 +82,7 @@ class DashboardController extends RESTController
 
         return new Success([
             'Content-Type' => 'text/event-stream',
+            'Transfer-Encoding' => 'chunked',
             'Cache-Control' => 'no-cache',
         ], $stream);
     }

@@ -52,9 +52,7 @@ module.exports = {
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin('app.css'),
         new MomentLocalesPlugin({
-            localesToKeep: [
-                'en', 'fr', 'de', 'pt', 'id', 'hi',
-            ],
+            localesToKeep: ['en'],
         }),
     ],
     optimization: {

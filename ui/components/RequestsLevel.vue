@@ -21,7 +21,7 @@
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading">Uptime</p>
-                <p class="title">{{ uptime }}</p>
+                <p class="title is-capitalized"><abbr :title="upSince">{{ uptime }}</abbr></p>
             </div>
         </div>
     </nav>
@@ -35,7 +35,7 @@ const THIRTY_SECONDS = 30000;
 export default {
     data() {
         return {
-            uptime: moment.unix(this.start).fromNow(true),
+            uptime: '',
         };
     },
     props: {
@@ -48,12 +48,19 @@ export default {
             required: true,
         },
     },
+    computed: {
+        upSince() {
+            return moment.unix(this.start).format('[Up since] dddd, MMMM Do YYYY, h:mm:ssA [(server time)]');
+        },
+    },
     methods: {
         updateUptime() {
             this.uptime = moment.unix(this.start).fromNow(true);
         }
     },
     mounted() {
+        this.updateUptime();
+
         setInterval(this.updateUptime, THIRTY_SECONDS);
     },
 }

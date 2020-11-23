@@ -21,9 +21,9 @@ class Response extends GuzzleResponse
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
-        int $status = 200,
+        int $status,
         array $headers = [],
-        $data = null,
+        $data = '',
         string $version = '1.1',
         ?string $reason = null
     ) {
