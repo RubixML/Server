@@ -4,17 +4,11 @@ namespace Rubix\Server\Models;
 
 use Rubix\Server\Queries\Query;
 use Rubix\Server\Services\SSEChannel;
-use Rubix\Server\Exceptions\InvalidArgumentException;
-use Rubix\Server\Exceptions\RuntimeException;
-use ArrayAccess;
 
-/**
- * @implements ArrayAccess<string, array>
- */
-class QueryLog implements Model, ArrayAccess
+class QueryLog implements Model
 {
     /**
-     * The server-sent events emitter.
+     * The server-sent events (SSE) emitter.
      *
      * @var \Rubix\Server\Services\SSEChannel
      */
@@ -87,51 +81,5 @@ class QueryLog implements Model, ArrayAccess
     public function asArray() : array
     {
         return $this->log;
-    }
-
-    /**
-     * Return an array of counts for a query.
-     *
-     * @param string $name
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
-     * @return int[]
-     */
-    public function offsetGet($name) : array
-    {
-        if (isset($this->log[$name])) {
-            return $this->log[$name];
-        }
-
-        throw new InvalidArgumentException("Query $name not found.");
-    }
-
-    /**
-     * @param string $name
-     * @param int[] $counts
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     */
-    public function offsetSet($name, $counts) : void
-    {
-        throw new RuntimeException('Log cannot be mutated directly.');
-    }
-
-    /**
-     * Does a query exist in the log?
-     *
-     * @param string $name
-     * @return bool
-     */
-    public function offsetExists($name) : bool
-    {
-        return isset($this->log[$name]);
-    }
-
-    /**
-     * @param string $name
-     * @throws \Rubix\Server\Exceptions\RuntimeException
-     */
-    public function offsetUnset($name) : void
-    {
-        throw new RuntimeException('Log cannot be mutated directly.');
     }
 }

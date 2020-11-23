@@ -50,11 +50,11 @@ export default {
             message: '',
         };
     },
-    created() {
+    mounted() {
         bus.$on('communication-error', (payload) => {
             if (!this.open) {
-                this.open = true;
                 this.message = payload.error.message;
+                this.open = true;
 
                 document.getElementById('sharp').play();
 

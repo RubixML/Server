@@ -53,11 +53,11 @@ class AccessLogGenerator implements Middleware
 
                 $method = $request->getMethod();
 
-                $path = $request->getUri();
+                $uri = $request->getUri();
 
                 $version = "HTTP/{$request->getProtocolVersion()}";
 
-                $requestString = "\"$method {$path->getPath()} $version\"";
+                $requestString = "\"$method {$uri->getPath()} $version\"";
 
                 $status = $response->getStatusCode();
 

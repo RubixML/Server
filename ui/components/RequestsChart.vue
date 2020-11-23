@@ -5,8 +5,8 @@
 <script>
 import Chart from 'chart.js';
 
+const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
-const UPDATE_INTERVAL = 1000;
 
 export default {
     data() {
@@ -75,7 +75,7 @@ export default {
                 },
                 tooltips: {
                     mode: 'index',
-                    intersect: false,
+                    intersect: true,
                 },
                 hover: {
                     mode: 'nearest',
@@ -111,7 +111,7 @@ export default {
             },
         });
 
-        setInterval(this.update, UPDATE_INTERVAL);
+        setInterval(this.update, ONE_SECOND);
     },
     methods: { 
         update() {
@@ -125,7 +125,7 @@ export default {
             datasets[2].data.push(this.requests.rejected - this.last.rejected);
             datasets[3].data.push(this.requests.failed - this.last.failed);
 
-            const mu = datasets[1].data.reduce((a, b) => a + b, 0) / datasets[0].data.length;
+            const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[0].data.length;
 
             datasets[0].data.push(Math.round(mu + 'e2') + 'e-2');
  

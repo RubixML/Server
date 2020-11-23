@@ -19,21 +19,21 @@ class HTTPStats implements Model
      *
      * @var int
      */
-    protected $numSuccessful = 0;
+    protected $numSuccessful;
 
     /**
      * The number of rejected requests.
      *
      * @var int
      */
-    protected $numRejected = 0;
+    protected $numRejected;
 
     /**
      * The number of failed requests.
      *
      * @var int
      */
-    protected $numFailed = 0;
+    protected $numFailed;
 
     /**
      * @param \Rubix\Server\Services\SSEChannel $channel
@@ -41,6 +41,9 @@ class HTTPStats implements Model
     public function __construct(SSEChannel $channel)
     {
         $this->channel = $channel;
+        $this->numSuccessful = 0;
+        $this->numRejected = 0;
+        $this->numFailed = 0;
     }
 
     /**

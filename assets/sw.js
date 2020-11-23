@@ -3,14 +3,14 @@ self.addEventListener('install', function(event) {
         return cache.addAll([
             '/',
             '/server',
+            '/manifest.json',
             '/app.js',
             '/app.css',
-            '/images/app-icon-large.png',
             '/images/app-icon-small.png',
+            '/images/app-icon-large.png',
             '/fonts/fa-solid-900.woff',
             '/fonts/fa-solid-900.woff2',
             '/sounds/sharp.ogg',
-            '/manifest.json',
         ]);
     }));
 });

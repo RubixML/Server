@@ -2,6 +2,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -50,6 +51,11 @@ module.exports = {
     plugins: [
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin('app.css'),
+        new MomentLocalesPlugin({
+            localesToKeep: [
+                'en', 'fr', 'de', 'pt', 'id', 'hi',
+            ],
+        }),
     ],
     optimization: {
         minimizer: [

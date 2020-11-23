@@ -11,7 +11,7 @@ use Exception;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-abstract class Failure extends Event
+abstract class Failure implements Event
 {
     /**
      * The exception.

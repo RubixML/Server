@@ -7,6 +7,9 @@ use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Stream\WritableStreamInterface;
 use SplObjectStorage;
 
+use function count;
+use function array_slice;
+
 class SSEChannel
 {
     protected const EOL = "\n";
@@ -65,10 +68,6 @@ class SSEChannel
      */
     public function attach(WritableStreamInterface $stream, ?int $lastId = null) : void
     {
-        $stream->on('close', function () use ($stream) {
-            $this->detach($stream);
-        });
-
         if ($lastId) {
             for ($id = $lastId; isset($this->buffer[$id]); ++$id) {
                 $stream->write($this->buffer[$id]);
@@ -76,6 +75,10 @@ class SSEChannel
         }
 
         $this->streams->attach($stream);
+
+        $stream->on('close', function () use ($stream) {
+            $this->detach($stream);
+        });
     }
 
     /**

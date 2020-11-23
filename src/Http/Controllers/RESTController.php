@@ -55,7 +55,7 @@ abstract class RESTController implements Controller
         }
 
         try {
-            $json = JSON::decode((string) $request->getBody());
+            $json = JSON::decode($request->getBody());
         } catch (Exception $exception) {
             return new BadRequest(self::HEADERS, JSON::encode([
                 'message' => $exception->getMessage(),

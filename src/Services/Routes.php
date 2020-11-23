@@ -11,6 +11,8 @@ use ArrayAccess;
 
 use function in_array;
 use function is_string;
+use function is_array;
+use function is_callable;
 
 /**
  * @implements ArrayAccess<string, array>

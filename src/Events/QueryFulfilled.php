@@ -12,7 +12,7 @@ use Rubix\Server\Payloads\Payload;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class QueryFulfilled extends Event
+class QueryFulfilled implements Event
 {
     /**
      * The query.

@@ -49,7 +49,7 @@ abstract class RPCController implements Controller
         }
 
         try {
-            $message = $this->serializer->unserialize((string) $request->getBody());
+            $message = $this->serializer->unserialize($request->getBody());
         } catch (Exception $exception) {
             $payload = ErrorPayload::fromException($exception);
 

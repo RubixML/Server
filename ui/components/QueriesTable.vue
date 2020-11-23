@@ -14,6 +14,13 @@
                 <td class="has-text-right">{{ counts.failed.toLocaleString() }}</td>
             </tr>
         </tbody>
+        <tfoot>
+            <tr>
+                <th>Totals</th>
+                <td class="has-text-right">{{ totalFulfilled.toLocaleString() }}</td>
+                <td class="has-text-right">{{ totalFailed.toLocaleString() }}</td>
+            </tr>
+        </tfoot>
     </table>
 </template>
 
@@ -25,5 +32,13 @@ export default {
             required: true,
         },
     },
+    computed: {
+        totalFulfilled() {
+            return Object.entries(this.queries).reduce((sigma, query) => sigma + query[1].fulfilled, 0);
+        },
+        totalFailed() {
+            return Object.entries(this.queries).reduce((sigma, query) => sigma + query[1].failed, 0);
+        },
+    }
 }
 </script>

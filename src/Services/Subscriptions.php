@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Services;
 
+use Rubix\Server\Listeners\Listener;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use ArrayAccess;
@@ -25,6 +26,7 @@ class Subscriptions implements ArrayAccess
      * Subscribe an array of listeners to their events.
      *
      * @param \Rubix\Server\Listeners\Listener[] $listeners
+     * @throws \InvalidArgumentException
      * @return self
      */
     public static function subscribe(array $listeners) : self
@@ -32,6 +34,11 @@ class Subscriptions implements ArrayAccess
         $subscriptions = [];
 
         foreach ($listeners as $listener) {
+            if (!$listener instanceof Listener) {
+                throw new InvalidArgumentException('Listener must implement'
+                    . ' the Listener interface.');
+            }
+
             foreach ($listener->events() as $class => $handlers) {
                 foreach ($handlers as $handler) {
                     $subscriptions[$class][] = $handler;

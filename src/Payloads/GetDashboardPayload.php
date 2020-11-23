@@ -21,6 +21,17 @@ class GetDashboardPayload extends Payload
     protected $dashboard;
 
     /**
+     * Build the response from a dashboard model.
+     *
+     * @param \Rubix\Server\Models\Dashboard $dashboard
+     * @return self
+     */
+    public static function fromDashboard(Dashboard $dashboard) : self
+    {
+        return self::fromArray($dashboard->asArray());
+    }
+
+    /**
      * Build the response from an associative array of data.
      *
      * @param mixed[] $data

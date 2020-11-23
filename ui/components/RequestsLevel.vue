@@ -30,7 +30,7 @@
 <script>
 import moment from 'moment';
 
-const UPTIME_UPDATE_INTERVAL = 30000;
+const THIRTY_SECONDS = 30000;
 
 export default {
     data() {
@@ -54,7 +54,7 @@ export default {
         }
     },
     mounted() {
-        setInterval(this.updateUptime, UPTIME_UPDATE_INTERVAL);
+        setInterval(this.updateUptime, THIRTY_SECONDS);
     },
 }
 </script>

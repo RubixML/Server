@@ -18,10 +18,6 @@ $generator = new Agglomerate([
 
 $dataset = $generator->generate(10)->randomize();
 
-$promise1 = $client->predictAsync($dataset);
+$promise = $client->probaAsync($dataset);
 
-$promise2 = $client->probaAsync($dataset);
-
-print_r($promise1->wait());
-
-print_r($promise2->wait());
+print_r($promise->wait());

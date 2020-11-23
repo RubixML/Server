@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
  * @package     Rubix/Server
  * @author      Andrew DalPino
  */
-class ResponseSent extends Event
+class ResponseSent implements Event
 {
     /**
      * The response.
