@@ -7,7 +7,6 @@ use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\KDNeighbors;
 use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\AccessLogGenerator;
-use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
 use Rubix\ML\Other\Loggers\Screen;
 
 $generator = new Agglomerate([
