@@ -6,14 +6,12 @@ use Rubix\Server\RESTClient;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 
-$client = new RESTClient('127.0.0.1', 8080, false, [
-    // 'Authorization' => 'Basic ' . base64_encode('user:secret'),
-]);
+$client = new RESTClient('127.0.0.1', 8080);
 
 $generator = new Agglomerate([
-    'red' => new Blob([255, 0, 0], 10.0),
-    'green' => new Blob([0, 128, 0], 10.0),
-    'blue' => new Blob([0, 0, 255], 10.0),
+    'red' => new Blob([255, 0, 0], 20.0),
+    'green' => new Blob([0, 128, 0], 20.0),
+    'blue' => new Blob([0, 0, 255], 20.0),
 ]);
 
 for ($i = 0; $i < 10000; ++$i) {

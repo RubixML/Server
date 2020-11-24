@@ -87,15 +87,17 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 2 | port | 8080 | int | The network port to run the HTTP services on. |
+| 2 | port | 80 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | | array | The HTTP middleware stack to run on each request/response. |
+| 5 | sse retry buffer | 50 | int | The size of the server-sent events retry buffer. |
 
 **Example**
 
 ```php
 use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\AccessLogGenerator;
+use Rubix\ML\Other\Loggers\Screen;
 use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
 
 $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
@@ -104,21 +106,21 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-]);
+], 100);
 ```
 
 #### Routes
-This server exposes the following HTTP resources and their methods.
+The HTTP server exposes the following resources.
 
 | Method | URI | Description |
 |---|---|---|
-| GET | / | The web interface. |
+| GET | / | The web user interface. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
 | GET | /server | The server dashboard. |
-| GET | /server/dashboard | Query the server dashboard model. |
-| GET | /server/dashboard/events | Subscribe to the server dashboard event stream. |
+| GET | /server/dashboard | Query the dashboard model. |
+| GET | /server/dashboard/events | Subscribe to the dashboard event stream. |
 
 #### Web Interface
 The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` using your web browser.

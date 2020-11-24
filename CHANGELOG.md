@@ -8,6 +8,7 @@
     - Added Verbose interface for logger-aware servers
     - Removed RPC API and client
     - Renamed REST Server to HTTP Server
+    - Adjustable server-sent events retry buffer
 
 - 0.2.2-beta
     - Added Async Client interface

@@ -89,6 +89,13 @@ class HTTPServer implements Server, Verbose
     protected $middlewares;
 
     /**
+     * The size of the server-sent events retry buffer.
+     *
+     * @var int
+     */
+    protected $sseRetryBuffer;
+
+    /**
      * The event loop.
      *
      * @var \React\EventLoop\LoopInterface
@@ -114,13 +121,15 @@ class HTTPServer implements Server, Verbose
      * @param int $port
      * @param string|null $cert
      * @param mixed[] $middlewares
+     * @param int $sseRetryBuffer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
         int $port = 80,
         ?string $cert = null,
-        array $middlewares = []
+        array $middlewares = [],
+        int $sseRetryBuffer = 50
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host address cannot be empty.');
@@ -131,10 +140,6 @@ class HTTPServer implements Server, Verbose
                 . ' between 0 and ' . self::MAX_TCP_PORT . ", $port given.");
         }
 
-        if (isset($cert) and empty($cert)) {
-            throw new InvalidArgumentException('Certificate must not be empty.');
-        }
-
         foreach ($middlewares as $middleware) {
             if (!$middleware instanceof Middleware) {
                 throw new InvalidArgumentException('Middleware must implement'
@@ -142,10 +147,16 @@ class HTTPServer implements Server, Verbose
             }
         }
 
+        if ($sseRetryBuffer < 0) {
+            throw new InvalidArgumentException('SSE retry buffer must'
+                . " be greater than 0, $sseRetryBuffer given.");
+        }
+
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
         $this->middlewares = $middlewares;
+        $this->sseRetryBuffer = $sseRetryBuffer;
         $this->logger = new BlackHole();
     }
 
@@ -174,7 +185,7 @@ class HTTPServer implements Server, Verbose
 
         $filesystem = Filesystem::create($loop);
 
-        $dashboardChannel = new SSEChannel(50);
+        $dashboardChannel = new SSEChannel($this->sseRetryBuffer);
 
         $dashboard = new Dashboard($dashboardChannel);
 

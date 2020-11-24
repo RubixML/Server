@@ -50,7 +50,7 @@ export default {
     },
     computed: {
         upSince() {
-            return moment.unix(this.start).format('[Up since] dddd, MMMM Do YYYY, h:mm:ssA [(server time)]');
+            return moment.unix(this.start).format('[Up since] dddd, MMMM Do YYYY, h:mmA [(server time)]');
         },
     },
     methods: {

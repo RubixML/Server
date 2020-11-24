@@ -25,7 +25,7 @@ class HTTPServerTest extends TestCase
     {
         $this->server = new HTTPServer('127.0.0.1', 8888, null, [
             new SharedTokenAuthenticator(['secret']),
-        ]);
+        ], 50);
     }
 
     /**
