@@ -44,8 +44,7 @@
         "phpunit/phpunit": "8.5.*"
     },
     "suggest": {
-        "ext-event": "For high volume servers",
-        "ext-igbinary": "For binary message serialization"
+        "ext-event": "For high volume servers"
     },
     "autoload": {
         "psr-4": {

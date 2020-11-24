@@ -13,7 +13,6 @@ $ composer require rubix/server
 
 #### Optional
 - [Event extension](https://pecl.php.net/package/event) for high-volume servers
-- [Igbinary extension](https://github.com/igbinary/igbinary) for binary message serialization
 
 ## Documentation
 
