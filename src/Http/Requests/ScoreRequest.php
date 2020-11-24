@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Http\Requests;
+namespace Rubix\Server\HTTP\Requests;
 
 use Rubix\ML\Datasets\Dataset;
 

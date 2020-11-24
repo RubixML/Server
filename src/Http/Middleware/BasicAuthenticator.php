@@ -1,8 +1,8 @@
 <?php
 
-namespace Rubix\Server\Http\Middleware;
+namespace Rubix\Server\HTTP\Middleware;
 
-use Rubix\Server\Http\Responses\Unauthorized;
+use Rubix\Server\HTTP\Responses\Unauthorized;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 

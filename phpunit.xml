@@ -19,8 +19,8 @@
         <testsuite name="Handlers">
             <directory>tests/Handlers</directory>
         </testsuite>
-        <testsuite name="Http">
-            <directory>tests/Http</directory>
+        <testsuite name="HTTP">
+            <directory>tests/HTTP</directory>
         </testsuite>
         <testsuite name="Responses">
             <directory>tests/Responses</directory>

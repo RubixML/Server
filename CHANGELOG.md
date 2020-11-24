@@ -4,9 +4,10 @@
     - Non 4xx error responses deferred for better concurrency
     - Rename internal command Response objects to Payload
     - Trusted Clients middleware now returns Forbidden (403) response
-    - Removed single sample commands
-    - Combined REST and RPC interfaces into one HTTP server
+    - Removed single sample queries
     - Added Verbose interface for logger-aware servers
+    - Removed RPC API and client
+    - Renamed REST Server to HTTP Server
 
 - 0.2.2-beta
     - Added Async Client interface

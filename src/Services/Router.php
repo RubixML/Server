@@ -2,8 +2,8 @@
 
 namespace Rubix\Server\Services;
 
-use Rubix\Server\Http\Responses\NotFound;
-use Rubix\Server\Http\Responses\MethodNotAllowed;
+use Rubix\Server\HTTP\Responses\NotFound;
+use Rubix\Server\HTTP\Responses\MethodNotAllowed;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 

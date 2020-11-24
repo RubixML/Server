@@ -3,9 +3,9 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Datasets\Dataset;
-use Rubix\Server\Http\Requests\PredictRequest;
-use Rubix\Server\Http\Requests\ProbaRequest;
-use Rubix\Server\Http\Requests\ScoreRequest;
+use Rubix\Server\HTTP\Requests\PredictRequest;
+use Rubix\Server\HTTP\Requests\ProbaRequest;
+use Rubix\Server\HTTP\Requests\ScoreRequest;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use Rubix\Server\Helpers\JSON;
@@ -30,6 +30,7 @@ class RESTClient implements Client, AsyncClient
 {
     public const HTTP_HEADERS = [
         'User-Agent' => 'Rubix ML REST Client',
+        'Accept' => 'application/json',
     ];
 
     protected const MAX_TCP_PORT = 65535;
@@ -52,7 +53,7 @@ class RESTClient implements Client, AsyncClient
      */
     public function __construct(
         string $host = '127.0.0.1',
-        int $port = 8888,
+        int $port = 80,
         bool $secure = false,
         array $headers = [],
         float $timeout = 0.0,
@@ -113,7 +114,7 @@ class RESTClient implements Client, AsyncClient
      */
     public function predictAsync(Dataset $dataset) : PromiseInterface
     {
-        $validateResponse = function (array $json) : Promise {
+        $unpackPayload = function (array $json) : Promise {
             if (empty($json['predictions'])) {
                 throw new RuntimeException('Predictions missing'
                     . ' in response payload.');
@@ -131,8 +132,8 @@ class RESTClient implements Client, AsyncClient
 
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
-            [$this, 'handleException']
-        )->then($validateResponse);
+            [$this, 'onError']
+        )->then($unpackPayload);
     }
 
     /**
@@ -154,7 +155,7 @@ class RESTClient implements Client, AsyncClient
      */
     public function probaAsync(Dataset $dataset) : PromiseInterface
     {
-        $validateResponse = function (array $json) : Promise {
+        $unpackPayload = function (array $json) : Promise {
             if (empty($json['probabilities'])) {
                 throw new RuntimeException('Probabilities missing'
                     . ' in response payload.');
@@ -172,8 +173,8 @@ class RESTClient implements Client, AsyncClient
 
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
-            [$this, 'handleException']
-        )->then($validateResponse);
+            [$this, 'onError']
+        )->then($unpackPayload);
     }
 
     /**
@@ -195,7 +196,7 @@ class RESTClient implements Client, AsyncClient
      */
     public function scoreAsync(Dataset $dataset) : PromiseInterface
     {
-        $validateResponse = function (array $json) : Promise {
+        $unpackPayload = function (array $json) : Promise {
             if (empty($json['scores'])) {
                 throw new RuntimeException('Anomaly scores missing'
                     . ' in response payload.');
@@ -213,8 +214,8 @@ class RESTClient implements Client, AsyncClient
 
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
-            [$this, 'handleException']
-        )->then($validateResponse);
+            [$this, 'onError']
+        )->then($unpackPayload);
     }
 
     /**
@@ -246,7 +247,7 @@ class RESTClient implements Client, AsyncClient
      * @param \Exception $exception
      * @throws \Rubix\Server\Exceptions\RuntimeException
      */
-    public function handleException(Exception $exception) : void
+    public function onError(Exception $exception) : void
     {
         throw new RuntimeException($exception->getMessage(), $exception->getCode(), $exception);
     }

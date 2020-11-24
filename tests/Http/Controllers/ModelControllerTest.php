@@ -1,11 +1,11 @@
 <?php
 
-namespace Rubix\Server\Tests\Http\Controllers;
+namespace Rubix\Server\Tests\HTTP\Controllers;
 
 use Rubix\Server\Services\QueryBus;
-use Rubix\Server\Http\Controllers\ModelController;
-use Rubix\Server\Http\Controllers\RESTController;
-use Rubix\Server\Http\Controllers\Controller;
+use Rubix\Server\HTTP\Controllers\ModelController;
+use Rubix\Server\HTTP\Controllers\RESTController;
+use Rubix\Server\HTTP\Controllers\Controller;
 use Rubix\Server\Payloads\PredictPayload;
 use React\Http\Message\ServerRequest;
 use React\Promise\PromiseInterface;
@@ -14,12 +14,12 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @group Controllers
- * @covers \Rubix\Server\Http\Controllers\ModelController
+ * @covers \Rubix\Server\HTTP\Controllers\ModelController
  */
 class ModelControllerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Http\Controllers\ModelController
+     * @var \Rubix\Server\HTTP\Controllers\ModelController
      */
     protected $controller;
 

@@ -67,7 +67,7 @@ $server->serve($estimator);
 > **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case of a failure.
 
 #### Shutting Down The Server
-To gracefully shut down the server, send a terminate (`SIGTERM`) or interrupt signal (`SIGINT`) to the process. To shut down immediately, without waiting for current connections to close, you can either send a second `SIGTERM` or `SIGINT` signal or you can send a single kill signal (`SIGKILL`) instead.
+To gracefully shut down the server, send a terminate (`SIGTERM`) to the process. To shut down immediately, without waiting for current connections to close, you can either send a second `SIGTERM` signal or you can send a single kill (`SIGKILL`) or interrupt (`SIGINT`) signal instead.
 
 #### Verbose Interface
 Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.
@@ -90,16 +90,13 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 2 | port | 8080 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | | array | The HTTP middleware stack to run on each request/response. |
-| 5 | serializer | JSON | object | The message serializer. |
 
-#### Example
+**Example**
 
 ```php
 use Rubix\Server\HTTPServer;
-use Rubix\Server\Http\Middleware\AccessLogGenerator;
-use Rubix\Server\Http\Middleware\BasicAuthenticator;
-use Rubix\Server\Serializers\Gzip;
-use Rubix\Server\Serializers\JSON;
+use Rubix\Server\HTTP\Middleware\AccessLogGenerator;
+use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
 
 $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 	new AccessLogGenerator(new Screen()),
@@ -107,7 +104,7 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-], new Gzip(1, new JSON()));
+]);
 ```
 
 #### Routes
@@ -119,7 +116,6 @@ This server exposes the following HTTP resources and their methods.
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
-| POST | /queries | Send a query to the server. |
 | GET | /server | The server dashboard. |
 | GET | /server/dashboard | Query the server dashboard model. |
 | GET | /server/dashboard/events | Subscribe to the server dashboard event stream. |
@@ -148,9 +144,9 @@ public predict(Dataset $dataset) : array
 ```
 
 ```php
-use Rubix\Server\RPCClient;
+use Rubix\Server\RESTClient;
 
-$client = new RPCClient('127.0.0.1', 8888);
+$client = new RESTClient('127.0.0.1', 8080);
 
 // Import a dataset
 
@@ -168,13 +164,11 @@ public score(Dataset $dataset) : array
 ```
 
 ### Async Clients
-Clients that implement the Async Client interface have asynchronous versions of all the standard client methods. All asynchronous methods return a [Promises/A+](https://promisesaplus.com/) object that resolves to the return value of the response.
+Clients that implement the Async Client interface have asynchronous versions of all the standard client methods. All asynchronous methods return a [Promises/A+](https://promisesaplus.com/) object that resolves to the return value of the response. Promises allow you to perform other work while the request is processing or to execute multiple requests in parallel. Calling the `wait()` method on the promise will block until the promise is resolved and return the value.
 
 ```php
 public predictAsync(Dataset $dataset) : Promise
 ```
-
-Promises allow you to concurrently perform additional work while the request is processing or to execute multiple requests in parallel. Calling the `wait()` method on the promise will block until the promise is resolved and return the value.
 
 ```php
 $promise = $client->predictAsync($dataset);
@@ -184,10 +178,12 @@ $promise = $client->predictAsync($dataset);
 $predictions = $promise->wait();
 ```
 
+Return a promise for the probabilities predicted by the model:
 ```php
 public probaAsync(Dataset $dataset) : Promise
 ```
 
+Return a promise for the anomaly scores predicted by the model:
 ```php
 public scoreAsync(Dataset $dataset) : Promise
 ```
@@ -207,7 +203,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
 | 6 | retries | 3 | int | The number of retries before giving up on the request. |
 
-#### Example
+**Example**
 
 ```php
 use Rubix\Server\RESTClient;
@@ -215,34 +211,6 @@ use Rubix\Server\RESTClient;
 $client = new RESTClient('127.0.0.1', 443, true, [
     'Authorization' => 'Basic ' . base64_encode('morgan:secret'),
 ], 0.0, 5);
-```
-
-### RPC Client
-The RPC Client provides methods for querying an [HTTP Server](#http-server) using the lightweight RPC API. In addition, the RPC client uses a back-pressure mechanism to ensure that clients do not overwhelm the server under heavy load.
-
-Interfaces: [Client](#clients), [AsyncClient](#async-clients)
-
-#### Parameters
-| # | Param | Default | Type | Description |
-|---|---|---|---|---|
-| 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
-| 2 | port | 8888 | int | The network port that the HTTP server is running on. |
-| 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
-| 4 | headers | | array | Additional HTTP headers to send along with each request. |
-| 5 | serializer | JSON | object | The message serializer. |
-| 6 | timeout | | float | The number of seconds to wait before giving up on the request. |
-| 7 | retries | 3 | int | The number of retries before giving up on the request. |
-
-#### Example
-
-```php
-use Rubix\Server\RPCClient;
-use Rubix\Server\Serializers\Gzip;
-use Rubix\Server\Serializers\JSON;
-
-$client = new RPCClient('127.0.0.1', 8888, false, [
-    'Authorization' => 'Bearer secret',
-], new Gzip(5, new JSON()), 3.5, 10);
 ```
 
 ---
@@ -257,10 +225,10 @@ Generates an HTTP access log using a format similar to the Apache log format.
 |---|---|---|---|---|
 | 1 | logger | | LoggerInterface | A PSR-3 logger instance. |
 
-#### Example
+**Example**
 
 ```php
-use Rubix\Server\Http\Middleware\AccessLog;
+use Rubix\Server\HTTP\Middleware\AccessLog;
 use Rubix\ML\Other\Loggers\Screen;
 
 $middleware = new AccessLog(new Screen());
@@ -282,10 +250,10 @@ An implementation of HTTP Basic Auth as described in [RFC7617](https://tools.iet
 | 1 | passwords | | array | An associative map from usernames to their passwords. |
 | 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
 
-#### Example
+**Example**
 
 ```php
-use Rubix\Server\Http\Middleware\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
 
 $middleware = new BasicAuthenticator([
 	'morgan' => 'secret',
@@ -304,10 +272,10 @@ Authenticates incoming requests using a shared key that is kept secret between t
 | 1 | tokens | | array | The shared secret keys (bearer tokens) used to authorize requests. |
 | 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
 
-#### Example
+**Example**
 
 ```php
-use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator([
 	'secret', 'another-secret',
@@ -322,10 +290,10 @@ A whitelist of clients that can access the server - all other connections will b
 |---|---|---|---|---|
 | 1 | ips | ['127.0.0.1'] | array | An array of trusted client ip addresses. |
 
-#### Example
+**Example**
 
 ```php
-use Rubix\Server\Http\Middleware\TrustedClients;
+use Rubix\Server\HTTP\Middleware\TrustedClients;
 
 $middleware = new TrustedClients([
 	'127.0.0.1', '192.168.4.1', '45.63.67.15',

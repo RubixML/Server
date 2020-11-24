@@ -14,20 +14,20 @@ use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\SSEChannel;
-use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Controllers\ModelController;
-use Rubix\Server\Http\Controllers\QueriesController;
-use Rubix\Server\Http\Controllers\DashboardController;
-use Rubix\Server\Http\Controllers\StaticAssetsController;
+use Rubix\Server\HTTP\Middleware\Middleware;
+use Rubix\Server\HTTP\Controllers\ModelController;
+use Rubix\Server\HTTP\Controllers\DashboardController;
+use Rubix\Server\HTTP\Controllers\StaticAssetsController;
 use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\DashboardHandler;
 use Rubix\Server\Events\ResponseSent;
+use Rubix\Server\Events\ShuttingDown;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
-use Rubix\Server\Serializers\JSON;
-use Rubix\Server\Serializers\Serializer;
+use Rubix\Server\Listeners\CloseSSEChannels;
+use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Specifications\LearnerIsTrained;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
@@ -46,9 +46,7 @@ use function React\Promise\resolve;
 /**
  * HTTP Server
  *
- * A JSON over HTTP(S) server exposing a REST (Representational State Transfer) API. The REST
- * server exposes one endpoint (resource) per command and can be queried using any standard
- * HTTP client.
+ * An HTTP(S) server exposing Representational State Transfer (REST) and Remote Procedure Call (RPC) APIs.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -70,15 +68,14 @@ class HTTPServer implements Server, Verbose
     protected $host;
 
     /**
-     * The network port to run the HTTP services on.
+     * The transmission control protocol (TCP) port to run the HTTP services on.
      *
      * @var int
      */
     protected $port;
 
     /**
-     * The path to the certificate used to authenticate and encrypt the secure (HTTPS)
-     * communication channel.
+     * The path to the certificate used to authenticate and encrypt the secure (HTTPS) channel.
      *
      * @var string|null
      */
@@ -87,16 +84,9 @@ class HTTPServer implements Server, Verbose
     /**
      * The HTTP middleware stack.
      *
-     * @var \Rubix\Server\Http\Middleware\Middleware[]
+     * @var \Rubix\Server\HTTP\Middleware\Middleware[]
      */
     protected $middlewares;
-
-    /**
-     * The message serializer.
-     *
-     * @var \Rubix\Server\Serializers\Serializer
-     */
-    protected $serializer;
 
     /**
      * The event loop.
@@ -120,31 +110,20 @@ class HTTPServer implements Server, Verbose
     protected $eventBus;
 
     /**
-     * The server-sent events channels.
-     *
-     * @var \Rubix\Server\Services\SSEChannel[]
-     */
-    protected $channels = [
-        //
-    ];
-
-    /**
      * @param string $host
      * @param int $port
      * @param string|null $cert
      * @param mixed[] $middlewares
-     * @param \Rubix\Server\Serializers\Serializer $serializer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
-        int $port = 8080,
+        int $port = 80,
         ?string $cert = null,
-        array $middlewares = [],
-        ?Serializer $serializer = null
+        array $middlewares = []
     ) {
         if (empty($host)) {
-            throw new InvalidArgumentException('Host cannot be empty.');
+            throw new InvalidArgumentException('Host address cannot be empty.');
         }
 
         if ($port < 0 or $port > self::MAX_TCP_PORT) {
@@ -153,26 +132,25 @@ class HTTPServer implements Server, Verbose
         }
 
         if (isset($cert) and empty($cert)) {
-            throw new InvalidArgumentException('Certificate cannot be empty.');
+            throw new InvalidArgumentException('Certificate must not be empty.');
         }
 
         foreach ($middlewares as $middleware) {
             if (!$middleware instanceof Middleware) {
-                throw new InvalidArgumentException('Class must implement'
-                    . ' middleware interface.');
+                throw new InvalidArgumentException('Middleware must implement'
+                    . ' the Middleware interface.');
             }
         }
 
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
-        $this->middlewares = array_values($middlewares);
-        $this->serializer = $serializer ?? new JSON();
+        $this->middlewares = $middlewares;
         $this->logger = new BlackHole();
     }
 
     /**
-     * Serve a model.
+     * Boot up the server.
      *
      * @param \Rubix\ML\Estimator $estimator
      */
@@ -181,6 +159,8 @@ class HTTPServer implements Server, Verbose
         if ($estimator instanceof Learner) {
             LearnerIsTrained::with($estimator)->check();
         }
+
+        $this->logger->info('HTTP Server booting up');
 
         $loop = Loop::create();
 
@@ -201,18 +181,21 @@ class HTTPServer implements Server, Verbose
         $eventBus = new EventBus(Subscriptions::subscribe([
             new UpdateDashboard($dashboard),
             new LogFailures($this->logger),
+            new CloseSSEChannels([
+                $dashboardChannel,
+            ]),
+            new CloseSocket($socket),
         ]), $loop, $this->logger);
 
         $queryBus = new QueryBus(Bindings::bind([
             new PredictHandler($estimator),
-            new DashboardHandler($dashboard),
             $estimator instanceof Probabilistic ? new ProbaHandler($estimator) : null,
             $estimator instanceof Ranking ? new ScoreHandler($estimator) : null,
+            new DashboardHandler($dashboard),
         ]), $eventBus);
 
         $router = new Router(Routes::collect([
             new ModelController($queryBus),
-            new QueriesController($queryBus, $this->serializer),
             new DashboardController($queryBus, $dashboardChannel),
             new StaticAssetsController($filesystem),
         ]));
@@ -230,19 +213,20 @@ class HTTPServer implements Server, Verbose
 
         $server->listen($socket);
 
-        $this->loop = $loop;
-        $this->socket = $socket;
+        $this->logger->info("Listening at {$this->host}"
+            . " on port {$this->port}");
+
         $this->eventBus = $eventBus;
 
-        $this->channels = [
-            $dashboardChannel,
-        ];
+        $shutdown = function (int $signal) use ($loop, &$shutdown) {
+            $loop->removeSignal($signal, $shutdown);
 
-        $loop->addSignal(SIGINT, [$this, 'shutdown']);
-        $loop->addSignal(SIGTERM, [$this, 'shutdown']);
+            $this->logger->info('Shutting down');
 
-        $this->logger->info('HTTP Server running at'
-            . " {$this->host} on port {$this->port}");
+            $this->eventBus->dispatch(new ShuttingDown($this));
+        };
+
+        $loop->addSignal(SIGTERM, $shutdown);
 
         $loop->run();
     }
@@ -279,25 +263,5 @@ class HTTPServer implements Server, Verbose
         return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
             return $response->withHeader('Server', self::SERVER_NAME);
         });
-    }
-
-    /**
-     * Shut down the server.
-     *
-     * @internal
-     *
-     * @param int $signal
-     */
-    public function shutdown(int $signal) : void
-    {
-        $this->loop->removeSignal($signal, [$this, 'shutdown']);
-
-        $this->logger->info('Server is shutting down');
-
-        $this->socket->close();
-
-        foreach ($this->channels as $channel) {
-            $channel->close();
-        }
     }
 }

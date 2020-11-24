@@ -1,0 +1,7 @@
+.has-text-first-letter-capitalized {
+    text-transform: lowercase;
+    
+    ::first-letter {    
+        text-transform: capitalize;
+    }
+}

@@ -1,14 +1,14 @@
 <?php
 
-namespace Rubix\Server\Http\Controllers;
+namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Payloads\Payload;
-use Rubix\Server\Http\Responses\Success;
-use Rubix\Server\Http\Responses\BadRequest;
-use Rubix\Server\Http\Responses\UnsupportedMediaType;
-use Rubix\Server\Http\Responses\InternalServerError;
-use Rubix\Server\Http\Responses\UnprocessableEntity;
+use Rubix\Server\HTTP\Responses\Success;
+use Rubix\Server\HTTP\Responses\BadRequest;
+use Rubix\Server\HTTP\Responses\UnsupportedMediaType;
+use Rubix\Server\HTTP\Responses\InternalServerError;
+use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Rubix\Server\Helpers\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use Exception;
@@ -17,7 +17,6 @@ abstract class RESTController implements Controller
 {
     public const HEADERS = [
         'Content-Type' => 'application/json',
-        'Accept' => 'application/json',
     ];
 
     /**
@@ -48,7 +47,7 @@ abstract class RESTController implements Controller
     {
         $contentType = $request->getHeaderLine('Content-Type');
 
-        $acceptedContentType = self::HEADERS['Accept'];
+        $acceptedContentType = self::HEADERS['Content-Type'];
 
         if ($contentType !== $acceptedContentType) {
             return new UnsupportedMediaType($acceptedContentType);
@@ -73,7 +72,7 @@ abstract class RESTController implements Controller
      * @internal
      *
      * @param \Rubix\Server\Payloads\Payload $payload
-     * @return \Rubix\Server\Http\Responses\Success
+     * @return \Rubix\Server\HTTP\Responses\Success
      */
     public function respondSuccess(Payload $payload) : Success
     {
@@ -84,7 +83,7 @@ abstract class RESTController implements Controller
      * Respond with an internal server error.
      *
      * @param \Exception $exception
-     * @return \Rubix\Server\Http\Responses\InternalServerError
+     * @return \Rubix\Server\HTTP\Responses\InternalServerError
      */
     public function respondServerError(Exception $exception) : InternalServerError
     {
@@ -95,7 +94,7 @@ abstract class RESTController implements Controller
      * Respond with an unprocessable entity error.
      *
      * @param \Exception $exception
-     * @return \Rubix\Server\Http\Responses\UnprocessableEntity
+     * @return \Rubix\Server\HTTP\Responses\UnprocessableEntity
      */
     public function respondInvalid(Exception $exception) : UnprocessableEntity
     {

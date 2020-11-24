@@ -20,8 +20,8 @@
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Uptime</p>
-                <p class="title is-capitalized"><abbr :title="upSince">{{ uptime }}</abbr></p>
+                <p class="heading">Uptime <span class="icon"><i class="fas fa-info-circle" :title="upSince"></i></span></p>
+                <p class="title has-text-first-letter-capitalized">{{ uptime }}</p>
             </div>
         </div>
     </nav>

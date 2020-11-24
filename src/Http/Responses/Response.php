@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Http\Responses;
+namespace Rubix\Server\HTTP\Responses;
 
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use React\Http\Io\HttpBodyStream;

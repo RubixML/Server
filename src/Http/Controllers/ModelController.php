@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Http\Controllers;
+namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Queries\Predict;
 use Rubix\Server\Queries\Proba;

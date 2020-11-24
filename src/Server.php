@@ -7,7 +7,7 @@ use Rubix\ML\Estimator;
 interface Server
 {
     /**
-     * Serve a model.
+     * Boot up the server.
      *
      * @param \Rubix\ML\Estimator $estimator
      */

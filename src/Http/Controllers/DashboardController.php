@@ -1,11 +1,11 @@
 <?php
 
-namespace Rubix\Server\Http\Controllers;
+namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\Queries\GetDashboard;
-use Rubix\Server\Http\Responses\Success;
+use Rubix\Server\HTTP\Responses\EventStream;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Stream\ThroughStream;
 
@@ -66,9 +66,9 @@ class DashboardController extends RESTController
      * Attach the event steam to an event source request.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Rubix\Server\Http\Responses\Success
+     * @return \Rubix\Server\HTTP\Responses\EventStream
      */
-    public function connectEventStream(ServerRequestInterface $request) : Success
+    public function connectEventStream(ServerRequestInterface $request) : EventStream
     {
         $lastId = null;
 
@@ -80,10 +80,6 @@ class DashboardController extends RESTController
 
         $this->channel->attach($stream, $lastId);
 
-        return new Success([
-            'Content-Type' => 'text/event-stream',
-            'Transfer-Encoding' => 'chunked',
-            'Cache-Control' => 'no-cache',
-        ], $stream);
+        return new EventStream($stream);
     }
 }

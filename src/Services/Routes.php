@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Services;
 
-use Rubix\Server\Http\Controllers\Controller;
+use Rubix\Server\HTTP\Controllers\Controller;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,7 +33,7 @@ class Routes implements ArrayAccess
     /**
      * Collect the routes from an array of controllers.
      *
-     * @param \Rubix\Server\Http\Controllers\Controller[] $controllers
+     * @param \Rubix\Server\HTTP\Controllers\Controller[] $controllers
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      * @return self
      */

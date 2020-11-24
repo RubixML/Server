@@ -4,7 +4,7 @@ namespace Rubix\Server\Tests;
 
 use Rubix\Server\Server;
 use Rubix\Server\HTTPServer;
-use Rubix\Server\Http\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -1,10 +1,10 @@
 <?php
 
-namespace Rubix\Server\Http\Controllers;
+namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Helpers\File;
-use Rubix\Server\Http\Responses\Success;
-use Rubix\Server\Http\Responses\NotFound;
+use Rubix\Server\HTTP\Responses\Success;
+use Rubix\Server\HTTP\Responses\NotFound;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Filesystem\FilesystemInterface;
 use React\Promise\PromiseInterface;

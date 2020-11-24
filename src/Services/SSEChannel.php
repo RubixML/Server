@@ -12,31 +12,29 @@ use function array_slice;
 
 class SSEChannel
 {
-    protected const EOL = "\n";
-
     /**
-     * The number of previous server-sent events to store in the buffer.
+     * The number of messages to store in the reconnect buffer.
      *
      * @var int
      */
     protected $bufferSize;
 
     /**
-     * The current open event streams.
+     * The current open response body streams.
      *
      * @var \SplObjectStorage
      */
     protected $streams;
 
     /**
-     * A counter used to identify the server-sent events.
+     * A counter used to identify individual events.
      *
      * @var int
      */
-    protected $counter;
+    protected $id;
 
     /**
-     * The previously-sent messages.
+     * The reconnect buffer.
      *
      * @var string[]
      */
@@ -57,7 +55,7 @@ class SSEChannel
 
         $this->bufferSize = $bufferSize;
         $this->streams = new SplObjectStorage();
-        $this->counter = 1;
+        $this->id = 1;
     }
 
     /**
@@ -109,22 +107,20 @@ class SSEChannel
      */
     public function emit(string $name, array $json = []) : void
     {
-        $message = "id: {$this->counter}" . self::EOL;
-        $message .= "event: $name" . self::EOL;
-
         $data = JSON::encode($json);
 
-        $message .= "data: $data" . self::EOL;
-        $message .= self::EOL;
+        $message = "event: $name\n";
+        $message .= "data: $data\n";
+        $message .= "id: {$this->id}\n\n";
+
+        $this->buffer[$this->id] = $message;
 
         foreach ($this->streams as $stream) {
             /** @var \React\Stream\WritableStreamInterface $stream */
             $stream->write($message);
         }
 
-        $this->buffer[$this->counter] = $message;
-
-        ++$this->counter;
+        ++$this->id;
 
         if (count($this->buffer) > $this->bufferSize) {
             $this->buffer = array_slice($this->buffer, -$this->bufferSize, null, true);

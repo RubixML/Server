@@ -1,20 +1,20 @@
 <?php
 
-namespace Rubix\Server\Tests\Http\Middleware;
+namespace Rubix\Server\Tests\HTTP\Middleware;
 
 use Rubix\ML\Other\Loggers\BlackHole;
-use Rubix\Server\Http\Middleware\Middleware;
-use Rubix\Server\Http\Middleware\AccessLogGenerator;
+use Rubix\Server\HTTP\Middleware\Middleware;
+use Rubix\Server\HTTP\Middleware\AccessLogGenerator;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Middleware
- * @covers \Rubix\Server\Http\Middleware\AccessLogGenerator
+ * @covers \Rubix\Server\HTTP\Middleware\AccessLogGenerator
  */
 class AccessLogGeneratorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\Http\Middleware\AccessLogGenerator
+     * @var \Rubix\Server\HTTP\Middleware\AccessLogGenerator
      */
     protected $middleware;
 

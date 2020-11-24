@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Http\Responses;
+namespace Rubix\Server\HTTP\Responses;
 
 class Forbidden extends Response
 {
