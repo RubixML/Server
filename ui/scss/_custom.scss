@@ -1,7 +1,11 @@
 .has-text-first-letter-capitalized {
     text-transform: lowercase;
-    
-    ::first-letter {    
-        text-transform: capitalize;
-    }
+}
+
+.has-text-first-letter-capitalized:first-letter {
+    text-transform: uppercase;
+}
+
+.tooltip {
+    cursor: help;
 }

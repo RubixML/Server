@@ -6,6 +6,7 @@
 @import "~bulma/sass/base/_all.sass";
 @import "~bulma/sass/components/navbar.sass";
 @import "~bulma/sass/components/level.sass";
+@import "~bulma/sass/components/card.sass";
 @import "~bulma/sass/components/modal.sass";
 @import "~bulma/sass/elements/button.sass";
 @import "~bulma/sass/elements/container.sass";
@@ -15,6 +16,8 @@
 @import "~bulma/sass/grid/columns.sass";
 @import "~bulma/sass/helpers/_all.sass";
 @import "~bulma/sass/layout/_all.sass";
+
+@import '@creativebulma/bulma-tooltip';
 
 @import "~bulma-prefers-dark/bulma-prefers-dark.sass";
 

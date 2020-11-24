@@ -8,19 +8,19 @@
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Rejected</p>
+                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="Requests that were rejected due to a client error (4xx).">Rejected</span> <span class="icon"><i class="fas fa-question-circle"></i></span></p>
                 <p class="title">{{ requests.rejected.toLocaleString() }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Failed</p>
+                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="Requests that failed due to a server error (5xx).">Failed</span> <span class="icon"><i class="fas fa-question-circle"></i></span></p>
                 <p class="title">{{ requests.failed.toLocaleString() }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Uptime <span class="icon"><i class="fas fa-info-circle" :title="upSince"></i></span></p>
+                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" :data-tooltip="upSince">Uptime</span> <span class="icon"><i class="fas fa-info-circle"></i></span></p>
                 <p class="title has-text-first-letter-capitalized">{{ uptime }}</p>
             </div>
         </div>

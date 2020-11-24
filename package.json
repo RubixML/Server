@@ -15,6 +15,7 @@
     "devDependencies": {
         "@babel/core": "^7.12.7",
         "@babel/preset-env": "^7.12.7",
+        "@creativebulma/bulma-tooltip": "^1.2.0",
         "@fortawesome/fontawesome-free": "^5.14.0",
         "axios": "^0.19",
         "babel-loader": "^8.2.1",
