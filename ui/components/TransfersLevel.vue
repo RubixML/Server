@@ -1,5 +1,5 @@
 <template>
-    <nav class="level is-mobile">
+    <nav class="level">
         <div class="level-item has-text-centered">
             <div>
                 <p class="heading">Received</p>
@@ -10,6 +10,12 @@
             <div>
                 <p class="heading">Sent</p>
                 <p class="title">{{ sent.toFixed(2) }}M</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Total</p>
+                <p class="title">{{ total.toFixed(2) }}M</p>
             </div>
         </div>
     </nav>
@@ -31,6 +37,9 @@ export default {
         },
         sent() {
             return this.httpStats.transferred.sent / MEGABYTE;
+        },
+        total() {
+            return (this.httpStats.transferred.received + this.httpStats.transferred.sent) / MEGABYTE;
         }
     }
 }

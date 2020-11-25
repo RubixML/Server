@@ -2,12 +2,6 @@
     <nav class="level">
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Requests</p>
-                <p class="title">{{ httpStats.requests.toLocaleString() }}</p>
-            </div>
-        </div>
-        <div class="level-item has-text-centered">
-            <div>
                 <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="Requests that returned a 100, 200, or 300 level response code.">Successful</span></p>
                 <p class="title">{{ httpStats.responses.successful.toLocaleString() }}</p>
             </div>
@@ -24,18 +18,50 @@
                 <p class="title">{{ httpStats.responses.failed.toLocaleString() }}</p>
             </div>
         </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" :data-tooltip="upSince">Uptime</span></p>
+                <p class="title has-text-first-letter-capitalized">{{ uptime }}</p>
+            </div>
+        </div>
     </nav>
 </template>
 
 <script>
-const MEGABYTE = 1000000;
+import moment from 'moment';
+
+const THIRTY_SECONDS = 30000;
 
 export default {
+    data() {
+        return {
+            uptime: '',
+        };
+    },
     props: {
         httpStats: {
             type: Object,
             required: true,
         },
+        start: {
+            type: Number,
+            required: true,
+        },
+    },
+    computed: {
+        upSince() {
+            return moment.unix(this.start).format('[Up since] dddd, MMMM Do YYYY, h:mmA [(server time)]');
+        },
+    },
+    methods: {
+        updateUptime() {
+            this.uptime = moment.unix(this.start).fromNow(true);
+        }
+    },
+    mounted() {
+        this.updateUptime();
+
+        setInterval(this.updateUptime, THIRTY_SECONDS);
     },
 }
 </script>

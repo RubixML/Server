@@ -1,7 +1,7 @@
 <template>
     <section class="section">
         <div class="container">
-            <requests-level v-if="httpStats" :httpStats="httpStats"></requests-level>
+            <requests-level v-if="httpStats && start" :httpStats="httpStats" :start="start"></requests-level>
             <requests-chart v-if="httpStats" :httpStats="httpStats"></requests-chart>
             <transfers-level v-if="httpStats" :httpStats="httpStats" class="mt-5"></transfers-level>
             <div class="columns">
