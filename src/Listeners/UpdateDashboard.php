@@ -3,9 +3,10 @@
 namespace Rubix\Server\Listeners;
 
 use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Events\RequestReceived;
+use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Events\QueryFulfilled;
 use Rubix\Server\Events\QueryFailed;
-use Rubix\Server\Events\ResponseSent;
 
 class UpdateDashboard implements Listener
 {
@@ -32,16 +33,39 @@ class UpdateDashboard implements Listener
     public function events() : array
     {
         return [
+            RequestReceived::class => [
+                [$this, 'recordRequest'],
+            ],
+            ResponseSent::class => [
+                [$this, 'recordResponse'],
+            ],
             QueryFulfilled::class => [
                 [$this, 'recordFulfilledQuery'],
             ],
             QueryFailed::class => [
                 [$this, 'recordFailedQuery'],
             ],
-            ResponseSent::class => [
-                [$this, 'incrementResponseCount'],
-            ],
         ];
+    }
+
+    /**
+     * Record a request.
+     *
+     * @param \Rubix\Server\Events\RequestReceived $event
+     */
+    public function recordRequest(RequestReceived $event) : void
+    {
+        $this->dashboard->httpStats()->recordRequest($event->request());
+    }
+
+    /**
+     * Record a response.
+     *
+     * @param \Rubix\Server\Events\ResponseSent $event
+     */
+    public function recordResponse(ResponseSent $event) : void
+    {
+        $this->dashboard->httpStats()->recordResponse($event->response());
     }
 
     /**
@@ -51,8 +75,7 @@ class UpdateDashboard implements Listener
      */
     public function recordFulfilledQuery(QueryFulfilled $event) : void
     {
-        $this->dashboard->queryLog()
-            ->recordFulfilled($event->query());
+        $this->dashboard->queryLog()->recordFulfilled($event->query());
     }
 
     /**
@@ -62,18 +85,6 @@ class UpdateDashboard implements Listener
      */
     public function recordFailedQuery(QueryFailed $event) : void
     {
-        $this->dashboard->queryLog()
-            ->recordFailed($event->query());
-    }
-
-    /**
-     * Increment the response count.
-     *
-     * @param \Rubix\Server\Events\ResponseSent $event
-     */
-    public function incrementResponseCount(ResponseSent $event) : void
-    {
-        $this->dashboard->httpStats()
-            ->incrementResponseCount($event->response());
+        $this->dashboard->queryLog()->recordFailed($event->query());
     }
 }

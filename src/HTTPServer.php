@@ -22,6 +22,7 @@ use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\DashboardHandler;
+use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Events\ShuttingDown;
 use Rubix\Server\Listeners\UpdateDashboard;
@@ -253,6 +254,8 @@ class HTTPServer implements Server, Verbose
      */
     public function dispatchEvents(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
+        $this->eventBus->dispatch(new RequestReceived($request));
+
         return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
             $this->eventBus->dispatch(new ResponseSent($response));
 

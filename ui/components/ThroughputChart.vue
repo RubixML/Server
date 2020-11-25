@@ -1,10 +1,11 @@
 <template>
-    <canvas id="requests-chart" width="900" height="300"></canvas>
+    <canvas id="transfer-rate-chart" width="600" height="400"></canvas>
 </template>
 
 <script>
 import Chart from 'chart.js';
 
+const MEGABYTE = 1000000;
 const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
 
@@ -22,7 +23,7 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('requests-chart').getContext('2d');
+        let context = document.getElementById('transfer-rate-chart').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -30,36 +31,18 @@ export default {
                 labels: [...Array(DATASET_SIZE).keys()].reverse(),
                 datasets: [
                     {
-                        label: 'Average',
-                        data: Array(DATASET_SIZE).fill(0),
+                        label: 'Received',
+                        data: Array(DATASET_SIZE).fill(0.0),
+                        borderColor: 'hsl(204, 86%, 53%)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        lineTension: 0,
+                        fill: 'origin',
+                    },
+                    {
+                        label: 'Sent',
+                        data: Array(DATASET_SIZE).fill(0.0),
                         borderColor: 'hsl(271, 100%, 71%)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: false,
-                    },
-                    {
-                        label: 'Successful',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(141, 71%, 48%)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                    {
-                        label: 'Rejected',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(35, 95%, 50%)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                    {
-                        label: 'Failed',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(347, 100%, 69%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -71,7 +54,7 @@ export default {
                 responsive: true,
                 title: {
                     display: false,
-                    text: 'Requests',
+                    text: 'Throughput',
                 },
                 tooltips: {
                     mode: 'index',
@@ -98,11 +81,11 @@ export default {
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Requests / s',
+                                labelString: 'Megabytes (MB) / s',
                             },
                             ticks: {
                                 beginAtZero: true,
-                                precision: 0,
+                                precision: 3,
                             },
                             display: true,
                         }
@@ -118,16 +101,11 @@ export default {
             let datasets = this.chart.data.datasets;
 
             if (!this.last) {
-                this.last = Object.assign({}, this.httpStats.responses);
+                this.last = Object.assign({}, this.httpStats.transferred);
             }
 
-            datasets[1].data.push(this.httpStats.responses.successful - this.last.successful);
-            datasets[2].data.push(this.httpStats.responses.rejected - this.last.rejected);
-            datasets[3].data.push(this.httpStats.responses.failed - this.last.failed);
-
-            const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[1].data.length;
-
-            datasets[0].data.push(Math.round(mu + 'e3') + 'e-3');
+            datasets[0].data.push(Math.round(((this.httpStats.transferred.received - this.last.received) / MEGABYTE) + 'e3') + 'e-3');
+            datasets[1].data.push(Math.round(((this.httpStats.transferred.sent - this.last.sent) / MEGABYTE) + 'e3') + 'e-3');
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
@@ -135,10 +113,10 @@ export default {
                 }
             });
 
-            this.last = Object.assign({}, this.httpStats.responses);
+            this.last = Object.assign({}, this.httpStats.transferred);
 
             this.chart.update(0);
-        }
+        },
     },
 }
 </script>

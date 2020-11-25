@@ -13,7 +13,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules"
     },
     "devDependencies": {
-        "@babel/core": "^7.12.7",
+        "@babel/core": "^7.12.9",
         "@babel/preset-env": "^7.12.7",
         "@creativebulma/bulma-tooltip": "^1.2.0",
         "@fortawesome/fontawesome-free": "^5.14.0",
@@ -30,6 +30,7 @@
         "moment-locales-webpack-plugin": "^1.2.0",
         "node-sass": "^4.14.1",
         "optimize-css-assets-webpack-plugin": "^5.0.4",
+        "sass": "^1.29.0",
         "sass-loader": "^9.0.3",
         "vue": "^2.6.12",
         "vue-axios": "^2.1.5",

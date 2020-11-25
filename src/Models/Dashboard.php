@@ -75,8 +75,8 @@ class Dashboard implements Model
     public function asArray() : array
     {
         return [
-            'requests' => $this->httpStats->asArray(),
-            'queries' => $this->queryLog->asArray(),
+            'http_stats' => $this->httpStats->asArray(),
+            'query_log' => $this->queryLog->asArray(),
             'start' => $this->start,
         ];
     }

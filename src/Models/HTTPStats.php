@@ -3,6 +3,7 @@
 namespace Rubix\Server\Models;
 
 use Rubix\Server\Services\SSEChannel;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class HTTPStats implements Model
@@ -15,25 +16,46 @@ class HTTPStats implements Model
     protected $channel;
 
     /**
+     * The number of requests received by the server.
+     *
+     * @var int
+     */
+    protected $numRequests = 0;
+
+    /**
      * The number of successful requests handled by the server.
      *
      * @var int
      */
-    protected $numSuccessful;
+    protected $numSuccessful = 0;
 
     /**
      * The number of rejected requests.
      *
      * @var int
      */
-    protected $numRejected;
+    protected $numRejected = 0;
 
     /**
      * The number of failed requests.
      *
      * @var int
      */
-    protected $numFailed;
+    protected $numFailed = 0;
+
+    /**
+     * The number of bytes that have been received by the server.
+     *
+     * @var int
+     */
+    protected $bytesReceived = 0;
+
+    /**
+     * The number of bytes that have been sent by the server.
+     *
+     * @var int
+     */
+    protected $bytesSent = 0;
 
     /**
      * @param \Rubix\Server\Services\SSEChannel $channel
@@ -41,33 +63,67 @@ class HTTPStats implements Model
     public function __construct(SSEChannel $channel)
     {
         $this->channel = $channel;
-        $this->numSuccessful = 0;
-        $this->numRejected = 0;
-        $this->numFailed = 0;
     }
 
     /**
-     * Increment the response counter for a given response.
+     * Record an HTTP request.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     */
+    public function recordRequest(ServerRequestInterface $request) : void
+    {
+        ++$this->numRequests;
+
+        if ($request->hasHeader('Content-Length')) {
+            $size = (int) $request->getHeaderLine('Content-Length');
+
+            $this->bytesReceived += $size;
+        } else {
+            $size = null;
+        }
+
+        $this->channel->emit('request-recorded', [
+            'size' => $size,
+        ]);
+    }
+
+    /**
+     * Record an HTTP response.
      *
      * @param \Psr\Http\Message\ResponseInterface $response
      */
-    public function incrementResponseCount(ResponseInterface $response) : void
+    public function recordResponse(ResponseInterface $response) : void
     {
         $code = $response->getStatusCode();
 
         if ($code >= 100 and $code < 400) {
             ++$this->numSuccessful;
-
-            $this->channel->emit('http-successful-incremented');
         } elseif ($code >= 400 and $code < 500) {
             ++$this->numRejected;
-
-            $this->channel->emit('http-rejected-incremented');
         } elseif ($code >= 500) {
             ++$this->numFailed;
-
-            $this->channel->emit('http-failed-incremented');
         }
+
+        $size = $response->getBody()->getSize();
+
+        if ($size) {
+            $this->bytesSent += $size;
+        }
+
+        $this->channel->emit('response-recorded', [
+            'code' => $code,
+            'size' => $size,
+        ]);
+    }
+
+    /**
+     * Return the number of requests received by the server.
+     *
+     * @return int
+     */
+    public function numRequests() : int
+    {
+        return $this->numRequests;
     }
 
     /**
@@ -101,6 +157,26 @@ class HTTPStats implements Model
     }
 
     /**
+     * Return the number bytes received so far.
+     *
+     * @return int
+     */
+    public function bytesReceived() : int
+    {
+        return $this->bytesReceived;
+    }
+
+    /**
+     * Return the number bytes sent so far.
+     *
+     * @return int
+     */
+    public function bytesSent() : int
+    {
+        return $this->bytesSent;
+    }
+
+    /**
      * Return the model as an associative array.
      *
      * @return mixed[]
@@ -108,9 +184,16 @@ class HTTPStats implements Model
     public function asArray() : array
     {
         return [
-            'successful' => $this->numSuccessful,
-            'rejected' => $this->numRejected,
-            'failed' => $this->numFailed,
+            'requests' => $this->numRequests,
+            'responses' => [
+                'successful' => $this->numSuccessful,
+                'rejected' => $this->numRejected,
+                'failed' => $this->numFailed,
+            ],
+            'transferred' => [
+                'received' => $this->bytesReceived,
+                'sent' => $this->bytesSent,
+            ],
         ];
     }
 }

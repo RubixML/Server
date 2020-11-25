@@ -8,7 +8,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(counts, name, index) in queries" :key="index">
+            <tr v-for="(counts, name, index) in queryLog" :key="index">
                 <td>{{ name }}</td>
                 <td class="has-text-right">{{ counts.fulfilled.toLocaleString() }}</td>
                 <td class="has-text-right">{{ counts.failed.toLocaleString() }}</td>
@@ -27,17 +27,17 @@
 <script>
 export default {
     props: {
-        queries: {
+        queryLog: {
             type: Object,
             required: true,
         },
     },
     computed: {
         totalFulfilled() {
-            return Object.entries(this.queries).reduce((sigma, query) => sigma + query[1].fulfilled, 0);
+            return Object.entries(this.queryLog).reduce((sigma, query) => sigma + query[1].fulfilled, 0);
         },
         totalFailed() {
-            return Object.entries(this.queries).reduce((sigma, query) => sigma + query[1].failed, 0);
+            return Object.entries(this.queryLog).reduce((sigma, query) => sigma + query[1].failed, 0);
         },
     }
 }

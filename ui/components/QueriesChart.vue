@@ -6,7 +6,8 @@
 import Chart from 'chart.js';
 
 const COLORS = [
-    'hsl(271, 100%, 71%)', 'hsl(204, 86%, 53%)', 'hsl(347, 100%, 69%)', 'hsl(271, 100%, 71%)',
+    'hsl(347, 100%, 69%)', 'hsl(271, 100%, 71%)', 'hsl(271, 100%, 71%)', 'hsl(204, 86%, 53%)',
+    'hsl(35, 95%, 50%)',
 ];
 
 const FIVE_SECONDS = 5000;
@@ -18,7 +19,7 @@ export default {
         };
     },
     props: {
-        queries: {
+        queryLog: {
             type: Object,
             required: true,
         },
@@ -50,13 +51,13 @@ export default {
     },
     methods: { 
         update() {
-            this.chart.data.datasets[0].data = Object.entries(this.queries).map((query) => {
+            this.chart.data.datasets[0].data = Object.entries(this.queryLog).map((query) => {
                 return query[1].fulfilled + query[1].failed;
             });
 
-            this.chart.data.datasets[0].backgroundColor = COLORS.slice(0, this.queries.length);
+            this.chart.data.datasets[0].backgroundColor = COLORS.slice(0, this.queryLog.length);
 
-            this.chart.data.labels = Object.keys(this.queries);
+            this.chart.data.labels = Object.keys(this.queryLog);
 
             this.chart.update();
         },

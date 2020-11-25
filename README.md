@@ -133,7 +133,7 @@ This server respects the following `php.ini` configuration variables.
 |---|---|---|
 | memory_limit | 128M | The total amount of memory available to the server to handle requests. |
 | post_max_size | 8M | The maximum size of a request body to handle. |
-| enable_post_data_reading | 1 | Disabling this will force the request body to be read in a stream. |
+| enable_post_data_reading | 1 | Should we automatically parse form and file upload data? |
 
 ---
 ### Clients
