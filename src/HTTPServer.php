@@ -13,6 +13,7 @@ use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
+use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\HTTP\Middleware\Middleware;
 use Rubix\Server\HTTP\Controllers\ModelController;
@@ -63,6 +64,8 @@ class HTTPServer implements Server, Verbose
     protected const SERVER_NAME = 'Rubix ML HTTP Server/' . VERSION;
 
     protected const MAX_TCP_PORT = 65535;
+
+    protected const MEMORY_UPDATE_INTERVAL = 1.0;
 
     /**
      * The host address to bind the server to.
@@ -179,7 +182,7 @@ class HTTPServer implements Server, Verbose
 
         $loop = Loop::create();
 
-        $filesystem = Filesystem::create($loop);
+        $scheduler = new Scheduler($loop);
 
         $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
@@ -189,23 +192,28 @@ class HTTPServer implements Server, Verbose
             ]);
         }
 
+        $filesystem = Filesystem::create($loop);
+
         $dashboardChannel = new SSEChannel($this->sseRetryBuffer);
 
         $dashboard = new Dashboard($dashboardChannel);
 
-        $memoryTimer = $loop->addPeriodicTimer(1.0, [$dashboard->memory(), 'updateUsage']);
+        $memoryTimer = $scheduler->repeat(
+            self::MEMORY_UPDATE_INTERVAL,
+            [$dashboard->memory(), 'updateUsage']
+        );
 
         $eventBus = new EventBus(Subscriptions::subscribe([
             new UpdateDashboard($dashboard),
             new LogFailures($this->logger),
-            new StopTimers($loop, [
+            new StopTimers($scheduler, [
                 $memoryTimer,
             ]),
             new CloseSSEChannels([
                 $dashboardChannel,
             ]),
             new CloseSocket($socket),
-        ]), $loop, $this->logger);
+        ]), $scheduler, $this->logger);
 
         $queryBus = new QueryBus(Bindings::bind([
             new PredictHandler($estimator),

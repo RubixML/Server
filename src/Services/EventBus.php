@@ -3,7 +3,6 @@
 namespace Rubix\Server\Services;
 
 use Rubix\Server\Events\Event;
-use React\EventLoop\LoopInterface;
 use Psr\Log\LoggerInterface;
 use Exception;
 
@@ -26,11 +25,11 @@ class EventBus
     protected $subscriptions;
 
     /**
-     * The event loop.
+     * The job scheduler.
      *
-     * @var \React\EventLoop\LoopInterface
+     * @var \Rubix\Server\Services\Scheduler
      */
-    protected $loop;
+    protected $scheduler;
 
     /**
      * A PSR-3 logger instance.
@@ -41,14 +40,14 @@ class EventBus
 
     /**
      * @param \Rubix\Server\Services\Subscriptions $subscriptions
-     * @param \React\EventLoop\LoopInterface $loop
+     * @param \Rubix\Server\Services\Scheduler $scheduler
      * @param \Psr\Log\LoggerInterface $logger
      * @param Subscriptions $subscriptions
      */
-    public function __construct(Subscriptions $subscriptions, LoopInterface $loop, LoggerInterface $logger)
+    public function __construct(Subscriptions $subscriptions, Scheduler $scheduler, LoggerInterface $logger)
     {
         $this->subscriptions = $subscriptions;
-        $this->loop = $loop;
+        $this->scheduler = $scheduler;
         $this->logger = $logger;
     }
 
@@ -83,7 +82,7 @@ class EventBus
                     }
                 };
 
-                $this->loop->futureTick($job);
+                $this->scheduler->defer($job);
             }
         }
     }

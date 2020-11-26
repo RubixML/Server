@@ -1,5 +1,5 @@
 <template>
-    <figure class="image">
+    <figure>
         <canvas id="memory-usage-chart" width="480" height="320"></canvas>
     </figure>
 </template>

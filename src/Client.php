@@ -29,4 +29,11 @@ interface Client
      * @return float[]
      */
     public function score(Dataset $dataset) : array;
+
+    /**
+     * Return the server dashboard properties.
+     *
+     * @return mixed[]
+     */
+    public function getDashboard() : array;
 }

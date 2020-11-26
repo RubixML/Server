@@ -3,31 +3,31 @@
 namespace Rubix\Server\Listeners;
 
 use Rubix\Server\Events\ShuttingDown;
-use React\EventLoop\LoopInterface;
+use Rubix\Server\Services\Scheduler;
 
 class StopTimers implements Listener
 {
     /**
-     * The event loop.
+     * The job scheduler.
      *
-     * @var \React\EventLoop\LoopInterface
+     * @var \Rubix\Server\Services\Scheduler
      */
-    protected $loop;
+    protected $scheduler;
 
     /**
      * The timers.
-     *
+     *x
      * @var \React\EventLoop\TimerInterface[]
      */
     protected $timers;
 
     /**
-     * @param \React\EventLoop\LoopInterface $loop
+     * @param \Rubix\Server\Services\Scheduler $scheduler
      * @param \React\EventLoop\TimerInterface[] $timers
      */
-    public function __construct(LoopInterface $loop, array $timers)
+    public function __construct(Scheduler $scheduler, array $timers)
     {
-        $this->loop = $loop;
+        $this->scheduler = $scheduler;
         $this->timers = $timers;
     }
 
@@ -51,7 +51,7 @@ class StopTimers implements Listener
     public function __invoke(ShuttingDown $event) : void
     {
         foreach ($this->timers as $timer) {
-            $this->loop->cancelTimer($timer);
+            $this->scheduler->stop($timer);
         }
     }
 }
