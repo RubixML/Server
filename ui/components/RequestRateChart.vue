@@ -126,16 +126,16 @@ export default {
             datasets[1].data.push(this.requests.successful - this.last.successful);
             datasets[2].data.push(this.requests.rejected - this.last.rejected);
             datasets[3].data.push(this.requests.failed - this.last.failed);
-
-            const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[1].data.length;
-
-            datasets[0].data.push(mu);
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
                     dataset.data = dataset.data.slice(-DATASET_SIZE);
                 }
             });
+
+            const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[1].data.length;
+
+            datasets[0].data.push(mu);
 
             this.last = Object.assign({}, this.requests);
 

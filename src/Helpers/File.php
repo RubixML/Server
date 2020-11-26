@@ -3,19 +3,18 @@
 namespace Rubix\Server\Helpers;
 
 use Rubix\Server\Exceptions\RuntimeException;
-use React\Filesystem\Node\FileInterface;
 
 class File
 {
     /**
-     * Guess the MIME type of a file.
+     * Guess the MIME type of a file based on the path.
      *
-     * @param \React\Filesystem\Node\FileInterface $file
+     * @param string $path
      * @return string
      */
-    public static function mime(FileInterface $file) : string
+    public static function mime(string $path) : string
     {
-        $pathInfo = pathinfo($file->getPath());
+        $pathInfo = pathinfo($path);
 
         if (!isset($pathInfo['extension'])) {
             throw new RuntimeException('File extension is missing.');
@@ -50,7 +49,7 @@ class File
                 return 'audio/ogg';
 
             default:
-                throw new RuntimeException('Could not guess file MIME type.');
+                throw new RuntimeException('Could not guess MIME type.');
         }
     }
 }

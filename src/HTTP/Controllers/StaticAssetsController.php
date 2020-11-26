@@ -6,30 +6,16 @@ use Rubix\Server\Helpers\File;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
 use Psr\Http\Message\ServerRequestInterface;
-use React\Filesystem\FilesystemInterface;
-use React\Promise\PromiseInterface;
-use Exception;
+use React\Promise\Promise;
+
+use function is_readable;
+use function file_get_contents;
 
 class StaticAssetsController implements Controller
 {
-    protected const ASSETS_PATH = '../../assets';
+    protected const ASSETS_PATH = __DIR__ . '/../../../assets';
 
     protected const CACHE_MAX_AGE = 'max-age=604800';
-
-    /**
-     * The filesystem.
-     *
-     * @var \React\Filesystem\FilesystemInterface
-     */
-    protected $filesystem;
-
-    /**
-     * @param \React\Filesystem\FilesystemInterface $filesystem
-     */
-    public function __construct(FilesystemInterface $filesystem)
-    {
-        $this->filesystem = $filesystem;
-    }
 
     /**
      * Return the routes this controller handles.
@@ -57,30 +43,34 @@ class StaticAssetsController implements Controller
      * Handle the request and return a response or a deferred response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \React\Promise\PromiseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function app(ServerRequestInterface $request) : PromiseInterface
+    public function app(ServerRequestInterface $request)
     {
         return $this->respondWithFile('/app.html');
     }
 
     /**
      * @param string $path
-     * @return \React\Promise\PromiseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function respondWithFile(string $path) : PromiseInterface
+    protected function respondWithFile(string $path)
     {
-        $file = $this->filesystem->file(self::ASSETS_PATH . $path);
+        $path = self::ASSETS_PATH . $path;
 
-        return $file->exists()->then(function () use ($file) {
-            return $file->getContents()->then(function ($data) use ($file) {
-                return new Success([
-                    'Content-Type' => File::mime($file),
-                    'Cache-Control' => self::CACHE_MAX_AGE,
-                ], $data);
-            });
-        }, function (Exception $exception) {
+        if (!is_readable($path)) {
             return new NotFound();
+        }
+
+        return new Promise(function ($resolve) use ($path) {
+            $data = file_get_contents($path) ?: null;
+
+            $response = new Success([
+                'Content-Type' => File::mime($path),
+                'Cache-Control' => self::CACHE_MAX_AGE,
+            ], $data);
+
+            $resolve($response);
         });
     }
 
@@ -88,9 +78,9 @@ class StaticAssetsController implements Controller
      * Handle the request and return a response or a deferred response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \React\Promise\PromiseInterface
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function __invoke(ServerRequestInterface $request) : PromiseInterface
+    public function __invoke(ServerRequestInterface $request)
     {
         return $this->respondWithFile($request->getUri()->getPath());
     }

@@ -6,7 +6,7 @@ use Rubix\Server\RESTClient;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 
-$client = new RESTClient('127.0.0.1', 8080);
+$client = new RESTClient('127.0.0.1', 8000);
 
 $generator = new Agglomerate([
     'red' => new Blob([255, 0, 0], 20.0),

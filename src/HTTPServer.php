@@ -39,7 +39,6 @@ use React\EventLoop\Factory as Loop;
 use React\Http\Server as HTTP;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
-use React\Filesystem\Filesystem;
 use React\Promise\PromiseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -192,8 +191,6 @@ class HTTPServer implements Server, Verbose
             ]);
         }
 
-        $filesystem = Filesystem::create($loop);
-
         $dashboardChannel = new SSEChannel($this->sseRetryBuffer);
 
         $dashboard = new Dashboard($dashboardChannel);
@@ -225,7 +222,7 @@ class HTTPServer implements Server, Verbose
         $router = new Router(Routes::collect([
             new ModelController($queryBus),
             new DashboardController($queryBus, $dashboardChannel),
-            new StaticAssetsController($filesystem),
+            new StaticAssetsController(),
         ]));
 
         $stack = [];
