@@ -66,6 +66,7 @@ class StaticAssetsController implements Controller
 
     /**
      * @param string $path
+     * @return \React\Promise\PromiseInterface
      */
     public function respondWithFile(string $path) : PromiseInterface
     {
