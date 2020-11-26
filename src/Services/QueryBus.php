@@ -3,8 +3,6 @@
 namespace Rubix\Server\Services;
 
 use Rubix\Server\Queries\Query;
-use Rubix\Server\Payloads\Payload;
-use Rubix\Server\Events\QueryFulfilled;
 use Rubix\Server\Events\QueryFailed;
 use Rubix\Server\Exceptions\HandlerNotFound;
 use React\Promise\PromiseInterface;
@@ -81,18 +79,12 @@ class QueryBus
             $resolve($handler($query));
         });
 
-        $onSuccess = function (Payload $payload) use ($query) : Payload {
-            $this->eventBus->dispatch(new QueryFulfilled($query, $payload));
-
-            return $payload;
-        };
-
         $onError = function (Exception $exception) use ($query) : void {
             $this->eventBus->dispatch(new QueryFailed($query, $exception));
 
             throw $exception;
         };
 
-        return $promise->then($onSuccess, $onError);
+        return $promise->otherwise($onError);
     }
 }

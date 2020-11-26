@@ -60,7 +60,7 @@ class AccessLogGenerator implements Middleware
 
             $status = $response->getStatusCode();
 
-            $size = $response->getBody()->getSize();
+            $size = $response->getBody()->getSize() ?? self::UNKNOWN;
 
             $referrer = $request->hasHeader('Referer')
                 ? "\"{$request->getHeaderLine('Referer')}\""

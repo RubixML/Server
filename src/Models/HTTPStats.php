@@ -16,13 +16,6 @@ class HTTPStats implements Model
     protected $channel;
 
     /**
-     * The number of requests received by the server.
-     *
-     * @var int
-     */
-    protected $numRequests = 0;
-
-    /**
      * The number of successful requests handled by the server.
      *
      * @var int
@@ -72,8 +65,6 @@ class HTTPStats implements Model
      */
     public function recordRequest(ServerRequestInterface $request) : void
     {
-        ++$this->numRequests;
-
         if ($request->hasHeader('Content-Length')) {
             $size = (int) $request->getHeaderLine('Content-Length');
 
@@ -114,16 +105,6 @@ class HTTPStats implements Model
             'code' => $code,
             'size' => $size,
         ]);
-    }
-
-    /**
-     * Return the number of requests received by the server.
-     *
-     * @return int
-     */
-    public function numRequests() : int
-    {
-        return $this->numRequests;
     }
 
     /**
@@ -184,13 +165,12 @@ class HTTPStats implements Model
     public function asArray() : array
     {
         return [
-            'requests' => $this->numRequests,
-            'responses' => [
+            'requests' => [
                 'successful' => $this->numSuccessful,
                 'rejected' => $this->numRejected,
                 'failed' => $this->numFailed,
             ],
-            'transferred' => [
+            'transfers' => [
                 'received' => $this->bytesReceived,
                 'sent' => $this->bytesSent,
             ],

@@ -8,7 +8,6 @@ use React\Stream\WritableStreamInterface;
 use SplObjectStorage;
 
 use function count;
-use function array_slice;
 
 class SSEChannel
 {
@@ -31,7 +30,7 @@ class SSEChannel
      *
      * @var int
      */
-    protected $id;
+    protected $id = 1;
 
     /**
      * The reconnect buffer.
@@ -55,7 +54,6 @@ class SSEChannel
 
         $this->bufferSize = $bufferSize;
         $this->streams = new SplObjectStorage();
-        $this->id = 1;
     }
 
     /**
@@ -122,8 +120,10 @@ class SSEChannel
 
         ++$this->id;
 
-        if (count($this->buffer) > $this->bufferSize) {
-            $this->buffer = array_slice($this->buffer, -$this->bufferSize, null, true);
+        while (count($this->buffer) > $this->bufferSize) {
+            $id = array_key_first($this->buffer);
+
+            unset($this->buffer[$id]);
         }
     }
 

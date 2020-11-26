@@ -34,6 +34,7 @@
         "react/filesystem": "^0.1.2",
         "react/http": "^1.1",
         "rubix/ml": "^0.2.0",
+        "symfony/polyfill-php73": "^1.20",
         "symfony/polyfill-php80": "^1.17"
     },
     "require-dev": {
@@ -54,7 +55,10 @@
     "autoload-dev": {
         "psr-4": {
             "Rubix\\Server\\Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "src/constants.php"
+        ]
     },
     "scripts": {
         "build": [

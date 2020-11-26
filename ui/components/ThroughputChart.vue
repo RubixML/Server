@@ -1,5 +1,7 @@
 <template>
-    <canvas id="transfer-rate-chart" width="600" height="400"></canvas>
+    <figure class="image">
+        <canvas id="throughput-chart" width="480" height="320"></canvas>
+    </figure>
 </template>
 
 <script>
@@ -17,13 +19,13 @@ export default {
         };
     },
     props: {
-        httpStats: {
+        transfers: {
             type: Object,
             required: true,
         },
     },
     mounted() {
-        let context = document.getElementById('transfer-rate-chart').getContext('2d');
+        let context = document.getElementById('throughput-chart').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -52,17 +54,17 @@ export default {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 title: {
-                    display: false,
+                    display: true,
                     text: 'Throughput',
                 },
                 tooltips: {
-                    mode: 'index',
-                    intersect: true,
+                    enabled: false,
                 },
                 hover: {
-                    mode: 'nearest',
-                    intersect: false,
+                    mode: 'point',
+                    intersect: true,
                 },
                 scales: {
                     xAxes: [
@@ -81,11 +83,11 @@ export default {
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Megabytes (MB) / s',
+                                labelString: 'Megabytes',
                             },
                             ticks: {
                                 beginAtZero: true,
-                                precision: 3,
+                                precision: 2,
                             },
                             display: true,
                         }
@@ -101,11 +103,11 @@ export default {
             let datasets = this.chart.data.datasets;
 
             if (!this.last) {
-                this.last = Object.assign({}, this.httpStats.transferred);
+                this.last = Object.assign({}, this.transfers);
             }
 
-            datasets[0].data.push(Math.round(((this.httpStats.transferred.received - this.last.received) / MEGABYTE) + 'e3') + 'e-3');
-            datasets[1].data.push(Math.round(((this.httpStats.transferred.sent - this.last.sent) / MEGABYTE) + 'e3') + 'e-3');
+            datasets[0].data.push((this.transfers.received - this.last.received) / MEGABYTE);
+            datasets[1].data.push((this.transfers.sent - this.last.sent) / MEGABYTE);
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
@@ -113,7 +115,7 @@ export default {
                 }
             });
 
-            this.last = Object.assign({}, this.httpStats.transferred);
+            this.last = Object.assign({}, this.transfers);
 
             this.chart.update(0);
         },

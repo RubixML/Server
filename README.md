@@ -78,7 +78,7 @@ $server->setLogger(new Screen());
 ```
 
 ### HTTP Server
-An HTTP(S) server exposing Representational State Transfer (REST) and Remote Procedure Call (RPC) APIs.
+A JSON over HTTP server exposing a Representational State Transfer (REST) API. The HTTP Server operates with ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for real-time server monitoring.
 
 Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 

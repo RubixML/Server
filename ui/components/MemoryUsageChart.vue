@@ -1,12 +1,14 @@
 <template>
-    <canvas id="transfers-chart" width="600" height="400"></canvas>
+    <figure class="image">
+        <canvas id="memory-usage-chart" width="480" height="320"></canvas>
+    </figure>
 </template>
 
 <script>
 import Chart from 'chart.js';
 
 const MEGABYTE = 1000000;
-const FIVE_SECONDS = 5000;
+const ONE_SECOND = 1000;
 
 export default {
     data() {
@@ -15,41 +17,49 @@ export default {
         };
     },
     props: {
-        httpStats: {
+        memory: {
             type: Object,
             required: true,
         },
     },
     mounted() {
-        let context = document.getElementById('transfers-chart').getContext('2d');
+        let context = document.getElementById('memory-usage-chart').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'bar',
             data: {
                 datasets: [
                     {
-                        label: 'Received',
-                        backgroundColor: 'hsl(204, 86%, 53%)',
+                        label: 'Current',
+                        backgroundColor: 'hsl(141, 71%, 48%)',
                     },
                     {
-                        label: 'Sent',
-                        backgroundColor: 'hsl(271, 100%, 71%)',
+                        label: 'Peak',
+                        backgroundColor: 'hsl(347, 100%, 69%)',
                     },
                 ],
-                labels: ['Transferred'],
+                labels: ['Usage'],
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 title: {
-                    display: false,
-                    text: 'Transfers',
+                    display: true,
+                    text: 'Memory',
+                },
+                tooltips: {
+                    enabled: false,
+                },
+                hover: {
+                    mode: 'point',
+                    intersect: true,
                 },
                  scales: {
                     yAxes: [
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Megabytes (MB)',
+                                labelString: 'Megabytes',
                             },
                             ticks: {
                                 beginAtZero: true,
@@ -63,12 +73,12 @@ export default {
 
         this.update();
 
-        setInterval(this.update, FIVE_SECONDS);
+        setInterval(this.update, ONE_SECOND);
     },
     methods: { 
         update() {
-            this.chart.data.datasets[0].data[0] = Math.round((this.httpStats.transferred.received / MEGABYTE) + 'e2') + 'e-2';
-            this.chart.data.datasets[1].data[0] = Math.round((this.httpStats.transferred.sent / MEGABYTE) + 'e2') + 'e-2';
+            this.chart.data.datasets[0].data[0] = this.memory.current / MEGABYTE;
+            this.chart.data.datasets[1].data[0] = this.memory.peak / MEGABYTE;
 
             this.chart.update();
         },

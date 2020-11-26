@@ -14,11 +14,11 @@ class Dashboard implements Model
     protected $httpStats;
 
     /**
-     * The query log model.
+     * The memory model.
      *
-     * @var \Rubix\Server\Models\QueryLog
+     * @var \Rubix\Server\Models\Memory
      */
-    protected $queryLog;
+    protected $memory;
 
     /**
      * The timestamp from when the server went up.
@@ -33,7 +33,7 @@ class Dashboard implements Model
     public function __construct(SSEChannel $channel)
     {
         $this->httpStats = new HTTPStats($channel);
-        $this->queryLog = new QueryLog($channel);
+        $this->memory = new Memory($channel);
         $this->start = time();
     }
 
@@ -48,13 +48,13 @@ class Dashboard implements Model
     }
 
     /**
-     * Return the query log model.
+     * Return the memory model.
      *
-     * @return \Rubix\Server\Models\QueryLog
+     * @return \Rubix\Server\Models\Memory
      */
-    public function queryLog() : QueryLog
+    public function memory() : Memory
     {
-        return $this->queryLog;
+        return $this->memory;
     }
 
     /**
@@ -76,7 +76,7 @@ class Dashboard implements Model
     {
         return [
             'http_stats' => $this->httpStats->asArray(),
-            'query_log' => $this->queryLog->asArray(),
+            'memory' => $this->memory->asArray(),
             'start' => $this->start,
         ];
     }

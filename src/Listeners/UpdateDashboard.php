@@ -5,8 +5,6 @@ namespace Rubix\Server\Listeners;
 use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Events\RequestReceived;
 use Rubix\Server\Events\ResponseSent;
-use Rubix\Server\Events\QueryFulfilled;
-use Rubix\Server\Events\QueryFailed;
 
 class UpdateDashboard implements Listener
 {
@@ -39,12 +37,6 @@ class UpdateDashboard implements Listener
             ResponseSent::class => [
                 [$this, 'recordResponse'],
             ],
-            QueryFulfilled::class => [
-                [$this, 'recordFulfilledQuery'],
-            ],
-            QueryFailed::class => [
-                [$this, 'recordFailedQuery'],
-            ],
         ];
     }
 
@@ -66,25 +58,5 @@ class UpdateDashboard implements Listener
     public function recordResponse(ResponseSent $event) : void
     {
         $this->dashboard->httpStats()->recordResponse($event->response());
-    }
-
-    /**
-     * Record a fulfilled query.
-     *
-     * @param \Rubix\Server\Events\QueryFulfilled $event
-     */
-    public function recordFulfilledQuery(QueryFulfilled $event) : void
-    {
-        $this->dashboard->queryLog()->recordFulfilled($event->query());
-    }
-
-    /**
-     * Record a failed query.
-     *
-     * @param \Rubix\Server\Events\QueryFailed $event
-     */
-    public function recordFailedQuery(QueryFailed $event) : void
-    {
-        $this->dashboard->queryLog()->recordFailed($event->query());
     }
 }

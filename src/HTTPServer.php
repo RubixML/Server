@@ -27,6 +27,7 @@ use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Events\ShuttingDown;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
+use Rubix\Server\Listeners\StopTimers;
 use Rubix\Server\Listeners\CloseSSEChannels;
 use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Specifications\LearnerIsTrained;
@@ -47,7 +48,9 @@ use function React\Promise\resolve;
 /**
  * HTTP Server
  *
- * An HTTP(S) server exposing Representational State Transfer (REST) and Remote Procedure Call (RPC) APIs.
+ * A JSON over HTTP server exposing a Representational State Transfer (REST) API. The HTTP Server
+ * operates with ubiquitous standards making it compatible with a wide range of systems. In addition,
+ * it provides its own web-based user interface for real-time server monitoring.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -57,7 +60,7 @@ class HTTPServer implements Server, Verbose
 {
     use LoggerAware;
 
-    protected const SERVER_NAME = 'Rubix ML HTTP Server';
+    protected const SERVER_NAME = 'Rubix ML HTTP Server/' . VERSION;
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -176,6 +179,8 @@ class HTTPServer implements Server, Verbose
 
         $loop = Loop::create();
 
+        $filesystem = Filesystem::create($loop);
+
         $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
         if ($this->cert) {
@@ -184,15 +189,18 @@ class HTTPServer implements Server, Verbose
             ]);
         }
 
-        $filesystem = Filesystem::create($loop);
-
         $dashboardChannel = new SSEChannel($this->sseRetryBuffer);
 
         $dashboard = new Dashboard($dashboardChannel);
 
+        $memoryTimer = $loop->addPeriodicTimer(1.0, [$dashboard->memory(), 'updateUsage']);
+
         $eventBus = new EventBus(Subscriptions::subscribe([
             new UpdateDashboard($dashboard),
             new LogFailures($this->logger),
+            new StopTimers($loop, [
+                $memoryTimer,
+            ]),
             new CloseSSEChannels([
                 $dashboardChannel,
             ]),

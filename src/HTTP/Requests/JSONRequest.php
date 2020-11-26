@@ -13,9 +13,9 @@ class JSONRequest extends Request
     /**
      * @param string $method
      * @param string $path
-     * @param mixed[] $json
+     * @param mixed[]|null $json
      */
-    public function __construct(string $method, string $path, array $json)
+    public function __construct(string $method, string $path, ?array $json = null)
     {
         parent::__construct($method, $path, self::HEADERS, JSON::encode($json));
     }

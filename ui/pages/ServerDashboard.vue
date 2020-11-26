@@ -1,27 +1,26 @@
 <template>
-    <section class="section">
-        <div class="container">
-            <requests-level v-if="httpStats && start" :httpStats="httpStats" :start="start"></requests-level>
-            <requests-chart v-if="httpStats" :httpStats="httpStats"></requests-chart>
-            <transfers-level v-if="httpStats" :httpStats="httpStats" class="mt-5"></transfers-level>
-            <div class="columns">
-                <div class="column is-half">
-                    <throughput-chart v-if="httpStats" :httpStats="httpStats"></throughput-chart>
-                </div>
-                <div class="column is-half">
-                    <transfers-chart v-if="httpStats" :httpStats="httpStats"></transfers-chart>
+    <div>
+        <section class="section">
+            <div class="container">
+                <requests-level v-if="httpStats && start" :requests="httpStats.requests" :start="start"></requests-level>
+                <request-rate-chart v-if="httpStats" :requests="httpStats.requests"></request-rate-chart>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="columns">
+                    <div class="column is-half">
+                        <transfers-level v-if="httpStats" :transfers="httpStats.transfers"></transfers-level>
+                        <throughput-chart v-if="httpStats" :transfers="httpStats.transfers"></throughput-chart>
+                    </div>
+                    <div class="column is-half">
+                        <memory-level v-if="memory" :memory="memory"></memory-level>
+                        <memory-usage-chart v-if="memory" :memory="memory"></memory-usage-chart>
+                    </div>
                 </div>
             </div>
-            <div class="columns mt-5">
-                <div class="column is-two-thirds">
-                    <queries-table v-if="queryLog" :queryLog="queryLog"></queries-table>
-                </div>
-                <div class="column is-one-third">
-                    <queries-chart v-if="queryLog" :queryLog="queryLog"></queries-chart>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 </template>
 
 <script>
@@ -31,7 +30,7 @@ export default {
     data() {
         return {
             httpStats: undefined,
-            queryLog: undefined,
+            memory: undefined,
             start: undefined,
             stream: null,
         };
@@ -39,50 +38,31 @@ export default {
     mounted() {
         this.$http.get('/server/dashboard').then((response) => {
             this.httpStats = response.data.http_stats;
-            this.queryLog = Object.assign({}, response.data.query_log);
+            this.memory = response.data.memory;
             this.start = response.data.start;
 
             this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
                 stream.subscribe('request-recorded', (message) => {
-                    this.httpStats.requests++;
-                    
-                    this.httpStats.transferred.received += message.size;
+                    this.httpStats.transfers.received += message.size;
                 });
 
                 stream.subscribe('response-recorded', (message) => {
                     const code = message.code;
 
                     if (code >= 100 && code < 400) {
-                        this.httpStats.responses.successful++;
+                        this.httpStats.requests.successful++;
                     } else if (code >= 400 && code < 500) {
-                        this.httpStats.responses.rejected++;
+                        this.httpStats.requests.rejected++;
                     } else if (code >= 500) {
-                        this.httpStats.responses.failed++;
+                        this.httpStats.requests.failed++;
                     }
 
-                    this.httpStats.transferred.sent += message.size;
+                    this.httpStats.transfers.sent += message.size;
                 });
 
-                stream.subscribe('query-fulfilled', (message) => {
-                    if (this.queryLog.hasOwnProperty(message.name)) {
-                        this.queryLog[message.name].fulfilled++;
-                    } else {
-                        this.$set(this.queryLog, message.name, {
-                            fulfilled: 1,
-                            failed: 0,
-                        });
-                    }
-                });
-
-                stream.subscribe('query-failed', (message) => {
-                    if (this.queryLog.hasOwnProperty(message.name)) {
-                        this.queryLog[message.name].failed++;
-                    } else {
-                        this.$set(this.queryLog, message.name, {
-                            fulfilled: 0,
-                            failed: 1,
-                        });
-                    }
+                stream.subscribe('memory-usage-updated', (message) => {
+                    this.memory.current = message.current;
+                    this.memory.peak = message.peak;
                 });
 
                 this.stream = stream;

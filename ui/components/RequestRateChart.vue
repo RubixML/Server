@@ -1,5 +1,7 @@
 <template>
-    <canvas id="requests-chart" width="900" height="300"></canvas>
+    <figure>
+        <canvas id="requests-chart" width="640" height="360"></canvas>
+    </figure>
 </template>
 
 <script>
@@ -16,7 +18,7 @@ export default {
         };
     },
     props: {
-        httpStats: {
+        requests: {
             type: Object,
             required: true,
         },
@@ -50,7 +52,7 @@ export default {
                     {
                         label: 'Rejected',
                         data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(35, 95%, 50%)',
+                        borderColor: 'hsl(204, 86%, 53%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -69,17 +71,17 @@ export default {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 title: {
-                    display: false,
-                    text: 'Requests',
+                    display: true,
+                    text: 'Request Rate',
                 },
                 tooltips: {
-                    mode: 'index',
-                    intersect: true,
+                    enabled: false,
                 },
                 hover: {
-                    mode: 'nearest',
-                    intersect: false,
+                    mode: 'point',
+                    intersect: true,
                 },
                 scales: {
                     xAxes: [
@@ -98,7 +100,7 @@ export default {
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Requests / s',
+                                labelString: 'Requests',
                             },
                             ticks: {
                                 beginAtZero: true,
@@ -118,16 +120,16 @@ export default {
             let datasets = this.chart.data.datasets;
 
             if (!this.last) {
-                this.last = Object.assign({}, this.httpStats.responses);
+                this.last = Object.assign({}, this.requests);
             }
 
-            datasets[1].data.push(this.httpStats.responses.successful - this.last.successful);
-            datasets[2].data.push(this.httpStats.responses.rejected - this.last.rejected);
-            datasets[3].data.push(this.httpStats.responses.failed - this.last.failed);
+            datasets[1].data.push(this.requests.successful - this.last.successful);
+            datasets[2].data.push(this.requests.rejected - this.last.rejected);
+            datasets[3].data.push(this.requests.failed - this.last.failed);
 
             const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[1].data.length;
 
-            datasets[0].data.push(Math.round(mu + 'e3') + 'e-3');
+            datasets[0].data.push(mu);
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
@@ -135,7 +137,7 @@ export default {
                 }
             });
 
-            this.last = Object.assign({}, this.httpStats.responses);
+            this.last = Object.assign({}, this.requests);
 
             this.chart.update(0);
         }

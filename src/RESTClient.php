@@ -6,6 +6,7 @@ use Rubix\ML\Datasets\Dataset;
 use Rubix\Server\HTTP\Requests\PredictRequest;
 use Rubix\Server\HTTP\Requests\ProbaRequest;
 use Rubix\Server\HTTP\Requests\ScoreRequest;
+use Rubix\Server\HTTP\Requests\GetDashboardRequest;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use Rubix\Server\Helpers\JSON;
@@ -28,15 +29,15 @@ use Exception;
  */
 class RESTClient implements Client, AsyncClient
 {
-    public const HTTP_HEADERS = [
-        'User-Agent' => 'Rubix ML REST Client',
+    public const HEADERS = [
+        'User-Agent' => 'Rubix ML REST Client/' . VERSION,
         'Accept' => 'application/json',
     ];
 
     protected const MAX_TCP_PORT = 65535;
 
     /**
-     * The Guzzle client.
+     * The Guzzle HTTP client.
      *
      * @var Guzzle
      */
@@ -60,7 +61,7 @@ class RESTClient implements Client, AsyncClient
         int $retries = 3
     ) {
         if (empty($host)) {
-            throw new InvalidArgumentException('Host cannot be empty.');
+            throw new InvalidArgumentException('Host address cannot be empty.');
         }
 
         if ($port < 0 or $port > self::MAX_TCP_PORT) {
@@ -80,7 +81,7 @@ class RESTClient implements Client, AsyncClient
 
         $baseUri = ($secure ? 'https' : 'http') . "://$host:$port";
 
-        $headers += self::HTTP_HEADERS;
+        $headers += self::HEADERS;
 
         $stack = HandlerStack::create();
 
@@ -114,10 +115,12 @@ class RESTClient implements Client, AsyncClient
      */
     public function predictAsync(Dataset $dataset) : PromiseInterface
     {
+        $request = new PredictRequest($dataset);
+
         $unpackPayload = function (array $json) : Promise {
             if (empty($json['predictions'])) {
                 throw new RuntimeException('Predictions missing'
-                    . ' in response payload.');
+                    . ' from response payload.');
             }
 
             $promise = new Promise(function () use (&$promise, $json) {
@@ -127,8 +130,6 @@ class RESTClient implements Client, AsyncClient
 
             return $promise;
         };
-
-        $request = new PredictRequest($dataset);
 
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
@@ -155,10 +156,12 @@ class RESTClient implements Client, AsyncClient
      */
     public function probaAsync(Dataset $dataset) : PromiseInterface
     {
+        $request = new ProbaRequest($dataset);
+
         $unpackPayload = function (array $json) : Promise {
             if (empty($json['probabilities'])) {
                 throw new RuntimeException('Probabilities missing'
-                    . ' in response payload.');
+                    . ' from response payload.');
             }
 
             $promise = new Promise(function () use (&$promise, $json) {
@@ -168,8 +171,6 @@ class RESTClient implements Client, AsyncClient
 
             return $promise;
         };
-
-        $request = new ProbaRequest($dataset);
 
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
@@ -196,10 +197,12 @@ class RESTClient implements Client, AsyncClient
      */
     public function scoreAsync(Dataset $dataset) : PromiseInterface
     {
+        $request = new ScoreRequest($dataset);
+
         $unpackPayload = function (array $json) : Promise {
             if (empty($json['scores'])) {
                 throw new RuntimeException('Anomaly scores missing'
-                    . ' in response payload.');
+                    . ' from response payload.');
             }
 
             $promise = new Promise(function () use (&$promise, $json) {
@@ -210,12 +213,35 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        $request = new ScoreRequest($dataset);
-
         return $this->client->sendAsync($request)->then(
             [$this, 'parseResponseBody'],
             [$this, 'onError']
         )->then($unpackPayload);
+    }
+
+    /**
+     * Return the server dashboard information.
+     *
+     * @return mixed[]
+     */
+    public function getDashboard() : array
+    {
+        return $this->getDashboardAsync()->wait();
+    }
+
+    /**
+     * Return a promise for the server dashboard information.
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getDashboardAsync() : PromiseInterface
+    {
+        $request = new GetDashboardRequest();
+
+        return $this->client->sendAsync($request)->then(
+            [$this, 'parseResponseBody'],
+            [$this, 'onError']
+        );
     }
 
     /**
@@ -230,10 +256,8 @@ class RESTClient implements Client, AsyncClient
     public function parseResponseBody(ResponseInterface $response) : Promise
     {
         $promise = new Promise(function () use (&$promise, $response) {
-            $json = JSON::decode($response->getBody());
-
             /** @var \GuzzleHttp\Promise\Promise $promise */
-            $promise->resolve($json);
+            $promise->resolve(JSON::decode($response->getBody()));
         });
 
         return $promise;
