@@ -32,6 +32,7 @@ class RESTClient implements Client, AsyncClient
     public const HEADERS = [
         'User-Agent' => 'Rubix ML REST Client/' . VERSION,
         'Accept' => 'application/json',
+        'Accept-Encoding' => 'identity',
     ];
 
     protected const MAX_TCP_PORT = 65535;

@@ -21,8 +21,7 @@ class ResponseSent implements Event
     protected $response;
 
     /**
-     * @param Psr\Http\Message\ResponseInterface $response
-     * @param ResponseInterface $response
+     * @param \Psr\Http\Message\ResponseInterface $response
      */
     public function __construct(ResponseInterface $response)
     {

@@ -12,6 +12,7 @@ import TransfersLevel from './components/TransfersLevel.vue';
 import ThroughputChart from './components/ThroughputChart.vue';
 import MemoryLevel from './components/MemoryLevel.vue';
 import MemoryUsageChart from './components/MemoryUsageChart.vue';
+import ConfigurationSettings from './components/ConfigurationSettings.vue';
 import CommunicationError from './components/CommunicationError.vue';
 
 const axios = require('axios');
@@ -41,6 +42,7 @@ Vue.component('transfers-level', TransfersLevel);
 Vue.component('throughput-chart', ThroughputChart);
 Vue.component('memory-level', MemoryLevel);
 Vue.component('memory-usage-chart', MemoryUsageChart);
+Vue.component('configuration-settings', ConfigurationSettings);
 Vue.component('communication-error', CommunicationError);
 
 Vue.use(VueRouter);

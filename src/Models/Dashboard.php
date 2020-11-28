@@ -28,6 +28,13 @@ class Dashboard implements Model
     protected $start;
 
     /**
+     * The server configuration settings.
+     *
+     * @var \Rubix\Server\Models\Configuration
+     */
+    protected $configuration;
+
+    /**
      * @param \Rubix\Server\Services\SSEChannel $channel
      */
     public function __construct(SSEChannel $channel)
@@ -35,6 +42,7 @@ class Dashboard implements Model
         $this->httpStats = new HTTPStats($channel);
         $this->memory = new Memory($channel);
         $this->start = time();
+        $this->configuration = new Configuration();
     }
 
     /**
@@ -68,6 +76,16 @@ class Dashboard implements Model
     }
 
     /**
+     * Return the configuration settings model.
+     *
+     * @return \Rubix\Server\Models\Configuration
+     */
+    public function configuration() : Configuration
+    {
+        return $this->configuration;
+    }
+
+    /**
      * Return the model as an associative array.
      *
      * @return mixed[]
@@ -75,9 +93,10 @@ class Dashboard implements Model
     public function asArray() : array
     {
         return [
-            'http_stats' => $this->httpStats->asArray(),
+            'httpStats' => $this->httpStats->asArray(),
             'memory' => $this->memory->asArray(),
             'start' => $this->start,
+            'configuration' => $this->configuration->asArray(),
         ];
     }
 }

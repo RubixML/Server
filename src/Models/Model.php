@@ -5,7 +5,7 @@ namespace Rubix\Server\Models;
 interface Model
 {
     /**
-     * Return the model as an associative array.
+     * Return the model properties as an associative array.
      *
      * @return mixed[]
      */

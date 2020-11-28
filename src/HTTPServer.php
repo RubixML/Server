@@ -102,25 +102,18 @@ class HTTPServer implements Server, Verbose
     protected $sseRetryBuffer;
 
     /**
-     * The event loop.
-     *
-     * @var \React\EventLoop\LoopInterface
-     */
-    protected $loop;
-
-    /**
-     * The network socket.
-     *
-     * @var \React\Socket\ServerInterface
-     */
-    protected $socket;
-
-    /**
      * The event bus.
      *
      * @var \Rubix\Server\Services\EventBus
      */
     protected $eventBus;
+
+    /**
+     * The event loop.
+     *
+     * @var \React\EventLoop\LoopInterface
+     */
+    protected $loop;
 
     /**
      * @param string $host
@@ -231,7 +224,7 @@ class HTTPServer implements Server, Verbose
 
         $stack = array_merge($stack, $this->middlewares);
 
-        $stack[] = [$this, 'addServerHeader'];
+        $stack[] = [$this, 'addServerHeaders'];
         $stack[] = [$router, 'dispatch'];
 
         $server = new HTTP($loop, ...$stack);
@@ -242,16 +235,11 @@ class HTTPServer implements Server, Verbose
             . " on port {$this->port}");
 
         $this->eventBus = $eventBus;
+        $this->loop = $loop;
 
-        $shutdown = function (int $signal) use ($loop, &$shutdown) {
-            $loop->removeSignal($signal, $shutdown);
-
-            $this->logger->info('Shutting down');
-
-            $this->eventBus->dispatch(new ShuttingDown($this));
-        };
-
-        $loop->addSignal(SIGTERM, $shutdown);
+        if (extension_loaded('pcntl')) {
+            $loop->addSignal(SIGTERM, [$this, 'shutdown']);
+        }
 
         $loop->run();
     }
@@ -277,7 +265,7 @@ class HTTPServer implements Server, Verbose
     }
 
     /**
-     * Add the HTTP server header.
+     * Add the HTTP server headers to the response.
      *
      * @internal
      *
@@ -285,10 +273,25 @@ class HTTPServer implements Server, Verbose
      * @param callable $next
      * @return \React\Promise\PromiseInterface
      */
-    public function addServerHeader(ServerRequestInterface $request, callable $next) : PromiseInterface
+    public function addServerHeaders(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
         return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
             return $response->withHeader('Server', self::SERVER_NAME);
         });
+    }
+
+    /**
+     * Shut down the server.
+     *
+     * @var int
+     * @param int $signal
+     */
+    public function shutdown(int $signal) : void
+    {
+        $this->loop->removeSignal($signal, [$this, 'shutdown']);
+
+        $this->logger->info('Shutting down');
+
+        $this->eventBus->dispatch(new ShuttingDown($this));
     }
 }

@@ -29,7 +29,7 @@ export default {
         this.chart = new Chart(context, {
             type: 'line',
             data: {
-                labels: [...Array(DATASET_SIZE).keys()].reverse(),
+                labels: [...Array(60).keys()].reverse(),
                 datasets: [
                     {
                         label: 'Average',
@@ -88,7 +88,7 @@ export default {
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'T+ (seconds)',
+                                labelString: 'T- (seconds)',
                             },
                             ticks: {
                                 precision: 0,

@@ -9,6 +9,7 @@
     - Removed RPC API and client
     - Renamed REST Server to HTTP Server
     - Adjustable server-sent events retry buffer
+    - Support for Gzip and Deflate request body encodings
 
 - 0.2.2-beta
     - Added Async Client interface

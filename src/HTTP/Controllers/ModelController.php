@@ -20,18 +20,21 @@ class ModelController extends RESTController
         return [
             '/model/predictions' => [
                 'POST' => [
+                    [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
                     [$this, 'predict'],
                 ],
             ],
             '/model/probabilities' => [
                 'POST' => [
+                    [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
                     [$this, 'proba'],
                 ],
             ],
             '/model/anomaly_scores' => [
                 'POST' => [
+                    [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
                     [$this, 'score'],
                 ],
@@ -47,10 +50,11 @@ class ModelController extends RESTController
      */
     public function predict(ServerRequestInterface $request)
     {
-        $json = (array) $request->getParsedBody();
+        /** @var mixed[] $body */
+        $body = $request->getParsedBody();
 
         try {
-            $query = Predict::fromArray($json);
+            $query = Predict::fromArray($body);
         } catch (Exception $exception) {
             return $this->respondInvalid($exception);
         }
@@ -69,10 +73,11 @@ class ModelController extends RESTController
      */
     public function proba(ServerRequestInterface $request)
     {
-        $json = (array) $request->getParsedBody();
+        /** @var mixed[] $body */
+        $body = $request->getParsedBody();
 
         try {
-            $query = Proba::fromArray($json);
+            $query = Proba::fromArray($body);
         } catch (Exception $exception) {
             return $this->respondInvalid($exception);
         }
@@ -91,10 +96,11 @@ class ModelController extends RESTController
      */
     public function score(ServerRequestInterface $request)
     {
-        $json = (array) $request->getParsedBody();
+        /** @var mixed[] $body */
+        $body = $request->getParsedBody();
 
         try {
-            $query = Score::fromArray($json);
+            $query = Score::fromArray($body);
         } catch (Exception $exception) {
             return $this->respondInvalid($exception);
         }

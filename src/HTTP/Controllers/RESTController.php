@@ -6,17 +6,27 @@ use Rubix\Server\Services\QueryBus;
 use Rubix\Server\Payloads\Payload;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\BadRequest;
-use Rubix\Server\HTTP\Responses\UnsupportedMediaType;
+use Rubix\Server\HTTP\Responses\UnsupportedContentEncoding;
+use Rubix\Server\HTTP\Responses\UnsupportedContentType;
 use Rubix\Server\HTTP\Responses\InternalServerError;
 use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Rubix\Server\Helpers\JSON;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ServerRequestInterface;
 use Exception;
 
 abstract class RESTController implements Controller
 {
-    public const HEADERS = [
+    protected const DEFAULT_HEADERS = [
         'Content-Type' => 'application/json',
+    ];
+
+    protected const ACCEPTED_CONTENT_TYPES = [
+        'application/json',
+    ];
+
+    protected const ACCEPTED_CONTENT_ENCODINGS = [
+        'gzip', 'deflate', 'identity',
     ];
 
     /**
@@ -35,6 +45,56 @@ abstract class RESTController implements Controller
     }
 
     /**
+     * Decompress the request body.
+     *
+     * @internal
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function decompressRequestBody(ServerRequestInterface $request, callable $next)
+    {
+        if ($request->hasHeader('Content-Encoding')) {
+            $encoding = $request->getHeaderLine('Content-Encoding');
+
+            if (!in_array($encoding, self::ACCEPTED_CONTENT_ENCODINGS)) {
+                return new UnsupportedContentEncoding(self::ACCEPTED_CONTENT_ENCODINGS);
+            }
+
+            try {
+                switch ($encoding) {
+                    case 'gzip':
+                        $body = gzdecode($request->getBody());
+
+                        break 1;
+
+                    case 'deflate':
+                        $body = gzinflate($request->getBody());
+
+                        break 1;
+
+                    default:
+                    case 'identity':
+                        $body = $request->getBody();
+
+                        break 1;
+                }
+            } catch (Exception $exception) {
+                return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([
+                    'message' => $exception->getMessage(),
+                ]));
+            }
+
+            $stream = Utils::streamFor($body);
+
+            $request = $request->withBody($stream);
+        }
+
+        return $next($request);
+    }
+
+    /**
      * Parse the request body content.
      *
      * @internal
@@ -45,23 +105,29 @@ abstract class RESTController implements Controller
      */
     public function parseRequestBody(ServerRequestInterface $request, callable $next)
     {
-        $contentType = $request->getHeaderLine('Content-Type');
+        if ($request->hasHeader('Content-Type')) {
+            $type = $request->getHeaderLine('Content-Type');
 
-        $acceptedContentType = self::HEADERS['Content-Type'];
+            if (!in_array($type, self::ACCEPTED_CONTENT_TYPES)) {
+                return new UnsupportedContentType(self::ACCEPTED_CONTENT_TYPES);
+            }
 
-        if ($contentType !== $acceptedContentType) {
-            return new UnsupportedMediaType($acceptedContentType);
+            try {
+                switch ($type) {
+                    default:
+                    case 'application/json':
+                        $body = JSON::decode($request->getBody());
+
+                        break 1;
+                }
+            } catch (Exception $exception) {
+                return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([
+                    'message' => $exception->getMessage(),
+                ]));
+            }
+
+            $request = $request->withParsedBody($body);
         }
-
-        try {
-            $json = JSON::decode($request->getBody());
-        } catch (Exception $exception) {
-            return new BadRequest(self::HEADERS, JSON::encode([
-                'message' => $exception->getMessage(),
-            ]));
-        }
-
-        $request = $request->withParsedBody($json);
 
         return $next($request);
     }
@@ -76,7 +142,7 @@ abstract class RESTController implements Controller
      */
     public function respondSuccess(Payload $payload) : Success
     {
-        return new Success(self::HEADERS, JSON::encode($payload->asArray()));
+        return new Success(self::DEFAULT_HEADERS, JSON::encode($payload->asArray()));
     }
 
     /**
@@ -98,7 +164,7 @@ abstract class RESTController implements Controller
      */
     public function respondInvalid(Exception $exception) : UnprocessableEntity
     {
-        return new UnprocessableEntity(self::HEADERS, JSON::encode([
+        return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
             'message' => $exception->getMessage(),
         ]));
     }

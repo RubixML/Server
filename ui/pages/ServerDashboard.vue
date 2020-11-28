@@ -20,6 +20,16 @@
                 </div>
             </div>
         </section>
+        <section class="section">
+            <div class="container">
+                <div class="columns">
+                    <div class="column is-half">
+                        <h2 class="title">Configuration Settings</h2>
+                        <configuration-settings v-if="configuration" :configuration="configuration"></configuration-settings>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -32,14 +42,16 @@ export default {
             httpStats: undefined,
             memory: undefined,
             start: undefined,
+            configuration: undefined,
             stream: null,
         };
     },
     mounted() {
         this.$http.get('/server/dashboard').then((response) => {
-            this.httpStats = response.data.http_stats;
+            this.httpStats = response.data.httpStats;
             this.memory = response.data.memory;
             this.start = response.data.start;
+            this.configuration = response.data.configuration;
 
             this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
                 stream.subscribe('request-recorded', (message) => {
