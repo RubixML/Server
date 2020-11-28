@@ -22,18 +22,18 @@ class Dashboard implements Model
     protected $memory;
 
     /**
-     * The timestamp from when the server went up.
-     *
-     * @var int
-     */
-    protected $start;
-
-    /**
      * The server configuration settings.
      *
      * @var \Rubix\Server\Models\Configuration
      */
     protected $configuration;
+
+    /**
+     * The timestamp from when the server went up.
+     *
+     * @var int
+     */
+    protected $start;
 
     /**
      * @param \Rubix\Server\HTTPServer $server
@@ -43,8 +43,8 @@ class Dashboard implements Model
     {
         $this->httpStats = new HTTPStats($channel);
         $this->memory = new Memory($channel);
-        $this->start = time();
         $this->configuration = new Configuration($server);
+        $this->start = time();
     }
 
     /**
@@ -68,16 +68,6 @@ class Dashboard implements Model
     }
 
     /**
-     * Return the starting timestamp.
-     *
-     * @return int
-     */
-    public function start() : int
-    {
-        return $this->start;
-    }
-
-    /**
      * Return the configuration settings model.
      *
      * @return \Rubix\Server\Models\Configuration
@@ -85,6 +75,16 @@ class Dashboard implements Model
     public function configuration() : Configuration
     {
         return $this->configuration;
+    }
+
+    /**
+     * Return the starting timestamp.
+     *
+     * @return int
+     */
+    public function start() : int
+    {
+        return $this->start;
     }
 
     /**
@@ -97,8 +97,8 @@ class Dashboard implements Model
         return [
             'httpStats' => $this->httpStats->asArray(),
             'memory' => $this->memory->asArray(),
-            'start' => $this->start,
             'configuration' => $this->configuration->asArray(),
+            'start' => $this->start,
         ];
     }
 }

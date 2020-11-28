@@ -183,6 +183,8 @@ class HTTPServer implements Server, Verbose
     /**
      * Return the host address the server is bound to.
      *
+     * @internal
+     *
      * @return string
      */
     public function host() : string
@@ -192,6 +194,8 @@ class HTTPServer implements Server, Verbose
 
     /**
      * Return the TCP port the server is providing HTTP service on.
+     *
+     * @internal
      *
      * @return int
      */
@@ -203,6 +207,8 @@ class HTTPServer implements Server, Verbose
     /**
      * Return the maximum number of concurrent requests.
      *
+     * @internal
+     *
      * @return int
      */
     public function maxConcurrentRequests() : int
@@ -212,6 +218,8 @@ class HTTPServer implements Server, Verbose
 
     /**
      * Return the size of the SSE reconnect buffer.
+     *
+     * @internal
      *
      * @return int
      */
