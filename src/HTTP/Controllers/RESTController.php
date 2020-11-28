@@ -11,9 +11,11 @@ use Rubix\Server\HTTP\Responses\UnsupportedContentType;
 use Rubix\Server\HTTP\Responses\InternalServerError;
 use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Rubix\Server\Helpers\JSON;
-use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ServerRequestInterface;
+use GuzzleHttp\Psr7\Utils;
 use Exception;
+
+use function in_array;
 
 abstract class RESTController implements Controller
 {

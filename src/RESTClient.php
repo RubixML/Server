@@ -10,10 +10,10 @@ use Rubix\Server\HTTP\Requests\GetDashboardRequest;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use Rubix\Server\Helpers\JSON;
-use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\Promise;
 use GuzzleRetry\GuzzleRetryMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Exception;
@@ -21,7 +21,7 @@ use Exception;
 /**
  * REST Client
  *
- * The REST (Representational State Transfer) client communicates with a REST Server.
+ * The REST Client communicates with the HTTP Server through the JSON REST API it exposes.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -29,10 +29,14 @@ use Exception;
  */
 class RESTClient implements Client, AsyncClient
 {
-    public const HEADERS = [
+    protected const HEADERS = [
         'User-Agent' => 'Rubix ML REST Client/' . VERSION,
         'Accept' => 'application/json',
         'Accept-Encoding' => 'identity',
+    ];
+
+    protected const ACCEPTED_CONTENT_TYPES = [
+        'application/json',
     ];
 
     protected const MAX_TCP_PORT = 65535;
@@ -132,10 +136,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        return $this->client->sendAsync($request)->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'onError']
-        )->then($unpackPayload);
+        return $this->client->sendAsync($request)
+            ->then([$this, 'parseResponseBody'], [$this, 'onError'])
+            ->then($unpackPayload);
     }
 
     /**
@@ -173,10 +176,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        return $this->client->sendAsync($request)->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'onError']
-        )->then($unpackPayload);
+        return $this->client->sendAsync($request)
+            ->then([$this, 'parseResponseBody'], [$this, 'onError'])
+            ->then($unpackPayload);
     }
 
     /**
@@ -214,10 +216,9 @@ class RESTClient implements Client, AsyncClient
             return $promise;
         };
 
-        return $this->client->sendAsync($request)->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'onError']
-        )->then($unpackPayload);
+        return $this->client->sendAsync($request)
+            ->then([$this, 'parseResponseBody'], [$this, 'onError'])
+            ->then($unpackPayload);
     }
 
     /**
@@ -257,8 +258,25 @@ class RESTClient implements Client, AsyncClient
     public function parseResponseBody(ResponseInterface $response) : Promise
     {
         $promise = new Promise(function () use (&$promise, $response) {
-            /** @var \GuzzleHttp\Promise\Promise $promise */
-            $promise->resolve(JSON::decode($response->getBody()));
+            if ($response->hasHeader('Content-Type')) {
+                $type = $response->getHeaderLine('Content-Type');
+
+                if (!in_array($type, self::ACCEPTED_CONTENT_TYPES)) {
+                    throw new RuntimeException('Unacceptable content'
+                        . " type $type in the response body.");
+                }
+
+                switch ($type) {
+                    default:
+                    case 'application/json':
+                        $payload = JSON::decode($response->getBody());
+
+                        break 1;
+                }
+
+                /** @var \GuzzleHttp\Promise\Promise $promise */
+                $promise->resolve($payload);
+            }
         });
 
         return $promise;

@@ -21,7 +21,6 @@ $ composer require rubix/server
 	- [HTTP Server](#http-server)
 - [Clients](#clients)
 	- [REST Client](#rest-client)
-	- [RPC Client](#rpc-client)
 - [HTTP Middleware](#http-middleware)
 	- [Access Log Generator](#access-log-generator)
 	- [Basic Authenticator](#basic-authenticator)
@@ -190,7 +189,7 @@ public scoreAsync(Dataset $dataset) : Promise
 ```
 
 ### REST Client
-The REST (Representational State Transfer) client communicates with a [REST Server](#rest-server).
+The REST Client communicates with the [HTTP Server](#http-server) through the JSON REST API it exposes.
 
 Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 
@@ -198,8 +197,8 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
-| 2 | port | 8888 | int | The network port that the HTTP server is running on. |
-| 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)?. |
+| 2 | port | 80 | int | The network port that the HTTP server is running on. |
+| 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)? |
 | 4 | headers | | array | Additional HTTP headers to send along with each request. |
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
 | 6 | retries | 3 | int | The number of retries before giving up on the request. |
