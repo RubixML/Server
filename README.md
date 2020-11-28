@@ -88,7 +88,8 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 2 | port | 80 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | | array | The HTTP middleware stack to run on each request/response. |
-| 5 | sse retry buffer | 50 | int | The size of the server-sent events retry buffer. |
+| 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
+| 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
 **Example**
 
@@ -104,11 +105,11 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-], 100);
+], 50, 100);
 ```
 
 #### Routes
-The HTTP server exposes the following resources.
+The HTTP server exposes the following resources and their methods.
 
 | Method | URI | Description |
 |---|---|---|
@@ -116,9 +117,9 @@ The HTTP server exposes the following resources.
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
-| GET | /server | The server dashboard. |
-| GET | /server/dashboard | Query the dashboard model. |
-| GET | /server/dashboard/events | Subscribe to the dashboard event stream. |
+| GET | /server | The server dashboard interface. |
+| GET | /server/dashboard | Query the dashboard. |
+| GET | /server/dashboard/events | Subscribe to the dashboard events stream. |
 
 #### Web Interface
 The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` using your web browser.
@@ -130,9 +131,10 @@ This server respects the following `php.ini` configuration variables.
 
 | Name | Default | Description |
 |---|---|---|
-| memory_limit | 128M | The total amount of memory available to the server to handle requests. |
-| post_max_size | 8M | The maximum size of a request body to handle. |
-| enable_post_data_reading | 1 | Should we automatically parse form and file upload data? |
+| post_max_size | 8M | The maximum size of a request body the server can buffer. |
+
+#### References
+>- R. Fielding et al. (2014). Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content.
 
 ---
 ### Clients

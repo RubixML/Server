@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Models;
 
+use Rubix\Server\HTTPServer;
 use Rubix\Server\Services\SSEChannel;
 
 class Dashboard implements Model
@@ -35,14 +36,15 @@ class Dashboard implements Model
     protected $configuration;
 
     /**
+     * @param \Rubix\Server\HTTPServer $server
      * @param \Rubix\Server\Services\SSEChannel $channel
      */
-    public function __construct(SSEChannel $channel)
+    public function __construct(HTTPServer $server, SSEChannel $channel)
     {
         $this->httpStats = new HTTPStats($channel);
         $this->memory = new Memory($channel);
         $this->start = time();
-        $this->configuration = new Configuration();
+        $this->configuration = new Configuration($server);
     }
 
     /**

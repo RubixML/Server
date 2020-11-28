@@ -10,6 +10,7 @@
     - Renamed REST Server to HTTP Server
     - Adjustable server-sent events retry buffer
     - Support for Gzip and Deflate request body encodings
+    - HTTP Server max concurrent requests now configurable
 
 - 0.2.2-beta
     - Added Async Client interface

@@ -35,13 +35,16 @@ use Rubix\Server\Specifications\LearnerIsTrained;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\ML\Other\Loggers\BlackHole;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\Factory as Loop;
 use React\Http\Server as HTTP;
+use React\Http\Middleware\StreamingRequestMiddleware;
+use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
+use React\Http\Middleware\RequestBodyBufferMiddleware;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\Promise\PromiseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 use function React\Promise\resolve;
 
@@ -51,6 +54,9 @@ use function React\Promise\resolve;
  * A JSON over HTTP server exposing a Representational State Transfer (REST) API. The HTTP Server
  * operates with ubiquitous standards making it compatible with a wide range of systems. In addition,
  * it provides its own web-based user interface for real-time server monitoring.
+ *
+ * References:
+ * [1] R. Fielding et al. (2014). Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content.
  *
  * @category    Machine Learning
  * @package     Rubix/Server
@@ -95,11 +101,18 @@ class HTTPServer implements Server, Verbose
     protected $middlewares;
 
     /**
-     * The size of the server-sent events retry buffer.
+     * The maximum number of requests that can be handled concurrently.
      *
      * @var int
      */
-    protected $sseRetryBuffer;
+    protected $maxConcurrentRequests;
+
+    /**
+     * The maximum number of events to store in the server-sent events (SSE) reconnect buffer.
+     *
+     * @var int
+     */
+    protected $sseReconnectBuffer;
 
     /**
      * The event bus.
@@ -119,8 +132,9 @@ class HTTPServer implements Server, Verbose
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param mixed[] $middlewares
-     * @param int $sseRetryBuffer
+     * @param \Rubix\Server\HTTP\Middleware\Middleware[] $middlewares
+     * @param int $maxConcurrentRequests
+     * @param int $sseReconnectBuffer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
@@ -128,7 +142,8 @@ class HTTPServer implements Server, Verbose
         int $port = 80,
         ?string $cert = null,
         array $middlewares = [],
-        int $sseRetryBuffer = 50
+        int $maxConcurrentRequests = 10,
+        int $sseReconnectBuffer = 50
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host address cannot be empty.');
@@ -146,17 +161,63 @@ class HTTPServer implements Server, Verbose
             }
         }
 
-        if ($sseRetryBuffer < 0) {
+        if ($maxConcurrentRequests < 1) {
+            throw new InvalidArgumentException('Max concurrent requests must'
+                . " be greater than 0, $maxConcurrentRequests given.");
+        }
+
+        if ($sseReconnectBuffer < 0) {
             throw new InvalidArgumentException('SSE retry buffer must'
-                . " be greater than 0, $sseRetryBuffer given.");
+                . " be greater than 0, $sseReconnectBuffer given.");
         }
 
         $this->host = $host;
         $this->port = $port;
         $this->cert = $cert;
         $this->middlewares = $middlewares;
-        $this->sseRetryBuffer = $sseRetryBuffer;
+        $this->maxConcurrentRequests = $maxConcurrentRequests;
+        $this->sseReconnectBuffer = $sseReconnectBuffer;
         $this->logger = new BlackHole();
+    }
+
+    /**
+     * Return the host address the server is bound to.
+     *
+     * @return string
+     */
+    public function host() : string
+    {
+        return $this->host;
+    }
+
+    /**
+     * Return the TCP port the server is providing HTTP service on.
+     *
+     * @return int
+     */
+    public function port() : int
+    {
+        return $this->port;
+    }
+
+    /**
+     * Return the maximum number of concurrent requests.
+     *
+     * @return int
+     */
+    public function maxConcurrentRequests() : int
+    {
+        return $this->maxConcurrentRequests;
+    }
+
+    /**
+     * Return the size of the SSE reconnect buffer.
+     *
+     * @return int
+     */
+    public function sseReconnectBuffer() : int
+    {
+        return $this->sseReconnectBuffer;
     }
 
     /**
@@ -184,9 +245,9 @@ class HTTPServer implements Server, Verbose
             ]);
         }
 
-        $dashboardChannel = new SSEChannel($this->sseRetryBuffer);
+        $dashboardChannel = new SSEChannel($this->sseReconnectBuffer);
 
-        $dashboard = new Dashboard($dashboardChannel);
+        $dashboard = new Dashboard($this, $dashboardChannel);
 
         $memoryTimer = $scheduler->repeat(
             self::MEMORY_UPDATE_INTERVAL,
@@ -218,28 +279,31 @@ class HTTPServer implements Server, Verbose
             new StaticAssetsController(),
         ]));
 
-        $stack = [];
-
-        $stack[] = [$this, 'dispatchEvents'];
+        $stack = [
+            new StreamingRequestMiddleware(),
+            [$this, 'dispatchEvents'],
+            new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests),
+        ];
 
         $stack = array_merge($stack, $this->middlewares);
 
         $stack[] = [$this, 'addServerHeaders'];
+        $stack[] = new RequestBodyBufferMiddleware($dashboard->configuration()->postMaxSize());
         $stack[] = [$router, 'dispatch'];
 
         $server = new HTTP($loop, ...$stack);
 
         $server->listen($socket);
 
-        $this->logger->info("Listening at {$this->host}"
-            . " on port {$this->port}");
+        if (extension_loaded('pcntl')) {
+            $loop->addSignal(SIGTERM, [$this, 'shutdown']);
+        }
 
         $this->eventBus = $eventBus;
         $this->loop = $loop;
 
-        if (extension_loaded('pcntl')) {
-            $loop->addSignal(SIGTERM, [$this, 'shutdown']);
-        }
+        $this->logger->info("Listening at {$this->host}"
+            . " on port {$this->port}");
 
         $loop->run();
     }
@@ -290,7 +354,7 @@ class HTTPServer implements Server, Verbose
     {
         $this->loop->removeSignal($signal, [$this, 'shutdown']);
 
-        $this->logger->info('Shutting down');
+        $this->logger->info('Server shutting down');
 
         $this->eventBus->dispatch(new ShuttingDown($this));
     }

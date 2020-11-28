@@ -20,7 +20,7 @@ use function is_callable;
 class Routes implements ArrayAccess
 {
     public const SUPPORTED_METHODS = [
-        'OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE',
+        'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE',
     ];
 
     /**

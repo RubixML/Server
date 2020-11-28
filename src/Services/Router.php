@@ -3,9 +3,12 @@
 namespace Rubix\Server\Services;
 
 use Rubix\Server\HTTP\Responses\NotFound;
+use Rubix\Server\HTTP\Responses\NotImplemented;
 use Rubix\Server\HTTP\Responses\MethodNotAllowed;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+
+use function in_array;
 
 class Router
 {
@@ -48,9 +51,13 @@ class Router
             return new NotFound();
         }
 
-        $actions = $this->routes[$path];
-
         $method = $request->getMethod();
+
+        if (!in_array($method, Routes::SUPPORTED_METHODS)) {
+            return new NotImplemented();
+        }
+
+        $actions = $this->routes[$path];
 
         if (empty($actions[$method])) {
             return new MethodNotAllowed(array_keys($actions));
