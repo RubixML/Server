@@ -3,8 +3,8 @@
 namespace Rubix\Server\Services;
 
 use Rubix\Server\Events\Event;
+use Rubix\Server\Jobs\HandleEvent;
 use Psr\Log\LoggerInterface;
-use Exception;
 
 use function get_class;
 
@@ -74,15 +74,7 @@ class EventBus
             $handlers = $this->subscriptions[$class];
 
             foreach ($handlers as $handler) {
-                $job = function () use ($event, $handler) {
-                    try {
-                        $handler($event);
-                    } catch (Exception $exception) {
-                        $this->logger->error((string) $exception);
-                    }
-                };
-
-                $this->scheduler->defer($job);
+                $this->scheduler->defer(new HandleEvent($handler, $event, $this->logger));
             }
         }
     }

@@ -1,6 +1,6 @@
 <template>
     <figure>
-        <canvas id="requests-chart" width="640" height="360"></canvas>
+        <canvas id="response-rate-chart" width="640" height="360"></canvas>
     </figure>
 </template>
 
@@ -24,7 +24,7 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('requests-chart').getContext('2d');
+        let context = document.getElementById('response-rate-chart').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -74,7 +74,7 @@ export default {
                 maintainAspectRatio: false,
                 title: {
                     display: true,
-                    text: 'Request Rate',
+                    text: 'Response Rate',
                 },
                 tooltips: {
                     enabled: false,

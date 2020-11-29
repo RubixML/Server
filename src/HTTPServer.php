@@ -31,19 +31,20 @@ use Rubix\Server\Listeners\LogFailures;
 use Rubix\Server\Listeners\StopTimers;
 use Rubix\Server\Listeners\CloseSSEChannels;
 use Rubix\Server\Listeners\CloseSocket;
+use Rubix\Server\Jobs\UpdateMemoryUsage;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\ML\Other\Loggers\BlackHole;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\Factory as Loop;
+use React\Socket\Server as Socket;
+use React\Socket\SecureServer as SecureSocket;
+use React\Promise\PromiseInterface;
 use React\Http\Server as HTTP;
 use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
-use React\Socket\Server as Socket;
-use React\Socket\SecureServer as SecureSocket;
-use React\Promise\PromiseInterface;
 
 use function React\Promise\resolve;
 
@@ -69,7 +70,7 @@ class HTTPServer implements Server, Verbose
 
     protected const MAX_TCP_PORT = 65535;
 
-    protected const MEMORY_UPDATE_INTERVAL = 1.0;
+    protected const DASHBOARD_MEMORY_UPDATE_INTERVAL = 2.0;
 
     /**
      * The host address to bind the server to.
@@ -260,8 +261,8 @@ class HTTPServer implements Server, Verbose
         $dashboard = new Dashboard($this, $dashboardChannel);
 
         $memoryTimer = $scheduler->repeat(
-            self::MEMORY_UPDATE_INTERVAL,
-            [$dashboard->memory(), 'updateUsage']
+            self::DASHBOARD_MEMORY_UPDATE_INTERVAL,
+            new UpdateMemoryUsage($dashboard->memory())
         );
 
         $eventBus = new EventBus(Subscriptions::subscribe([

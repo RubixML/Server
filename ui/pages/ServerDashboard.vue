@@ -2,8 +2,8 @@
     <div>
         <section class="section">
             <div class="container">
-                <requests-level v-if="httpStats && start" :requests="httpStats.requests" :start="start"></requests-level>
-                <request-rate-chart v-if="httpStats" :requests="httpStats.requests"></request-rate-chart>
+                <requests-level v-if="httpStats" :requests="httpStats.requests"></requests-level>
+                <response-rate-chart v-if="httpStats" :requests="httpStats.requests"></response-rate-chart>
             </div>
         </section>
         <section class="section">
@@ -24,8 +24,12 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <h2 class="title">Configuration Settings</h2>
-                        <configuration-settings v-if="configuration" :configuration="configuration"></configuration-settings>
+                        <h2 class="title">Information</h2>
+                        <server-info v-if="info" :info="info"></server-info>
+                    </div>
+                    <div class="column is-half">
+                        <h2 class="title">Settings</h2>
+                        <server-settings v-if="configuration" :configuration="configuration"></server-settings>
                     </div>
                 </div>
             </div>
@@ -41,8 +45,8 @@ export default {
         return {
             httpStats: undefined,
             memory: undefined,
+            info: undefined,
             configuration: undefined,
-            start: undefined,
             stream: null,
         };
     },
@@ -52,8 +56,8 @@ export default {
 
             this.httpStats = data.httpStats;
             this.memory = data.memory;
+            this.info = data.info;
             this.configuration = data.configuration;
-            this.start = data.start;
 
             this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
                 stream.subscribe('request-recorded', (message) => {

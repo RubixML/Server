@@ -22,18 +22,18 @@ class Dashboard extends Model
     protected $memory;
 
     /**
+     * The server info model.
+     *
+     * @var \Rubix\Server\Models\ServerInfo
+     */
+    protected $serverInfo;
+
+    /**
      * The server configuration settings.
      *
      * @var \Rubix\Server\Models\Configuration
      */
     protected $configuration;
-
-    /**
-     * The timestamp from when the server went up.
-     *
-     * @var int
-     */
-    protected $start;
 
     /**
      * @param \Rubix\Server\HTTPServer $server
@@ -43,8 +43,8 @@ class Dashboard extends Model
     {
         $this->httpStats = new HTTPStats($channel);
         $this->memory = new Memory($channel);
+        $this->serverInfo = new ServerInfo();
         $this->configuration = new Configuration($server);
-        $this->start = time();
     }
 
     /**
@@ -68,23 +68,23 @@ class Dashboard extends Model
     }
 
     /**
-     * Return the configuration settings model.
+     * Return the server info model.
+     *
+     * @return \Rubix\Server\Models\ServerInfo
+     */
+    public function serverInfo() : ServerInfo
+    {
+        return $this->serverInfo;
+    }
+
+    /**
+     * Return the configuration model.
      *
      * @return \Rubix\Server\Models\Configuration
      */
     public function configuration() : Configuration
     {
         return $this->configuration;
-    }
-
-    /**
-     * Return the starting timestamp.
-     *
-     * @return int
-     */
-    public function start() : int
-    {
-        return $this->start;
     }
 
     /**
@@ -97,8 +97,8 @@ class Dashboard extends Model
         return [
             'httpStats' => $this->httpStats->asArray(),
             'memory' => $this->memory->asArray(),
+            'info' => $this->serverInfo->asArray(),
             'configuration' => $this->configuration->asArray(),
-            'start' => $this->start,
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Services;
 
+use Rubix\Server\Jobs\Job;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\TimerInterface;
 
