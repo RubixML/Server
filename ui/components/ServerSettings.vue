@@ -1,11 +1,5 @@
 <template>
     <table class="table is-bordered is-striped is-fullwidth">
-        <thead>
-            <tr>
-                <th>Setting</th>
-                <th class="has-text-right">Value</th>
-            </tr>
-        </thead>
         <tbody>
             <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The host address this server is bound to.">Host</span></td>

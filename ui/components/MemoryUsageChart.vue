@@ -8,7 +8,7 @@
 import Chart from 'chart.js';
 
 const MEGABYTE = 1000000;
-const ONE_SECOND = 1000;
+const THREE_SECONDS = 3000;
 
 export default {
     data() {
@@ -73,7 +73,7 @@ export default {
 
         this.update();
 
-        setInterval(this.update, ONE_SECOND);
+        setInterval(this.update, THREE_SECONDS);
     },
     methods: { 
         update() {

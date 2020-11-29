@@ -15,20 +15,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use GuzzleHttp\Psr7\Utils;
 use Exception;
 
-use function in_array;
-
 abstract class RESTController implements Controller
 {
     protected const DEFAULT_HEADERS = [
         'Content-Type' => 'application/json',
-    ];
-
-    protected const ACCEPTED_CONTENT_TYPES = [
-        'application/json',
-    ];
-
-    protected const ACCEPTED_CONTENT_ENCODINGS = [
-        'gzip', 'deflate', 'identity',
     ];
 
     /**
@@ -60,10 +50,6 @@ abstract class RESTController implements Controller
         if ($request->hasHeader('Content-Encoding')) {
             $encoding = $request->getHeaderLine('Content-Encoding');
 
-            if (!in_array($encoding, self::ACCEPTED_CONTENT_ENCODINGS)) {
-                return new UnsupportedContentEncoding(self::ACCEPTED_CONTENT_ENCODINGS);
-            }
-
             try {
                 switch ($encoding) {
                     case 'gzip':
@@ -76,11 +62,15 @@ abstract class RESTController implements Controller
 
                         break 1;
 
-                    default:
                     case 'identity':
                         $data = $request->getBody();
 
                         break 1;
+
+                    default:
+                        return new UnsupportedContentEncoding([
+                            'gzip', 'deflate', 'identity',
+                        ]);
                 }
             } catch (Exception $exception) {
                 return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([
@@ -108,17 +98,17 @@ abstract class RESTController implements Controller
         if ($request->hasHeader('Content-Type')) {
             $type = $request->getHeaderLine('Content-Type');
 
-            if (!in_array($type, self::ACCEPTED_CONTENT_TYPES)) {
-                return new UnsupportedContentType(self::ACCEPTED_CONTENT_TYPES);
-            }
-
             try {
                 switch ($type) {
-                    default:
                     case 'application/json':
                         $body = JSON::decode($request->getBody());
 
                         break 1;
+
+                    default:
+                        return new UnsupportedContentType([
+                            'application/json',
+                        ]);
                 }
             } catch (Exception $exception) {
                 return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([

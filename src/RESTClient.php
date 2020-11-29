@@ -214,17 +214,15 @@ class RESTClient implements Client, AsyncClient
             if ($response->hasHeader('Content-Type')) {
                 $type = $response->getHeaderLine('Content-Type');
 
-                if (!in_array($type, self::ACCEPTED_CONTENT_TYPES)) {
-                    throw new RuntimeException('Unacceptable content'
-                        . " type $type in the response body.");
-                }
-
                 switch ($type) {
-                    default:
                     case 'application/json':
                         $payload = JSON::decode($response->getBody());
 
                         break 1;
+
+                    default:
+                        throw new RuntimeException('Unacceptable content'
+                            . " type $type in the response body.");
                 }
 
                 /** @var \GuzzleHttp\Promise\Promise $promise */

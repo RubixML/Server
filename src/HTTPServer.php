@@ -70,7 +70,7 @@ class HTTPServer implements Server, Verbose
 
     protected const MAX_TCP_PORT = 65535;
 
-    protected const DASHBOARD_MEMORY_UPDATE_INTERVAL = 2.0;
+    protected const DASHBOARD_MEMORY_UPDATE_INTERVAL = 3.0;
 
     /**
      * The host address to bind the server to.

@@ -42,10 +42,8 @@ class CompressRequestBody implements Middleware
     {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
-                $body = $request->getBody();
-
-                if ($body->getSize() > self::MAX_MTU) {
-                    $data = $this->encoder->encode($body);
+                if ($request->getBody()->getSize() > self::MAX_MTU) {
+                    $data = $this->encoder->encode($request->getBody());
 
                     $request = $request->withBody(Utils::streamFor($data))
                         ->withHeader('Content-Encoding', $this->encoder->scheme());
