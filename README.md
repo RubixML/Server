@@ -297,6 +297,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)? |
 | 4 | middlewares | | array | The stack of client middleware to run on each request/response.  |
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
+| 6 | verify SSL certificate | true | bool | Should we verify the server's SSL certificate? |
 
 **Example**
 
@@ -309,7 +310,7 @@ use Rubix\Server\HTTP\Encoders\Gzip;
 $client = new RESTClient('127.0.0.1', 443, true, [
 	new BasicAuthenticator('user', 'password'),
 	new CompressRequestBody(new Gzip(1)),
-], 0.0);
+], 0.0, true);
 ```
 
 ### Client Middleware

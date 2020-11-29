@@ -33,10 +33,10 @@ use Rubix\Server\Listeners\CloseSSEChannels;
 use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Jobs\UpdateMemoryUsage;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-use Rubix\Server\Traits\LoggerAware;
 use Rubix\ML\Other\Loggers\BlackHole;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as Loop;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
@@ -64,8 +64,6 @@ use function React\Promise\resolve;
  */
 class HTTPServer implements Server, Verbose
 {
-    use LoggerAware;
-
     protected const SERVER_NAME = 'Rubix ML HTTP Server/' . VERSION;
 
     protected const MAX_TCP_PORT = 65535;
@@ -113,6 +111,13 @@ class HTTPServer implements Server, Verbose
      * @var int
      */
     protected $sseReconnectBuffer;
+
+    /**
+     * A PSR-3 logger instance.
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
 
     /**
      * The event bus.
@@ -226,6 +231,16 @@ class HTTPServer implements Server, Verbose
     public function sseReconnectBuffer() : int
     {
         return $this->sseReconnectBuffer;
+    }
+
+    /**
+     * Sets a psr-3 logger.
+     *
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) : void
+    {
+        $this->logger = $logger;
     }
 
     /**

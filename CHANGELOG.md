@@ -12,6 +12,7 @@
     - Adjustable server-sent events retry buffer
     - Support for Gzip and Deflate request body encodings
     - HTTP Server max concurrent requests now configurable
+    - Allow REST client to disable SSL certificate verification
 
 - 0.2.2-beta
     - Added Async Client interface

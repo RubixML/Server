@@ -18,6 +18,8 @@ use GuzzleHttp\Promise\Promise;
 use Psr\Http\Message\ResponseInterface;
 use Exception;
 
+use function call_user_func;
+
 /**
  * REST Client
  *
@@ -53,6 +55,7 @@ class RESTClient implements Client, AsyncClient
      * @param bool $secure
      * @param \Rubix\Server\HTTP\Middleware\Client\Middleware[] $middlewares
      * @param float $timeout
+     * @param bool $verifySSLCertificate
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
@@ -60,7 +63,8 @@ class RESTClient implements Client, AsyncClient
         int $port = 80,
         bool $secure = false,
         array $middlewares = [],
-        float $timeout = 0.0
+        float $timeout = 0.0,
+        bool $verifySSLCertificate = true
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host address cannot be empty.');
@@ -93,6 +97,7 @@ class RESTClient implements Client, AsyncClient
             'base_uri' => $baseUri,
             'headers' => self::HEADERS,
             'timeout' => $timeout,
+            'verify' => $verifySSLCertificate,
             'handler' => $stack,
         ]);
     }
