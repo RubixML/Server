@@ -12,5 +12,5 @@ abstract class Query implements Stringable
      * @param mixed[] $data
      * @return self
      */
-    abstract public static function fromArray(array $data) : self;
+    abstract public static function fromArray(array $data);
 }
