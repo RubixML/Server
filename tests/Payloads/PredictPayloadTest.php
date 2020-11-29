@@ -46,7 +46,7 @@ class PredictPayloadTest extends TestCase
     public function asArray() : void
     {
         $expected = [
-            'predictions' => self::EXPECTED_PREDICTIONS,
+            'data' => self::EXPECTED_PREDICTIONS,
         ];
 
         $payload = $this->payload->asArray();

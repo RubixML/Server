@@ -31,7 +31,6 @@ use Rubix\Server\Listeners\LogFailures;
 use Rubix\Server\Listeners\StopTimers;
 use Rubix\Server\Listeners\CloseSSEChannels;
 use Rubix\Server\Listeners\CloseSocket;
-use Rubix\Server\Specifications\LearnerIsTrained;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Traits\LoggerAware;
 use Rubix\ML\Other\Loggers\BlackHole;
@@ -232,11 +231,14 @@ class HTTPServer implements Server, Verbose
      * Boot up the server.
      *
      * @param \Rubix\ML\Estimator $estimator
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function serve(Estimator $estimator) : void
     {
         if ($estimator instanceof Learner) {
-            LearnerIsTrained::with($estimator)->check();
+            if (!$estimator->trained()) {
+                throw new InvalidArgumentException('Learner must be trained.');
+            }
         }
 
         $this->logger->info('HTTP Server booting up');
@@ -282,8 +284,8 @@ class HTTPServer implements Server, Verbose
         ]), $eventBus);
 
         $router = new Router(Routes::collect([
-            new ModelController($queryBus),
             new DashboardController($queryBus, $dashboardChannel),
+            new ModelController($queryBus),
             new StaticAssetsController(),
         ]));
 

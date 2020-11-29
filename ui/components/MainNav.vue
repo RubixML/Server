@@ -14,7 +14,7 @@
         <div id="nav-menu" class="navbar-menu" :class="{ 'is-active' : open }">
             <div class="navbar-end">
                 <div class="navbar-item">
-                    <router-link :to="{ name: 'server'}" class="navbar-item button is-white" @click.native="open = false">
+                    <router-link :to="{ name: 'server'}" class="navbar-item button is-light" @click.native="open = false">
                         <span class="icon"><i class="fas fa-server"></i></span>
                         <span>Server</span>
                     </router-link>

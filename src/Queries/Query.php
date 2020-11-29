@@ -2,10 +2,15 @@
 
 namespace Rubix\Server\Queries;
 
-use Rubix\Server\Message;
 use Stringable;
 
-abstract class Query extends Message implements Stringable
+abstract class Query implements Stringable
 {
-    //
+    /**
+     * Build the query from an associative array.
+     *
+     * @param mixed[] $data
+     * @return self
+     */
+    abstract public static function fromArray(array $data) : self;
 }

@@ -47,7 +47,7 @@ class ProbaPayloadTest extends TestCase
     public function asArray() : void
     {
         $expected = [
-            'probabilities' => self::EXPECTED_PROBABILITIES,
+            'data' => self::EXPECTED_PROBABILITIES,
         ];
 
         $payload = $this->payload->asArray();

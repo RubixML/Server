@@ -22,17 +22,6 @@ class ProbaPayload extends Payload
     protected $probabilities;
 
     /**
-     * Build the response from an associative array of data.
-     *
-     * @param mixed[] $data
-     * @return self
-     */
-    public static function fromArray(array $data) : self
-    {
-        return new self($data['probabilities'] ?? []);
-    }
-
-    /**
      * @param mixed[] $probabilities
      */
     public function __construct(array $probabilities)
@@ -58,7 +47,7 @@ class ProbaPayload extends Payload
     public function asArray() : array
     {
         return [
-            'probabilities' => $this->probabilities,
+            'data' => $this->probabilities,
         ];
     }
 }

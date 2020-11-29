@@ -44,7 +44,7 @@ class ScorePayloadTest extends TestCase
     public function asArray() : void
     {
         $expected = [
-            'scores' => self::EXPECTED_SCORES,
+            'data' => self::EXPECTED_SCORES,
         ];
 
         $payload = $this->payload->asArray();

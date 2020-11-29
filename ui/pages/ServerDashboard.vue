@@ -41,17 +41,19 @@ export default {
         return {
             httpStats: undefined,
             memory: undefined,
-            start: undefined,
             configuration: undefined,
+            start: undefined,
             stream: null,
         };
     },
     mounted() {
         this.$http.get('/server/dashboard').then((response) => {
-            this.httpStats = response.data.httpStats;
-            this.memory = response.data.memory;
-            this.start = response.data.start;
-            this.configuration = response.data.configuration;
+            const data = response.data.data;
+
+            this.httpStats = data.httpStats;
+            this.memory = data.memory;
+            this.configuration = data.configuration;
+            this.start = data.start;
 
             this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
                 stream.subscribe('request-recorded', (message) => {

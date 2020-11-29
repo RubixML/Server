@@ -23,18 +23,6 @@ class GetDashboard extends Query
     }
 
     /**
-     * Return the message as an array.
-     *
-     * @return mixed[]
-     */
-    public function asArray() : array
-    {
-        return [
-            //
-        ];
-    }
-
-    /**
      * Return the string representation of the object.
      *
      * @return string

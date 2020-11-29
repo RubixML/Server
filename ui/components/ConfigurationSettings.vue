@@ -20,11 +20,11 @@
                 <td class="has-text-right">{{ configuration.maxConcurrentRequests }}</td>
             </tr>
             <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum amount of memory the server is allowed to consume.">Memory Limit</span><span class="tag is-warning ml-3">INI</span></td>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum amount of memory the server is allowed to consume.">Memory Limit</span><span class="tag ml-3">INI</span></td>
                 <td class="has-text-right">{{ configuration.memoryLimit }}</td>
             </tr>
             <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum size of a request body allowed.">Max POST Size</span><span class="tag is-warning ml-3">INI</span></td>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum size of a request body allowed.">Max POST Size</span><span class="tag ml-3">INI</span></td>
                 <td class="has-text-right">{{ configuration.postMaxSize }}</td>
             </tr>
             <tr>

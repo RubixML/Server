@@ -122,7 +122,7 @@ The HTTP server exposes the following resources and their methods.
 | GET | /server/dashboard/events | Subscribe to the dashboard events stream. |
 
 #### Web Interface
-The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` using your web browser.
+The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser.
 
 ![Server Web UI Screenshot](https://raw.githubusercontent.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png)
 

@@ -43,6 +43,6 @@ class DashboardHandler implements Handler
      */
     public function getDashboard(GetDashboard $query) : GetDashboardPayload
     {
-        return GetDashboardPayload::fromDashboard($this->dashboard);
+        return new GetDashboardPayload($this->dashboard);
     }
 }

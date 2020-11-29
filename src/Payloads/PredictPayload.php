@@ -22,17 +22,6 @@ class PredictPayload extends Payload
     protected $predictions;
 
     /**
-     * Build the response from an associative array of data.
-     *
-     * @param mixed[] $data
-     * @return self
-     */
-    public static function fromArray(array $data) : self
-    {
-        return new self($data['predictions'] ?? []);
-    }
-
-    /**
      * @param mixed[] $predictions
      */
     public function __construct(array $predictions)
@@ -58,7 +47,7 @@ class PredictPayload extends Payload
     public function asArray() : array
     {
         return [
-            'predictions' => $this->predictions,
+            'data' => $this->predictions,
         ];
     }
 }

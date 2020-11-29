@@ -44,7 +44,7 @@ class RESTClient implements Client, AsyncClient
     /**
      * The Guzzle HTTP client.
      *
-     * @var Guzzle
+     * @var \GuzzleHttp\Client
      */
     protected $client;
 
@@ -122,23 +122,9 @@ class RESTClient implements Client, AsyncClient
     {
         $request = new PredictRequest($dataset);
 
-        $unpackPayload = function (array $json) : Promise {
-            if (empty($json['predictions'])) {
-                throw new RuntimeException('Predictions missing'
-                    . ' from response payload.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $json) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($json['predictions']);
-            });
-
-            return $promise;
-        };
-
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then($unpackPayload);
+            ->then([$this, 'unpackPayload']);
     }
 
     /**
@@ -162,23 +148,9 @@ class RESTClient implements Client, AsyncClient
     {
         $request = new ProbaRequest($dataset);
 
-        $unpackPayload = function (array $json) : Promise {
-            if (empty($json['probabilities'])) {
-                throw new RuntimeException('Probabilities missing'
-                    . ' from response payload.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $json) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($json['probabilities']);
-            });
-
-            return $promise;
-        };
-
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then($unpackPayload);
+            ->then([$this, 'unpackPayload']);
     }
 
     /**
@@ -202,23 +174,9 @@ class RESTClient implements Client, AsyncClient
     {
         $request = new ScoreRequest($dataset);
 
-        $unpackPayload = function (array $json) : Promise {
-            if (empty($json['scores'])) {
-                throw new RuntimeException('Anomaly scores missing'
-                    . ' from response payload.');
-            }
-
-            $promise = new Promise(function () use (&$promise, $json) {
-                /** @var \GuzzleHttp\Promise\Promise $promise */
-                $promise->resolve($json['scores']);
-            });
-
-            return $promise;
-        };
-
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then($unpackPayload);
+            ->then([$this, 'unpackPayload']);
     }
 
     /**
@@ -240,10 +198,9 @@ class RESTClient implements Client, AsyncClient
     {
         $request = new GetDashboardRequest();
 
-        return $this->client->sendAsync($request)->then(
-            [$this, 'parseResponseBody'],
-            [$this, 'onError']
-        );
+        return $this->client->sendAsync($request)
+            ->then([$this, 'parseResponseBody'], [$this, 'onError'])
+            ->then([$this, 'unpackPayload']);
     }
 
     /**
@@ -277,6 +234,27 @@ class RESTClient implements Client, AsyncClient
                 /** @var \GuzzleHttp\Promise\Promise $promise */
                 $promise->resolve($payload);
             }
+        });
+
+        return $promise;
+    }
+
+    /**
+     * Unpack the response body data payload.
+     *
+     * @param mixed[] $body
+     * @return \GuzzleHttp\Promise\Promise
+     */
+    public function unpackPayload(array $body) : Promise
+    {
+        $promise = new Promise(function () use (&$promise, $body) {
+            if (!isset($body['data'])) {
+                throw new RuntimeException('Data payload missing'
+                    . ' from the response body.');
+            }
+
+            /** @var \GuzzleHttp\Promise\Promise $promise */
+            $promise->resolve($body['data']);
         });
 
         return $promise;

@@ -19,17 +19,6 @@ class ScorePayload extends Payload
     protected $scores;
 
     /**
-     * Build the response from an associative array of data.
-     *
-     * @param mixed[] $data
-     * @return self
-     */
-    public static function fromArray(array $data) : self
-    {
-        return new self($data['scores'] ?? []);
-    }
-
-    /**
      * @param mixed[] $scores
      */
     public function __construct(array $scores)
@@ -55,7 +44,7 @@ class ScorePayload extends Payload
     public function asArray() : array
     {
         return [
-            'scores' => $this->scores,
+            'data' => $this->scores,
         ];
     }
 }

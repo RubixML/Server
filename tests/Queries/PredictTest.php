@@ -47,21 +47,4 @@ class PredictTest extends TestCase
     {
         $this->assertInstanceOf(Dataset::class, $this->query->dataset());
     }
-
-    /**
-     * @test
-     */
-    public function asArray() : void
-    {
-        $expected = [
-            'samples' => [
-                ['nice', 'rough', 'loner'],
-            ],
-        ];
-
-        $payload = $this->query->asArray();
-
-        $this->assertIsArray($payload);
-        $this->assertEquals($expected, $payload);
-    }
 }

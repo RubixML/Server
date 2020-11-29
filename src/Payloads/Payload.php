@@ -2,9 +2,12 @@
 
 namespace Rubix\Server\Payloads;
 
-use Rubix\Server\Message;
-
-abstract class Payload extends Message
+abstract class Payload
 {
-    //
+    /**
+     * Return the payload as an associative array.
+     *
+     * @return mixed[]
+     */
+    abstract public function asArray() : array;
 }

@@ -14,59 +14,39 @@ use Rubix\Server\Models\Dashboard;
 class GetDashboardPayload extends Payload
 {
     /**
-     * The dashboard data.
+     * The dashboard model.
      *
-     * @var mixed[]
+     * @var \Rubix\Server\Models\Dashboard
      */
     protected $dashboard;
 
     /**
-     * Build the response from a dashboard model.
-     *
      * @param \Rubix\Server\Models\Dashboard $dashboard
-     * @return self
      */
-    public static function fromDashboard(Dashboard $dashboard) : self
-    {
-        return self::fromArray($dashboard->asArray());
-    }
-
-    /**
-     * Build the response from an associative array of data.
-     *
-     * @param mixed[] $data
-     * @return self
-     */
-    public static function fromArray(array $data) : self
-    {
-        return new self($data);
-    }
-
-    /**
-     * @param mixed[] $dashboard
-     */
-    public function __construct(array $dashboard)
+    public function __construct(Dashboard $dashboard)
     {
         $this->dashboard = $dashboard;
     }
 
     /**
-     * Return the dashboard data.
+     * Return the dashboard model.
      *
-     * @return mixed[]
+     * @return \Rubix\Server\Models\Dashboard
      */
-    public function dashboard() : array
+    public function dashboard() : Dashboard
     {
         return $this->dashboard;
     }
 
     /**
-     * Return the message as an array.
+     * Return the payload as an associative array.
      *
      * @return mixed[]
      */
     public function asArray() : array
     {
-        return $this->dashboard;
+        return [
+            'data' => $this->dashboard->asArray(),
+        ];
     }
 }
