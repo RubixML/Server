@@ -1,19 +1,19 @@
 <?php
 
-namespace Rubix\Server\Tests\HTTP\Middleware;
+namespace Rubix\Server\Tests\HTTP\Middleware\Server;
 
-use Rubix\Server\HTTP\Middleware\Middleware;
-use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\Server\Middleware;
+use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Middleware
- * @covers \Rubix\Server\HTTP\Middleware\BasicAuthenticator
+ * @covers \Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator
  */
 class BasicAuthenticatorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\BasicAuthenticator
+     * @var \Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator
      */
     protected $middleware;
 

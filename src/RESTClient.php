@@ -7,6 +7,7 @@ use Rubix\Server\HTTP\Requests\PredictRequest;
 use Rubix\Server\HTTP\Requests\ProbaRequest;
 use Rubix\Server\HTTP\Requests\ScoreRequest;
 use Rubix\Server\HTTP\Requests\GetDashboardRequest;
+use Rubix\Server\HTTP\Middleware\Client\Middleware;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 use Rubix\Server\Helpers\JSON;
@@ -14,7 +15,6 @@ use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Promise;
-use GuzzleRetry\GuzzleRetryMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Exception;
 
@@ -32,7 +32,6 @@ class RESTClient implements Client, AsyncClient
     protected const HEADERS = [
         'User-Agent' => 'Rubix ML REST Client/' . VERSION,
         'Accept' => 'application/json',
-        'Accept-Encoding' => 'identity',
     ];
 
     protected const ACCEPTED_CONTENT_TYPES = [
@@ -52,18 +51,16 @@ class RESTClient implements Client, AsyncClient
      * @param string $host
      * @param int $port
      * @param bool $secure
-     * @param mixed[] $headers
+     * @param \Rubix\Server\HTTP\Middleware\Client\Middleware[] $middlewares
      * @param float $timeout
-     * @param int $retries
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
         int $port = 80,
         bool $secure = false,
-        array $headers = [],
-        float $timeout = 0.0,
-        int $retries = 3
+        array $middlewares = [],
+        float $timeout = 0.0
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host address cannot be empty.');
@@ -74,29 +71,28 @@ class RESTClient implements Client, AsyncClient
                 . ' between 0 and ' . self::MAX_TCP_PORT . ", $port given.");
         }
 
+        $stack = HandlerStack::create();
+
+        foreach ($middlewares as $middleware) {
+            if (!$middleware instanceof Middleware) {
+                throw new InvalidArgumentException('Middleware must'
+                    . ' implement the Middleware interface.');
+            }
+
+            $stack->push(call_user_func($middleware));
+        }
+
         if ($timeout < 0.0) {
             throw new InvalidArgumentException('Timeout must be'
                 . " greater than 0, $timeout given.");
         }
 
-        if ($retries < 0) {
-            throw new InvalidArgumentException('Number of retries'
-                . " must be greater than 0, $retries given.");
-        }
-
         $baseUri = ($secure ? 'https' : 'http') . "://$host:$port";
-
-        $headers += self::HEADERS;
-
-        $stack = HandlerStack::create();
-
-        $stack->push(GuzzleRetryMiddleware::factory());
 
         $this->client = new Guzzle([
             'base_uri' => $baseUri,
-            'headers' => $headers,
+            'headers' => self::HEADERS,
             'timeout' => $timeout,
-            'max_retry_attempts' => $retries,
             'handler' => $stack,
         ]);
     }

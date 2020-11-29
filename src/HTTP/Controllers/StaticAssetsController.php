@@ -5,17 +5,21 @@ namespace Rubix\Server\HTTP\Controllers;
 use Rubix\Server\Helpers\File;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
+use Rubix\Server\HTTP\Responses\InternalServerError;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Promise\Promise;
 
+use function is_file;
 use function is_readable;
 use function file_get_contents;
 
 class StaticAssetsController implements Controller
 {
-    protected const ASSETS_PATH = __DIR__ . '/../../../assets';
+    protected const DEFAULT_HEADERS = [
+        'Cache-Control' => 'max-age=604800',
+    ];
 
-    protected const CACHE_MAX_AGE = 'max-age=604800';
+    protected const ASSETS_PATH = __DIR__ . '/../../../assets';
 
     /**
      * Return the routes this controller handles.
@@ -56,19 +60,22 @@ class StaticAssetsController implements Controller
      */
     protected function respondWithFile(string $path)
     {
-        $path = self::ASSETS_PATH . $path;
+        $path = realpath(self::ASSETS_PATH . $path);
 
-        if (!is_readable($path)) {
+        if ($path === false or !is_file($path)) {
             return new NotFound();
         }
 
+        if (!is_readable($path)) {
+            return new InternalServerError();
+        }
+
         return new Promise(function ($resolve) use ($path) {
-            $data = file_get_contents($path) ?: null;
+            $data = file_get_contents($path) ?: '';
 
             $response = new Success([
                 'Content-Type' => File::mime($path),
-                'Cache-Control' => self::CACHE_MAX_AGE,
-            ], $data);
+            ] + self::DEFAULT_HEADERS, $data);
 
             $resolve($response);
         });

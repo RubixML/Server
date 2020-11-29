@@ -11,6 +11,9 @@ $ composer require rubix/server
 ## Requirements
 - [PHP](https://php.net/manual/en/install.php) 7.2 or above
 
+#### Recommended
+- [Tensor extension](https://github.com/RubixML/Tensor) for fast Matrix/Vector computing
+
 #### Optional
 - [Event extension](https://pecl.php.net/package/event) for high-volume servers
 
@@ -19,13 +22,17 @@ $ composer require rubix/server
 ### Table of Contents
 - [Servers](#servers)
 	- [HTTP Server](#http-server)
-- [Clients](#clients)
-	- [REST Client](#rest-client)
-- [HTTP Middleware](#http-middleware)
+- [Server Middleware](#server-middleware)
 	- [Access Log Generator](#access-log-generator)
 	- [Basic Authenticator](#basic-authenticator)
 	- [Shared Token Authenticator](#shared-token-authenticator)
 	- [Trusted Clients](#trusted-clients)
+- [Clients](#clients)
+	- [REST Client](#rest-client)
+- [Client Middleware](#client-middleware)
+	- [Basic Authenticator](#basic-authenticator-client-side)
+	- [Compress Request Body](#compress-request-body)
+	- [Shared Token Authenticator](#shared-token-authenticator-client-side)
 
 ---
 ### Servers
@@ -87,7 +94,7 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 80 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middlewares | | array | The HTTP middleware stack to run on each request/response. |
+| 4 | middlewares | | array | The stack of server middleware to run on each request/response. |
 | 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
 | 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
@@ -95,9 +102,9 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 
 ```php
 use Rubix\Server\HTTPServer;
-use Rubix\Server\HTTP\Middleware\AccessLogGenerator;
+use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use Rubix\ML\Other\Loggers\Screen;
-use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
 
 $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 	new AccessLogGenerator(new Screen()),
@@ -135,6 +142,93 @@ This server respects the following `php.ini` configuration variables.
 
 #### References
 >- R. Fielding et al. (2014). Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content.
+
+---
+### Server Middleware
+HTTP middleware are processors of the incoming HTTP requests and outgoing responses produced by the request handler (or *Controller*). They allow the user to hook into the HTTP request/response cycle by inserting additional logic into the pipeline.
+
+### Access Log Generator
+Generates an HTTP access log using a format similar to the Apache log format.
+
+#### Parameters
+| # | Param | Default | Type | Description |
+|---|---|---|---|---|
+| 1 | logger | | LoggerInterface | A PSR-3 logger instance. |
+
+**Example**
+
+```php
+use Rubix\Server\HTTP\Middleware\Server\AccessLog;
+use Rubix\ML\Other\Loggers\Screen;
+
+$middleware = new AccessLog(new Screen());
+```
+
+```sh
+[2020-11-04 23:10:57] INFO: 127.0.0.1 "POST /predictions HTTP/1.1" 200 140 - "Rubix ML REST Client/0.2"
+[2020-11-04 23:11:54] INFO: 127.0.0.1 "POST /predictions/sample HTTP/1.1" 200 96 - "Rubix ML REST Client/0.2"
+```
+
+### Basic Authenticator
+An implementation of HTTP Basic Auth as described in [RFC7617](https://tools.ietf.org/html/rfc7617).
+
+> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+
+#### Parameters
+| # | Param | Default | Type | Description |
+|---|---|---|---|---|
+| 1 | passwords | | array | An associative map from usernames to their passwords. |
+| 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
+
+**Example**
+
+```php
+use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
+
+$middleware = new BasicAuthenticator([
+	'morgan' => 'secret',
+	'taylor' => 'secret',
+], 'ml models');
+```
+
+### Shared Token Authenticator
+Authenticates incoming requests using a shared key that is kept secret between the client and server. It uses the `Authorization` header with the `Bearer` prefix to indicate the shared key.
+
+> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+
+#### Parameters
+| # | Param | Default | Type | Description |
+|---|---|---|---|---|
+| 1 | tokens | | array | The shared secret keys (bearer tokens) used to authorize requests. |
+| 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
+
+**Example**
+
+```php
+use Rubix\Server\HTTP\Middleware\Server\SharedTokenAuthenticator;
+
+$middleware = new SharedTokenAuthenticator([
+	'secret', 'another-secret',
+], 'ml models');
+```
+
+### Trusted Clients
+A whitelist of clients that can access the server - all other connections will be dropped.
+
+#### Parameters
+| # | Param | Default | Type | Description |
+|---|---|---|---|---|
+| 1 | ips | ['127.0.0.1'] | array | An array of trusted client ip addresses. |
+
+**Example**
+
+```php
+use Rubix\Server\HTTP\Middleware\Server\TrustedClients;
+
+$middleware = new TrustedClients([
+	'127.0.0.1', '192.168.4.1', '45.63.67.15',
+]);
+```
 
 ---
 ### Clients
@@ -201,105 +295,76 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
 | 2 | port | 80 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)? |
-| 4 | headers | | array | Additional HTTP headers to send along with each request. |
+| 4 | middlewares | | array | The stack of client middleware to run on each request/response.  |
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
-| 6 | retries | 3 | int | The number of retries before giving up on the request. |
 
 **Example**
 
 ```php
 use Rubix\Server\RESTClient;
+use Rubix\Server\HTTP\Middleware\Client\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\Client\CompressRequestBody;
+use Rubix\Server\HTTP\Encoders\Gzip;
 
 $client = new RESTClient('127.0.0.1', 443, true, [
-    'Authorization' => 'Basic ' . base64_encode('morgan:secret'),
-], 0.0, 5);
+	new BasicAuthenticator('user', 'password'),
+	new CompressRequestBody(new Gzip(1)),
+], 0.0);
 ```
 
----
-### HTTP Middleware
-HTTP middleware are objects that process incoming HTTP requests before and after they are handled by a final request handler (controller). They allow the user to hook into the HTTP request/response cycle by inserting additional logic into the pipeline.
+### Client Middleware
+Similarly to Server middleware, client middlewares are functions that hook into the request/response cycle but from the client end. Some of the server middlewares have accompanying client middleware such as [Basic Authenticator](#basic-authenticator) and [Shared Token Authenticator](#shared-token-authenticator).
 
-### Access Log Generator
-Generates an HTTP access log using a format similar to the Apache log format.
+### Basic Authenticator (Client Side)
+Adds the necessary authorization headers to the request using the Basic scheme.
 
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
-| 1 | logger | | LoggerInterface | A PSR-3 logger instance. |
+| 1 | username | | string | The username. |
+| 2 | password | | string | The password. |
 
 **Example**
 
 ```php
-use Rubix\Server\HTTP\Middleware\AccessLog;
-use Rubix\ML\Other\Loggers\Screen;
+use Rubix\Server\HTTP\Middleware\Client\BasicAuthenticator;
 
-$middleware = new AccessLog(new Screen());
+$middleware = new BasicAuthenticator('morgan', 'secret');
 ```
 
-```sh
-[2020-11-04 23:10:57] INFO: 127.0.0.1 "POST /predictions HTTP/1.1" 200 140 - "Rubix RPC Client"
-[2020-11-04 23:11:54] INFO: 127.0.0.1 "POST /predictions/sample HTTP/1.1" 200 96 - "Rubix RPC Client"
-```
+### Compress Request Body
+Apply a compression algorithm (*Encoder*) to the request body.
 
-### Basic Authenticator
-An implementation of HTTP Basic Auth as described in [RFC7617](https://tools.ietf.org/html/rfc7617).
-
-> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+> **Note:** The request body must be larger than the standard max MTU (maximum transfer unit) otherwise the body will be sent uncompressed.
 
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
-| 1 | passwords | | array | An associative map from usernames to their passwords. |
-| 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
+| 1 | encoder | Gzip | object | The encoder used to compress the request body. |
 
 **Example**
 
 ```php
-use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\Client\CompressRequestBody;
+use Rubix\Server\HTTP\Encoders\Deflate;
 
-$middleware = new BasicAuthenticator([
-	'morgan' => 'secret',
-	'taylor' => 'secret',
-], 'ml models');
+$middleware = new CompressRequestBody(new Deflate(5));
 ```
 
-### Shared Token Authenticator
-Authenticates incoming requests using a shared key that is kept secret between the client and server. It uses the `Authorization` header with the `Bearer` prefix to indicate the shared key.
-
-> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+### Shared Token Authenticator (Client Side)
+Adds the necessary authorization headers to the request using the Bearer scheme.
 
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
-| 1 | tokens | | array | The shared secret keys (bearer tokens) used to authorize requests. |
-| 2 | realm | 'auth' | string | The unique name given to the scope of permissions required for this server. |
+| 1 | token | | string | The shared token to authenticate the request. |
 
 **Example**
 
 ```php
-use Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator;
+use Rubix\Server\HTTP\Middleware\Client\SharedtokenAuthenticator;
 
-$middleware = new SharedTokenAuthenticator([
-	'secret', 'another-secret',
-], 'ml models');
-```
-
-### Trusted Clients
-A whitelist of clients that can access the server - all other connections will be dropped.
-
-#### Parameters
-| # | Param | Default | Type | Description |
-|---|---|---|---|---|
-| 1 | ips | ['127.0.0.1'] | array | An array of trusted client ip addresses. |
-
-**Example**
-
-```php
-use Rubix\Server\HTTP\Middleware\TrustedClients;
-
-$middleware = new TrustedClients([
-	'127.0.0.1', '192.168.4.1', '45.63.67.15',
-]);
+$middleware = new SharedTokenAuthenticator('secret');
 ```
 
 ## License

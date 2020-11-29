@@ -15,7 +15,7 @@ use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\SSEChannel;
-use Rubix\Server\HTTP\Middleware\Middleware;
+use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
 use Rubix\Server\HTTP\Controllers\StaticAssetsController;
@@ -95,7 +95,7 @@ class HTTPServer implements Server, Verbose
     /**
      * The HTTP middleware stack.
      *
-     * @var \Rubix\Server\HTTP\Middleware\Middleware[]
+     * @var \Rubix\Server\HTTP\Middleware\Server\Middleware[]
      */
     protected $middlewares;
 
@@ -131,7 +131,7 @@ class HTTPServer implements Server, Verbose
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param \Rubix\Server\HTTP\Middleware\Middleware[] $middlewares
+     * @param \Rubix\Server\HTTP\Middleware\Server\Middleware[] $middlewares
      * @param int $maxConcurrentRequests
      * @param int $sseReconnectBuffer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException

@@ -4,7 +4,7 @@ namespace Rubix\Server\Models;
 
 use Rubix\Server\HTTPServer;
 
-class Configuration implements Model
+class Configuration extends Model
 {
     protected const UNKNOWN = 'unknown';
 

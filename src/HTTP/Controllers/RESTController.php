@@ -67,18 +67,18 @@ abstract class RESTController implements Controller
             try {
                 switch ($encoding) {
                     case 'gzip':
-                        $body = gzdecode($request->getBody());
+                        $data = gzdecode($request->getBody());
 
                         break 1;
 
                     case 'deflate':
-                        $body = gzinflate($request->getBody());
+                        $data = gzinflate($request->getBody());
 
                         break 1;
 
                     default:
                     case 'identity':
-                        $body = $request->getBody();
+                        $data = $request->getBody();
 
                         break 1;
                 }
@@ -88,9 +88,7 @@ abstract class RESTController implements Controller
                 ]));
             }
 
-            $stream = Utils::streamFor($body);
-
-            $request = $request->withBody($stream);
+            $request = $request->withBody(Utils::streamFor($data));
         }
 
         return $next($request);

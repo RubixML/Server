@@ -5,6 +5,7 @@ namespace Rubix\Server\Tests;
 use Rubix\Server\RESTClient;
 use Rubix\Server\Client;
 use Rubix\Server\AsyncClient;
+use Rubix\Server\HTTP\Middleware\Client\SharedTokenAuthenticator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,7 +24,9 @@ class RESTClientTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->client = new RESTClient('127.0.0.1', 8888, false, [], 0.0, 3);
+        $this->client = new RESTClient('127.0.0.1', 8888, false, [
+            new SharedTokenAuthenticator('secret'),
+        ], 0.0);
     }
 
     /**

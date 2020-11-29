@@ -2,12 +2,12 @@
 
 namespace Rubix\Server\Models;
 
-interface Model
+abstract class Model
 {
     /**
      * Return the model properties as an associative array.
      *
      * @return mixed[]
      */
-    public function asArray() : array;
+    abstract public function asArray() : array;
 }

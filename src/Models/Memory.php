@@ -4,7 +4,7 @@ namespace Rubix\Server\Models;
 
 use Rubix\Server\Services\SSEChannel;
 
-class Memory implements Model
+class Memory extends Model
 {
     /**
      * The server-sent events emitter.

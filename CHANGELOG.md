@@ -1,5 +1,6 @@
 - 0.2.3-beta
     - Added web user interface
+    - Added client middlewares
     - Added server dashboard view
     - Non 4xx error responses deferred for better concurrency
     - Rename internal command Response objects to Payload

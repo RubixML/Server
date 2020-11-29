@@ -6,7 +6,7 @@ use Rubix\Server\Services\SSEChannel;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class HTTPStats implements Model
+class HTTPStats extends Model
 {
     /**
      * The server-sent events emitter.
