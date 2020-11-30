@@ -8,5 +8,5 @@ namespace Rubix\Server
 
     const BUGFIX_VERSION = '3-beta';
 
-    const VERSION = MAJOR_VERSION . '.' . MINOR_VERSION . '.' . BUGFIX_VERSION;
+    const FULL_VERSION = MAJOR_VERSION . '.' . MINOR_VERSION . '.' . BUGFIX_VERSION;
 }

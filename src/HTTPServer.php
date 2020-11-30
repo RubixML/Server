@@ -48,8 +48,6 @@ use React\Http\Middleware\RequestBodyBufferMiddleware;
 
 use function React\Promise\resolve;
 
-use const Rubix\Server\VERSION as VERSION;
-
 /**
  * HTTP Server
  *
@@ -66,7 +64,7 @@ use const Rubix\Server\VERSION as VERSION;
  */
 class HTTPServer implements Server, Verbose
 {
-    protected const SERVER_NAME = 'Rubix ML HTTP Server/' . VERSION;
+    protected const SERVER_NAME = 'Rubix ML HTTP Server/' . FULL_VERSION;
 
     protected const MAX_TCP_PORT = 65535;
 

@@ -20,8 +20,6 @@ use Exception;
 
 use function call_user_func;
 
-use const Rubix\Server\VERSION as VERSION;
-
 /**
  * REST Client
  *
@@ -34,7 +32,7 @@ use const Rubix\Server\VERSION as VERSION;
 class RESTClient implements Client, AsyncClient
 {
     protected const HEADERS = [
-        'User-Agent' => 'Rubix ML REST Client/' . VERSION,
+        'User-Agent' => 'Rubix ML REST Client/' . FULL_VERSION,
         'Accept' => 'application/json',
     ];
 
