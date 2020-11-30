@@ -36,6 +36,8 @@ class StaticAssetsController implements Controller
             '/sw.js' => ['GET' => $this],
             '/manifest.json' => ['GET' => $this],
             '/images/app-icon-small.png' => ['GET' => $this],
+            '/images/app-icon-apple-touch.png' => ['GET' => $this],
+            '/images/app-icon-medium.png' => ['GET' => $this],
             '/images/app-icon-large.png' => ['GET' => $this],
             '/fonts/fa-solid-900.woff' => ['GET' => $this],
             '/fonts/fa-solid-900.woff2' => ['GET' => $this],

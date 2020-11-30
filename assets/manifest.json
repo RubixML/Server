@@ -10,12 +10,23 @@
         {
             "src": "/images/app-icon-small.png",
             "type": "image/png",
-            "sizes": "64x64"
+            "sizes": "128x128"
+        },
+        {
+            "src": "/images/app-icon-apple-touch.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/app-icon-medium.png",
+            "type": "image/png",
+            "sizes": "256x256"
         },
         {
             "src": "/images/app-icon-large.png",
             "type": "image/png",
-            "sizes": "256x256"
+            "sizes": "512x512"
         }
     ],
     "background_color": "#FFFFFF",

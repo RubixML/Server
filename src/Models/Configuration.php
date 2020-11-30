@@ -6,8 +6,6 @@ use Rubix\Server\HTTPServer;
 
 class Configuration extends Model
 {
-    protected const UNKNOWN = 'unknown';
-
     /**
      * The server instance.
      *
@@ -70,7 +68,7 @@ class Configuration extends Model
      */
     public function memoryLimit() : string
     {
-        return ini_get('memory_limit') ?: self::UNKNOWN;
+        return ini_get('memory_limit') ?: 'unknown';
     }
 
     /**
@@ -80,7 +78,7 @@ class Configuration extends Model
      */
     public function postMaxSize() : string
     {
-        return ini_get('post_max_size') ?: self::UNKNOWN;
+        return ini_get('post_max_size') ?: 'unknown';
     }
 
     /**

@@ -2,8 +2,6 @@
 
 namespace Rubix\Server\Models;
 
-use const Rubix\Server\VERSION;
-
 class ServerInfo extends Model
 {
     /**
@@ -20,10 +18,18 @@ class ServerInfo extends Model
      */
     protected $pid;
 
+    /**
+     * The version numbers model.
+     *
+     * @var \Rubix\Server\Models\Versions
+     */
+    protected $versions;
+
     public function __construct()
     {
         $this->start = time();
         $this->pid = getmypid();
+        $this->versions = new Versions();
     }
 
     /**
@@ -47,23 +53,13 @@ class ServerInfo extends Model
     }
 
     /**
-     * Return the library version.
+     * Return the version numbers model.
      *
-     * @return string
+     * @return \Rubix\Server\Models\Versions
      */
-    public function serverVersion() : string
+    public function versions() : Versions
     {
-        return VERSION;
-    }
-
-    /**
-     * Return the version of PHP the server is running on.
-     *
-     * @return string
-     */
-    public function phpVersion() : string
-    {
-        return phpversion() ?: 'unknown';
+        return $this->versions;
     }
 
     /**
@@ -76,8 +72,7 @@ class ServerInfo extends Model
         return [
             'start' => $this->start,
             'pid' => $this->pid,
-            'serverVersion' => $this->serverVersion(),
-            'phpVersion' => $this->phpVersion(),
+            'versions' => $this->versions->asArray(),
         ];
     }
 }

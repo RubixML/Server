@@ -7,19 +7,23 @@
             </tr>
             <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The amount of time that the server has been running.">Uptime</span></td>
-                <td class="has-text-right">{{ uptime }}</td>
+                <td class="has-text-right has-text-first-letter-capitalized">{{ uptime }}</td>
             </tr>
             <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The process ID (PID) of the server.">PID</span></td>
                 <td class="has-text-right">{{ info.pid }}</td>
             </tr>
             <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of the library the server is running on.">Server Library Version</span></td>
-                <td class="has-text-right">{{ info.serverVersion }}</td>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of the library the server is running on.">Server Version</span></td>
+                <td class="has-text-right">{{ info.versions.server}}</td>
+            </tr>
+            <tr>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of Rubix ML the model is running on.">ML Version</span></td>
+                <td class="has-text-right">{{ info.versions.ml }}</td>
             </tr>
             <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of PHP the server is running on.">PHP Version</span></td>
-                <td class="has-text-right">{{ info.phpVersion }}</td>
+                <td class="has-text-right">{{ info.versions.php }}</td>
             </tr>
         </tbody>
     </table>

@@ -4,7 +4,9 @@ namespace Rubix\Server
 {
     const MAJOR_VERSION = '0';
 
-    const MINOR_VERSION = '2-beta';
+    const MINOR_VERSION = '2';
 
-    const VERSION = MAJOR_VERSION . '.' . MINOR_VERSION;
+    const BUGFIX_VERSION = '3-beta';
+
+    const VERSION = MAJOR_VERSION . '.' . MINOR_VERSION . '.' . BUGFIX_VERSION;
 }

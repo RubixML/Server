@@ -8,7 +8,7 @@ use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 
 $client = new RESTClient('127.0.0.1', 8000, false, [
-    new BasicAuthenticator('user', 'password'),
+    new BasicAuthenticator('user', 'secret'),
 ]);
 
 $generator = new Agglomerate([
@@ -21,6 +21,6 @@ $predictions = $client->predict($generator->generate(10));
 
 print_r($predictions);
 
-for ($i = 0; $i < 10000; ++$i) {
-    $client->predict($generator->generate(10));
+for ($i = 0; $i < 100000; ++$i) {
+    $client->score($generator->generate(10));
 }

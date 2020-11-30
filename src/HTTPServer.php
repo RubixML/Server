@@ -144,7 +144,7 @@ class HTTPServer implements Server, Verbose
      */
     public function __construct(
         string $host = '127.0.0.1',
-        int $port = 80,
+        int $port = 8000,
         ?string $cert = null,
         array $middlewares = [],
         int $maxConcurrentRequests = 10,

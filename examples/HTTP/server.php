@@ -25,7 +25,7 @@ $estimator->train($dataset);
 $server = new HTTPServer('127.0.0.1', 8000, null, [
     new AccessLogGenerator(new Screen()),
     new BasicAuthenticator([
-        'user' => 'password',
+        'user' => 'secret',
     ]),
 ]);
 

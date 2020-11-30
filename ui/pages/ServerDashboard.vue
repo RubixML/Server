@@ -24,11 +24,11 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <h2 class="title">Information</h2>
+                        <h2 class="title">Information<span class="icon ml-4"><i class="fas fa-info-circle"></i></span></h2>
                         <server-info v-if="info" :info="info"></server-info>
                     </div>
                     <div class="column is-half">
-                        <h2 class="title">Settings</h2>
+                        <h2 class="title">Runtime Settings<span class="icon ml-5"><i class="fas fa-cogs"></i></span></h2>
                         <server-settings v-if="configuration" :configuration="configuration"></server-settings>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 # Rubix ML Server
-Bring your [Rubix ML](https://github.com/RubixML/RubixML) models into production by serving them with one of our high-performance stand-alone model servers. Model severs wrap your trained estimators in an API such as REST or RPC that can be queried over a network in real-time. In addition, the library provides client implementations that make querying models from your application fast and easy.
+Bring your [Rubix ML](https://github.com/RubixML/RubixML) models into production by serving them with one of our stand-alone model inference servers. Model severs wrap your trained estimator in an API that can be queried locally or over the network in real-time using standard protocols. They are optimized for low latency and scalability. In addition, the library provides client implementations that make querying models from your applications fast and easy.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -33,6 +33,7 @@ $ composer require rubix/server
 	- [Basic Authenticator](#basic-authenticator-client-side)
 	- [Compress Request Body](#compress-request-body)
 	- [Shared Token Authenticator](#shared-token-authenticator-client-side)
+- [FAQs](#faqs)
 
 ---
 ### Servers
@@ -47,7 +48,7 @@ public function serve(Estimator $estimator) : void
 use Rubix\Server\HTTPServer;
 use Rubix\ML\Classifiers\KNearestNeighbors;
 
-$server = new HTTPServer('127.0.0.1', 8080);
+$server = new HTTPServer('127.0.0.1', 8000);
 
 $estimator = new KNearestNeighbors(5);
 
@@ -92,7 +93,7 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
-| 2 | port | 80 | int | The network port to run the HTTP services on. |
+| 2 | port | 8000 | int | The network port to run the HTTP services on. |
 | 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | | array | The stack of server middleware to run on each request/response. |
 | 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
@@ -129,7 +130,7 @@ The HTTP server exposes the following resources and their methods.
 | GET | /server/dashboard/events | Subscribe to the dashboard events stream. |
 
 #### Web Interface
-The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser.
+The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.
 
 ![Server Web UI Screenshot](https://raw.githubusercontent.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png)
 
@@ -165,8 +166,8 @@ $middleware = new AccessLog(new Screen());
 ```
 
 ```sh
-[2020-11-04 23:10:57] INFO: 127.0.0.1 "POST /predictions HTTP/1.1" 200 140 - "Rubix ML REST Client/0.2"
-[2020-11-04 23:11:54] INFO: 127.0.0.1 "POST /predictions/sample HTTP/1.1" 200 96 - "Rubix ML REST Client/0.2"
+[2020-11-04 23:10:57] INFO: 127.0.0.1 "POST /predictions HTTP/1.1" 200 140 - "Rubix ML REST Client/0.2.3"
+[2020-11-04 23:11:54] INFO: 127.0.0.1 "POST /predictions/sample HTTP/1.1" 200 96 - "Rubix ML REST Client/0.2.3"
 ```
 
 ### Basic Authenticator
@@ -293,7 +294,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The IP address or hostname of the server. |
-| 2 | port | 80 | int | The network port that the HTTP server is running on. |
+| 2 | port | 8000 | int | The network port that the HTTP server is running on. |
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)? |
 | 4 | middlewares | | array | The stack of client middleware to run on each request/response.  |
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
@@ -367,6 +368,26 @@ use Rubix\Server\HTTP\Middleware\Client\SharedtokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator('secret');
 ```
+
+### FAQs
+Here you will find answers to the most frequently asked questions.
+#### How do I run the server?
+All model servers are designed to be run from the PHP command line interface ([CLI](http://php.net/manual/en/features.commandline.php)). Model servers are long-running asynchronous processes that handle concurrent requests and implement their own networking stack avoiding the need for a third-party web server such as Nginx or Apache.
+
+To run the server, you can execute your script containing the server code by entering the following on the command line.
+
+```sh
+$ php server.php
+```
+
+#### Can I run the model server on the same host as a regular web server?
+Yes, model server are designed to coexist with other web servers (including other model servers) seamlessly. Just make sure that each server runs on its own unique port.
+
+#### How do I scale inference throughput?
+Since model servers are inference-only (i.e. they only support queries), they scale horizontally by adding more instances behind a load balancer such as [Nginx](http://nginx.org).
+
+#### Do servers support compression?
+Yes, the HTTP Server supports both Gzip and Deflate compression schemes applied to the request bodies. However, since response bodies tend to be considerably smaller compared to requests for this application, they do not support outbound message compression.
 
 ## License
 The code is licensed [MIT](LICENSE.md) and the documentation is licensed [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).

@@ -5,6 +5,8 @@ const ASSETS = [
     '/app.js',
     '/app.css',
     '/images/app-icon-small.png',
+    '/images/app-icon-apple-touch.png',
+    '/images/app-icon-medium.png',
     '/images/app-icon-large.png',
     '/fonts/fa-solid-900.woff',
     '/fonts/fa-solid-900.woff2',

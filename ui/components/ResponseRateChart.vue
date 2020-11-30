@@ -38,7 +38,7 @@ export default {
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
-                        fill: false,
+                        fill: true,
                     },
                     {
                         label: 'Successful',
@@ -123,9 +123,13 @@ export default {
                 this.last = Object.assign({}, this.requests);
             }
 
-            datasets[1].data.push(this.requests.successful - this.last.successful);
-            datasets[2].data.push(this.requests.rejected - this.last.rejected);
-            datasets[3].data.push(this.requests.failed - this.last.failed);
+            const successful = this.requests.successful - this.last.successful;
+            const rejected = this.requests.rejected - this.last.rejected;
+            const failed = this.requests.failed - this.last.failed;
+
+            datasets[1].data.push(successful);
+            datasets[2].data.push(rejected);
+            datasets[3].data.push(failed);
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
