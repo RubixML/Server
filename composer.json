@@ -48,15 +48,15 @@
     "autoload": {
         "psr-4": {
             "Rubix\\Server\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Rubix\\Server\\Tests\\": "tests/"
         },
         "files": [
             "src/constants.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rubix\\Server\\Tests\\": "tests/"
+        }
     },
     "scripts": {
         "build": [
