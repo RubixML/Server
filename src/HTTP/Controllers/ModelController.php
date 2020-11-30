@@ -5,8 +5,13 @@ namespace Rubix\Server\HTTP\Controllers;
 use Rubix\Server\Queries\Predict;
 use Rubix\Server\Queries\Proba;
 use Rubix\Server\Queries\Score;
+use Rubix\Server\HTTP\Responses\UnprocessableEntity;
+use Rubix\Server\HTTP\Responses\NotFound;
+use Rubix\Server\Exceptions\ValidationException;
+use Rubix\Server\Exceptions\HandlerNotFound;
+use Rubix\Server\Helpers\JSON;
+
 use Psr\Http\Message\ServerRequestInterface;
-use Exception;
 
 class ModelController extends RESTController
 {
@@ -55,11 +60,19 @@ class ModelController extends RESTController
 
         try {
             $query = Predict::fromArray($body);
-        } catch (Exception $exception) {
-            return $this->respondInvalid($exception);
+        } catch (ValidationException $exception) {
+            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
+                'message' => $exception->getMessage(),
+            ]));
         }
 
-        return $this->queryBus->dispatch($query)->then(
+        try {
+            $promise = $this->queryBus->dispatch($query);
+        } catch (HandlerNotFound $exception) {
+            return new NotFound();
+        }
+
+        return $promise->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );
@@ -78,11 +91,19 @@ class ModelController extends RESTController
 
         try {
             $query = Proba::fromArray($body);
-        } catch (Exception $exception) {
-            return $this->respondInvalid($exception);
+        } catch (ValidationException $exception) {
+            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
+                'message' => $exception->getMessage(),
+            ]));
         }
 
-        return $this->queryBus->dispatch($query)->then(
+        try {
+            $promise = $this->queryBus->dispatch($query);
+        } catch (HandlerNotFound $exception) {
+            return new NotFound();
+        }
+
+        return $promise->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );
@@ -101,11 +122,19 @@ class ModelController extends RESTController
 
         try {
             $query = Score::fromArray($body);
-        } catch (Exception $exception) {
-            return $this->respondInvalid($exception);
+        } catch (ValidationException $exception) {
+            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
+                'message' => $exception->getMessage(),
+            ]));
         }
 
-        return $this->queryBus->dispatch($query)->then(
+        try {
+            $promise = $this->queryBus->dispatch($query);
+        } catch (HandlerNotFound $exception) {
+            return new NotFound();
+        }
+
+        return $promise->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );

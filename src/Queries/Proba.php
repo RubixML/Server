@@ -41,10 +41,15 @@ class Proba extends Query
     }
 
     /**
-     * @param \Rubix\ML\Datasets\Dataset<array> $dataset
+     * @param \Rubix\ML\Datasets\Dataset<array[]> $dataset
+     * @throws \Rubix\Server\Exceptions\ValidationException
      */
     public function __construct(Dataset $dataset)
     {
+        if ($dataset->empty()) {
+            throw new ValidationException('Dataset must contain at least one sample.');
+        }
+
         $this->dataset = $dataset;
     }
 

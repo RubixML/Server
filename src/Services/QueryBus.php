@@ -5,7 +5,7 @@ namespace Rubix\Server\Services;
 use Rubix\Server\Queries\Query;
 use Rubix\Server\Events\QueryFailed;
 use Rubix\Server\Exceptions\HandlerNotFound;
-use React\Promise\PromiseInterface;
+use React\Promise\ExtendedPromiseInterface;
 use React\Promise\Promise;
 use Exception;
 
@@ -63,9 +63,9 @@ class QueryBus
      *
      * @param \Rubix\Server\Queries\Query $query
      * @throws \Rubix\Server\Exceptions\HandlerNotFound
-     * @return \React\Promise\PromiseInterface
+     * @return \React\Promise\ExtendedPromiseInterface
      */
-    public function dispatch(Query $query) : PromiseInterface
+    public function dispatch(Query $query) : ExtendedPromiseInterface
     {
         $class = get_class($query);
 

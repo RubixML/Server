@@ -54,9 +54,7 @@ class DashboardController extends RESTController
      */
     public function getDashboard(ServerRequestInterface $request)
     {
-        $query = new GetDashboard();
-
-        return $this->queryBus->dispatch($query)->then(
+        return $this->queryBus->dispatch(new GetDashboard())->then(
             [$this, 'respondSuccess'],
             [$this, 'respondServerError']
         );

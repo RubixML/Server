@@ -35,14 +35,19 @@ class Score extends Query
             throw new ValidationException('Samples property must be present.');
         }
 
-        return new self(new Unlabeled($data['samples'] ?? []));
+        return new self(new Unlabeled($data['samples']));
     }
 
     /**
-     * @param \Rubix\ML\Datasets\Dataset<array> $dataset
+     * @param \Rubix\ML\Datasets\Dataset<array[]> $dataset
+     * @throws \Rubix\Server\Exceptions\ValidationException
      */
     public function __construct(Dataset $dataset)
     {
+        if ($dataset->empty()) {
+            throw new ValidationException('Dataset must contain at least one sample.');
+        }
+
         $this->dataset = $dataset;
     }
 

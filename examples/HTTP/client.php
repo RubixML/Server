@@ -22,5 +22,5 @@ $predictions = $client->predict($generator->generate(10));
 print_r($predictions);
 
 for ($i = 0; $i < 100000; ++$i) {
-    $client->score($generator->generate(10));
+    $client->predict($generator->generate(10));
 }

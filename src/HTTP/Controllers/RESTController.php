@@ -9,7 +9,6 @@ use Rubix\Server\HTTP\Responses\BadRequest;
 use Rubix\Server\HTTP\Responses\UnsupportedContentEncoding;
 use Rubix\Server\HTTP\Responses\UnsupportedContentType;
 use Rubix\Server\HTTP\Responses\InternalServerError;
-use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Rubix\Server\Helpers\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use GuzzleHttp\Psr7\Utils;
@@ -144,18 +143,5 @@ abstract class RESTController implements Controller
     public function respondServerError(Exception $exception) : InternalServerError
     {
         return new InternalServerError();
-    }
-
-    /**
-     * Respond with an unprocessable entity error.
-     *
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\UnprocessableEntity
-     */
-    public function respondInvalid(Exception $exception) : UnprocessableEntity
-    {
-        return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
-            'message' => $exception->getMessage(),
-        ]));
     }
 }

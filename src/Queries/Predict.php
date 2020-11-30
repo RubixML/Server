@@ -35,7 +35,7 @@ class Predict extends Query
     public static function fromArray(array $data) : self
     {
         if (!isset($data['samples'])) {
-            throw new ValidationException("The 'samples' property is missing.");
+            throw new ValidationException('Samples property must be present');
         }
 
         return new self(new Unlabeled($data['samples']));
@@ -43,9 +43,14 @@ class Predict extends Query
 
     /**
      * @param \Rubix\ML\Datasets\Dataset<array[]> $dataset
+     * @throws \Rubix\Server\Exceptions\ValidationException
      */
     public function __construct(Dataset $dataset)
     {
+        if ($dataset->empty()) {
+            throw new ValidationException('Dataset must contain at least one sample.');
+        }
+
         $this->dataset = $dataset;
     }
 
