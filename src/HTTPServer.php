@@ -48,8 +48,6 @@ use React\Http\Middleware\RequestBodyBufferMiddleware;
 
 use function React\Promise\resolve;
 
-use const Rubix\Server\VERSION;
-
 /**
  * HTTP Server
  *
