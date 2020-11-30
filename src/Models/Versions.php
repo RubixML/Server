@@ -4,6 +4,7 @@ namespace Rubix\Server\Models;
 
 use const Rubix\Server\VERSION as SERVER_VERSION;
 use const Rubix\ML\VERSION as ML_VERSION;
+use const PHP_VERSION;
 
 class Versions extends Model
 {
@@ -34,7 +35,7 @@ class Versions extends Model
      */
     public function php() : string
     {
-        return phpversion() ?: 'unknown';
+        return PHP_VERSION;
     }
 
     /**
