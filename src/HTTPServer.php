@@ -64,7 +64,7 @@ use function React\Promise\resolve;
  */
 class HTTPServer implements Server, Verbose
 {
-    protected const SERVER_NAME = 'Rubix ML HTTP Server/' . FULL_VERSION;
+    protected const SERVER_NAME = 'Rubix ML HTTP Server/' . VERSION;
 
     protected const MAX_TCP_PORT = 65535;
 

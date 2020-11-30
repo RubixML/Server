@@ -32,7 +32,7 @@ use function call_user_func;
 class RESTClient implements Client, AsyncClient
 {
     protected const HEADERS = [
-        'User-Agent' => 'Rubix ML REST Client/' . FULL_VERSION,
+        'User-Agent' => 'Rubix ML REST Client/' . VERSION,
         'Accept' => 'application/json',
     ];
 

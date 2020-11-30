@@ -94,8 +94,8 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 |---|---|---|---|---|
 | 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
 | 2 | port | 8000 | int | The network port to run the HTTP services on. |
-| 3 | cert | | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
-| 4 | middlewares | | array | The stack of server middleware to run on each request/response. |
+| 3 | cert | null | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
+| 4 | middlewares | [] | array | The stack of server middleware to run on each request/response. |
 | 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
 | 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
