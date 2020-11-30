@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Models;
 
-use const Rubix\Server\VERSION as SERVER_VERSION;
+use const Rubix\Server\FULL_VERSION as SERVER_VERSION;
 use const Rubix\ML\VERSION as ML_VERSION;
 use const PHP_VERSION;
 
