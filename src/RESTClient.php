@@ -20,6 +20,8 @@ use Exception;
 
 use function call_user_func;
 
+use const Rubix\Server\VERSION;
+
 /**
  * REST Client
  *
