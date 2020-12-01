@@ -3,6 +3,7 @@
 namespace Rubix\Server\Models;
 
 use Rubix\Server\HTTPServer;
+use React\Http\Io\IniUtil;
 
 class ServerSettings extends Model
 {
@@ -62,23 +63,23 @@ class ServerSettings extends Model
     }
 
     /**
-     * Return the memory limit.
+     * Return the memory limit in bytes.
      *
-     * @return string
+     * @return int
      */
-    public function memoryLimit() : string
+    public function memoryLimit() : int
     {
-        return ini_get('memory_limit') ?: 'unknown';
+        return IniUtil::iniSizeToBytes((string) ini_get('memory_limit'));
     }
 
     /**
-     * Return the maximum body size of a request.
+     * Return the maximum body size of a request in bytes.
      *
-     * @return string
+     * @return int
      */
-    public function postMaxSize() : string
+    public function postMaxSize() : int
     {
-        return ini_get('post_max_size') ?: 'unknown';
+        return IniUtil::iniSizeToBytes((string) ini_get('post_max_size'));
     }
 
     /**

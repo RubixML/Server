@@ -16,6 +16,9 @@ use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
+use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
+use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
+use Rubix\Server\HTTP\Middleware\Internal\CheckRequestBodySize;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
 use Rubix\Server\HTTP\Controllers\StaticAssetsController;
@@ -23,8 +26,6 @@ use Rubix\Server\Handlers\PredictHandler;
 use Rubix\Server\Handlers\ProbaHandler;
 use Rubix\Server\Handlers\ScoreHandler;
 use Rubix\Server\Handlers\DashboardHandler;
-use Rubix\Server\Events\RequestReceived;
-use Rubix\Server\Events\ResponseSent;
 use Rubix\Server\Events\ShuttingDown;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
@@ -34,19 +35,14 @@ use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Jobs\UpdateMemoryUsage;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\ML\Other\Loggers\BlackHole;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as Loop;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
-use React\Promise\PromiseInterface;
 use React\Http\Server as HTTP;
 use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
-
-use function React\Promise\resolve;
 
 /**
  * HTTP Server
@@ -64,7 +60,7 @@ use function React\Promise\resolve;
  */
 class HTTPServer implements Server, Verbose
 {
-    protected const SERVER_NAME = 'Rubix ML HTTP Server/' . VERSION;
+    protected const SERVER_NAME = 'Rubix ML HTTP Server';
 
     protected const MAX_TCP_PORT = 65535;
 
@@ -147,7 +143,7 @@ class HTTPServer implements Server, Verbose
         int $port = 8000,
         ?string $cert = null,
         array $middlewares = [],
-        int $maxConcurrentRequests = 10,
+        int $maxConcurrentRequests = 20,
         int $sseReconnectBuffer = 50
     ) {
         if (empty($host)) {
@@ -305,16 +301,19 @@ class HTTPServer implements Server, Verbose
             new StaticAssetsController(),
         ]));
 
+        $postMaxSize = $dashboard->settings()->postMaxSize();
+
         $stack = [
             new StreamingRequestMiddleware(),
-            [$this, 'dispatchEvents'],
-            [$this, 'addServerHeaders'],
+            new DispatchEvents($eventBus),
+            new AttachServerHeaders(self::SERVER_NAME),
         ];
 
         $stack = array_merge($stack, $this->middlewares);
 
+        $stack[] = new CheckRequestBodySize($postMaxSize);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
-        $stack[] = new RequestBodyBufferMiddleware($dashboard->settings()->postMaxSize());
+        $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
         $stack[] = [$router, 'dispatch'];
 
         $server = new HTTP($loop, ...$stack);
@@ -332,42 +331,6 @@ class HTTPServer implements Server, Verbose
             . " on port {$this->port}");
 
         $loop->run();
-    }
-
-    /**
-     * Dispatch events related to the request/response cycle.
-     *
-     * @internal
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param callable $next
-     * @return \React\Promise\PromiseInterface
-     */
-    public function dispatchEvents(ServerRequestInterface $request, callable $next) : PromiseInterface
-    {
-        $this->eventBus->dispatch(new RequestReceived($request));
-
-        return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
-            $this->eventBus->dispatch(new ResponseSent($response));
-
-            return $response;
-        });
-    }
-
-    /**
-     * Add the HTTP server headers to the response.
-     *
-     * @internal
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param callable $next
-     * @return \React\Promise\PromiseInterface
-     */
-    public function addServerHeaders(ServerRequestInterface $request, callable $next) : PromiseInterface
-    {
-        return resolve($next($request))->then(function (ResponseInterface $response) : ResponseInterface {
-            return $response->withHeader('Server', self::SERVER_NAME);
-        });
     }
 
     /**

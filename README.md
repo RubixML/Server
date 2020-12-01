@@ -77,6 +77,12 @@ To gracefully shut down the server, send a quit signal (`SIGQUIT`) to the proces
 
 > **Note:** Signal handling does not work in Windows environments.
 
+For example, to shut down gracefully, first identify the server's process ID (PID) and then send the `QUIT` signal to it.
+
+```sh
+$ kill -s QUIT 1234
+```
+
 #### Verbose Interface
 Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.
 
@@ -98,7 +104,7 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 2 | port | 8000 | int | The network port to run the HTTP services on. |
 | 3 | cert | null | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | [] | array | The stack of server middleware to run on each request/response. |
-| 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
+| 5 | max concurrent requests | 20 | int | The maximum number of requests that can be handled concurrently. |
 | 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
 **Example**
@@ -115,7 +121,7 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-], 50, 100);
+], 100, 100);
 ```
 
 #### Routes
