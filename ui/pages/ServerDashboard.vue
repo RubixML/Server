@@ -28,8 +28,8 @@
                         <server-info v-if="info" :info="info"></server-info>
                     </div>
                     <div class="column is-half">
-                        <h2 class="title">Runtime Settings<span class="icon ml-5"><i class="fas fa-cogs"></i></span></h2>
-                        <server-settings v-if="configuration" :configuration="configuration"></server-settings>
+                        <h2 class="title">Settings<span class="icon ml-5"><i class="fas fa-cogs"></i></span></h2>
+                        <server-settings v-if="settings" :settings="settings"></server-settings>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@ export default {
             httpStats: undefined,
             memory: undefined,
             info: undefined,
-            configuration: undefined,
+            settings: undefined,
             stream: null,
         };
     },
@@ -57,7 +57,7 @@ export default {
             this.httpStats = data.httpStats;
             this.memory = data.memory;
             this.info = data.info;
-            this.configuration = data.configuration;
+            this.settings = data.settings;
 
             this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
                 stream.subscribe('request-recorded', (message) => {

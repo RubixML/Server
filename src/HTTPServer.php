@@ -314,7 +314,7 @@ class HTTPServer implements Server, Verbose
         $stack = array_merge($stack, $this->middlewares);
 
         $stack[] = [$this, 'addServerHeaders'];
-        $stack[] = new RequestBodyBufferMiddleware($dashboard->configuration()->postMaxSize());
+        $stack[] = new RequestBodyBufferMiddleware($dashboard->settings()->postMaxSize());
         $stack[] = [$router, 'dispatch'];
 
         $server = new HTTP($loop, ...$stack);

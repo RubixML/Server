@@ -129,7 +129,7 @@ abstract class RESTController implements Controller
      * @param \Rubix\Server\Payloads\Payload $payload
      * @return \Rubix\Server\HTTP\Responses\Success
      */
-    public function respondSuccess(Payload $payload) : Success
+    public function respondWithPayload(Payload $payload) : Success
     {
         return new Success(self::DEFAULT_HEADERS, JSON::encode($payload->asArray()));
     }

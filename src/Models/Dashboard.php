@@ -26,14 +26,14 @@ class Dashboard extends Model
      *
      * @var \Rubix\Server\Models\ServerInfo
      */
-    protected $serverInfo;
+    protected $info;
 
     /**
-     * The server configuration settings.
+     * The server settings.
      *
-     * @var \Rubix\Server\Models\Configuration
+     * @var \Rubix\Server\Models\ServerSettings
      */
-    protected $configuration;
+    protected $settings;
 
     /**
      * @param \Rubix\Server\HTTPServer $server
@@ -43,8 +43,8 @@ class Dashboard extends Model
     {
         $this->httpStats = new HTTPStats($channel);
         $this->memory = new Memory($channel);
-        $this->serverInfo = new ServerInfo();
-        $this->configuration = new Configuration($server);
+        $this->info = new ServerInfo();
+        $this->settings = new ServerSettings($server);
     }
 
     /**
@@ -72,19 +72,19 @@ class Dashboard extends Model
      *
      * @return \Rubix\Server\Models\ServerInfo
      */
-    public function serverInfo() : ServerInfo
+    public function info() : ServerInfo
     {
-        return $this->serverInfo;
+        return $this->info;
     }
 
     /**
-     * Return the configuration model.
+     * Return the server settings model.
      *
-     * @return \Rubix\Server\Models\Configuration
+     * @return \Rubix\Server\Models\ServerSettings
      */
-    public function configuration() : Configuration
+    public function settings() : ServerSettings
     {
-        return $this->configuration;
+        return $this->settings;
     }
 
     /**
@@ -97,8 +97,8 @@ class Dashboard extends Model
         return [
             'httpStats' => $this->httpStats->asArray(),
             'memory' => $this->memory->asArray(),
-            'info' => $this->serverInfo->asArray(),
-            'configuration' => $this->configuration->asArray(),
+            'info' => $this->info->asArray(),
+            'settings' => $this->settings->asArray(),
         ];
     }
 }

@@ -73,7 +73,7 @@ class ModelController extends RESTController
         }
 
         return $promise->then(
-            [$this, 'respondSuccess'],
+            [$this, 'respondWithPayload'],
             [$this, 'respondServerError']
         );
     }
@@ -104,7 +104,7 @@ class ModelController extends RESTController
         }
 
         return $promise->then(
-            [$this, 'respondSuccess'],
+            [$this, 'respondWithPayload'],
             [$this, 'respondServerError']
         );
     }
@@ -135,7 +135,7 @@ class ModelController extends RESTController
         }
 
         return $promise->then(
-            [$this, 'respondSuccess'],
+            [$this, 'respondWithPayload'],
             [$this, 'respondServerError']
         );
     }

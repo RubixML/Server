@@ -92,7 +92,7 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
-| 1 | host | '127.0.0.1' | string | The host address to bind the server to. |
+| 1 | host | '127.0.0.1' | string | The host address to bind the server to. Use `'0.0.0.0'` to bind to all interfaces. |
 | 2 | port | 8000 | int | The network port to run the HTTP services on. |
 | 3 | cert | null | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | [] | array | The stack of server middleware to run on each request/response. |

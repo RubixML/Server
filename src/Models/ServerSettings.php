@@ -4,7 +4,7 @@ namespace Rubix\Server\Models;
 
 use Rubix\Server\HTTPServer;
 
-class Configuration extends Model
+class ServerSettings extends Model
 {
     /**
      * The server instance.
