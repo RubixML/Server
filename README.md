@@ -73,7 +73,9 @@ $server->serve($estimator);
 > **Note**: The server will stay running until the process is terminated. It is a good practice to use a process monitor such as [Supervisor](http://supervisord.org/) to start and autorestart the server in case of a failure.
 
 #### Shutting Down The Server
-To gracefully shut down the server, send a terminate (`SIGTERM`) to the process. To shut down immediately, without waiting for current connections to close, you can either send a second `SIGTERM` signal or you can send a single kill (`SIGKILL`) or interrupt (`SIGINT`) signal instead.
+To gracefully shut down the server, send a quit signal (`SIGQUIT`) to the process. To shut down immediately, without waiting for current connections to close, you can either send a terminate (`SIGTERM`) or interrupt (`SIGINT`) signal.
+
+> **Note:** Signal handling does not work in Windows environments.
 
 #### Verbose Interface
 Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.

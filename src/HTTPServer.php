@@ -308,12 +308,12 @@ class HTTPServer implements Server, Verbose
         $stack = [
             new StreamingRequestMiddleware(),
             [$this, 'dispatchEvents'],
-            new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests),
+            [$this, 'addServerHeaders'],
         ];
 
         $stack = array_merge($stack, $this->middlewares);
 
-        $stack[] = [$this, 'addServerHeaders'];
+        $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
         $stack[] = new RequestBodyBufferMiddleware($dashboard->settings()->postMaxSize());
         $stack[] = [$router, 'dispatch'];
 
@@ -322,7 +322,7 @@ class HTTPServer implements Server, Verbose
         $server->listen($socket);
 
         if (extension_loaded('pcntl')) {
-            $loop->addSignal(SIGTERM, [$this, 'shutdown']);
+            $loop->addSignal(SIGQUIT, [$this, 'shutdown']);
         }
 
         $this->eventBus = $eventBus;
