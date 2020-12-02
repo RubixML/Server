@@ -17,43 +17,21 @@ class Memory extends Model
     protected $channel;
 
     /**
-     * The current memory usage in bytes.
-     *
-     * @var int
-     */
-    protected $current;
-
-    /**
-     * The peak memory usage in bytes.
-     *
-     * @var int
-     */
-    protected $peak;
-
-    /**
      * @param \Rubix\Server\Services\SSEChannel $channel
      */
     public function __construct(SSEChannel $channel)
     {
         $this->channel = $channel;
-        $this->current = memory_get_usage();
-        $this->peak = memory_get_peak_usage();
     }
 
     /**
      * Update the memory usage.
-     *
-     * @param int $current
-     * @param int $peak
      */
-    public function updateUsage(int $current, int $peak) : void
+    public function updateUsage() : void
     {
-        $this->current = $current;
-        $this->peak = $peak;
-
         $this->channel->emit('memory-usage-updated', [
-            'current' => $current,
-            'peak' => $peak,
+            'current' => $this->current(),
+            'peak' => $this->peak(),
         ]);
     }
 
@@ -64,7 +42,7 @@ class Memory extends Model
      */
     public function current() : int
     {
-        return $this->current;
+        return memory_get_usage(true);
     }
 
     /**
@@ -74,7 +52,7 @@ class Memory extends Model
      */
     public function peak() : int
     {
-        return $this->peak;
+        return memory_get_peak_usage(true);
     }
 
     /**
@@ -85,8 +63,8 @@ class Memory extends Model
     public function asArray() : array
     {
         return [
-            'current' => $this->current,
-            'peak' => $this->peak,
+            'current' => $this->current(),
+            'peak' => $this->peak(),
         ];
     }
 }

@@ -4,9 +4,6 @@ namespace Rubix\Server\Jobs;
 
 use Rubix\Server\Models\Memory;
 
-use function memory_get_usage;
-use function memory_get_peak_usage;
-
 class UpdateMemoryUsage implements Job
 {
     /**
@@ -29,9 +26,6 @@ class UpdateMemoryUsage implements Job
      */
     public function __invoke() : void
     {
-        $current = memory_get_usage();
-        $peak = memory_get_peak_usage();
-
-        $this->memory->updateUsage($current, $peak);
+        $this->memory->updateUsage();
     }
 }

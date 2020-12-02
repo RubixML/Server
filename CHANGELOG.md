@@ -1,3 +1,6 @@
+- 0.2.4-beta
+    - Dashboard memory chart shows real memory usage
+
 - 0.2.3-beta
     - Added web user interface
     - Added client middlewares
