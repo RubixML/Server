@@ -93,9 +93,9 @@ class ServerSettings extends Model
             'host' => $this->server->host(),
             'port' => $this->server->port(),
             'maxConcurrentRequests' => $this->server->maxConcurrentRequests(),
+            'sseReconnectBuffer' => $this->server->sseReconnectBuffer(),
             'memoryLimit' => $this->memoryLimit(),
             'postMaxSize' => $this->postMaxSize(),
-            'sseReconnectBuffer' => $this->server->sseReconnectBuffer(),
         ];
     }
 }

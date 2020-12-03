@@ -14,16 +14,16 @@
                 <td class="has-text-right">{{ settings.maxConcurrentRequests.toLocaleString() }}</td>
             </tr>
             <tr>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The size of the server-sent events (SSE) reconnect buffer.">SSE Reconnect Buffer</span></td>
+                <td class="has-text-right">{{ settings.sseReconnectBuffer.toLocaleString() }}</td>
+            </tr>
+            <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum amount of memory the server is allowed to consume.">Memory Limit</span><span class="tag ml-3">INI</span></td>
                 <td class="has-text-right">{{ memoryLimit }}</td>
             </tr>
             <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum size of a request body allowed.">Max POST Size</span><span class="tag ml-3">INI</span></td>
                 <td class="has-text-right">{{ postMaxSize }}</td>
-            </tr>
-            <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The size of the server-sent events (SSE) reconnect buffer.">SSE Reconnect Buffer</span></td>
-                <td class="has-text-right">{{ settings.sseReconnectBuffer.toLocaleString() }}</td>
             </tr>
         </tbody>
     </table>

@@ -21,6 +21,6 @@ $predictions = $client->predict($generator->generate(10));
 
 print_r($predictions);
 
-for ($i = 0; $i < 100000; ++$i) {
-    $client->predict($generator->generate(10));
-}
+// for ($i = 0; $i < 10000; ++$i) {
+//     $client->predict($generator->generate(10));
+// }

@@ -306,11 +306,11 @@ class HTTPServer implements Server, Verbose
         $stack = [
             new StreamingRequestMiddleware(),
             new DispatchEvents($eventBus),
-            new AttachServerHeaders(self::SERVER_NAME),
         ];
 
         $stack = array_merge($stack, $this->middlewares);
 
+        $stack[] = new AttachServerHeaders(self::SERVER_NAME);
         $stack[] = new CheckRequestBodySize($postMaxSize);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
         $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
@@ -336,7 +336,6 @@ class HTTPServer implements Server, Verbose
     /**
      * Shut down the server.
      *
-     * @var int
      * @param int $signal
      */
     public function shutdown(int $signal) : void
@@ -345,6 +344,6 @@ class HTTPServer implements Server, Verbose
 
         $this->logger->info('Server shutting down');
 
-        $this->eventBus->dispatch(new ShuttingDown($this));
+        $this->eventBus->dispatch(new ShuttingDown());
     }
 }
