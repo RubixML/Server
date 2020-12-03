@@ -10,7 +10,7 @@
                 <td class="has-text-right">{{ settings.port }}</td>
             </tr>
             <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum number of requets to handle concurrently.">Max Concurrent Requests</span></td>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum number of requests to handle concurrently.">Max Concurrent Requests</span></td>
                 <td class="has-text-right">{{ settings.maxConcurrentRequests.toLocaleString() }}</td>
             </tr>
             <tr>
