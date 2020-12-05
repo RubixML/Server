@@ -2,19 +2,57 @@
 
 namespace Rubix\Server\HTTP\Controllers;
 
-use Rubix\Server\Queries\Predict;
-use Rubix\Server\Queries\Proba;
-use Rubix\Server\Queries\Score;
+use Rubix\ML\Estimator;
+use Rubix\ML\Learner;
+use Rubix\ML\Probabilistic;
+use Rubix\ML\Ranking;
+use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\Services\EventBus;
+use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\UnprocessableEntity;
-use Rubix\Server\HTTP\Responses\NotFound;
+use Rubix\Server\HTTP\Responses\InternalServerError;
+use Rubix\Server\Events\ModelQueryFailed;
 use Rubix\Server\Exceptions\ValidationException;
-use Rubix\Server\Exceptions\HandlerNotFound;
+use Rubix\Server\Exceptions\InvalidArgumentException;
+use Rubix\Server\Exceptions\RuntimeException;
 use Rubix\Server\Helpers\JSON;
+use React\Promise\Promise;
+use Exception;
 
 use Psr\Http\Message\ServerRequestInterface;
 
 class ModelController extends RESTController
 {
+    /**
+     * The model that is being served.
+     *
+     * @var \Rubix\ML\Estimator
+     */
+    protected $estimator;
+
+    /**
+     * The event bus.
+     *
+     * @var \Rubix\Server\Services\EventBus
+     */
+    protected $eventBus;
+
+    /**
+     * @param \Rubix\ML\Estimator $estimator
+     * @param \Rubix\Server\Services\EventBus $eventBus
+     */
+    public function __construct(Estimator $estimator, EventBus $eventBus)
+    {
+        if ($estimator instanceof Learner) {
+            if (!$estimator->trained()) {
+                throw new InvalidArgumentException('Learner must be trained.');
+            }
+        }
+
+        $this->estimator = $estimator;
+        $this->eventBus = $eventBus;
+    }
+
     /**
      * Return the routes this controller handles.
      *
@@ -22,7 +60,7 @@ class ModelController extends RESTController
      */
     public function routes() : array
     {
-        return [
+        $routes = [
             '/model/predictions' => [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
@@ -30,21 +68,29 @@ class ModelController extends RESTController
                     [$this, 'predict'],
                 ],
             ],
-            '/model/probabilities' => [
+        ];
+
+        if ($this->estimator instanceof Probabilistic) {
+            $routes['/model/probabilities'] = [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
                     [$this, 'proba'],
                 ],
-            ],
-            '/model/anomaly_scores' => [
+            ];
+        }
+
+        if ($this->estimator instanceof Ranking) {
+            $routes['/model/anomaly_scores'] = [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
                     [$this, 'score'],
                 ],
-            ],
-        ];
+            ];
+        }
+
+        return $routes;
     }
 
     /**
@@ -55,27 +101,34 @@ class ModelController extends RESTController
      */
     public function predict(ServerRequestInterface $request)
     {
-        /** @var mixed[] $body */
-        $body = $request->getParsedBody();
+        /** @var mixed[] $input */
+        $input = $request->getParsedBody();
 
         try {
-            $query = Predict::fromArray($body);
-        } catch (ValidationException $exception) {
+            if (empty($input['samples'])) {
+                throw new ValidationException('Samples property must not be empty.');
+            }
+
+            $dataset = new Unlabeled($input['samples']);
+        } catch (Exception $exception) {
             return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
                 'message' => $exception->getMessage(),
             ]));
         }
 
-        try {
-            $promise = $this->queryBus->dispatch($query);
-        } catch (HandlerNotFound $exception) {
-            return new NotFound();
-        }
+        $promise = new Promise(function ($resolve) use ($dataset) {
+            $predictions = $this->estimator->predict($dataset);
 
-        return $promise->then(
-            [$this, 'respondWithPayload'],
-            [$this, 'respondServerError']
-        );
+            $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
+                'data' => [
+                    'predictions' => $predictions,
+                ],
+            ]));
+
+            $resolve($response);
+        });
+
+        return $promise->otherwise([$this, 'respondServerError']);
     }
 
     /**
@@ -86,27 +139,39 @@ class ModelController extends RESTController
      */
     public function proba(ServerRequestInterface $request)
     {
-        /** @var mixed[] $body */
-        $body = $request->getParsedBody();
+        /** @var mixed[] $input */
+        $input = $request->getParsedBody();
 
         try {
-            $query = Proba::fromArray($body);
-        } catch (ValidationException $exception) {
+            if (empty($input['samples'])) {
+                throw new ValidationException('Samples property must not be empty.');
+            }
+
+            $dataset = new Unlabeled($input['samples']);
+        } catch (Exception $exception) {
             return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
                 'message' => $exception->getMessage(),
             ]));
         }
 
-        try {
-            $promise = $this->queryBus->dispatch($query);
-        } catch (HandlerNotFound $exception) {
-            return new NotFound();
-        }
+        $promise = new Promise(function ($resolve) use ($dataset) {
+            if (!$this->estimator instanceof Probabilistic) {
+                throw new RuntimeException('Estimator must implement'
+                    . ' the Probabilistic interface.');
+            }
 
-        return $promise->then(
-            [$this, 'respondWithPayload'],
-            [$this, 'respondServerError']
-        );
+            $probabilities = $this->estimator->proba($dataset);
+
+            $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
+                'data' => [
+                    'probabilities' => $probabilities,
+                ],
+            ]));
+
+            $resolve($response);
+        });
+
+        return $promise->otherwise([$this, 'respondServerError']);
     }
 
     /**
@@ -117,26 +182,51 @@ class ModelController extends RESTController
      */
     public function score(ServerRequestInterface $request)
     {
-        /** @var mixed[] $body */
-        $body = $request->getParsedBody();
+        /** @var mixed[] $input */
+        $input = $request->getParsedBody();
 
         try {
-            $query = Score::fromArray($body);
-        } catch (ValidationException $exception) {
+            if (empty($input['samples'])) {
+                throw new ValidationException('Samples property must not be empty.');
+            }
+
+            $dataset = new Unlabeled($input['samples']);
+        } catch (Exception $exception) {
             return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
                 'message' => $exception->getMessage(),
             ]));
         }
 
-        try {
-            $promise = $this->queryBus->dispatch($query);
-        } catch (HandlerNotFound $exception) {
-            return new NotFound();
-        }
+        $promise = new Promise(function ($resolve) use ($dataset) {
+            if (!$this->estimator instanceof Ranking) {
+                throw new RuntimeException('Estimator must implement'
+                    . ' the Ranking interface.');
+            }
 
-        return $promise->then(
-            [$this, 'respondWithPayload'],
-            [$this, 'respondServerError']
-        );
+            $scores = $this->estimator->score($dataset);
+
+            $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
+                'data' => [
+                    'scores' => $scores,
+                ],
+            ]));
+
+            $resolve($response);
+        });
+
+        return $promise->otherwise([$this, 'respondServerError']);
+    }
+
+    /**
+     * Respond with an internal server error.
+     *
+     * @param \Exception $exception
+     * @return \Rubix\Server\HTTP\Responses\InternalServerError
+     */
+    public function respondServerError(Exception $exception) : InternalServerError
+    {
+        $this->eventBus->dispatch(new ModelQueryFailed($exception));
+
+        return new InternalServerError();
     }
 }

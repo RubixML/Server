@@ -3,17 +3,12 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
-use Rubix\ML\Learner;
-use Rubix\ML\Probabilistic;
-use Rubix\ML\Ranking;
 use Rubix\Server\Models\Dashboard;
-use Rubix\Server\Services\Bindings;
-use Rubix\Server\Services\QueryBus;
+use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
-use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
@@ -22,10 +17,6 @@ use Rubix\Server\HTTP\Middleware\Internal\CheckRequestBodySize;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
 use Rubix\Server\HTTP\Controllers\StaticAssetsController;
-use Rubix\Server\Handlers\PredictHandler;
-use Rubix\Server\Handlers\ProbaHandler;
-use Rubix\Server\Handlers\ScoreHandler;
-use Rubix\Server\Handlers\DashboardHandler;
 use Rubix\Server\Events\ShuttingDown;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
@@ -39,10 +30,10 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory as Loop;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
-use React\Http\Server as HTTP;
 use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
+use React\Http\Server as HTTP;
 
 /**
  * HTTP Server
@@ -143,7 +134,7 @@ class HTTPServer implements Server, Verbose
         int $port = 8000,
         ?string $cert = null,
         array $middlewares = [],
-        int $maxConcurrentRequests = 20,
+        int $maxConcurrentRequests = 10,
         int $sseReconnectBuffer = 50
     ) {
         if (empty($host)) {
@@ -247,15 +238,9 @@ class HTTPServer implements Server, Verbose
      */
     public function serve(Estimator $estimator) : void
     {
-        if ($estimator instanceof Learner) {
-            if (!$estimator->trained()) {
-                throw new InvalidArgumentException('Learner must be trained.');
-            }
-        }
+        $loop = Loop::create();
 
         $this->logger->info('HTTP Server booting up');
-
-        $loop = Loop::create();
 
         $scheduler = new Scheduler($loop);
 
@@ -288,16 +273,9 @@ class HTTPServer implements Server, Verbose
             new CloseSocket($socket),
         ]), $scheduler, $this->logger);
 
-        $queryBus = new QueryBus(Bindings::bind([
-            new PredictHandler($estimator),
-            $estimator instanceof Probabilistic ? new ProbaHandler($estimator) : null,
-            $estimator instanceof Ranking ? new ScoreHandler($estimator) : null,
-            new DashboardHandler($dashboard),
-        ]), $eventBus);
-
         $router = new Router(Routes::collect([
-            new DashboardController($queryBus, $dashboardChannel),
-            new ModelController($queryBus),
+            new DashboardController($dashboard, $dashboardChannel),
+            new ModelController($estimator, $eventBus),
             new StaticAssetsController(),
         ]));
 

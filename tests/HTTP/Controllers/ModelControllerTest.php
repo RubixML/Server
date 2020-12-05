@@ -2,14 +2,17 @@
 
 namespace Rubix\Server\Tests\HTTP\Controllers;
 
-use Rubix\Server\Services\QueryBus;
+use Rubix\ML\Datasets\Generators\Blob;
+use Rubix\ML\Datasets\Generators\Agglomerate;
+use Rubix\ML\Classifiers\KNearestNeighbors;
+use Rubix\ML\Other\Loggers\BlackHole;
+use Rubix\Server\Services\Subscriptions;
+use Rubix\Server\Services\EventBus;
+use Rubix\Server\Services\Scheduler;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\RESTController;
 use Rubix\Server\HTTP\Controllers\Controller;
-use Rubix\Server\Payloads\PredictPayload;
-use React\Http\Message\ServerRequest;
-use React\Promise\PromiseInterface;
-use React\Promise\Promise;
+use React\EventLoop\Factory as Loop;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,14 +31,19 @@ class ModelControllerTest extends TestCase
      */
     protected function setUp() : void
     {
-        $queryBus = $this->createMock(QueryBus::class);
+        $generator = new Agglomerate([
+            'red' => new Blob([255, 0, 0], 10.0),
+            'green' => new Blob([0, 128, 0], 10.0),
+            'blue' => new Blob([0, 0, 255], 10.0),
+        ]);
 
-        $queryBus->method('dispatch')
-            ->willReturn(new Promise(function ($resolve) {
-                $resolve(new PredictPayload(['positive']));
-            }));
+        $estimator = new KNearestNeighbors();
 
-        $this->controller = new ModelController($queryBus);
+        $dataset = $generator->generate(10);
+
+        $estimator->train($dataset);
+
+        $this->controller = new ModelController($estimator, new EventBus(new Subscriptions([]), new Scheduler(Loop::create()), new BlackHole()));
     }
 
     /**
@@ -46,25 +54,5 @@ class ModelControllerTest extends TestCase
         $this->assertInstanceOf(ModelController::class, $this->controller);
         $this->assertInstanceOf(RESTController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
-    }
-
-    /**
-     * @test
-     */
-    public function handle() : void
-    {
-        $payload = [
-            'samples' => [
-                ['The first step is to establish that something is possible, then probability will occur.'],
-            ],
-        ];
-
-        $request = new ServerRequest('POST', '/example', [], json_encode($payload) ?: '');
-
-        $request = $request->withParsedBody($payload);
-
-        $promise = call_user_func([$this->controller, 'predict'], $request);
-
-        $this->assertInstanceOf(PromiseInterface::class, $promise);
     }
 }

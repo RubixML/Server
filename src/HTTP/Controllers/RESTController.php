@@ -2,14 +2,10 @@
 
 namespace Rubix\Server\HTTP\Controllers;
 
-use Rubix\Server\Services\QueryBus;
-use Rubix\Server\Payloads\Payload;
-use Rubix\Server\HTTP\Responses\Success;
+use Rubix\Server\Helpers\JSON;
 use Rubix\Server\HTTP\Responses\BadRequest;
 use Rubix\Server\HTTP\Responses\UnsupportedContentEncoding;
 use Rubix\Server\HTTP\Responses\UnsupportedContentType;
-use Rubix\Server\HTTP\Responses\InternalServerError;
-use Rubix\Server\Helpers\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use GuzzleHttp\Psr7\Utils;
 use Exception;
@@ -19,21 +15,6 @@ abstract class RESTController implements Controller
     protected const DEFAULT_HEADERS = [
         'Content-Type' => 'application/json',
     ];
-
-    /**
-     * The query bus.
-     *
-     * @var \Rubix\Server\Services\QueryBus
-     */
-    protected $queryBus;
-
-    /**
-     * @param \Rubix\Server\Services\QueryBus $queryBus
-     */
-    public function __construct(QueryBus $queryBus)
-    {
-        $this->queryBus = $queryBus;
-    }
 
     /**
      * Decompress the request body.
@@ -119,29 +100,5 @@ abstract class RESTController implements Controller
         }
 
         return $next($request);
-    }
-
-    /**
-     * Send the payload in a successful response.
-     *
-     * @internal
-     *
-     * @param \Rubix\Server\Payloads\Payload $payload
-     * @return \Rubix\Server\HTTP\Responses\Success
-     */
-    public function respondWithPayload(Payload $payload) : Success
-    {
-        return new Success(self::DEFAULT_HEADERS, JSON::encode($payload->asArray()));
-    }
-
-    /**
-     * Respond with an internal server error.
-     *
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\InternalServerError
-     */
-    public function respondServerError(Exception $exception) : InternalServerError
-    {
-        return new InternalServerError();
     }
 }

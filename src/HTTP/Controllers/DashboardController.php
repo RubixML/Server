@@ -2,15 +2,24 @@
 
 namespace Rubix\Server\HTTP\Controllers;
 
-use Rubix\Server\Services\QueryBus;
+use Rubix\Server\Helpers\JSON;
+use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\Queries\GetDashboard;
+use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\EventStream;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Stream\ThroughStream;
 
 class DashboardController extends RESTController
 {
+    /**
+     * The dashboard model.
+     *
+     * @var \Rubix\Server\Models\Dashboard
+     */
+    protected $dashboard;
+
     /**
      * The server-sent events emitter.
      *
@@ -19,13 +28,12 @@ class DashboardController extends RESTController
     protected $channel;
 
     /**
-     * @param \Rubix\Server\Services\QueryBus $queryBus
+     * @param \Rubix\Server\Models\Dashboard $dashboard
      * @param \Rubix\Server\Services\SSEChannel $channel
      */
-    public function __construct(QueryBus $queryBus, SSEChannel $channel)
+    public function __construct(Dashboard $dashboard, SSEChannel $channel)
     {
-        parent::__construct($queryBus);
-
+        $this->dashboard = $dashboard;
         $this->channel = $channel;
     }
 
@@ -54,10 +62,9 @@ class DashboardController extends RESTController
      */
     public function getDashboard(ServerRequestInterface $request)
     {
-        return $this->queryBus->dispatch(new GetDashboard())->then(
-            [$this, 'respondWithPayload'],
-            [$this, 'respondServerError']
-        );
+        return new Success(self::DEFAULT_HEADERS, JSON::encode([
+            'data' => $this->dashboard->asArray(),
+        ]));
     }
 
     /**
