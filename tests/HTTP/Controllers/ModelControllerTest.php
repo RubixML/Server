@@ -10,7 +10,7 @@ use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Scheduler;
 use Rubix\Server\HTTP\Controllers\ModelController;
-use Rubix\Server\HTTP\Controllers\RESTController;
+use Rubix\Server\HTTP\Controllers\JSONController;
 use Rubix\Server\HTTP\Controllers\Controller;
 use React\EventLoop\Factory as Loop;
 use PHPUnit\Framework\TestCase;
@@ -52,7 +52,7 @@ class ModelControllerTest extends TestCase
     public function build() : void
     {
         $this->assertInstanceOf(ModelController::class, $this->controller);
-        $this->assertInstanceOf(RESTController::class, $this->controller);
+        $this->assertInstanceOf(JSONController::class, $this->controller);
         $this->assertInstanceOf(Controller::class, $this->controller);
     }
 }

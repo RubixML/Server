@@ -31,6 +31,7 @@
 
 <script>
 import moment from 'moment';
+import gql from 'graphql-tag';
 
 const THIRTY_SECONDS = 30000;
 
@@ -60,6 +61,16 @@ export default {
         this.updateUptime();
 
         setInterval(this.updateUptime, THIRTY_SECONDS);
+    },
+    fragments: {
+        info: gql`
+            fragment ServerInfo on DashboardType {
+                info {
+                    start
+                    pid
+                }
+            }
+        `,
     },
 }
 </script>

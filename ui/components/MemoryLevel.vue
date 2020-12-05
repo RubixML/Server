@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import gql from 'graphql-tag';
+
 const MEGABYTE = 1000000;
 
 export default {
@@ -32,6 +34,16 @@ export default {
         peak() {
             return this.memory.peak / MEGABYTE;
         },
-    }
+    },
+    fragments: {
+        memory: gql`
+            fragment MemoryLevel on DashboardType {
+                memory {
+                    current
+                    peak
+                }
+            }
+        `,
+    },
 }
 </script>

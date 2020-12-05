@@ -2,12 +2,12 @@
 
 namespace Rubix\Server\HTTP\Controllers;
 
-interface Controller
+abstract class Controller
 {
     /**
      * Return the routes this controller handles.
      *
      * @return array[]
      */
-    public function routes() : array;
+    abstract public function routes() : array;
 }

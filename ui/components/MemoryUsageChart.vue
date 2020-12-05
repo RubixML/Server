@@ -6,6 +6,7 @@
 
 <script>
 import Chart from 'chart.js';
+import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
 const THREE_SECONDS = 3000;
@@ -82,6 +83,16 @@ export default {
 
             this.chart.update();
         },
+    },
+    fragments: {
+        memory: gql`
+            fragment MemoryUsageChart on DashboardType {
+                memory {
+                    current
+                    peak
+                }
+            }
+        `,
     },
 }
 </script>

@@ -17,6 +17,8 @@ use Rubix\Server\HTTP\Middleware\Internal\CheckRequestBodySize;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
 use Rubix\Server\HTTP\Controllers\StaticAssetsController;
+use Rubix\Server\HTTP\Controllers\GraphQLController;
+use Rubix\Server\GraphQL\Schema;
 use Rubix\Server\Events\ShuttingDown;
 use Rubix\Server\Listeners\UpdateDashboard;
 use Rubix\Server\Listeners\LogFailures;
@@ -276,6 +278,7 @@ class HTTPServer implements Server, Verbose
         $router = new Router(Routes::collect([
             new DashboardController($dashboard, $dashboardChannel),
             new ModelController($estimator, $eventBus),
+            new GraphQLController(new Schema($dashboard)),
             new StaticAssetsController(),
         ]));
 

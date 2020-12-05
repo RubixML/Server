@@ -22,12 +22,25 @@
 </template>
 
 <script>
+import gql from 'graphql-tag';
+
 export default {
     props: {
         requests: {
             type: Object,
             required: true,
         },
+    },
+    fragments: {
+        memory: gql`
+            fragment RequestsLevel on DashboardType {
+                requests {
+                    successful
+                    rejected
+                    failed
+                }
+            }
+        `,
     },
 }
 </script>

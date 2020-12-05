@@ -11,7 +11,7 @@ use Rubix\Server\HTTP\Responses\EventStream;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Stream\ThroughStream;
 
-class DashboardController extends RESTController
+class DashboardController extends JSONController
 {
     /**
      * The dashboard model.

@@ -21,7 +21,7 @@ use Exception;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-class ModelController extends RESTController
+class ModelController extends JSONController
 {
     /**
      * The model that is being served.
