@@ -6,8 +6,11 @@ use Rubix\Server\GraphQL\Schema;
 use Rubix\Server\Helpers\JSON;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\UnprocessableEntity;
+use Rubix\Server\HTTP\Responses\InternalServerError;
 use Rubix\Server\Exceptions\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
+use GraphQL\Executor\Promise\PromiseAdapter;
+use GraphQL\Executor\ExecutionResult;
 use GraphQL\GraphQL;
 use Exception;
 
@@ -21,11 +24,20 @@ class GraphQLController extends JSONController
     protected $schema;
 
     /**
-     * @param \Rubix\Server\GraphQL\Schema $schema
+     * The promise adapter.
+     *
+     * @var \GraphQL\Executor\Promise\PromiseAdapter
      */
-    public function __construct(Schema $schema)
+    protected $adapter;
+
+    /**
+     * @param \Rubix\Server\GraphQL\Schema $schema
+     * @param \GraphQL\Executor\Promise\PromiseAdapter $adapter
+     */
+    public function __construct(Schema $schema, PromiseAdapter $adapter)
     {
         $this->schema = $schema;
+        $this->adapter = $adapter;
     }
 
     /**
@@ -38,11 +50,32 @@ class GraphQLController extends JSONController
         return [
             '/graphql' => [
                 'POST' => [
+                    [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
                     $this,
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param \GraphQL\Executor\ExecutionResult $result
+     * @return \Rubix\Server\HTTP\Responses\Success
+     */
+    public function onSuccess(ExecutionResult $result) : Success
+    {
+        return new Success(self::DEFAULT_HEADERS, JSON::encode($result));
+    }
+
+    /**
+     * Respond with an internal server error.
+     *
+     * @param \Exception $exception
+     * @return \Rubix\Server\HTTP\Responses\InternalServerError
+     */
+    public function onError(Exception $exception) : InternalServerError
+    {
+        return new InternalServerError();
     }
 
     /**
@@ -66,16 +99,20 @@ class GraphQLController extends JSONController
             ]));
         }
 
-        $result = GraphQL::executeQuery(
+        /** @var \React\Promise\PromiseInterface $promise */
+        $promise = GraphQL::promiseToExecute(
+            $this->adapter,
             $this->schema,
             $input['query'],
             null,
             null,
             $input['variables'] ?? null,
-            $input['operationName'] ?? null,
-            null
+            $input['operationName'] ?? null
         );
 
-        return new Success(self::DEFAULT_HEADERS, JSON::encode($result));
+        return $promise->then(
+            [$this, 'onSuccess'],
+            [$this, 'onError']
+        );
     }
 }

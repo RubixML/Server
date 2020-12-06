@@ -28,7 +28,7 @@ use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Jobs\UpdateMemoryUsage;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\ML\Other\Loggers\BlackHole;
-use Psr\Log\LoggerInterface;
+use GraphQL\Executor\Promise\Adapter\ReactPromiseAdapter;
 use React\EventLoop\Factory as Loop;
 use React\Socket\Server as Socket;
 use React\Socket\SecureServer as SecureSocket;
@@ -36,6 +36,7 @@ use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
 use React\Http\Server as HTTP;
+use Psr\Log\LoggerInterface;
 
 /**
  * HTTP Server
@@ -258,6 +259,8 @@ class HTTPServer implements Server, Verbose
 
         $dashboard = new Dashboard($this, $dashboardChannel);
 
+        $schema = new Schema($dashboard);
+
         $memoryTimer = $scheduler->repeat(
             self::DASHBOARD_MEMORY_UPDATE_INTERVAL,
             new UpdateMemoryUsage($dashboard->memory())
@@ -278,7 +281,7 @@ class HTTPServer implements Server, Verbose
         $router = new Router(Routes::collect([
             new DashboardController($dashboard, $dashboardChannel),
             new ModelController($estimator, $eventBus),
-            new GraphQLController(new Schema($dashboard)),
+            new GraphQLController($schema, new ReactPromiseAdapter()),
             new StaticAssetsController(),
         ]));
 
@@ -291,8 +294,8 @@ class HTTPServer implements Server, Verbose
 
         $stack = array_merge($stack, $this->middlewares);
 
-        $stack[] = new AttachServerHeaders(self::SERVER_NAME);
         $stack[] = new CheckRequestBodySize($postMaxSize);
+        $stack[] = new AttachServerHeaders(self::SERVER_NAME);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
         $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
         $stack[] = [$router, 'dispatch'];

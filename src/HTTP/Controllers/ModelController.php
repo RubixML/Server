@@ -128,7 +128,7 @@ class ModelController extends JSONController
             $resolve($response);
         });
 
-        return $promise->otherwise([$this, 'respondServerError']);
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -171,7 +171,7 @@ class ModelController extends JSONController
             $resolve($response);
         });
 
-        return $promise->otherwise([$this, 'respondServerError']);
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -214,7 +214,7 @@ class ModelController extends JSONController
             $resolve($response);
         });
 
-        return $promise->otherwise([$this, 'respondServerError']);
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -223,7 +223,7 @@ class ModelController extends JSONController
      * @param \Exception $exception
      * @return \Rubix\Server\HTTP\Responses\InternalServerError
      */
-    public function respondServerError(Exception $exception) : InternalServerError
+    public function onError(Exception $exception) : InternalServerError
     {
         $this->eventBus->dispatch(new ModelQueryFailed($exception));
 
