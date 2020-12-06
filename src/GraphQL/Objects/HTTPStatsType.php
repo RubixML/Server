@@ -19,6 +19,7 @@ class HTTPStatsType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'description' => 'Statistics related to the HTTP request/response cycle.',
             'fields' => [
                 'requests' => [
                     'type' => RequestsType::singleton(),

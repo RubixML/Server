@@ -34,6 +34,19 @@ import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
 
+export const fragment = gql`
+    fragment ServerSettings on Dashboard {
+        settings {
+            host
+            port
+            maxConcurrentRequests
+            sseReconnectBuffer
+            memoryLimit
+            postMaxSize
+        }
+    }
+`;
+
 export default {
     props: {
         settings: {
@@ -52,20 +65,6 @@ export default {
                 ? (this.settings.postMaxSize / MEGABYTE).toFixed(1) + 'M'
                 : 'Unlimited';
         }
-    },
-    fragments: {
-        settings: gql`
-            fragment ServerSettings on DashboardType {
-                settings {
-                    host
-                    port
-                    maxConcurrentRequests
-                    sseReconnectBuffer
-                    memoryLimit
-                    postMaxSize
-                }
-            }
-        `,
     },
 }
 </script>

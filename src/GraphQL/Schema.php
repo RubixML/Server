@@ -9,6 +9,9 @@ use GraphQL\Type\Schema as BaseSchema;
 
 class Schema extends BaseSchema
 {
+    /**
+     * @param \Rubix\Server\Models\Dashboard $dashboard
+     */
     public function __construct(Dashboard $dashboard)
     {
         parent::__construct([

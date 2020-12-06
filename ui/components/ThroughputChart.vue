@@ -12,6 +12,17 @@ const MEGABYTE = 1000000;
 const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
 
+export const fragment = gql`
+    fragment ThroughputChart on Dashboard {
+        httpStats {
+            transfers {
+                received
+                sent
+            }
+        }
+    }
+`;
+
 export default {
     data() {
         return {
@@ -120,16 +131,6 @@ export default {
 
             this.chart.update(0);
         },
-    },
-    fragments: {
-        tranfers: gql`
-            fragment ThroughputChart on DashboardType {
-                transfers {
-                    received
-                    sent
-                }
-            }
-        `,
     },
 }
 </script>

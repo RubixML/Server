@@ -23,6 +23,7 @@ class DashboardType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'description' => 'The server dashboard.',
             'fields' => [
                 'httpStats' => [
                     'type' => HTTPStatsType::singleton(),

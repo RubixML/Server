@@ -24,23 +24,24 @@
 <script>
 import gql from 'graphql-tag';
 
+export const fragment = gql`
+    fragment RequestsLevel on Dashboard {
+        httpStats {
+            requests {
+                successful
+                rejected
+                failed
+            }
+        }
+    }
+`;
+
 export default {
     props: {
         requests: {
             type: Object,
             required: true,
         },
-    },
-    fragments: {
-        memory: gql`
-            fragment RequestsLevel on DashboardType {
-                requests {
-                    successful
-                    rejected
-                    failed
-                }
-            }
-        `,
     },
 }
 </script>

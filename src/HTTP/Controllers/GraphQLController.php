@@ -5,8 +5,11 @@ namespace Rubix\Server\HTTP\Controllers;
 use Rubix\Server\GraphQL\Schema;
 use Rubix\Server\Helpers\JSON;
 use Rubix\Server\HTTP\Responses\Success;
+use Rubix\Server\HTTP\Responses\UnprocessableEntity;
+use Rubix\Server\Exceptions\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use GraphQL\GraphQL;
+use Exception;
 
 class GraphQLController extends JSONController
 {
@@ -33,10 +36,10 @@ class GraphQLController extends JSONController
     public function routes() : array
     {
         return [
-            '/graphql/queries' => [
+            '/graphql' => [
                 'POST' => [
                     [$this, 'parseRequestBody'],
-                    [$this, 'query'],
+                    $this,
                 ],
             ],
         ];
@@ -48,12 +51,30 @@ class GraphQLController extends JSONController
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function query(ServerRequestInterface $request)
+    public function __invoke(ServerRequestInterface $request)
     {
         /** @var mixed[] $input */
         $input = $request->getParsedBody();
 
-        $result = GraphQL::executeQuery($this->schema, $input['query']);
+        try {
+            if (empty($input['query'])) {
+                throw new ValidationException('Query property must not be empty.');
+            }
+        } catch (Exception $exception) {
+            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
+                'message' => $exception->getMessage(),
+            ]));
+        }
+
+        $result = GraphQL::executeQuery(
+            $this->schema,
+            $input['query'],
+            null,
+            null,
+            $input['variables'] ?? null,
+            $input['operationName'] ?? null,
+            null
+        );
 
         return new Success(self::DEFAULT_HEADERS, JSON::encode($result));
     }

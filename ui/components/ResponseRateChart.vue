@@ -11,6 +11,18 @@ import gql from 'graphql-tag';
 const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
 
+export const fragment = gql`
+    fragment ResponseRateChart on Dashboard {
+        httpStats {
+            requests {
+                successful
+                rejected
+                failed
+            }
+        }
+    }
+`;
+
 export default {
     data() {
         return {
@@ -146,17 +158,6 @@ export default {
 
             this.chart.update(0);
         }
-    },
-    fragments: {
-        memory: gql`
-            fragment ResponseRateChart on DashboardType {
-                requests {
-                    successful
-                    rejected
-                    failed
-                }
-            }
-        `,
     },
 }
 </script>

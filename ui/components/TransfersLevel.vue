@@ -20,6 +20,17 @@ import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
 
+export const fragment = gql`
+    fragment TransfersLevel on Dashboard {
+        httpStats {
+            transfers {
+                received
+                sent
+            }
+        }
+    }
+`;
+
 export default {
     props: {
         transfers: {
@@ -34,16 +45,6 @@ export default {
         sent() {
             return this.transfers.sent / MEGABYTE;
         },
-    },
-    fragments: {
-        tranfers: gql`
-            fragment TransfersLevel on DashboardType {
-                transfers {
-                    received
-                    sent
-                }
-            }
-        `,
     },
 }
 </script>

@@ -11,6 +11,15 @@ import gql from 'graphql-tag';
 const MEGABYTE = 1000000;
 const THREE_SECONDS = 3000;
 
+export const fragment = gql`
+    fragment MemoryUsageChart on Dashboard {
+        memory {
+            current
+            peak
+        }
+    }
+`;
+
 export default {
     data() {
         return {
@@ -83,16 +92,6 @@ export default {
 
             this.chart.update();
         },
-    },
-    fragments: {
-        memory: gql`
-            fragment MemoryUsageChart on DashboardType {
-                memory {
-                    current
-                    peak
-                }
-            }
-        `,
     },
 }
 </script>

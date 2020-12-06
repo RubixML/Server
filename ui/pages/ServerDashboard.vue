@@ -38,6 +38,14 @@
 </template>
 
 <script>
+import { fragment as RequestsLevelFragment } from '../components/RequestsLevel.vue';
+import { fragment as ResponseRateChartFragment } from '../components/ResponseRateChart.vue';
+import { fragment as TransfersLevelFragment } from '../components/TransfersLevel.vue';
+import { fragment as ThroughputChartFragment } from '../components/ThroughputChart.vue';
+import { fragment as MemoryLevelFragment } from '../components/MemoryLevel.vue';
+import { fragment as MemoryUsageChartFragment } from '../components/MemoryUsageChart.vue';
+import { fragment as ServerInfoFragment } from '../components/ServerInfo.vue';
+import { fragment as ServerSettingsFragment } from '../components/ServerSettings.vue';
 import gql from 'graphql-tag';
 import bus from '../bus';
 
@@ -49,55 +57,63 @@ export default {
                 memory: undefined,
                 info: undefined,
                 settings: undefined,
-                stream: null,
-            }
+            },
+            stream: null,
         };
     },
-    apollo: {
-        dashboard: gql`
-            query GetDashboard {
-                dashboard {
-                    ...RequestsLevel
-                    ...ResponseRateChart
-                    ...TransfersLevel
-                    ...ThroughputChart
-                    ...ServerInfo
-                    ...ServerSettings
-                }
-            }
-            ${$options.fragments.requests}
-            ${$options.fragments.memory}
-            ${$options.fragments.transfers}
-            ${$options.fragments.info}
-            ${$options.fragments.settings}
-        `,
-    },
     mounted() {
-        this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
-            stream.subscribe('request-recorded', (message) => {
-                this.httpStats.transfers.received += message.size;
-            });
-
-            stream.subscribe('response-recorded', (message) => {
-                const code = message.code;
-
-                if (code >= 100 && code < 400) {
-                    this.httpStats.requests.successful++;
-                } else if (code >= 400 && code < 500) {
-                    this.httpStats.requests.rejected++;
-                } else if (code >= 500) {
-                    this.httpStats.requests.failed++;
+        this.$apollo.query({
+            query: gql`
+                query getDashboard {
+                    dashboard {
+                        ...RequestsLevel
+                        ...ResponseRateChart
+                        ...TransfersLevel
+                        ...ThroughputChart
+                        ...MemoryLevel
+                        ...MemoryUsageChart
+                        ...ServerInfo
+                        ...ServerSettings
+                    }
                 }
+                ${RequestsLevelFragment}
+                ${ResponseRateChartFragment}
+                ${TransfersLevelFragment}
+                ${ThroughputChartFragment}
+                ${MemoryLevelFragment}
+                ${MemoryUsageChartFragment}
+                ${ServerInfoFragment}
+                ${ServerSettingsFragment}
+            `,
+        }).then((response) => {
+            this.dashboard = response.data.dashboard;
 
-                this.httpStats.transfers.sent += message.size;
+            this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
+                stream.subscribe('request-recorded', (message) => {
+                    this.dashboard.httpStats.transfers.received += message.size;
+                });
+
+                stream.subscribe('response-recorded', (message) => {
+                    const code = message.code;
+
+                    if (code >= 100 && code < 400) {
+                        this.dashboard.httpStats.requests.successful++;
+                    } else if (code >= 400 && code < 500) {
+                        this.dashboard.httpStats.requests.rejected++;
+                    } else if (code >= 500) {
+                        this.dashboard.httpStats.requests.failed++;
+                    }
+
+                    this.dashboard.httpStats.transfers.sent += message.size;
+                });
+
+                stream.subscribe('memory-usage-updated', (message) => {
+                    this.dashboard.memory.current = message.current;
+                    this.dashboard.memory.peak = message.peak;
+                });
+
+                this.stream = stream;
             });
-
-            stream.subscribe('memory-usage-updated', (message) => {
-                this.memory.current = message.current;
-                this.memory.peak = message.peak;
-            });
-
-            this.stream = stream;
         }).catch((error) => {
             bus.$emit('communication-error', {
                 error,

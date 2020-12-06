@@ -35,6 +35,20 @@ import gql from 'graphql-tag';
 
 const THIRTY_SECONDS = 30000;
 
+export const fragment = gql`
+    fragment ServerInfo on Dashboard {
+        info {
+            start
+            pid
+            versions {
+                server
+                ml
+                php
+            }
+        }
+    }
+`;
+
 export default {
     data() {
         return {
@@ -61,16 +75,6 @@ export default {
         this.updateUptime();
 
         setInterval(this.updateUptime, THIRTY_SECONDS);
-    },
-    fragments: {
-        info: gql`
-            fragment ServerInfo on DashboardType {
-                info {
-                    start
-                    pid
-                }
-            }
-        `,
     },
 }
 </script>
