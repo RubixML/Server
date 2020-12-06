@@ -6,10 +6,22 @@
 
 <script>
 import Chart from 'chart.js';
+import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
 const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
+
+export const fragment = gql`
+    fragment ThroughputChart on Dashboard {
+        httpStats {
+            transfers {
+                received
+                sent
+            }
+        }
+    }
+`;
 
 export default {
     data() {

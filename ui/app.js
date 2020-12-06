@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import VueAxios from 'vue-axios';
+import VueApollo from 'vue-apollo';
+import { ApolloClient } from 'apollo-client';
+import { createHttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import VueSSE from 'vue-sse';
-import routes from './routes';
 import App from './App.vue';
 import MainNav from './components/MainNav.vue';
 import MainFooter from './components/MainFooter.vue';
@@ -15,8 +17,7 @@ import MemoryUsageChart from './components/MemoryUsageChart.vue';
 import ServerInfo from './components/ServerInfo.vue';
 import ServerSettings from './components/ServerSettings.vue';
 import CommunicationError from './components/CommunicationError.vue';
-
-const axios = require('axios');
+import routes from './routes';
 
 require('./scss/app.scss');
 
@@ -29,6 +30,21 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js');
     });
 }
+
+/**
+ * Boot up the Apollo Graph QL client.
+ */
+
+const httpLink = createHttpLink({
+    uri: '/graphql',
+});
+
+const cache = new InMemoryCache();
+  
+const apolloClient = new ApolloClient({
+    link: httpLink,
+    cache,
+});
 
 /**
  * Register the Vue components and instantiate the Vue app.
@@ -48,7 +64,7 @@ Vue.component('server-settings', ServerSettings);
 Vue.component('communication-error', CommunicationError);
 
 Vue.use(VueRouter);
-Vue.use(VueAxios, axios);
+Vue.use(VueApollo);
 Vue.use(VueSSE);
 
 const router = new VueRouter({
@@ -56,7 +72,12 @@ const router = new VueRouter({
     routes,
 });
 
+const apolloProvider = new VueApollo({
+    defaultClient: apolloClient,
+});
+
 const app = new Vue({
     el: '#app',
     router,
+    apolloProvider,
 });

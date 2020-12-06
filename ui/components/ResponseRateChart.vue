@@ -6,9 +6,22 @@
 
 <script>
 import Chart from 'chart.js';
+import gql from 'graphql-tag';
 
 const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
+
+export const fragment = gql`
+    fragment ResponseRateChart on Dashboard {
+        httpStats {
+            requests {
+                successful
+                rejected
+                failed
+            }
+        }
+    }
+`;
 
 export default {
     data() {

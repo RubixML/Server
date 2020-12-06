@@ -21,7 +21,7 @@ use Exception;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-class ModelController extends RESTController
+class ModelController extends JSONController
 {
     /**
      * The model that is being served.
@@ -128,7 +128,7 @@ class ModelController extends RESTController
             $resolve($response);
         });
 
-        return $promise->otherwise([$this, 'respondServerError']);
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -171,7 +171,7 @@ class ModelController extends RESTController
             $resolve($response);
         });
 
-        return $promise->otherwise([$this, 'respondServerError']);
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -214,7 +214,7 @@ class ModelController extends RESTController
             $resolve($response);
         });
 
-        return $promise->otherwise([$this, 'respondServerError']);
+        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -223,7 +223,7 @@ class ModelController extends RESTController
      * @param \Exception $exception
      * @return \Rubix\Server\HTTP\Responses\InternalServerError
      */
-    public function respondServerError(Exception $exception) : InternalServerError
+    public function onError(Exception $exception) : InternalServerError
     {
         $this->eventBus->dispatch(new ModelQueryFailed($exception));
 

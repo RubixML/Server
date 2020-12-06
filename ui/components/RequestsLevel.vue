@@ -22,6 +22,20 @@
 </template>
 
 <script>
+import gql from 'graphql-tag';
+
+export const fragment = gql`
+    fragment RequestsLevel on Dashboard {
+        httpStats {
+            requests {
+                successful
+                rejected
+                failed
+            }
+        }
+    }
+`;
+
 export default {
     props: {
         requests: {

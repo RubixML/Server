@@ -31,8 +31,23 @@
 
 <script>
 import moment from 'moment';
+import gql from 'graphql-tag';
 
 const THIRTY_SECONDS = 30000;
+
+export const fragment = gql`
+    fragment ServerInfo on Dashboard {
+        info {
+            start
+            pid
+            versions {
+                server
+                ml
+                php
+            }
+        }
+    }
+`;
 
 export default {
     data() {

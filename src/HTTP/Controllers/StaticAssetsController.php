@@ -13,7 +13,7 @@ use function is_file;
 use function is_readable;
 use function file_get_contents;
 
-class StaticAssetsController implements Controller
+class StaticAssetsController extends Controller
 {
     protected const DEFAULT_HEADERS = [
         'Cache-Control' => 'max-age=604800',

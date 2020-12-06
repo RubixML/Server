@@ -1,4 +1,5 @@
 - 0.2.4-beta
+    - Added GraphQL API
     - Dashboard memory chart shows real memory usage
     - Removed Query Bus and associated application layer
 

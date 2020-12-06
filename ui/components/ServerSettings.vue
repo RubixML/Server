@@ -30,7 +30,22 @@
 </template>
 
 <script>
+import gql from 'graphql-tag';
+
 const MEGABYTE = 1000000;
+
+export const fragment = gql`
+    fragment ServerSettings on Dashboard {
+        settings {
+            host
+            port
+            maxConcurrentRequests
+            sseReconnectBuffer
+            memoryLimit
+            postMaxSize
+        }
+    }
+`;
 
 export default {
     props: {

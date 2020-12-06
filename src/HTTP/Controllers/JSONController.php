@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use GuzzleHttp\Psr7\Utils;
 use Exception;
 
-abstract class RESTController implements Controller
+abstract class JSONController extends Controller
 {
     protected const DEFAULT_HEADERS = [
         'Content-Type' => 'application/json',

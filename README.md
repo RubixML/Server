@@ -93,7 +93,7 @@ $server->setLogger(new Screen());
 ```
 
 ### HTTP Server
-A JSON over HTTP server exposing a Representational State Transfer (REST) API. The HTTP Server operates with ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for real-time server monitoring.
+A JSON over HTTP server exposing Representational State Transfer (REST) and GraphQL APIs. The HTTP Server operates with ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for real-time server monitoring.
 
 Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 
@@ -136,6 +136,7 @@ The HTTP server exposes the following resources and their methods.
 | GET | /server | The server dashboard interface. |
 | GET | /server/dashboard | Query the dashboard. |
 | GET | /server/dashboard/events | Subscribe to the dashboard events stream. |
+| POST | /graphql | Send a GraphQL query to the server. |
 
 #### Web Interface
 The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.
@@ -147,6 +148,7 @@ This server respects the following `php.ini` configuration variables.
 
 | Name | Default | Description |
 |---|---|---|
+| memory_limit | 128M | The maximum amount of memory the server is allowed to consume. |
 | post_max_size | 8M | The maximum size of a request body the server can buffer. |
 
 #### References
