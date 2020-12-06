@@ -52,14 +52,14 @@ class ServerSettingsType extends ObjectType
                 ],
                 'memoryLimit' => [
                     'description' => 'The maximum amount of memory the server is allowed to consume in bytes.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->memoryLimit();
                     },
                 ],
                 'postMaxSize' => [
                     'description' => 'The maximum size of a request body in bytes.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->postMaxSize();
                     },
