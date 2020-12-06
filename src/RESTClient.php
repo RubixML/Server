@@ -6,7 +6,6 @@ use Rubix\ML\Datasets\Dataset;
 use Rubix\Server\HTTP\Requests\PredictRequest;
 use Rubix\Server\HTTP\Requests\ProbaRequest;
 use Rubix\Server\HTTP\Requests\ScoreRequest;
-use Rubix\Server\HTTP\Requests\GetDashboardRequest;
 use Rubix\Server\HTTP\Middleware\Client\Middleware;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
@@ -17,8 +16,6 @@ use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Promise;
 use Psr\Http\Message\ResponseInterface;
 use Exception;
-
-use function call_user_func;
 
 /**
  * REST Client
@@ -83,7 +80,7 @@ class RESTClient implements Client, AsyncClient
                     . ' implement the Middleware interface.');
             }
 
-            $stack->push(call_user_func($middleware));
+            $stack->push($middleware());
         }
 
         if ($timeout < 0.0) {
@@ -174,30 +171,6 @@ class RESTClient implements Client, AsyncClient
     public function scoreAsync(Dataset $dataset) : PromiseInterface
     {
         $request = new ScoreRequest($dataset);
-
-        return $this->client->sendAsync($request)
-            ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then([$this, 'unpackPayload']);
-    }
-
-    /**
-     * Return the server dashboard information.
-     *
-     * @return mixed[]
-     */
-    public function getDashboard() : array
-    {
-        return $this->getDashboardAsync()->wait();
-    }
-
-    /**
-     * Return a promise for the server dashboard information.
-     *
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getDashboardAsync() : PromiseInterface
-    {
-        $request = new GetDashboardRequest();
 
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])

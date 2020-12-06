@@ -6,6 +6,7 @@ use Rubix\Server\Models\Dashboard;
 use Rubix\Server\GraphQL\Objects\ObjectType;
 use Rubix\Server\GraphQL\Objects\DashboardType;
 use GraphQL\Type\Schema as BaseSchema;
+use GraphQL\Type\Definition\Type;
 
 class Schema extends BaseSchema
 {
@@ -19,8 +20,8 @@ class Schema extends BaseSchema
                 'name' => 'Query',
                 'fields' => [
                     'dashboard' => [
-                        'type' => DashboardType::singleton(),
-                        'resolve' => function () use ($dashboard) {
+                        'type' => Type::nonNull(DashboardType::singleton()),
+                        'resolve' => function () use ($dashboard) : Dashboard {
                             return $dashboard;
                         },
                     ],

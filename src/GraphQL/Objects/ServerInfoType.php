@@ -25,7 +25,7 @@ class ServerInfoType extends ObjectType
             'fields' => [
                 'start' => [
                     'description' => 'The timestamp of when the server went up.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (ServerInfo $info) : int {
                         return $info->start();
                     },
@@ -33,12 +33,12 @@ class ServerInfoType extends ObjectType
                 'pid' => [
                     'description' => 'The process ID (PID) of the server.',
                     'type' => Type::int(),
-                    'resolve' => function (ServerInfo $info) : int {
+                    'resolve' => function (ServerInfo $info) : ?int {
                         return $info->pid();
                     },
                 ],
                 'versions' => [
-                    'type' => VersionsType::singleton(),
+                    'type' => Type::nonNull(VersionsType::singleton()),
                     'resolve' => function (ServerInfo $info) : Versions {
                         return $info->versions();
                     },

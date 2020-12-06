@@ -15,11 +15,27 @@ class ServerSettings extends Model
     protected $server;
 
     /**
+     * The maximum number of bytes that the server can consume.
+     *
+     * @var int
+     */
+    protected $memoryLimit;
+
+    /**
+     * The maximum size of a request body in bytes.
+     *
+     * @var int
+     */
+    protected $postMaxSize;
+
+    /**
      * @param \Rubix\Server\HTTPServer $server
      */
     public function __construct(HTTPServer $server)
     {
         $this->server = $server;
+        $this->memoryLimit = IniUtil::iniSizeToBytes((string) ini_get('memory_limit'));
+        $this->postMaxSize = IniUtil::iniSizeToBytes((string) ini_get('post_max_size'));
     }
 
     /**
@@ -69,7 +85,7 @@ class ServerSettings extends Model
      */
     public function memoryLimit() : int
     {
-        return IniUtil::iniSizeToBytes((string) ini_get('memory_limit'));
+        return $this->memoryLimit;
     }
 
     /**
@@ -79,7 +95,7 @@ class ServerSettings extends Model
      */
     public function postMaxSize() : int
     {
-        return IniUtil::iniSizeToBytes((string) ini_get('post_max_size'));
+        return $this->postMaxSize;
     }
 
     /**
@@ -94,8 +110,8 @@ class ServerSettings extends Model
             'port' => $this->server->port(),
             'maxConcurrentRequests' => $this->server->maxConcurrentRequests(),
             'sseReconnectBuffer' => $this->server->sseReconnectBuffer(),
-            'memoryLimit' => $this->memoryLimit(),
-            'postMaxSize' => $this->postMaxSize(),
+            'memoryLimit' => $this->memoryLimit,
+            'postMaxSize' => $this->postMaxSize,
         ];
     }
 }

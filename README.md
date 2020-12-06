@@ -139,7 +139,7 @@ The HTTP server exposes the following resources and their methods.
 | POST | /graphql | Send a GraphQL query to the server. |
 
 #### Web Interface
-The HTTP server provides its own high-level user interface to the REST API it exposes under the hood. To access the web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.
+The HTTP server provides its own high-level user interface to the GraphQL API it exposes under the hood. To access the on-demand web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.
 
 ![Server Web UI Screenshot](https://raw.githubusercontent.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png)
 

@@ -30,11 +30,4 @@ interface AsyncClient
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
     public function scoreAsync(Dataset $dataset) : PromiseInterface;
-
-    /**
-     * Return the server dashboard properties in a promise.
-     *
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getDashboardAsync() : PromiseInterface;
 }

@@ -14,7 +14,7 @@ class ServerInfo extends Model
     /**
      * The process ID (PID) of the server.
      *
-     * @var int
+     * @var int|null
      */
     protected $pid;
 
@@ -28,7 +28,7 @@ class ServerInfo extends Model
     public function __construct()
     {
         $this->start = time();
-        $this->pid = getmypid();
+        $this->pid = getmypid() ?: null;
         $this->versions = new Versions();
     }
 
@@ -45,9 +45,9 @@ class ServerInfo extends Model
     /**
      * Return the server process ID (PID).
      *
-     * @return int
+     * @return int|null
      */
-    public function pid() : int
+    public function pid() : ?int
     {
         return $this->pid;
     }

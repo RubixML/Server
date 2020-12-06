@@ -24,21 +24,21 @@ class VersionsType extends ObjectType
             'fields' => [
                 'server' => [
                     'description' => 'The version number of the Server library.',
-                    'type' => Type::string(),
+                    'type' => Type::nonNull(Type::string()),
                     'resolve' => function (Versions $versions) : string {
                         return $versions->server();
                     },
                 ],
                 'ml' => [
                     'description' => 'The version number of the ML library.',
-                    'type' => Type::string(),
+                    'type' => Type::nonNull(Type::string()),
                     'resolve' => function (Versions $versions) : string {
                         return $versions->ml();
                     },
                 ],
                 'php' => [
                     'description' => 'The version number of the PHP runtime.',
-                    'type' => Type::string(),
+                    'type' => Type::nonNull(Type::string()),
                     'resolve' => function (Versions $versions) : string {
                         return $versions->php();
                     },

@@ -24,14 +24,14 @@ class MemoryType extends ObjectType
             'fields' => [
                 'current' => [
                     'description' => 'The current memory usage of the server.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (Memory $memory) : int {
                         return $memory->current();
                     },
                 ],
                 'peak' => [
                     'description' => 'The maximum amount of memory consumed by the server so far.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (Memory $memory) : int {
                         return $memory->peak();
                     },

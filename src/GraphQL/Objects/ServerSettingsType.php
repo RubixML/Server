@@ -24,28 +24,28 @@ class ServerSettingsType extends ObjectType
             'fields' => [
                 'host' => [
                     'description' => 'The host address of the server.',
-                    'type' => Type::string(),
+                    'type' => Type::nonNull(Type::string()),
                     'resolve' => function (ServerSettings $settings) : string {
                         return $settings->host();
                     },
                 ],
                 'port' => [
                     'description' => 'The networking port the server is running on.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->port();
                     },
                 ],
                 'maxConcurrentRequests' => [
                     'description' => 'The maximum number of requests to handle concurrently.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->maxConcurrentRequests();
                     },
                 ],
                 'sseReconnectBuffer' => [
                     'description' => 'The size of the server-sent events (SSE) reconnect buffer.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->sseReconnectBuffer();
                     },

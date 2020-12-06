@@ -3,6 +3,7 @@
 namespace Rubix\Server\GraphQL\Objects;
 
 use Rubix\Server\Models\HTTPStats;
+use GraphQL\Type\Definition\Type;
 
 class HTTPStatsType extends ObjectType
 {
@@ -22,13 +23,13 @@ class HTTPStatsType extends ObjectType
             'description' => 'Statistics related to the HTTP request/response cycle.',
             'fields' => [
                 'requests' => [
-                    'type' => RequestsType::singleton(),
+                    'type' => Type::nonNull(RequestsType::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : HTTPStats {
                         return $httpStats;
                     },
                 ],
                 'transfers' => [
-                    'type' => TransfersType::singleton(),
+                    'type' => Type::nonNull(TransfersType::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : HTTPStats {
                         return $httpStats;
                     },

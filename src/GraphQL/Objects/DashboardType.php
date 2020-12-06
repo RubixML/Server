@@ -7,6 +7,7 @@ use Rubix\Server\Models\HTTPStats;
 use Rubix\Server\Models\Memory;
 use Rubix\Server\Models\ServerInfo;
 use Rubix\Server\Models\ServerSettings;
+use GraphQL\Type\Definition\Type;
 
 class DashboardType extends ObjectType
 {
@@ -26,25 +27,25 @@ class DashboardType extends ObjectType
             'description' => 'The server dashboard.',
             'fields' => [
                 'httpStats' => [
-                    'type' => HTTPStatsType::singleton(),
+                    'type' => Type::nonNull(HTTPStatsType::singleton()),
                     'resolve' => function (Dashboard $dashboard) : HTTPStats {
                         return $dashboard->httpStats();
                     },
                 ],
                 'memory' => [
-                    'type' => MemoryType::singleton(),
+                    'type' => Type::nonNull(MemoryType::singleton()),
                     'resolve' => function (Dashboard $dashboard) : Memory {
                         return $dashboard->memory();
                     },
                 ],
                 'info' => [
-                    'type' => ServerInfoType::singleton(),
+                    'type' => Type::nonNull(ServerInfoType::singleton()),
                     'resolve' => function (Dashboard $dashboard) : ServerInfo {
                         return $dashboard->info();
                     },
                 ],
                 'settings' => [
-                    'type' => ServerSettingsType::singleton(),
+                    'type' => Type::nonNull(ServerSettingsType::singleton()),
                     'resolve' => function (Dashboard $dashboard) : ServerSettings {
                         return $dashboard->settings();
                     },

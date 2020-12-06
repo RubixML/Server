@@ -6,10 +6,10 @@
     "license": "MIT",
     "readme": "README.md",
     "keywords": [
-        "ai", "api", "cloud", "distributed", "inference", "inference engine", "inference server",
-        "infrastructure", "json api", "machine learning", "microservice", "ml", "ml infrastructure",
-        "ml server", "model server", "model deployment", "php", "pap ai", "php machine learning",
-        "php ml", "prediction", "rest api", "rest server", "rest client", "rpc client", "rpc server",
+        "ai", "api", "cloud", "distributed", "graphql", "graph ql", "inference", "inference engine",
+        "inference server", "infrastructure", "json api", "machine learning", "microservice", "ml",
+        "ml infrastructure", "ml server", "model server", "model deployment", "php", "pap ai",
+        "php machine learning", "php ml", "prediction", "rest api", "rest server", "rest client",
         "rubix", "rubix ml", "rubixml", "server"
     ],
     "authors": [
@@ -43,7 +43,6 @@
         "phpunit/phpunit": "8.5.*"
     },
     "suggest": {
-        "ext-tensor": "For fast Matrix/Vector computing",
         "ext-event": "For high volume servers"
     },
     "autoload": {
