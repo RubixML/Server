@@ -95,7 +95,9 @@ class GraphQLController extends JSONController
             }
         } catch (Exception $exception) {
             return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
-                'message' => $exception->getMessage(),
+                'error' => [
+                    'message' => $exception->getMessage(),
+                ],
             ]));
         }
 

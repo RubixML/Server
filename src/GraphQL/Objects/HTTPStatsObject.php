@@ -5,7 +5,7 @@ namespace Rubix\Server\GraphQL\Objects;
 use Rubix\Server\Models\HTTPStats;
 use GraphQL\Type\Definition\Type;
 
-class HTTPStatsType extends ObjectType
+class HTTPStatsObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -20,16 +20,17 @@ class HTTPStatsType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'HTTPStats',
             'description' => 'Statistics related to the HTTP request/response cycle.',
             'fields' => [
                 'requests' => [
-                    'type' => Type::nonNull(RequestsType::singleton()),
+                    'type' => Type::nonNull(RequestsObject::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : HTTPStats {
                         return $httpStats;
                     },
                 ],
                 'transfers' => [
-                    'type' => Type::nonNull(TransfersType::singleton()),
+                    'type' => Type::nonNull(TransfersObject::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : HTTPStats {
                         return $httpStats;
                     },

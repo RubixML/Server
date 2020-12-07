@@ -5,7 +5,7 @@ namespace Rubix\Server\GraphQL\Objects;
 use Rubix\Server\Models\Memory;
 use GraphQL\Type\Definition\Type;
 
-class MemoryType extends ObjectType
+class MemoryObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -20,6 +20,7 @@ class MemoryType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'Memory',
             'description' => 'Memory usage statistics.',
             'fields' => [
                 'current' => [

@@ -61,7 +61,7 @@ export default {
                 : 'Unlimited';
         },
         postMaxSize() {
-            return this.settings.postMaxSize !== -1
+            return this.settings.postMaxSize > 0
                 ? (this.settings.postMaxSize / MEGABYTE).toFixed(1) + 'M'
                 : 'Unlimited';
         }

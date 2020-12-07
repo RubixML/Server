@@ -5,7 +5,7 @@ namespace Rubix\Server\GraphQL\Objects;
 use Rubix\Server\Models\HTTPStats;
 use GraphQL\Type\Definition\Type;
 
-class TransfersType extends ObjectType
+class TransfersObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -20,6 +20,7 @@ class TransfersType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'Transfers',
             'description' => 'Transfer statistics.',
             'fields' => [
                 'received' => [

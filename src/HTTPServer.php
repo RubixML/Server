@@ -3,6 +3,7 @@
 namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
+use Rubix\Server\Models\Model;
 use Rubix\Server\Models\Dashboard;
 use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\Subscriptions;
@@ -255,11 +256,11 @@ class HTTPServer implements Server, Verbose
             ]);
         }
 
+        $model = new Model($estimator);
+
         $dashboardChannel = new SSEChannel($this->sseReconnectBuffer);
 
         $dashboard = new Dashboard($this, $dashboardChannel);
-
-        $schema = new Schema($dashboard);
 
         $memoryTimer = $scheduler->repeat(
             self::DASHBOARD_MEMORY_UPDATE_INTERVAL,
@@ -278,9 +279,11 @@ class HTTPServer implements Server, Verbose
             new CloseSocket($socket),
         ]), $scheduler, $this->logger);
 
+        $schema = new Schema($model, $dashboard);
+
         $router = new Router(Routes::collect([
+            new ModelController($model),
             new DashboardController($dashboard, $dashboardChannel),
-            new ModelController($estimator, $eventBus),
             new GraphQLController($schema, new ReactPromiseAdapter()),
             new StaticAssetsController(),
         ]));

@@ -5,7 +5,7 @@ namespace Rubix\Server\Models;
 use Rubix\Server\HTTPServer;
 use React\Http\Io\IniUtil;
 
-class ServerSettings extends Model
+class ServerSettings
 {
     /**
      * The server instance.

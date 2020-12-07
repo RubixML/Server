@@ -2,19 +2,11 @@
 
 namespace Rubix\Server\HTTP\Controllers;
 
-use Rubix\ML\Estimator;
-use Rubix\ML\Learner;
-use Rubix\ML\Probabilistic;
-use Rubix\ML\Ranking;
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\Services\EventBus;
+use Rubix\Server\Models\Model;
 use Rubix\Server\HTTP\Responses\Success;
-use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Rubix\Server\HTTP\Responses\InternalServerError;
-use Rubix\Server\Events\ModelQueryFailed;
 use Rubix\Server\Exceptions\ValidationException;
-use Rubix\Server\Exceptions\InvalidArgumentException;
-use Rubix\Server\Exceptions\RuntimeException;
 use Rubix\Server\Helpers\JSON;
 use React\Promise\Promise;
 use Exception;
@@ -24,33 +16,18 @@ use Psr\Http\Message\ServerRequestInterface;
 class ModelController extends JSONController
 {
     /**
-     * The model that is being served.
+     * The model model.
      *
-     * @var \Rubix\ML\Estimator
+     * @var \Rubix\Server\Models\Model
      */
-    protected $estimator;
+    protected $model;
 
     /**
-     * The event bus.
-     *
-     * @var \Rubix\Server\Services\EventBus
+     * @param \Rubix\Server\Models\Model $model
      */
-    protected $eventBus;
-
-    /**
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\Services\EventBus $eventBus
-     */
-    public function __construct(Estimator $estimator, EventBus $eventBus)
+    public function __construct(Model $model)
     {
-        if ($estimator instanceof Learner) {
-            if (!$estimator->trained()) {
-                throw new InvalidArgumentException('Learner must be trained.');
-            }
-        }
-
-        $this->estimator = $estimator;
-        $this->eventBus = $eventBus;
+        $this->model = $model;
     }
 
     /**
@@ -61,6 +38,9 @@ class ModelController extends JSONController
     public function routes() : array
     {
         $routes = [
+            '/model' => [
+                'GET' => [$this, 'getModel'],
+            ],
             '/model/predictions' => [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
@@ -70,7 +50,7 @@ class ModelController extends JSONController
             ],
         ];
 
-        if ($this->estimator instanceof Probabilistic) {
+        if ($this->model->isProbabilistic()) {
             $routes['/model/probabilities'] = [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
@@ -80,7 +60,7 @@ class ModelController extends JSONController
             ];
         }
 
-        if ($this->estimator instanceof Ranking) {
+        if ($this->model->isRanking()) {
             $routes['/model/anomaly_scores'] = [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
@@ -91,6 +71,21 @@ class ModelController extends JSONController
         }
 
         return $routes;
+    }
+
+    /**
+     * Handle the request and return a response or a deferred response.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function getModel(ServerRequestInterface $request)
+    {
+        return new Success(self::DEFAULT_HEADERS, JSON::encode([
+            'data' => [
+                'model' => $this->model->asArray(),
+            ],
+        ]));
     }
 
     /**
@@ -111,13 +106,11 @@ class ModelController extends JSONController
 
             $dataset = new Unlabeled($input['samples']);
         } catch (Exception $exception) {
-            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
-                'message' => $exception->getMessage(),
-            ]));
+            return $this->respondWithUnprocessable($exception);
         }
 
         $promise = new Promise(function ($resolve) use ($dataset) {
-            $predictions = $this->estimator->predict($dataset);
+            $predictions = $this->model->predict($dataset);
 
             $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
                 'data' => [
@@ -149,18 +142,11 @@ class ModelController extends JSONController
 
             $dataset = new Unlabeled($input['samples']);
         } catch (Exception $exception) {
-            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
-                'message' => $exception->getMessage(),
-            ]));
+            return $this->respondWithUnprocessable($exception);
         }
 
         $promise = new Promise(function ($resolve) use ($dataset) {
-            if (!$this->estimator instanceof Probabilistic) {
-                throw new RuntimeException('Estimator must implement'
-                    . ' the Probabilistic interface.');
-            }
-
-            $probabilities = $this->estimator->proba($dataset);
+            $probabilities = $this->model->proba($dataset);
 
             $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
                 'data' => [
@@ -192,18 +178,11 @@ class ModelController extends JSONController
 
             $dataset = new Unlabeled($input['samples']);
         } catch (Exception $exception) {
-            return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
-                'message' => $exception->getMessage(),
-            ]));
+            return $this->respondWithUnprocessable($exception);
         }
 
         $promise = new Promise(function ($resolve) use ($dataset) {
-            if (!$this->estimator instanceof Ranking) {
-                throw new RuntimeException('Estimator must implement'
-                    . ' the Ranking interface.');
-            }
-
-            $scores = $this->estimator->score($dataset);
+            $scores = $this->model->score($dataset);
 
             $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
                 'data' => [
@@ -225,8 +204,6 @@ class ModelController extends JSONController
      */
     public function onError(Exception $exception) : InternalServerError
     {
-        $this->eventBus->dispatch(new ModelQueryFailed($exception));
-
         return new InternalServerError();
     }
 }

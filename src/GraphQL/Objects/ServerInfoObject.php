@@ -6,7 +6,7 @@ use Rubix\Server\Models\ServerInfo;
 use Rubix\Server\Models\Versions;
 use GraphQL\Type\Definition\Type;
 
-class ServerInfoType extends ObjectType
+class ServerInfoObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -21,6 +21,7 @@ class ServerInfoType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'ServerInfo',
             'description' => 'Information related to the status of the server.',
             'fields' => [
                 'start' => [
@@ -38,7 +39,7 @@ class ServerInfoType extends ObjectType
                     },
                 ],
                 'versions' => [
-                    'type' => Type::nonNull(VersionsType::singleton()),
+                    'type' => Type::nonNull(VersionsObject::singleton()),
                     'resolve' => function (ServerInfo $info) : Versions {
                         return $info->versions();
                     },

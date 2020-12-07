@@ -5,7 +5,7 @@ namespace Rubix\Server\GraphQL\Objects;
 use Rubix\Server\Models\ServerSettings;
 use GraphQL\Type\Definition\Type;
 
-class ServerSettingsType extends ObjectType
+class ServerSettingsObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -20,6 +20,7 @@ class ServerSettingsType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'ServerSettings',
             'description' => 'The current user settings of the server.',
             'fields' => [
                 'host' => [

@@ -6,6 +6,7 @@ use Rubix\Server\Helpers\JSON;
 use Rubix\Server\HTTP\Responses\BadRequest;
 use Rubix\Server\HTTP\Responses\UnsupportedContentEncoding;
 use Rubix\Server\HTTP\Responses\UnsupportedContentType;
+use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Psr\Http\Message\ServerRequestInterface;
 use GuzzleHttp\Psr7\Utils;
 use Exception;
@@ -53,9 +54,7 @@ abstract class JSONController extends Controller
                         ]);
                 }
             } catch (Exception $exception) {
-                return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([
-                    'message' => $exception->getMessage(),
-                ]));
+                return $this->respondWithBadRequest($exception);
             }
 
             $request = $request->withBody(Utils::streamFor($data));
@@ -91,14 +90,42 @@ abstract class JSONController extends Controller
                         ]);
                 }
             } catch (Exception $exception) {
-                return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([
-                    'message' => $exception->getMessage(),
-                ]));
+                return $this->respondWithBadRequest($exception);
             }
 
             $request = $request->withParsedBody($body);
         }
 
         return $next($request);
+    }
+
+    /**
+     * Respond with bad request.
+     *
+     * @param \Exception $exception
+     * @return \Rubix\Server\HTTP\Responses\BadRequest
+     */
+    public function respondWithBadRequest(Exception $exception) : BadRequest
+    {
+        return new BadRequest(self::DEFAULT_HEADERS, JSON::encode([
+            'error' => [
+                'message' => $exception->getMessage(),
+            ],
+        ]));
+    }
+
+    /**
+     * Respond with unprocessable entity.
+     *
+     * @param \Exception $exception
+     * @return \Rubix\Server\HTTP\Responses\UnprocessableEntity
+     */
+    public function respondWithUnprocessable(Exception $exception) : UnprocessableEntity
+    {
+        return new UnprocessableEntity(self::DEFAULT_HEADERS, JSON::encode([
+            'error' => [
+                'message' => $exception->getMessage(),
+            ],
+        ]));
     }
 }

@@ -5,14 +5,10 @@ namespace Rubix\Server\Tests\HTTP\Controllers;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\KNearestNeighbors;
-use Rubix\ML\Other\Loggers\BlackHole;
-use Rubix\Server\Services\Subscriptions;
-use Rubix\Server\Services\EventBus;
-use Rubix\Server\Services\Scheduler;
+use Rubix\Server\Models\Model;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\JSONController;
 use Rubix\Server\HTTP\Controllers\Controller;
-use React\EventLoop\Factory as Loop;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -43,7 +39,7 @@ class ModelControllerTest extends TestCase
 
         $estimator->train($dataset);
 
-        $this->controller = new ModelController($estimator, new EventBus(new Subscriptions([]), new Scheduler(Loop::create()), new BlackHole()));
+        $this->controller = new ModelController(new Model($estimator));
     }
 
     /**

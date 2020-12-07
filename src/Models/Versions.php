@@ -6,7 +6,7 @@ use const Rubix\Server\VERSION as SERVER_VERSION;
 use const Rubix\ML\VERSION as ML_VERSION;
 use const PHP_VERSION;
 
-class Versions extends Model
+class Versions
 {
     /**
      * Return the Server library version.

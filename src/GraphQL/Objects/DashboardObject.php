@@ -9,7 +9,7 @@ use Rubix\Server\Models\ServerInfo;
 use Rubix\Server\Models\ServerSettings;
 use GraphQL\Type\Definition\Type;
 
-class DashboardType extends ObjectType
+class DashboardObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -24,28 +24,29 @@ class DashboardType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'Dashboard',
             'description' => 'The server dashboard.',
             'fields' => [
                 'httpStats' => [
-                    'type' => Type::nonNull(HTTPStatsType::singleton()),
+                    'type' => Type::nonNull(HTTPStatsObject::singleton()),
                     'resolve' => function (Dashboard $dashboard) : HTTPStats {
                         return $dashboard->httpStats();
                     },
                 ],
                 'memory' => [
-                    'type' => Type::nonNull(MemoryType::singleton()),
+                    'type' => Type::nonNull(MemoryObject::singleton()),
                     'resolve' => function (Dashboard $dashboard) : Memory {
                         return $dashboard->memory();
                     },
                 ],
                 'info' => [
-                    'type' => Type::nonNull(ServerInfoType::singleton()),
+                    'type' => Type::nonNull(ServerInfoObject::singleton()),
                     'resolve' => function (Dashboard $dashboard) : ServerInfo {
                         return $dashboard->info();
                     },
                 ],
                 'settings' => [
-                    'type' => Type::nonNull(ServerSettingsType::singleton()),
+                    'type' => Type::nonNull(ServerSettingsObject::singleton()),
                     'resolve' => function (Dashboard $dashboard) : ServerSettings {
                         return $dashboard->settings();
                     },

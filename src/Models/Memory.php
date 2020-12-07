@@ -7,7 +7,7 @@ use Rubix\Server\Services\SSEChannel;
 use function memory_get_usage;
 use function memory_get_peak_usage;
 
-class Memory extends Model
+class Memory
 {
     /**
      * The server-sent events emitter.

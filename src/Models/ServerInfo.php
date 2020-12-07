@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Models;
 
-class ServerInfo extends Model
+class ServerInfo
 {
     /**
      * The timestamp from when the server went up.

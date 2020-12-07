@@ -5,7 +5,7 @@ namespace Rubix\Server\GraphQL\Objects;
 use Rubix\Server\Models\Versions;
 use GraphQL\Type\Definition\Type;
 
-class VersionsType extends ObjectType
+class VersionsObject extends ObjectType
 {
     /**
      * The singleton instance of the object type.
@@ -20,6 +20,7 @@ class VersionsType extends ObjectType
     public static function singleton() : self
     {
         return self::$instance ?? self::$instance = new self([
+            'name' => 'Versions',
             'description' => 'Version numbers.',
             'fields' => [
                 'server' => [

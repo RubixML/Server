@@ -63,7 +63,9 @@ class DashboardController extends JSONController
     public function getDashboard(ServerRequestInterface $request)
     {
         return new Success(self::DEFAULT_HEADERS, JSON::encode([
-            'data' => $this->dashboard->asArray(),
+            'data' => [
+                'dashboard' => $this->dashboard->asArray(),
+            ],
         ]));
     }
 
