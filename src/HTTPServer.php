@@ -14,6 +14,7 @@ use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
 use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
+use Rubix\Server\HTTP\Middleware\Internal\CatchServerErrors;
 use Rubix\Server\HTTP\Middleware\Internal\CheckRequestBodySize;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
@@ -293,12 +294,13 @@ class HTTPServer implements Server, Verbose
         $stack = [
             new StreamingRequestMiddleware(),
             new DispatchEvents($eventBus),
+            new AttachServerHeaders(self::SERVER_NAME),
+            new CatchServerErrors($eventBus),
         ];
 
         $stack = array_merge($stack, $this->middlewares);
 
         $stack[] = new CheckRequestBodySize($postMaxSize);
-        $stack[] = new AttachServerHeaders(self::SERVER_NAME);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
         $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
         $stack[] = [$router, 'dispatch'];

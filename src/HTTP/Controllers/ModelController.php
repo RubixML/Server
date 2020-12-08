@@ -5,7 +5,6 @@ namespace Rubix\Server\HTTP\Controllers;
 use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Models\Model;
 use Rubix\Server\HTTP\Responses\Success;
-use Rubix\Server\HTTP\Responses\InternalServerError;
 use Rubix\Server\Exceptions\ValidationException;
 use Rubix\Server\Helpers\JSON;
 use React\Promise\Promise;
@@ -109,7 +108,7 @@ class ModelController extends JSONController
             return $this->respondWithUnprocessable($exception);
         }
 
-        $promise = new Promise(function ($resolve) use ($dataset) {
+        return new Promise(function ($resolve) use ($dataset) {
             $predictions = $this->model->predict($dataset);
 
             $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
@@ -120,8 +119,6 @@ class ModelController extends JSONController
 
             $resolve($response);
         });
-
-        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -145,7 +142,7 @@ class ModelController extends JSONController
             return $this->respondWithUnprocessable($exception);
         }
 
-        $promise = new Promise(function ($resolve) use ($dataset) {
+        return new Promise(function ($resolve) use ($dataset) {
             $probabilities = $this->model->proba($dataset);
 
             $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
@@ -156,8 +153,6 @@ class ModelController extends JSONController
 
             $resolve($response);
         });
-
-        return $promise->otherwise([$this, 'onError']);
     }
 
     /**
@@ -181,7 +176,7 @@ class ModelController extends JSONController
             return $this->respondWithUnprocessable($exception);
         }
 
-        $promise = new Promise(function ($resolve) use ($dataset) {
+        return new Promise(function ($resolve) use ($dataset) {
             $scores = $this->model->score($dataset);
 
             $response = new Success(self::DEFAULT_HEADERS, JSON::encode([
@@ -192,18 +187,5 @@ class ModelController extends JSONController
 
             $resolve($response);
         });
-
-        return $promise->otherwise([$this, 'onError']);
-    }
-
-    /**
-     * Respond with an internal server error.
-     *
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\InternalServerError
-     */
-    public function onError(Exception $exception) : InternalServerError
-    {
-        return new InternalServerError();
     }
 }

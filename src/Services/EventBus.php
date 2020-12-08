@@ -74,7 +74,9 @@ class EventBus
             $handlers = $this->subscriptions[$class];
 
             foreach ($handlers as $handler) {
-                $this->scheduler->defer(new HandleEvent($handler, $event, $this->logger));
+                $job = new HandleEvent($handler, $event, $this->logger);
+
+                $this->scheduler->defer($job);
             }
         }
     }

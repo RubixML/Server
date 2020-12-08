@@ -2,6 +2,7 @@
 
 namespace Rubix\Server\Listeners;
 
+use Rubix\Server\Events\RequestFailed;
 use Rubix\Server\Events\Failure;
 use Psr\Log\LoggerInterface;
 
@@ -30,7 +31,7 @@ class LogFailures implements Listener
     public function events() : array
     {
         return [
-            //
+            RequestFailed::class => [$this],
         ];
     }
 

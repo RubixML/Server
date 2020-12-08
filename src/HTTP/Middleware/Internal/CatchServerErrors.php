@@ -3,15 +3,15 @@
 namespace Rubix\Server\HTTP\Middleware\Internal;
 
 use Rubix\Server\Services\EventBus;
-use Rubix\Server\Events\RequestReceived;
-use Rubix\Server\Events\ResponseSent;
+use Rubix\Server\Events\RequestFailed;
+use Rubix\Server\HTTP\Responses\InternalServerError;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use React\Promise\PromiseInterface;
+use Exception;
 
 use function React\Promise\resolve;
 
-class DispatchEvents
+class CatchServerErrors
 {
     /**
      * The event bus.
@@ -29,14 +29,14 @@ class DispatchEvents
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return \Psr\Http\Message\ResponseInterface
+     * @param \Exception $exception
+     * @return \Rubix\Server\HTTP\Responses\InternalServerError
      */
-    public function onSuccess(ResponseInterface $response) : ResponseInterface
+    public function onError(Exception $exception) : InternalServerError
     {
-        $this->eventBus->dispatch(new ResponseSent($response));
+        $this->eventBus->dispatch(new RequestFailed($exception));
 
-        return $response;
+        return new InternalServerError();
     }
 
     /**
@@ -48,8 +48,6 @@ class DispatchEvents
      */
     public function __invoke(ServerRequestInterface $request, callable $next) : PromiseInterface
     {
-        $this->eventBus->dispatch(new RequestReceived($request));
-
-        return resolve($next($request))->then([$this, 'onSuccess']);
+        return resolve($next($request))->then(null, [$this, 'onError']);
     }
 }
