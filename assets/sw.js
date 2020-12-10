@@ -1,6 +1,6 @@
 const ASSETS = [
     '/',
-    '/server',
+    '/ui/dashboard',
     '/manifest.json',
     '/app.js',
     '/app.css',

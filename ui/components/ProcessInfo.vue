@@ -2,7 +2,7 @@
     <table class="table is-bordered is-striped is-fullwidth">
         <tbody>
             <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The date and time that the server started.">Server Start</span></td>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The date and time that the server started.">Up Since</span></td>
                 <td class="has-text-right">{{ upSince }}</td>
             </tr>
             <tr>
@@ -36,7 +36,7 @@ import gql from 'graphql-tag';
 const THIRTY_SECONDS = 30000;
 
 export const fragment = gql`
-    fragment ServerInfo on Server {
+    fragment ProcessInfo on Server {
         info {
             start
             pid

@@ -16,7 +16,7 @@ import InferenceLevel from './components/InferenceLevel.vue';
 import InferenceRateChart from './components/InferenceRateChart.vue';
 import MemoryLevel from './components/MemoryLevel.vue';
 import MemoryUsageChart from './components/MemoryUsageChart.vue';
-import ServerInfo from './components/ServerInfo.vue';
+import ProcessInfo from './components/ProcessInfo.vue';
 import ServerSettings from './components/ServerSettings.vue';
 import CommunicationError from './components/CommunicationError.vue';
 import routes from './routes';
@@ -63,7 +63,7 @@ Vue.component('inference-level', InferenceLevel);
 Vue.component('inference-rate-chart', InferenceRateChart);
 Vue.component('memory-level', MemoryLevel);
 Vue.component('memory-usage-chart', MemoryUsageChart);
-Vue.component('server-info', ServerInfo);
+Vue.component('process-info', ProcessInfo);
 Vue.component('server-settings', ServerSettings);
 Vue.component('communication-error', CommunicationError);
 

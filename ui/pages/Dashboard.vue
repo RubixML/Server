@@ -24,8 +24,8 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <h2 class="title is-size-5">Information<span class="icon ml-2"><i class="fas fa-info-circle"></i></span></h2>
-                        <server-info v-if="server.info" :info="server.info"></server-info>
+                        <h2 class="title is-size-5">Settings<span class="icon ml-3"><i class="fas fa-cogs"></i></span></h2>
+                        <server-settings v-if="server.settings" :settings="server.settings"></server-settings>
                     </div>
                     <div class="column is-half">
                         <memory-level v-if="server.memory" :memory="server.memory"></memory-level>
@@ -38,8 +38,8 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <h2 class="title is-size-5">Settings<span class="icon ml-3"><i class="fas fa-cogs"></i></span></h2>
-                        <server-settings v-if="server.settings" :settings="server.settings"></server-settings>
+                        <h2 class="title is-size-5">Process Info<span class="icon ml-3"><i class="fas fa-microchip"></i></span></h2>
+                        <process-info v-if="server.info" :info="server.info"></process-info>
                     </div>
                 </div>
             </div>
@@ -56,7 +56,7 @@ import { fragment as InferenceLevelFragment } from '../components/InferenceLevel
 import { fragment as InferenceRateChartFragment } from '../components/InferenceRateChart.vue';
 import { fragment as MemoryLevelFragment } from '../components/MemoryLevel.vue';
 import { fragment as MemoryUsageChartFragment } from '../components/MemoryUsageChart.vue';
-import { fragment as ServerInfoFragment } from '../components/ServerInfo.vue';
+import { fragment as ProcessInfoFragment } from '../components/ProcessInfo.vue';
 import { fragment as ServerSettingsFragment } from '../components/ServerSettings.vue';
 import gql from 'graphql-tag';
 import bus from '../bus';
@@ -84,9 +84,9 @@ export default {
                         ...TransfersLevel
                         ...ThroughputChart
                         ...MemoryLevel
-                        ...MemoryUsageChart
-                        ...ServerInfo
                         ...ServerSettings
+                        ...MemoryUsageChart
+                        ...ProcessInfo
                     }
                     model {
                         ...InferenceLevel
@@ -101,7 +101,7 @@ export default {
                 ${InferenceRateChartFragment}
                 ${MemoryLevelFragment}
                 ${MemoryUsageChartFragment}
-                ${ServerInfoFragment}
+                ${ProcessInfoFragment}
                 ${ServerSettingsFragment}
             `,
         }).then((response) => {
