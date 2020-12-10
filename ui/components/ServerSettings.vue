@@ -35,7 +35,7 @@ import gql from 'graphql-tag';
 const MEGABYTE = 1000000;
 
 export const fragment = gql`
-    fragment ServerSettings on Dashboard {
+    fragment ServerSettings on Server {
         settings {
             host
             port

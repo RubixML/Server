@@ -21,7 +21,7 @@ import gql from 'graphql-tag';
 const MEGABYTE = 1000000;
 
 export const fragment = gql`
-    fragment MemoryLevel on Dashboard {
+    fragment MemoryLevel on Server {
         memory {
             current
             peak

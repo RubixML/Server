@@ -1,6 +1,6 @@
 <template>
     <figure>
-        <canvas id="response-rate-chart" width="640" height="360"></canvas>
+        <canvas id="inference-rate-chart" width="480" height="320"></canvas>
     </figure>
 </template>
 
@@ -12,14 +12,8 @@ const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
 
 export const fragment = gql`
-    fragment ResponseRateChart on Server {
-        httpStats {
-            requests {
-                successful
-                rejected
-                failed
-            }
-        }
+    fragment InferenceRateChart on Model {
+        numSamplesInferred
     }
 `;
 
@@ -31,50 +25,32 @@ export default {
         };
     },
     props: {
-        requests: {
+        model: {
             type: Object,
             required: true,
         },
     },
     mounted() {
-        let context = document.getElementById('response-rate-chart').getContext('2d');
+        let context = document.getElementById('inference-rate-chart').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
             data: {
-                labels: [...Array(60).keys()].reverse(),
+                labels: [...Array(DATASET_SIZE).keys()].reverse(),
                 datasets: [
                     {
                         label: 'Average',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(271, 100%, 71%)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: true,
-                    },
-                    {
-                        label: 'Successful',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(141, 71%, 48%)',
+                        data: Array(DATASET_SIZE).fill(0.0),
+                        borderColor: 'hsl(39, 100%, 50%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
                         fill: 'origin',
                     },
                     {
-                        label: 'Rejected',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(204, 86%, 53%)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                    {
-                        label: 'Failed',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(347, 100%, 69%)',
+                        label: 'Samples',
+                        data: Array(DATASET_SIZE).fill(0.0),
+                        borderColor: 'hsl(60, 100%, 47%)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -87,7 +63,7 @@ export default {
                 maintainAspectRatio: false,
                 title: {
                     display: true,
-                    text: 'Response Rate',
+                    text: 'Inference Rate',
                 },
                 tooltips: {
                     enabled: false,
@@ -113,7 +89,7 @@ export default {
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Requests',
+                                labelString: 'Samples',
                             },
                             ticks: {
                                 beginAtZero: true,
@@ -133,16 +109,10 @@ export default {
             let datasets = this.chart.data.datasets;
 
             if (!this.last) {
-                this.last = Object.assign({}, this.requests);
+                this.last = Object.assign({}, this.model);
             }
 
-            const successful = this.requests.successful - this.last.successful;
-            const rejected = this.requests.rejected - this.last.rejected;
-            const failed = this.requests.failed - this.last.failed;
-
-            datasets[1].data.push(successful);
-            datasets[2].data.push(rejected);
-            datasets[3].data.push(failed);
+            datasets[1].data.push((this.model.numSamplesInferred - this.last.numSamplesInferred));
  
             datasets.forEach((dataset) => {
                 if (dataset.data.length > DATASET_SIZE) {
@@ -154,10 +124,10 @@ export default {
 
             datasets[0].data.push(mu);
 
-            this.last = Object.assign({}, this.requests);
+            this.last = Object.assign({}, this.model);
 
             this.chart.update(0);
-        }
+        },
     },
 }
 </script>

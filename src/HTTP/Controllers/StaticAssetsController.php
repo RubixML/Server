@@ -30,7 +30,7 @@ class StaticAssetsController extends Controller
     {
         return [
             '/' => ['GET' => [$this, 'app']],
-            '/server' => ['GET' => [$this, 'app']],
+            '/ui/dashboard' => ['GET' => [$this, 'app']],
             '/app.js' => ['GET' => $this],
             '/app.css' => ['GET' => $this],
             '/sw.js' => ['GET' => $this],

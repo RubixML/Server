@@ -37,6 +37,13 @@ class ModelObject extends ObjectType
                         return $model->compatibility();
                     },
                 ],
+                'numSamplesInferred' => [
+                    'description' => 'The number of samples that have been predicted by the model so far.',
+                    'type' => Type::int(),
+                    'resolve' => function (Model $model) : int {
+                        return $model->numSamplesInferred();
+                    },
+                ]
             ],
         ]);
     }

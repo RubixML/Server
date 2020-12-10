@@ -1,14 +1,14 @@
-import ServerDashboard from './pages/ServerDashboard.vue';
+import Dashboard from './pages/Dashboard.vue';
 
 export default [
     { 
         name: 'home',
         path: '/',
-        redirect: { name: 'server' }
+        redirect: { name: 'dashboard' }
     },
     {
-        name: 'server',
-        path: '/server',
-        component: ServerDashboard,
+        name: 'dashboard',
+        path: '/ui/dashboard',
+        component: Dashboard,
     },
 ];

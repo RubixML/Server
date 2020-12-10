@@ -2,19 +2,11 @@
 
 namespace Rubix\Server\Models;
 
-use Rubix\Server\Services\SSEChannel;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class HTTPStats
 {
-    /**
-     * The server-sent events emitter.
-     *
-     * @var \Rubix\Server\Services\SSEChannel
-     */
-    protected $channel;
-
     /**
      * The number of successful requests handled by the server.
      *
@@ -51,14 +43,6 @@ class HTTPStats
     protected $bytesSent = 0;
 
     /**
-     * @param \Rubix\Server\Services\SSEChannel $channel
-     */
-    public function __construct(SSEChannel $channel)
-    {
-        $this->channel = $channel;
-    }
-
-    /**
      * Record an HTTP request.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
@@ -69,13 +53,7 @@ class HTTPStats
             $size = (int) $request->getHeaderLine('Content-Length');
 
             $this->bytesReceived += $size;
-        } else {
-            $size = null;
         }
-
-        $this->channel->emit('request-recorded', [
-            'size' => $size,
-        ]);
     }
 
     /**
@@ -100,11 +78,6 @@ class HTTPStats
         if ($size) {
             $this->bytesSent += $size;
         }
-
-        $this->channel->emit('response-recorded', [
-            'code' => $code,
-            'size' => $size,
-        ]);
     }
 
     /**

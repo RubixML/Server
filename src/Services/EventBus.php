@@ -18,13 +18,6 @@ use function get_class;
 class EventBus
 {
     /**
-     * The mapping of events to their listeners.
-     *
-     * @var \Rubix\Server\Services\Subscriptions
-     */
-    protected $subscriptions;
-
-    /**
      * The job scheduler.
      *
      * @var \Rubix\Server\Services\Scheduler
@@ -39,24 +32,38 @@ class EventBus
     protected $logger;
 
     /**
-     * @param \Rubix\Server\Services\Subscriptions $subscriptions
+     * The mapping of events to their listeners.
+     *
+     * @var \Rubix\Server\Services\Subscriptions|null
+     */
+    protected $subscriptions;
+
+    /**
      * @param \Rubix\Server\Services\Scheduler $scheduler
      * @param \Psr\Log\LoggerInterface $logger
-     * @param Subscriptions $subscriptions
      */
-    public function __construct(Subscriptions $subscriptions, Scheduler $scheduler, LoggerInterface $logger)
+    public function __construct(Scheduler $scheduler, LoggerInterface $logger)
     {
-        $this->subscriptions = $subscriptions;
         $this->scheduler = $scheduler;
         $this->logger = $logger;
     }
 
     /**
+     * Add the mapping of events to their listeners.
+     *
+     * @param \Rubix\Server\Services\Subscriptions $subscriptions
+     */
+    public function setSubscriptions(Subscriptions $subscriptions) : void
+    {
+        $this->subscriptions = $subscriptions;
+    }
+
+    /**
      * Return the mapping of events to their listeners.
      *
-     * @return \Rubix\Server\Services\Subscriptions
+     * @return \Rubix\Server\Services\Subscriptions|null
      */
-    public function subscriptions() : Subscriptions
+    public function subscriptions() : ?Subscriptions
     {
         return $this->subscriptions;
     }

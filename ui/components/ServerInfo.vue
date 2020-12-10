@@ -36,7 +36,7 @@ import gql from 'graphql-tag';
 const THIRTY_SECONDS = 30000;
 
 export const fragment = gql`
-    fragment ServerInfo on Dashboard {
+    fragment ServerInfo on Server {
         info {
             start
             pid

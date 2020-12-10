@@ -2,20 +2,20 @@
     <div>
         <section class="section">
             <div class="container">
-                <requests-level v-if="dashboard.httpStats" :requests="dashboard.httpStats.requests"></requests-level>
-                <response-rate-chart v-if="dashboard.httpStats" :requests="dashboard.httpStats.requests"></response-rate-chart>
+                <requests-level v-if="server.httpStats" :requests="server.httpStats.requests"></requests-level>
+                <response-rate-chart v-if="server.httpStats" :requests="server.httpStats.requests"></response-rate-chart>
             </div>
         </section>
         <section class="section">
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <transfers-level v-if="dashboard.httpStats" :transfers="dashboard.httpStats.transfers"></transfers-level>
-                        <throughput-chart v-if="dashboard.httpStats" :transfers="dashboard.httpStats.transfers"></throughput-chart>
+                        <transfers-level v-if="server.httpStats" :transfers="server.httpStats.transfers"></transfers-level>
+                        <throughput-chart v-if="server.httpStats" :transfers="server.httpStats.transfers"></throughput-chart>
                     </div>
                     <div class="column is-half">
-                        <memory-level v-if="dashboard.memory" :memory="dashboard.memory"></memory-level>
-                        <memory-usage-chart v-if="dashboard.memory" :memory="dashboard.memory"></memory-usage-chart>
+                        <inference-level v-if="model" :model="model"></inference-level>
+                        <inference-rate-chart v-if="model" :model="model"></inference-rate-chart>
                     </div>
                 </div>
             </div>
@@ -24,12 +24,22 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <h2 class="title">Information<span class="icon ml-4"><i class="fas fa-info-circle"></i></span></h2>
-                        <server-info v-if="dashboard.info" :info="dashboard.info"></server-info>
+                        <h2 class="title is-size-5">Information<span class="icon ml-2"><i class="fas fa-info-circle"></i></span></h2>
+                        <server-info v-if="server.info" :info="server.info"></server-info>
                     </div>
                     <div class="column is-half">
-                        <h2 class="title">Settings<span class="icon ml-5"><i class="fas fa-cogs"></i></span></h2>
-                        <server-settings v-if="dashboard.settings" :settings="dashboard.settings"></server-settings>
+                        <memory-level v-if="server.memory" :memory="server.memory"></memory-level>
+                        <memory-usage-chart v-if="server.memory" :memory="server.memory"></memory-usage-chart>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="columns">
+                    <div class="column is-half">
+                        <h2 class="title is-size-5">Settings<span class="icon ml-3"><i class="fas fa-cogs"></i></span></h2>
+                        <server-settings v-if="server.settings" :settings="server.settings"></server-settings>
                     </div>
                 </div>
             </div>
@@ -42,6 +52,8 @@ import { fragment as RequestsLevelFragment } from '../components/RequestsLevel.v
 import { fragment as ResponseRateChartFragment } from '../components/ResponseRateChart.vue';
 import { fragment as TransfersLevelFragment } from '../components/TransfersLevel.vue';
 import { fragment as ThroughputChartFragment } from '../components/ThroughputChart.vue';
+import { fragment as InferenceLevelFragment } from '../components/InferenceLevel.vue';
+import { fragment as InferenceRateChartFragment } from '../components/InferenceRateChart.vue';
 import { fragment as MemoryLevelFragment } from '../components/MemoryLevel.vue';
 import { fragment as MemoryUsageChartFragment } from '../components/MemoryUsageChart.vue';
 import { fragment as ServerInfoFragment } from '../components/ServerInfo.vue';
@@ -52,12 +64,13 @@ import bus from '../bus';
 export default {
     data() {
         return {
-            dashboard: {
+            server: {
                 httpStats: undefined,
                 memory: undefined,
                 info: undefined,
                 settings: undefined,
             },
+            model: undefined,
             stream: null,
         };
     },
@@ -65,7 +78,7 @@ export default {
         this.$apollo.query({
             query: gql`
                 query getDashboard {
-                    dashboard {
+                    server {
                         ...RequestsLevel
                         ...ResponseRateChart
                         ...TransfersLevel
@@ -75,41 +88,52 @@ export default {
                         ...ServerInfo
                         ...ServerSettings
                     }
+                    model {
+                        ...InferenceLevel
+                        ...InferenceRateChart
+                    }
                 }
                 ${RequestsLevelFragment}
                 ${ResponseRateChartFragment}
                 ${TransfersLevelFragment}
                 ${ThroughputChartFragment}
+                ${InferenceLevelFragment}
+                ${InferenceRateChartFragment}
                 ${MemoryLevelFragment}
                 ${MemoryUsageChartFragment}
                 ${ServerInfoFragment}
                 ${ServerSettingsFragment}
             `,
         }).then((response) => {
-            this.dashboard = response.data.dashboard;
+            this.server = response.data.server;
+            this.model = response.data.model;
 
-            this.$sse('/server/dashboard/events', { format: 'json' }).then((stream) => {
-                stream.subscribe('request-recorded', (message) => {
-                    this.dashboard.httpStats.transfers.received += message.size;
+            this.$sse('/dashboard/events', { format: 'json' }).then((stream) => {
+                stream.subscribe('request-received', (message) => {
+                    this.server.httpStats.transfers.received += message.size;
                 });
 
-                stream.subscribe('response-recorded', (message) => {
+                stream.subscribe('response-sent', (message) => {
                     const code = message.code;
 
                     if (code >= 100 && code < 400) {
-                        this.dashboard.httpStats.requests.successful++;
+                        this.server.httpStats.requests.successful++;
                     } else if (code >= 400 && code < 500) {
-                        this.dashboard.httpStats.requests.rejected++;
+                        this.server.httpStats.requests.rejected++;
                     } else if (code >= 500) {
-                        this.dashboard.httpStats.requests.failed++;
+                        this.server.httpStats.requests.failed++;
                     }
 
-                    this.dashboard.httpStats.transfers.sent += message.size;
+                    this.server.httpStats.transfers.sent += message.size;
+                });
+
+                stream.subscribe('dataset-inferred', (message) => {
+                    this.model.numSamplesInferred += message.numSamples;
                 });
 
                 stream.subscribe('memory-usage-updated', (message) => {
-                    this.dashboard.memory.current = message.current;
-                    this.dashboard.memory.peak = message.peak;
+                    this.server.memory.current = message.current;
+                    this.server.memory.peak = message.peak;
                 });
 
                 this.stream = stream;

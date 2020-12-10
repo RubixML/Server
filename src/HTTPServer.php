@@ -4,7 +4,7 @@ namespace Rubix\Server;
 
 use Rubix\ML\Estimator;
 use Rubix\Server\Models\Model;
-use Rubix\Server\Models\Dashboard;
+use Rubix\Server\Models\Server as ServerModel;
 use Rubix\Server\Services\Scheduler;
 use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
@@ -17,12 +17,14 @@ use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
 use Rubix\Server\HTTP\Middleware\Internal\CatchServerErrors;
 use Rubix\Server\HTTP\Middleware\Internal\CheckRequestBodySize;
 use Rubix\Server\HTTP\Controllers\ModelController;
+use Rubix\Server\HTTP\Controllers\ServerController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
 use Rubix\Server\HTTP\Controllers\StaticAssetsController;
 use Rubix\Server\HTTP\Controllers\GraphQLController;
 use Rubix\Server\GraphQL\Schema;
 use Rubix\Server\Events\ShuttingDown;
-use Rubix\Server\Listeners\UpdateDashboard;
+use Rubix\Server\Listeners\RecordHTTPStats;
+use Rubix\Server\Listeners\DashboardEmitter;
 use Rubix\Server\Listeners\LogFailures;
 use Rubix\Server\Listeners\StopTimers;
 use Rubix\Server\Listeners\CloseSSEChannels;
@@ -247,8 +249,6 @@ class HTTPServer implements Server, Verbose
 
         $this->logger->info('HTTP Server booting up');
 
-        $scheduler = new Scheduler($loop);
-
         $socket = new Socket("{$this->host}:{$this->port}", $loop);
 
         if ($this->cert) {
@@ -257,19 +257,24 @@ class HTTPServer implements Server, Verbose
             ]);
         }
 
-        $model = new Model($estimator);
+        $scheduler = new Scheduler($loop);
+
+        $eventBus = new EventBus($scheduler, $this->logger);
 
         $dashboardChannel = new SSEChannel($this->sseReconnectBuffer);
 
-        $dashboard = new Dashboard($this, $dashboardChannel);
+        $model = new Model($estimator, $eventBus);
+
+        $server = new ServerModel($this, $eventBus);
 
         $memoryTimer = $scheduler->repeat(
             self::DASHBOARD_MEMORY_UPDATE_INTERVAL,
-            new UpdateMemoryUsage($dashboard->memory())
+            new UpdateMemoryUsage($server->memory())
         );
 
-        $eventBus = new EventBus(Subscriptions::subscribe([
-            new UpdateDashboard($dashboard),
+        $subscriptions = Subscriptions::subscribe([
+            new RecordHTTPStats($server->httpStats()),
+            new DashboardEmitter($dashboardChannel),
             new LogFailures($this->logger),
             new StopTimers($scheduler, [
                 $memoryTimer,
@@ -278,18 +283,21 @@ class HTTPServer implements Server, Verbose
                 $dashboardChannel,
             ]),
             new CloseSocket($socket),
-        ]), $scheduler, $this->logger);
+        ]);
 
-        $schema = new Schema($model, $dashboard);
+        $eventBus->setSubscriptions($subscriptions);
+
+        $schema = new Schema($model, $server);
 
         $router = new Router(Routes::collect([
             new ModelController($model),
-            new DashboardController($dashboard, $dashboardChannel),
+            new ServerController($server),
+            new DashboardController($dashboardChannel),
             new GraphQLController($schema, new ReactPromiseAdapter()),
             new StaticAssetsController(),
         ]));
 
-        $postMaxSize = $dashboard->settings()->postMaxSize();
+        $postMaxSize = $server->settings()->postMaxSize();
 
         $stack = [
             new StreamingRequestMiddleware(),
@@ -305,9 +313,9 @@ class HTTPServer implements Server, Verbose
         $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
         $stack[] = [$router, 'dispatch'];
 
-        $server = new HTTP($loop, ...$stack);
+        $http = new HTTP($loop, ...$stack);
 
-        $server->listen($socket);
+        $http->listen($socket);
 
         if (extension_loaded('pcntl')) {
             $loop->addSignal(SIGQUIT, [$this, 'shutdown']);

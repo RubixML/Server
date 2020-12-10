@@ -13,7 +13,7 @@ const ONE_SECOND = 1000;
 const DATASET_SIZE = 60;
 
 export const fragment = gql`
-    fragment ThroughputChart on Dashboard {
+    fragment ThroughputChart on Server {
         httpStats {
             transfers {
                 received

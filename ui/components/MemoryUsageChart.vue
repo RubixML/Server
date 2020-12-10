@@ -12,7 +12,7 @@ const MEGABYTE = 1000000;
 const THREE_SECONDS = 3000;
 
 export const fragment = gql`
-    fragment MemoryUsageChart on Dashboard {
+    fragment MemoryUsageChart on Server {
         memory {
             current
             peak

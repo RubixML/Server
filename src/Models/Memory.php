@@ -2,7 +2,8 @@
 
 namespace Rubix\Server\Models;
 
-use Rubix\Server\Services\SSEChannel;
+use Rubix\Server\Services\EventBus;
+use Rubix\Server\Events\MemoryUsageUpdated;
 
 use function memory_get_usage;
 use function memory_get_peak_usage;
@@ -10,18 +11,18 @@ use function memory_get_peak_usage;
 class Memory
 {
     /**
-     * The server-sent events emitter.
+     * The event bus.
      *
-     * @var \Rubix\Server\Services\SSEChannel
+     * @var \Rubix\Server\Services\EventBus
      */
-    protected $channel;
+    protected $eventBus;
 
     /**
-     * @param \Rubix\Server\Services\SSEChannel $channel
+     * @param \Rubix\Server\Services\EventBus $eventBus
      */
-    public function __construct(SSEChannel $channel)
+    public function __construct(EventBus $eventBus)
     {
-        $this->channel = $channel;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -29,10 +30,7 @@ class Memory
      */
     public function updateUsage() : void
     {
-        $this->channel->emit('memory-usage-updated', [
-            'current' => $this->current(),
-            'peak' => $this->peak(),
-        ]);
+        $this->eventBus->dispatch(new MemoryUsageUpdated($this));
     }
 
     /**

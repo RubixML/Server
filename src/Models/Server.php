@@ -3,9 +3,9 @@
 namespace Rubix\Server\Models;
 
 use Rubix\Server\HTTPServer;
-use Rubix\Server\Services\SSEChannel;
+use Rubix\Server\Services\EventBus;
 
-class Dashboard
+class Server
 {
     /**
      * The request/response statistics.
@@ -37,12 +37,12 @@ class Dashboard
 
     /**
      * @param \Rubix\Server\HTTPServer $server
-     * @param \Rubix\Server\Services\SSEChannel $channel
+     * @param \Rubix\Server\Services\EventBus $eventBus
      */
-    public function __construct(HTTPServer $server, SSEChannel $channel)
+    public function __construct(HTTPServer $server, EventBus $eventBus)
     {
-        $this->httpStats = new HTTPStats($channel);
-        $this->memory = new Memory($channel);
+        $this->httpStats = new HTTPStats();
+        $this->memory = new Memory($eventBus);
         $this->info = new ServerInfo();
         $this->settings = new ServerSettings($server);
     }

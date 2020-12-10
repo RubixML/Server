@@ -25,7 +25,7 @@
 import gql from 'graphql-tag';
 
 export const fragment = gql`
-    fragment RequestsLevel on Dashboard {
+    fragment RequestsLevel on Server {
         httpStats {
             requests {
                 successful

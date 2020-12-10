@@ -7,6 +7,8 @@ use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
 use Rubix\ML\Datasets\Dataset;
+use Rubix\Server\Services\EventBus;
+use Rubix\Server\Events\DatasetInferred;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 
@@ -20,10 +22,25 @@ class Model
     protected $estimator;
 
     /**
+     * The event bus.
+     *
+     * @var \Rubix\Server\Services\EventBus
+     */
+    protected $eventBus;
+
+    /**
+     * The number of samples that have been predicted so far.
+     *
+     * @var int
+     */
+    protected $numSamplesInferred = 0;
+
+    /**
      * @param \Rubix\ML\Estimator $estimator
+     * @param \Rubix\Server\Services\EventBus $eventBus
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
-    public function __construct(Estimator $estimator)
+    public function __construct(Estimator $estimator, EventBus $eventBus)
     {
         if ($estimator instanceof Learner) {
             if (!$estimator->trained()) {
@@ -32,6 +49,7 @@ class Model
         }
 
         $this->estimator = $estimator;
+        $this->eventBus = $eventBus;
     }
 
     /**
@@ -42,7 +60,13 @@ class Model
      */
     public function predict(Dataset $dataset) : array
     {
-        return $this->estimator->predict($dataset);
+        $predictions = $this->estimator->predict($dataset);
+
+        $this->numSamplesInferred += $dataset->numRows();
+
+        $this->eventBus->dispatch(new DatasetInferred($dataset));
+
+        return $predictions;
     }
 
     /**
@@ -59,7 +83,13 @@ class Model
                 . ' the Probabilistic interface.');
         }
 
-        return $this->estimator->proba($dataset);
+        $probabilities = $this->estimator->proba($dataset);
+
+        $this->numSamplesInferred += $dataset->numRows();
+
+        $this->eventBus->dispatch(new DatasetInferred($dataset));
+
+        return $probabilities;
     }
 
     /**
@@ -76,7 +106,13 @@ class Model
                 . ' the Ranking interface.');
         }
 
-        return $this->estimator->score($dataset);
+        $scores = $this->estimator->score($dataset);
+
+        $this->numSamplesInferred += $dataset->numRows();
+
+        $this->eventBus->dispatch(new DatasetInferred($dataset));
+
+        return $scores;
     }
 
     /**
@@ -122,6 +158,16 @@ class Model
     }
 
     /**
+     * Return the number of samples the model has inferred so far.
+     *
+     * @return int
+     */
+    public function numSamplesInferred() : int
+    {
+        return $this->numSamplesInferred;
+    }
+
+    /**
      * Return the model as an associative array.
      *
      * @return mixed[]
@@ -135,6 +181,7 @@ class Model
                 'probabilistic' => $this->isProbabilistic(),
                 'ranking' => $this->isRanking(),
             ],
+            'numSamplesInferred' => $this->numSamplesInferred,
         ];
     }
 }
