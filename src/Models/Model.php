@@ -152,7 +152,7 @@ class Model
      *
      * @return bool
      */
-    public function isRanking() : bool
+    public function isScoring() : bool
     {
         return $this->estimator instanceof Ranking;
     }
@@ -179,7 +179,7 @@ class Model
             'compatibility' => $this->compatibility(),
             'interfaces' => [
                 'probabilistic' => $this->isProbabilistic(),
-                'ranking' => $this->isRanking(),
+                'ranking' => $this->isScoring(),
             ],
             'numSamplesInferred' => $this->numSamplesInferred,
         ];

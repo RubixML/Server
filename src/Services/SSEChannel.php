@@ -70,11 +70,11 @@ class SSEChannel
             }
         }
 
-        $this->streams->attach($stream);
-
         $stream->on('close', function () use ($stream) {
             $this->detach($stream);
         });
+
+        $this->streams->attach($stream);
     }
 
     /**

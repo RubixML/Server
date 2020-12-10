@@ -59,7 +59,7 @@ class ModelController extends JSONController
             ];
         }
 
-        if ($this->model->isRanking()) {
+        if ($this->model->isScoring()) {
             $routes['/model/anomaly_scores'] = [
                 'POST' => [
                     [$this, 'decompressRequestBody'],

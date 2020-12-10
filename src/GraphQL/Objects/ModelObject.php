@@ -37,6 +37,12 @@ class ModelObject extends ObjectType
                         return $model->compatibility();
                     },
                 ],
+                'interfaces' => [
+                    'type' => EstimatorInterfacesObject::singleton(),
+                    'resolve' => function (Model $model) : Model {
+                        return $model;
+                    },
+                ],
                 'numSamplesInferred' => [
                     'description' => 'The number of samples that have been predicted by the model so far.',
                     'type' => Type::int(),
