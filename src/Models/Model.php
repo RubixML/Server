@@ -12,6 +12,8 @@ use Rubix\Server\Events\DatasetInferred;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 
+use function count;
+
 class Model
 {
     /**
@@ -62,7 +64,7 @@ class Model
     {
         $predictions = $this->estimator->predict($dataset);
 
-        $this->numSamplesInferred += $dataset->numRows();
+        $this->numSamplesInferred += count($predictions);
 
         $this->eventBus->dispatch(new DatasetInferred($dataset));
 
@@ -85,7 +87,7 @@ class Model
 
         $probabilities = $this->estimator->proba($dataset);
 
-        $this->numSamplesInferred += $dataset->numRows();
+        $this->numSamplesInferred += count($probabilities);
 
         $this->eventBus->dispatch(new DatasetInferred($dataset));
 
@@ -108,7 +110,7 @@ class Model
 
         $scores = $this->estimator->score($dataset);
 
-        $this->numSamplesInferred += $dataset->numRows();
+        $this->numSamplesInferred += count($scores);
 
         $this->eventBus->dispatch(new DatasetInferred($dataset));
 

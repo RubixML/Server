@@ -77,7 +77,7 @@ export default {
                         {
                             scaleLabel: {
                                 display: true,
-                                labelString: 'T- (seconds)',
+                                labelString: 'Seconds',
                             },
                             ticks: {
                                 precision: 0,

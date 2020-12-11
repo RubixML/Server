@@ -6,6 +6,8 @@ use Rubix\Server\Events\Event;
 use Psr\Log\LoggerInterface;
 use Exception;
 
+use function call_user_func;
+
 class HandleEvent implements Job
 {
     /**
