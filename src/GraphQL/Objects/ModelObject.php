@@ -2,9 +2,12 @@
 
 namespace Rubix\Server\GraphQL\Objects;
 
+use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Models\Model;
 use Rubix\Server\GraphQL\Enums\EstimatorTypeEnum;
 use Rubix\Server\GraphQL\Enums\DataTypeEnum;
+use Rubix\Server\GraphQL\Scalars\FeatureScalar;
+use Rubix\Server\GraphQL\Scalars\PredictionScalar;
 use GraphQL\Type\Definition\Type;
 
 class ModelObject extends ObjectType
@@ -41,6 +44,16 @@ class ModelObject extends ObjectType
                     'type' => Type::nonNull(EstimatorInterfacesObject::singleton()),
                     'resolve' => function (Model $model) : Model {
                         return $model;
+                    },
+                ],
+                'predictions' => [
+                    'description' => 'Return the predictions on a dataset.',
+                    'type' => Type::listOf(PredictionScalar::singleton()),
+                    'args' => [
+                        'dataset' => Type::listOf(Type::listOf(FeatureScalar::singleton())),
+                    ],
+                    'resolve' => function (Model $model, array $args) : array {
+                        return $model->predict(new Unlabeled($args['dataset']));
                     },
                 ],
                 'numSamplesInferred' => [
