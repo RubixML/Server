@@ -6,7 +6,7 @@ use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Models\Model;
 use Rubix\Server\GraphQL\Enums\EstimatorTypeEnum;
 use Rubix\Server\GraphQL\Enums\DataTypeEnum;
-use Rubix\Server\GraphQL\Scalars\FeatureScalar;
+use Rubix\Server\GraphQL\InputObjects\DatasetInputObject;
 use Rubix\Server\GraphQL\Scalars\PredictionScalar;
 use GraphQL\Type\Definition\Type;
 
@@ -50,10 +50,10 @@ class ModelObject extends ObjectType
                     'description' => 'Return the predictions on a dataset.',
                     'type' => Type::listOf(PredictionScalar::singleton()),
                     'args' => [
-                        'dataset' => Type::listOf(Type::listOf(FeatureScalar::singleton())),
+                        'dataset' => Type::nonNull(DatasetInputObject::singleton()),
                     ],
                     'resolve' => function (Model $model, array $args) : array {
-                        return $model->predict(new Unlabeled($args['dataset']));
+                        return $model->predict(new Unlabeled($args['dataset']['samples']));
                     },
                 ],
                 'numSamplesInferred' => [
