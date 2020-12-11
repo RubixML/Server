@@ -38,14 +38,14 @@ class ModelObject extends ObjectType
                     },
                 ],
                 'interfaces' => [
-                    'type' => EstimatorInterfacesObject::singleton(),
+                    'type' => Type::nonNull(EstimatorInterfacesObject::singleton()),
                     'resolve' => function (Model $model) : Model {
                         return $model;
                     },
                 ],
                 'numSamplesInferred' => [
                     'description' => 'The number of samples that have been predicted by the model so far.',
-                    'type' => Type::int(),
+                    'type' => Type::nonNull(Type::int()),
                     'resolve' => function (Model $model) : int {
                         return $model->numSamplesInferred();
                     },

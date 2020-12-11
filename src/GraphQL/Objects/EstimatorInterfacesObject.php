@@ -25,14 +25,14 @@ class EstimatorInterfacesObject extends ObjectType
             'fields' => [
                 'probabilistic' => [
                     'description' => 'Does the estimator implement the Probabilistic interface?',
-                    'type' => Type::boolean(),
+                    'type' => Type::nonNull(Type::boolean()),
                     'resolve' => function (Model $model) : bool {
                         return $model->isProbabilistic();
                     },
                 ],
                 'scoring' => [
                     'description' => 'Does the estimator implement the Ranking interface?',
-                    'type' => Type::boolean(),
+                    'type' => Type::nonNull(Type::boolean()),
                     'resolve' => function (Model $model) : bool {
                         return $model->isScoring();
                     },

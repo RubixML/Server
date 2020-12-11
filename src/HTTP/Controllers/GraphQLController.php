@@ -6,7 +6,6 @@ use Rubix\Server\GraphQL\Schema;
 use Rubix\Server\Helpers\JSON;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\UnprocessableEntity;
-use Rubix\Server\HTTP\Responses\InternalServerError;
 use Rubix\Server\Exceptions\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use GraphQL\Executor\Promise\PromiseAdapter;
@@ -62,20 +61,9 @@ class GraphQLController extends JSONController
      * @param \GraphQL\Executor\ExecutionResult $result
      * @return \Rubix\Server\HTTP\Responses\Success
      */
-    public function onSuccess(ExecutionResult $result) : Success
+    public function respondWithResult(ExecutionResult $result) : Success
     {
         return new Success(self::DEFAULT_HEADERS, JSON::encode($result));
-    }
-
-    /**
-     * Respond with an internal server error.
-     *
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\InternalServerError
-     */
-    public function onError(Exception $exception) : InternalServerError
-    {
-        return new InternalServerError();
     }
 
     /**
@@ -112,9 +100,6 @@ class GraphQLController extends JSONController
             $input['operationName'] ?? null
         );
 
-        return $promise->then(
-            [$this, 'onSuccess'],
-            [$this, 'onError']
-        );
+        return $promise->then([$this, 'respondWithResult']);
     }
 }
