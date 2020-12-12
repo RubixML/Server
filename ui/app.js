@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueApollo from 'vue-apollo';
+import VueSSE from 'vue-sse';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import VueSSE from 'vue-sse';
 import App from './App.vue';
 import MainNav from './components/MainNav.vue';
 import MainFooter from './components/MainFooter.vue';
+import DatasetLoader from './components/DatasetLoader.vue';
+import DatasetPreview from './components/DatasetPreview.vue';
 import RequestsLevel from './components/RequestsLevel.vue';
 import ResponseRateChart from './components/ResponseRateChart.vue';
 import TransfersLevel from './components/TransfersLevel.vue';
@@ -55,6 +57,8 @@ const apolloClient = new ApolloClient({
 Vue.component('app', App);
 Vue.component('main-nav', MainNav);
 Vue.component('main-footer', MainFooter);
+Vue.component('dataset-loader', DatasetLoader);
+Vue.component('dataset-preview', DatasetPreview);
 Vue.component('requests-level', RequestsLevel);
 Vue.component('response-rate-chart', ResponseRateChart);
 Vue.component('transfers-level', TransfersLevel);

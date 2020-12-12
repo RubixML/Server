@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <span class="navbar-item">
                 <img src="/images/app-icon-small.png" width="28" height="28" loading="eager" alt="The Rubix ML logo" />
@@ -14,7 +14,18 @@
         <div id="nav-menu" class="navbar-menu" :class="{ 'is-active' : open }">
             <div class="navbar-end">
                 <div class="navbar-item">
-                    <router-link :to="{ name: 'dashboard'}" class="navbar-item button is-light" @click.native="open = false">
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <div class="navbar-link">
+                            <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                            <span>Visualizer</span>
+                        </div>
+                        <div class="navbar-dropdown">
+                            <router-link :to="{ name: 'dataset-scatterplot' }" class="navbar-item" @click.native="open = false">
+                                <span>Scatterplot</span>
+                            </router-link>
+                        </div>
+                    </div>
+                    <router-link :to="{ name: 'dashboard' }" class="navbar-item" @click.native="open = false">
                         <span class="icon"><i class="fas fa-server"></i></span>
                         <span>Dashboard</span>
                     </router-link>

@@ -31,6 +31,8 @@ class StaticAssetsController extends Controller
         return [
             '/' => ['GET' => [$this, 'app']],
             '/ui/dashboard' => ['GET' => [$this, 'app']],
+            '/ui/visualizer' => ['GET' => [$this, 'app']],
+            '/ui/visualizer/scatterplot' => ['GET' => [$this, 'app']],
             '/app.js' => ['GET' => $this],
             '/app.css' => ['GET' => $this],
             '/sw.js' => ['GET' => $this],
