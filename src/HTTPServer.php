@@ -58,7 +58,7 @@ use Psr\Log\LoggerInterface;
  */
 class HTTPServer implements Server, Verbose
 {
-    protected const SERVER_NAME = 'Rubix ML HTTP Server';
+    protected const SERVER_NAME = 'Rubix ML Server';
 
     protected const MAX_TCP_PORT = 65535;
 

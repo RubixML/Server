@@ -21,11 +21,11 @@ class DatasetInputObject extends InputObjectType
     {
         return self::$instance ?? self::$instance = new self([
             'name' => 'Dataset',
-            'description' => 'A dataset object.',
+            'description' => 'A dataset input object.',
             'fields' => [
                 'samples' => [
                     'description' => 'The samples of the dataset.',
-                    'type' => Type::nonNull(Type::listOf(Type::listOf(FeatureScalar::singleton()))),
+                    'type' => Type::listOf(Type::listOf(FeatureScalar::singleton())),
                 ],
             ],
         ]);

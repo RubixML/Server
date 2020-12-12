@@ -9,6 +9,7 @@ use Rubix\Server\GraphQL\Enums\DataTypeEnum;
 use Rubix\Server\GraphQL\InputObjects\DatasetInputObject;
 use Rubix\Server\GraphQL\Scalars\PredictionScalar;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Error\UserError;
 
 class ModelObject extends ObjectType
 {
@@ -35,7 +36,7 @@ class ModelObject extends ObjectType
                     },
                 ],
                 'compatibility' => [
-                    'type' => Type::listOf(DataTypeEnum::singleton()),
+                    'type' => Type::nonNull(Type::listOf(DataTypeEnum::singleton())),
                     'resolve' => function (Model $model) : array {
                         return $model->compatibility();
                     },
@@ -54,6 +55,45 @@ class ModelObject extends ObjectType
                     ],
                     'resolve' => function (Model $model, array $args) : array {
                         return $model->predict(new Unlabeled($args['dataset']['samples']));
+                    },
+                ],
+                'probabilities' => [
+                    'description' => 'Predict the joint probabilities of a dataset.',
+                    'type' => Type::listOf(Type::listOf(ProbabilityObject::singleton())),
+                    'args' => [
+                        'dataset' => Type::nonNull(DatasetInputObject::singleton()),
+                    ],
+                    'resolve' => function (Model $model, array $args) : array {
+                        if (!$model->isProbabilistic()) {
+                            throw new UserError('Estimator must implement the Probabilistic interface.');
+                        }
+
+                        $probabilities = $model->proba(new Unlabeled($args['dataset']['samples']));
+
+                        foreach ($probabilities as &$dist) {
+                            foreach ($dist as $class => &$probability) {
+                                $probability = [
+                                    'class' => $class,
+                                    'value' => $probability,
+                                ];
+                            }
+                        }
+
+                        return $probabilities;
+                    },
+                ],
+                'scores' => [
+                    'description' => 'Return the anomaly scores of the samples in a dataset.',
+                    'type' => Type::listOf(Type::float()),
+                    'args' => [
+                        'dataset' => Type::nonNull(DatasetInputObject::singleton()),
+                    ],
+                    'resolve' => function (Model $model, array $args) : array {
+                        if ($model->isScoring()) {
+                            throw new UserError('Estimator must implement the Ranking interface.');
+                        }
+
+                        return $model->score(new Unlabeled($args['dataset']['samples']));
                     },
                 ],
                 'numSamplesInferred' => [
