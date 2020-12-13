@@ -3,9 +3,16 @@
         <section class="section">
             <div class="container">
                 <csv-loader></csv-loader>
-                <h2 class="title is-size-6 mt-5">Select the Columns To Plot</h2>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
                 <dataset-column-picker :dataset="dataset"></dataset-column-picker>
-                <router-view></router-view>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <router-view :dataset="dataset"></router-view>
             </div>
         </section>
     </div>

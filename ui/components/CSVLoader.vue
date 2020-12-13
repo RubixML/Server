@@ -15,9 +15,9 @@
                             </span>
                         </label>
                     </div>
-                    <div class="field mt-3">
+                    <div class="field mt-5">
                         <div class="control">
-                            <span class="mr-2">File has header?</span>
+                            <span class="mr-2">File has a header?</span>
                             <label class="radio">
                                 <input type="radio" :value="true" v-model="header" @change="loaded = false">
                                 <span>Yes</span>

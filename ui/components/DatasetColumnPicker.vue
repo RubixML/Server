@@ -1,5 +1,6 @@
 <template>
     <div>
+        <h2 class="title is-size-6">Select the Columns To Plot</h2>
         <div v-if="dataset.data" class="table-container">
             <table class="table is-bordered is-striped is-fullwidth">
                 <thead>
@@ -28,7 +29,7 @@
                         No Data To Show
                     </h1>
                     <h2 class="subtitle is-dimmed">
-                        Load a dataset to begin selecting
+                        Load a dataset to begin
                     </h2>
                 </div>
             </div>
@@ -42,7 +43,7 @@ const PREVIEW_ROWS = 5;
 export default {
     props: {
         dataset: {
-            type: Array,
+            type: Object,
             required: true,
         },
     },
