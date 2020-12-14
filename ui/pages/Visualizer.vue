@@ -2,12 +2,14 @@
     <div>
         <section class="section">
             <div class="container">
-                <csv-loader></csv-loader>
-            </div>
-        </section>
-        <section class="section">
-            <div class="container">
-                <dataset-column-picker :dataset="dataset"></dataset-column-picker>
+                <div class="tabs is-medium is-boxed">
+                    <ul>
+                        <li :class="loader === 'csv' ? 'is-active' : ''">
+                            <a @click="loader = 'csv'">CSV</a>
+                        </li>
+                    </ul>
+                </div>
+                <csv-loader v-if="loader === 'csv'"></csv-loader>
             </div>
         </section>
         <section class="section">
@@ -24,6 +26,7 @@ import bus from '../bus';
 export default {
     data() {
         return {
+            loader: 'csv',
             dataset: {
                 data: null,
                 header: null,
