@@ -1,26 +1,28 @@
 <template>
     <div>
-        <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select 2 columns</h2>
-        <div v-if="dataset.data" class="table-container">
-            <table class="table is-bordered is-striped is-fullwidth">
-                <thead>
-                    <tr class="has-text-weight-semibold">
-                        <td v-for="(title, offset) in header" :key="offset" nowrap>
-                            <label class="checkbox">
-                                <input type="checkbox" :value="offset" v-model="selected" @change="update()">
-                                <span class="ml-2">{{ title }}</span>
-                            </label>
-                        </td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(row, offset) in preview" :key="offset">
-                        <td v-for="(value, offset) in row" :key="offset">
-                            {{ value }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div v-if="dataset.data">
+            <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select 2 columns to plot</h2>
+            <div class="table-container">
+                <table class="table is-bordered is-striped is-narrow is-fullwidth">
+                    <thead>
+                        <tr class="has-text-weight-semibold">
+                            <td v-for="(title, offset) in dataset.header" :key="offset" nowrap>
+                                <label class="checkbox">
+                                    <input type="checkbox" :value="offset" v-model="selected" @change="update()" :disabled="disabled && !selected.includes(offset)" />
+                                    <span class="ml-2">{{ title }}</span>
+                                </label>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(row, offset) in preview" :key="offset">
+                            <td v-for="(value, offset) in row" :key="offset">
+                                {{ value }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <section v-if="!dataset.data" class="hero">
             <div class="hero-body">
@@ -34,16 +36,18 @@
                 </div>
             </div>
         </section>
-        <figure>
-            <canvas id="dataset-scatterplot" width="600" height="600"></canvas>
-        </figure>
+        <section class="section">
+            <figure>
+                <canvas id="dataset-2d-scatterplot" width="550" height="550"></canvas>
+            </figure>
+        </section>
     </div>
 </template>
 
 <script>
 import bus from '../bus';
 
-const PREVIEW_ROWS = 3;
+const PREVIEW_ROWS = 5;
 
 export default {
     data() {
@@ -61,17 +65,15 @@ export default {
         },
     },
     computed: {
-        header() {
-            return this.dataset.header ? this.dataset.header : [...this.dataset.data[0].keys()].map((offset) => {
-                return 'Column ' + offset;
-            });
-        },
         preview() {
             return this.dataset.data.slice(0, PREVIEW_ROWS);
         },
+        disabled() {
+            return this.selected.length === 2;
+        },
     },
     mounted() {
-        let context = document.getElementById('dataset-scatterplot').getContext('2d');
+        let context = document.getElementById('dataset-2d-scatterplot').getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'scatter',
@@ -90,8 +92,8 @@ export default {
                 responsive: true,
                 maintainAspectRatio: false,
                 title: {
-                    display: false,
-                    text: 'Dataset Scatterplot',
+                    display: true,
+                    text: '2D Scatterplot',
                 },
                 tooltips: {
                     enabled: true,
@@ -125,7 +127,7 @@ export default {
     },
     methods: { 
         update() {
-            if (this.selected.length >= 2) {
+            if (this.selected.length === 2) {
                 const xLabel = this.dataset.header[this.selected[0]];
                 const yLabel = this.dataset.header[this.selected[1]];
 
@@ -136,15 +138,17 @@ export default {
 
                 this.dataset.data.forEach((row) => {
                     data.push({
-                        x: row[xLabel],
-                        y: row[yLabel],
+                        x: row[this.selected[0]],
+                        y: row[this.selected[1]],
                     });
                 });
 
                 this.chart.data.datasets[0].data = data;
-
-                this.chart.update();
+            } else if (this.selected.length === 0) {
+                this.chart.data.datasets[0].data = [];
             }
+
+            this.chart.update();
         },
     },
 }

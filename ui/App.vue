@@ -5,7 +5,8 @@
             <router-view></router-view>
         </main>
         <main-footer></main-footer>
-        <communication-error></communication-error>
         <audio id="sharp" src="/sounds/sharp.ogg"></audio>
+        <communication-error></communication-error>
+        <dataset-import-failure></dataset-import-failure>
     </div>
 </template>

@@ -1,5 +1,5 @@
 import Visualizer from './pages/Visualizer.vue';
-import DatasetScatterplot from './pages/DatasetScatterplot.vue';
+import Dataset2DScatterplot from './pages/Dataset2DScatterplot.vue';
 import Dashboard from './pages/Dashboard.vue';
 
 export default [
@@ -14,9 +14,9 @@ export default [
         component: Visualizer,
         children: [
             {
-                name: 'dataset-scatterplot',
-                path: 'scatterplot',
-                component: DatasetScatterplot,
+                name: 'dataset-2d-scatterplot',
+                path: 'scatterplot-2d',
+                component: Dataset2DScatterplot,
             },
         ],
     },

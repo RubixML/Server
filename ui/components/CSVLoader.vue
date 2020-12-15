@@ -5,9 +5,9 @@
                 <div class="control">
                     <div class="file has-name is-medium is-fullwidth">
                         <label class="file-label">
-                            <input class="file-input" type="file" name="dataset" accept=".csv" @change="changeFile($event.target.files)" />
+                            <input class="file-input" type="file" name="dataset" accept=".csv" @change="changeFile($event.target.files[0])" />
                             <span class="file-cta">
-                                <span class="file-icon"><i class="fas fa-file-csv"></i></span>
+                                <span class="file-icon"><i class="fas fa-file-import"></i></span>
                                 <span class="file-label">Choose a file</span>
                             </span>
                             <span class="file-name" :class="file ? '' : 'is-placeholder'">
@@ -56,8 +56,8 @@ export default {
         },
     },
     methods: {
-        changeFile(files) {
-            this.file = files[0];
+        changeFile(file) {
+            this.file = file;
 
             this.loaded = false;
         },
@@ -69,10 +69,12 @@ export default {
                 dynamicTyping: true,
                 worker: true,
                 skipEmptyLines: true,
-                complete: (results) => {
+                complete: (result) => {
                     bus.$emit('dataset-imported', {
-                        data: results.data,
-                        header: results.meta.fields,
+                        dataset: {
+                            data: result.data,
+                            header: result.meta.fields,
+                        },
                     });
 
                     this.loading = false;
@@ -94,6 +96,6 @@ export default {
 
 <style lang="scss" scoped>
 .is-placeholder {
-    opacity: 0.5;
+    opacity: 0.3;
 }
 </style>

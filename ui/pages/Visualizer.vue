@@ -7,9 +7,13 @@
                         <li :class="loader === 'csv' ? 'is-active' : ''">
                             <a @click="loader = 'csv'">CSV</a>
                         </li>
+                        <li :class="loader === 'ndjson' ? 'is-active' : ''">
+                            <a @click="loader = 'ndjson'">NDJSON</a>
+                        </li>
                     </ul>
                 </div>
                 <csv-loader v-if="loader === 'csv'"></csv-loader>
+                <ndjson-loader v-if="loader === 'ndjson'"></ndjson-loader>
             </div>
         </section>
         <section class="section">
@@ -35,8 +39,17 @@ export default {
     },
     mounted() {
         bus.$on('dataset-imported', (payload) => {
-            this.dataset.data = payload.data;
-            this.dataset.header = payload.header;
+            if (payload.dataset.header) {
+                this.dataset.header = payload.dataset.header;
+            } else {
+                this.dataset.header = [...payload.dataset.data[0].keys()].map((offset) => {
+                    return 'Column ' + offset;
+                });
+            }
+
+            this.dataset.data = payload.dataset.data.map((row) => {
+                return row instanceof Array ? row : Object.values(row);
+            });
         });
     }
 }

@@ -20,8 +20,8 @@
                             <span>Visualizer</span>
                         </div>
                         <div class="navbar-dropdown">
-                            <router-link :to="{ name: 'dataset-scatterplot' }" class="navbar-item" @click.native="open = false">
-                                <span>Scatterplot</span>
+                            <router-link :to="{ name: 'dataset-2d-scatterplot' }" class="navbar-item" @click.native="open = false">
+                                <span>2D Scatterplot</span>
                             </router-link>
                         </div>
                     </div>
