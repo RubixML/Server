@@ -1,6 +1,7 @@
 const ASSETS = [
     '/',
     '/ui/dashboard',
+    '/ui/visualizer/scatterplot-2d',
     '/manifest.json',
     '/app.js',
     '/app.css',
