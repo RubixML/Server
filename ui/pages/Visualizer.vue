@@ -2,6 +2,7 @@
     <div>
         <section class="section">
             <div class="container">
+                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-import"></i></span>Import Dataset</h2>
                 <div class="tabs is-medium is-boxed">
                     <ul>
                         <li :class="loader === 'csv' ? 'is-active' : ''">
@@ -12,8 +13,8 @@
                         </li>
                     </ul>
                 </div>
-                <csv-loader v-if="loader === 'csv'"></csv-loader>
-                <ndjson-loader v-if="loader === 'ndjson'"></ndjson-loader>
+                <csv-loader v-show="loader === 'csv'"></csv-loader>
+                <ndjson-loader v-show="loader === 'ndjson'"></ndjson-loader>
             </div>
         </section>
         <section class="section">

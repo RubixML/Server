@@ -7,7 +7,7 @@
                         <label class="file-label">
                             <input class="file-input" type="file" name="dataset" accept=".csv" @change="changeFile($event.target.files[0])" />
                             <span class="file-cta">
-                                <span class="file-icon"><i class="fas fa-file-import"></i></span>
+                                <span class="file-icon"><i class="fas fa-file-csv"></i></span>
                                 <span class="file-label">Choose a file</span>
                             </span>
                             <span class="file-name" :class="file ? '' : 'is-placeholder'">
@@ -19,11 +19,11 @@
                         <div class="control">
                             <span class="mr-2">File has a header?</span>
                             <label class="radio">
-                                <input type="radio" :value="true" v-model="header" @change="loaded = false">
+                                <input type="radio" :value="true" v-model="hasHeader" @change="loaded = false">
                                 <span>Yes</span>
                             </label>
                             <label class="radio">
-                                <input type="radio" :value="false" v-model="header" @change="loaded = false">
+                                <input type="radio" :value="false" v-model="hasHeader" @change="loaded = false">
                                 <span>No</span>
                             </label>
                         </div>
@@ -45,7 +45,7 @@ export default {
     data() {
         return {
             file: null,
-            header: false,
+            hasHeader: true,
             loading: false,
             loaded: false,
         };
@@ -65,7 +65,7 @@ export default {
             this.loading = true;
 
             Papa.parse(this.file, {
-                header: this.header,
+                header: this.hasHeader,
                 dynamicTyping: true,
                 worker: true,
                 skipEmptyLines: true,

@@ -7,7 +7,7 @@
                         <label class="file-label">
                             <input class="file-input" type="file" name="dataset" accept=".ndjson" @change="changeFile($event.target.files[0])" />
                             <span class="file-cta">
-                                <span class="file-icon"><i class="fas fa-file-import"></i></span>
+                                <span class="file-icon"><i class="fas fa-file"></i></span>
                                 <span class="file-label">Choose a file</span>
                             </span>
                             <span class="file-name" :class="file ? '' : 'is-placeholder'">

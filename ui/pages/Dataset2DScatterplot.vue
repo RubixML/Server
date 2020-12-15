@@ -1,27 +1,43 @@
 <template>
     <div>
         <div v-if="dataset.data">
-            <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select 2 columns to plot</h2>
+            <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select columns</h2>
             <div class="table-container">
                 <table class="table is-bordered is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr class="has-text-weight-semibold">
+                            <td>#</td>
                             <td v-for="(title, offset) in dataset.header" :key="offset" nowrap>
                                 <label class="checkbox">
-                                    <input type="checkbox" :value="offset" v-model="selected" @change="update()" :disabled="disabled && !selected.includes(offset)" />
-                                    <span class="ml-2">{{ title }}</span>
+                                    <input type="checkbox" class="mr-2" :value="offset" v-model="selected" @change="updateDataset()" :disabled="disabled && !selected.includes(offset)" />
+                                    <span>{{ title }}</span>
                                 </label>
                             </td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(row, offset) in preview" :key="offset">
+                            <td>{{ cursor.offset + offset }}</td>
                             <td v-for="(value, offset) in row" :key="offset">
                                 {{ value }}
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="has-text-centered">
+                <button class="button" @click="previous()" :disabled="cursor.offset <= 0">
+                    <span class="icon"><i class="fas fa-caret-left"></i></span><span>Prev</span>
+                </button>
+                <button class="button" @click="less()" :disabled="cursor.limit <= 0">
+                    <span>Less</span>
+                </button>
+                <button class="button" @click="more()" :disabled="cursor.limit >= cursor.maxLimit">
+                    <span>More</span>
+                </button>
+                <button class="button" @click="next()" :disabled="cursor.offset >= dataset.data.length">
+                     <span>Next</span><span class="icon"><i class="fas fa-caret-right"></i></span>
+                </button>
             </div>
         </div>
         <section v-if="!dataset.data" class="hero">
@@ -47,8 +63,6 @@
 <script>
 import bus from '../bus';
 
-const PREVIEW_ROWS = 5;
-
 export default {
     data() {
         return {
@@ -56,6 +70,12 @@ export default {
             selected: [
                 //
             ],
+            cursor: {
+                offset: 0,
+                limit: 5,
+                increment: 5,
+                maxLimit: 25,
+            },
         };
     },
     props: {
@@ -66,10 +86,10 @@ export default {
     },
     computed: {
         preview() {
-            return this.dataset.data.slice(0, PREVIEW_ROWS);
+            return this.dataset.data.slice(this.cursor.offset, this.cursor.offset + this.cursor.limit);
         },
         disabled() {
-            return this.selected.length === 2;
+            return this.selected.length >= 2;
         },
     },
     mounted() {
@@ -125,26 +145,38 @@ export default {
             },
         });
     },
-    methods: { 
-        update() {
+    methods: {
+        more() {
+            this.cursor.limit = Math.min(this.cursor.maxLimit, this.cursor.limit + this.cursor.increment);
+        },
+        less() {
+            this.cursor.limit = Math.max(0, this.cursor.limit - this.cursor.increment);
+        },
+        next() {
+            this.cursor.offset = Math.min(this.dataset.data.length, this.cursor.offset + this.cursor.limit);
+        },
+        previous() {
+            this.cursor.offset = Math.max(0, this.cursor.offset - this.cursor.limit);
+        },
+        updateDataset() {
             if (this.selected.length === 2) {
-                const xLabel = this.dataset.header[this.selected[0]];
-                const yLabel = this.dataset.header[this.selected[1]];
+                const xOffset = this.selected[0];
+                const yOffset = this.selected[1];
 
-                this.chart.options.scales.xAxes[0].scaleLabel.labelString = xLabel;
-                this.chart.options.scales.yAxes[0].scaleLabel.labelString = yLabel;
+                this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[xOffset];
+                this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[yOffset];
 
                 let data = [];
 
                 this.dataset.data.forEach((row) => {
                     data.push({
-                        x: row[this.selected[0]],
-                        y: row[this.selected[1]],
+                        x: row[xOffset],
+                        y: row[yOffset],
                     });
                 });
 
                 this.chart.data.datasets[0].data = data;
-            } else if (this.selected.length === 0) {
+            } else {
                 this.chart.data.datasets[0].data = [];
             }
 
