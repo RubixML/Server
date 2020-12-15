@@ -48,7 +48,7 @@ export default {
 
             var reader = new FileReader();
             
-            reader.onload = (event) => {
+            reader.onload = function (event) {
                 let lines = this.result.split(EOL).filter(Boolean);
 
                 let data = [];
@@ -65,7 +65,7 @@ export default {
                 });
             };
 
-            reader.onerror = (event) => {
+            reader.onerror = function (event) {
                 bus.$emit('dataset-import-failed', {
                     error: 'There was an error importing the dataset.',
                 });

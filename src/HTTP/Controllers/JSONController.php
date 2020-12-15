@@ -20,8 +20,6 @@ abstract class JSONController extends Controller
     /**
      * Decompress the request body.
      *
-     * @internal
-     *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface

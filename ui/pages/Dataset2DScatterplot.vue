@@ -10,14 +10,14 @@
                             <td v-for="(title, offset) in dataset.header" :key="offset" nowrap>
                                 <label class="checkbox">
                                     <input type="checkbox"
-                                        v-if="typeof dataset.data[0][offset] === 'number'"
+                                        v-if="isContinuous(offset)"
                                         :value="offset"
                                         v-model="selected"
                                         @change="updateDataset()"
                                         :disabled="disabled && !selected.includes(offset)"
                                     />
                                     <input v-else type="checkbox" disabled />
-                                    <span class="ml-1" >{{ title }}</span>
+                                    <span class="ml-2" >{{ title }}</span>
                                 </label>
                             </td>
                         </tr>
@@ -191,6 +191,11 @@ export default {
             }
 
             this.chart.update();
+        },
+        isContinuous(offset) {
+            const value = this.dataset.data[0][offset];
+
+            return Number(value) == value;
         },
     },
 }

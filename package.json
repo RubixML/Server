@@ -25,6 +25,7 @@
         "bulma": "^0.9.0",
         "bulma-prefers-dark": "0.1.0-beta.0",
         "chart.js": "^2.9.4",
+        "compression-webpack-plugin": "^6.0.5",
         "cross-env": "^5.1",
         "css-loader": "^4.3.0",
         "file-loader": "^6.1.0",
