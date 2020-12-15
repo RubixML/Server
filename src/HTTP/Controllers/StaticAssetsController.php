@@ -94,7 +94,11 @@ class StaticAssetsController extends Controller
                 $response = $this->respondWithFile("$path.gz");
 
                 return resolve($response)->then(function (ResponseInterface $response) : ResponseInterface {
-                    return $response->withHeader('Content-Encoding', 'gzip');
+                    if ($response instanceof Success) {
+                        $response = $response->withHeader('Content-Encoding', 'gzip');
+                    }
+
+                    return $response;
                 });
             }
         }
