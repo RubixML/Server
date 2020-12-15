@@ -60,7 +60,7 @@ export default {
                 bus.$emit('dataset-imported', {
                     dataset: {
                         data,
-                        header: data[0] instanceof Object ? data[0].keys() : null,
+                        header: data[0] instanceof Array ? null : data[0].keys(),
                     },
                 });
             };
