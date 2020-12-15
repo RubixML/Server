@@ -9,8 +9,15 @@
                             <td>#</td>
                             <td v-for="(title, offset) in dataset.header" :key="offset" nowrap>
                                 <label class="checkbox">
-                                    <input type="checkbox" class="mr-2" :value="offset" v-model="selected" @change="updateDataset()" :disabled="disabled && !selected.includes(offset)" />
-                                    <span>{{ title }}</span>
+                                    <input type="checkbox"
+                                        v-if="typeof dataset.data[0][offset] === 'number'"
+                                        :value="offset"
+                                        v-model="selected"
+                                        @change="updateDataset()"
+                                        :disabled="disabled && !selected.includes(offset)"
+                                    />
+                                    <input v-else type="checkbox" disabled />
+                                    <span class="ml-1" >{{ title }}</span>
                                 </label>
                             </td>
                         </tr>
@@ -66,7 +73,6 @@ import bus from '../bus';
 export default {
     data() {
         return {
-            chart: null,
             selected: [
                 //
             ],
@@ -76,6 +82,7 @@ export default {
                 increment: 5,
                 maxLimit: 25,
             },
+            chart: null,
         };
     },
     props: {
@@ -114,6 +121,9 @@ export default {
                 title: {
                     display: true,
                     text: '2D Scatterplot',
+                },
+                legend: {
+                    display: false,
                 },
                 tooltips: {
                     enabled: true,

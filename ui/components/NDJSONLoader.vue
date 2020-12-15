@@ -43,17 +43,12 @@ export default {
         },
     },
     methods: {
-        changeFile(file) {
-            this.file = file;
-
-            this.loaded = false;
-        },
         loadDataset() {
             this.loading = true;
 
             var reader = new FileReader();
             
-            reader.onload = function (progressEvent) {
+            reader.onload = (event) => {
                 let lines = this.result.split(EOL).filter(Boolean);
 
                 let data = [];
@@ -70,11 +65,24 @@ export default {
                 });
             };
 
+            reader.onerror = (event) => {
+                bus.$emit('dataset-import-failed', {
+                    error: 'There was an error importing the dataset.',
+                });
+
+                this.loading = false;
+            };
+
             reader.readAsText(this.file);
 
             this.loading = false;
 
             this.loaded = true;
+        },
+        changeFile(file) {
+            this.file = file;
+
+            this.loaded = false;
         },
     },
 }
