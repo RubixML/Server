@@ -46,7 +46,7 @@ export default {
         loadDataset() {
             this.loading = true;
 
-            var reader = new FileReader();
+            let reader = new FileReader();
             
             reader.onload = function (event) {
                 let lines = this.result.split(EOL).filter(Boolean);
@@ -60,7 +60,7 @@ export default {
                 bus.$emit('dataset-imported', {
                     dataset: {
                         data,
-                        header: Array.isArray(data[0]) ? null : data[0].keys(),
+                        header: data[0] instanceof Object ? data[0].keys() : null,
                     },
                 });
             };
