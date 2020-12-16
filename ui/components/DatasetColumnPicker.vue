@@ -5,8 +5,8 @@
                 <table class="table is-bordered is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th v-for="(title, offset) in dataset.header" :key="offset" nowrap>
+                            <th class="has-text-weight-medium">#</th>
+                            <th v-for="(title, offset) in dataset.header" :key="offset" class="has-text-weight-medium" nowrap>
                                 <label class="checkbox">
                                     <input type="checkbox"
                                         v-if="isContinuous(offset)"
@@ -23,7 +23,7 @@
                     <tbody>
                         <tr v-for="(row, offset) in preview" :key="offset">
                             <td>{{ cursor.offset + offset }}</td>
-                            <td v-for="(value, offset) in row" :key="offset">
+                            <td v-for="(value, offset) in row" :key="offset" class="has-text-weight-light">
                                 {{ value }}
                             </td>
                         </tr>
@@ -45,7 +45,7 @@
                 </button>
             </div>
         </div>
-        <section v-if="!dataset.data || !dataset.header" class="hero">
+        <section v-else class="hero">
             <div class="hero-body">
                 <div class="container has-text-centered">
                     <h1 class="title is-dimmed">

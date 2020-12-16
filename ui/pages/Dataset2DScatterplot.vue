@@ -2,11 +2,9 @@
     <div>
         <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select 2 columns</h2>
         <dataset-column-picker :dataset="dataset" :maxColumns="2"></dataset-column-picker>
-        <section class="section">
-            <figure>
-                <canvas id="dataset-2d-scatterplot" width="550" height="550"></canvas>
-            </figure>
-        </section>
+        <figure class="mt-5">
+            <canvas id="dataset-2d-scatterplot" width="550" height="550"></canvas>
+        </figure>
     </div>
 </template>
 
@@ -46,7 +44,7 @@ export default {
                 maintainAspectRatio: false,
                 title: {
                     display: true,
-                    text: '2D Scatterplot',
+                    text: 'Scatterplot (2D)',
                 },
                 legend: {
                     display: false,

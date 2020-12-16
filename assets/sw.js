@@ -9,6 +9,8 @@ const ASSETS = [
     '/images/app-icon-apple-touch.png',
     '/images/app-icon-medium.png',
     '/images/app-icon-large.png',
+    '/fonts/roboto-300.woff2',
+    '/fonts/roboto-300.woff',
     '/fonts/roboto-regular.woff2',
     '/fonts/roboto-regular.woff',
     '/fonts/roboto-500.woff2',

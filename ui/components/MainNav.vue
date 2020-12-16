@@ -21,7 +21,7 @@
                         </div>
                         <div class="navbar-dropdown">
                             <router-link :to="{ name: 'dataset-2d-scatterplot' }" class="navbar-item" @click.native="open = false">
-                                <span>2D Scatterplot</span>
+                                <span>Scatterplot (2D)</span>
                             </router-link>
                         </div>
                     </div>

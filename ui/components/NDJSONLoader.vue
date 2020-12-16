@@ -67,7 +67,7 @@ export default {
 
             reader.onerror = function (event) {
                 bus.$emit('dataset-import-failed', {
-                    error: 'There was an error importing the dataset.',
+                    error: 'Unknown error',
                 });
 
                 this.loading = false;
