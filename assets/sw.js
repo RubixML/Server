@@ -1,6 +1,7 @@
 const ASSETS = [
     '/',
     '/ui/dashboard',
+    '/ui/visualizer/scatterplot-2d',
     '/manifest.json',
     '/app.js',
     '/app.css',
@@ -8,8 +9,14 @@ const ASSETS = [
     '/images/app-icon-apple-touch.png',
     '/images/app-icon-medium.png',
     '/images/app-icon-large.png',
-    '/fonts/fa-solid-900.woff',
+    '/fonts/roboto-300.woff2',
+    '/fonts/roboto-300.woff',
+    '/fonts/roboto-regular.woff2',
+    '/fonts/roboto-regular.woff',
+    '/fonts/roboto-500.woff2',
+    '/fonts/roboto-500.woff',
     '/fonts/fa-solid-900.woff2',
+    '/fonts/fa-solid-900.woff',
     '/sounds/sharp.ogg',
 ];
 

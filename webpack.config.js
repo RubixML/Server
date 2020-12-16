@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 const path = require('path');
 
 module.exports = {
@@ -53,6 +54,18 @@ module.exports = {
         new MiniCssExtractPlugin('app.css'),
         new MomentLocalesPlugin({
             localesToKeep: ['en'],
+        }),
+        new CompressionPlugin({
+            include: [
+                'app.js', 'app.css',
+            ],
+            filename: '[path][base].gz',
+            algorithm: 'gzip',
+            compressionOptions: {
+                level: process.env.NODE_ENV === 'development' ? 1 : 9,
+            },
+            minRatio: Infinity,
+            deleteOriginalAssets: false,
         }),
     ],
     optimization: {

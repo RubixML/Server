@@ -48,6 +48,9 @@ class File
             case 'ogg':
                 return 'audio/ogg';
 
+            case 'gz':
+                return self::mime(str_replace('.gz', '', $path));
+
             default:
                 throw new RuntimeException('Could not guess MIME type.');
         }

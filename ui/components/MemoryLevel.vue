@@ -2,13 +2,17 @@
     <nav class="level">
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes currently allocated to the server process.">Current</span><span class="icon"><i class="fas fa-memory ml-3"></i></span></p>
+                <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes currently allocated to the server process.">
+                    <span class="heading">Current<span class="icon"><i class="fas fa-memory ml-3"></i></span></span>
+                </p>
                 <p class="title">{{ current.toFixed(1) }}M</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum number of bytes consumed by the server process so far.">Peak</span><span class="icon"><i class="fas fa-memory ml-3"></i></span></p>
+                <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum number of bytes consumed by the server process so far.">
+                    <span class="heading">Peak<span class="icon"><i class="fas fa-memory ml-3"></i></span></span>
+                </p>
                 <p class="title">{{ peak.toFixed(1) }}M</p>
             </div>
         </div>

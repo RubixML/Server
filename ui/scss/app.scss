@@ -2,29 +2,14 @@
 
 @import 'variables';
 
-@import "~bulma/sass/utilities/_all.sass";
-@import "~bulma/sass/base/_all.sass";
-@import "~bulma/sass/components/navbar.sass";
-@import "~bulma/sass/components/level.sass";
-@import "~bulma/sass/components/card.sass";
-@import "~bulma/sass/components/modal.sass";
-@import "~bulma/sass/elements/button.sass";
-@import "~bulma/sass/elements/container.sass";
-@import "~bulma/sass/elements/icon.sass";
-@import "~bulma/sass/elements/table.sass";
-@import "~bulma/sass/elements/tag.sass";
-@import "~bulma/sass/elements/title.sass";
-@import "~bulma/sass/grid/columns.sass";
-@import "~bulma/sass/helpers/_all.sass";
-@import "~bulma/sass/layout/section.sass";
-@import "~bulma/sass/layout/footer.sass";
-
-@import '@creativebulma/bulma-tooltip';
+@import "~bulma/bulma";
 
 @import "~bulma-prefers-dark/bulma-prefers-dark.sass";
 
+@import '@creativebulma/bulma-tooltip';
+
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 
-@import "solid";
+@import "fonts";
 
-@import "custom"
+@import "custom";

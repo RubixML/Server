@@ -2,13 +2,17 @@
     <nav class="level">
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes received in request bodies.">Received</span><span class="icon"><i class="fas fa-download ml-3"></i></span></p>
+                <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes received in request bodies.">
+                    <span class="heading">Received<span class="icon"><i class="fas fa-download ml-3"></i></span></span>
+                </p>
                 <p class="title">{{ received.toFixed(1) }}M</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading"><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes sent in response bodies.">Sent</span><span class="icon"><i class="fas fa-upload ml-3"></i></span></p>
+                <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes sent in response bodies.">
+                    <span class="heading">Sent<span class="icon"><i class="fas fa-upload ml-3"></i></span></span>
+                </p>
                 <p class="title">{{ sent.toFixed(1) }}M</p>
             </div>
         </div>

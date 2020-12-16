@@ -1,13 +1,16 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueApollo from 'vue-apollo';
+import VueSSE from 'vue-sse';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import VueSSE from 'vue-sse';
 import App from './App.vue';
 import MainNav from './components/MainNav.vue';
 import MainFooter from './components/MainFooter.vue';
+import CSVLoader from './components/CSVLoader.vue';
+import NDJSONLoader from './components/NDJSONLoader.vue';
+import DatasetColumnPicker from './components/DatasetColumnPicker.vue';
 import RequestsLevel from './components/RequestsLevel.vue';
 import ResponseRateChart from './components/ResponseRateChart.vue';
 import TransfersLevel from './components/TransfersLevel.vue';
@@ -19,6 +22,7 @@ import MemoryUsageChart from './components/MemoryUsageChart.vue';
 import ProcessInfo from './components/ProcessInfo.vue';
 import ServerSettings from './components/ServerSettings.vue';
 import CommunicationError from './components/CommunicationError.vue';
+import DatasetImportFailure from './components/DatasetImportFailure.vue';
 import routes from './routes';
 
 require('./scss/app.scss');
@@ -55,6 +59,9 @@ const apolloClient = new ApolloClient({
 Vue.component('app', App);
 Vue.component('main-nav', MainNav);
 Vue.component('main-footer', MainFooter);
+Vue.component('csv-loader', CSVLoader);
+Vue.component('ndjson-loader', NDJSONLoader);
+Vue.component('dataset-column-picker', DatasetColumnPicker);
 Vue.component('requests-level', RequestsLevel);
 Vue.component('response-rate-chart', ResponseRateChart);
 Vue.component('transfers-level', TransfersLevel);
@@ -66,6 +73,7 @@ Vue.component('memory-usage-chart', MemoryUsageChart);
 Vue.component('process-info', ProcessInfo);
 Vue.component('server-settings', ServerSettings);
 Vue.component('communication-error', CommunicationError);
+Vue.component('dataset-import-failure', DatasetImportFailure);
 
 Vue.use(VueRouter);
 Vue.use(VueApollo);

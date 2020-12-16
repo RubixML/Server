@@ -7,12 +7,12 @@
                     <div class="content">
                         <span class="icon is-large">
                             <span class="fa-stack fa-lg">
-                                <i class="fas fa-server fa-stack-1x"></i>
+                                <i class="fas fa-file fa-stack-1x"></i>
                                 <i class="fas fa-ban fa-stack-2x has-text-danger"></i>
                             </span>
                         </span>
                         <p class="is-size-5">
-                            There was a problem communicating with the server.
+                            There was a problem importing the dataset.
                         </p>
                         <p class="error-message is-size-7">
                             {{ message }}
@@ -24,12 +24,6 @@
                         <button class="button is-white" @click="open = false">
                             <span class="icon"><i class="fas fa-times"></i></span>
                             <span>Dismiss</span>
-                        </button>
-                    </div>
-                    <div class="card-footer-item">
-                        <button class="button is-white" @click="$router.go()">
-                            <span class="icon"><i class="fas fa-redo"></i></span>
-                            <span>Retry</span>
                         </button>
                     </div>
                 </footer>
@@ -51,7 +45,7 @@ export default {
         };
     },
     mounted() {
-        bus.$on('communication-error', (payload) => {
+        bus.$on('dataset-import-failed', (payload) => {
             if (!this.open) {
                 this.message = payload.error.message;
                 this.open = true;

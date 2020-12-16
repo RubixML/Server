@@ -7,11 +7,14 @@ use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
 use Rubix\Server\HTTP\Responses\InternalServerError;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use React\Promise\Promise;
 
+use function React\Promise\resolve;
 use function is_file;
 use function is_readable;
 use function file_get_contents;
+use function in_array;
 
 class StaticAssetsController extends Controller
 {
@@ -29,16 +32,39 @@ class StaticAssetsController extends Controller
     public function routes() : array
     {
         return [
-            '/' => ['GET' => [$this, 'app']],
-            '/ui/dashboard' => ['GET' => [$this, 'app']],
-            '/app.js' => ['GET' => $this],
-            '/app.css' => ['GET' => $this],
+            '/' => [
+                'GET' => [$this, 'serveApp'],
+            ],
+            '/ui/dashboard' => [
+                'GET' => [$this, 'serveApp'],
+            ],
+            '/ui/visualizer/scatterplot-2d' => [
+                'GET' => [$this, 'serveApp'],
+            ],
+            '/app.js' => [
+                'GET' => [
+                    [$this, 'serveCompressedVersion'],
+                    $this,
+                ],
+            ],
+            '/app.css' => [
+                'GET' => [
+                    [$this, 'serveCompressedVersion'],
+                    $this,
+                ],
+            ],
             '/sw.js' => ['GET' => $this],
             '/manifest.json' => ['GET' => $this],
             '/images/app-icon-small.png' => ['GET' => $this],
             '/images/app-icon-apple-touch.png' => ['GET' => $this],
             '/images/app-icon-medium.png' => ['GET' => $this],
             '/images/app-icon-large.png' => ['GET' => $this],
+            '/fonts/roboto-300.woff' => ['GET' => $this],
+            '/fonts/roboto-300.woff2' => ['GET' => $this],
+            '/fonts/roboto-regular.woff' => ['GET' => $this],
+            '/fonts/roboto-regular.woff2' => ['GET' => $this],
+            '/fonts/roboto-500.woff' => ['GET' => $this],
+            '/fonts/roboto-500.woff2' => ['GET' => $this],
             '/fonts/fa-solid-900.woff' => ['GET' => $this],
             '/fonts/fa-solid-900.woff2' => ['GET' => $this],
             '/sounds/sharp.ogg' => ['GET' => $this],
@@ -46,17 +72,49 @@ class StaticAssetsController extends Controller
     }
 
     /**
-     * Handle the request and return a response or a deferred response.
+     * Respond with the web UI entry point.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function app(ServerRequestInterface $request)
+    public function serveApp(ServerRequestInterface $request)
     {
         return $this->respondWithFile('/app.html');
     }
 
     /**
+     * Serve a compressed version of a requested file if supported by the client.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param callable $next
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function serveCompressedVersion(ServerRequestInterface $request, callable $next)
+    {
+        if ($request->hasHeader('Accept-Encoding')) {
+            $accept = preg_split('/\s*,\s*/', $request->getHeaderLine('Accept-Encoding')) ?: [];
+
+            if (in_array('gzip', $accept)) {
+                $path = $request->getUri()->getPath();
+
+                $response = $this->respondWithFile("$path.gz");
+
+                return resolve($response)->then(function (ResponseInterface $response) : ResponseInterface {
+                    if ($response instanceof Success) {
+                        $response = $response->withHeader('Content-Encoding', 'gzip');
+                    }
+
+                    return $response;
+                });
+            }
+        }
+
+        return $next($request);
+    }
+
+    /**
+     * Respond with the contents of a file located in the assets folder.
+     *
      * @param string $path
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
