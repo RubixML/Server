@@ -1,7 +1,12 @@
 $body-bg: #f8fafc;
 
-$family-sans-serif: "Segoe UI", "Open Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$family-sans-serif: "Roboto", "Helvetica", "Arial", sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
+$title-weight: 500;
+
 $footer-padding: 1.5rem 2rem 1.5rem;
+
+$blue-light: hsl(209, 71%, 63%);
+$link-dark: $blue-light;

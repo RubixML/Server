@@ -1,5 +1,6 @@
 <template>
     <div>
+        <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select 2 columns</h2>
         <dataset-column-picker :dataset="dataset" :maxColumns="2"></dataset-column-picker>
         <section class="section">
             <figure>

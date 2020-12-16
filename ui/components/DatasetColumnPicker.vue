@@ -1,13 +1,12 @@
 <template>
     <div>
-        <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-check-square"></i></span>Select columns</h2>
         <div v-if="dataset.data && dataset.header">
             <div class="table-container">
                 <table class="table is-bordered is-striped is-narrow is-fullwidth">
                     <thead>
-                        <tr class="has-text-weight-semibold">
-                            <td>#</td>
-                            <td v-for="(title, offset) in dataset.header" :key="offset" nowrap>
+                        <tr>
+                            <th>#</th>
+                            <th v-for="(title, offset) in dataset.header" :key="offset" nowrap>
                                 <label class="checkbox">
                                     <input type="checkbox"
                                         v-if="isContinuous(offset)"
@@ -18,7 +17,7 @@
                                     <input v-else type="checkbox" disabled />
                                     <span class="ml-2" >{{ title }}</span>
                                 </label>
-                            </td>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,8 +40,8 @@
                 <button class="button" @click="more()" :disabled="cursor.limit >= cursor.maxLimit">
                     <span>More</span>
                 </button>
-                <button class="button" @click="next()" :disabled="cursor.offset >= dataset.data.length">
-                        <span>Next</span><span class="icon"><i class="fas fa-caret-right"></i></span>
+                <button class="button" @click="next()" :disabled="cursor.offset + cursor.limit >= dataset.data.length">
+                    <span>Next</span><span class="icon"><i class="fas fa-caret-right"></i></span>
                 </button>
             </div>
         </div>
