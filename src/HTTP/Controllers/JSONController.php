@@ -34,17 +34,17 @@ abstract class JSONController extends Controller
                     case 'gzip':
                         $data = gzdecode($request->getBody());
 
-                        break 1;
+                        break;
 
                     case 'deflate':
                         $data = gzinflate($request->getBody());
 
-                        break 1;
+                        break;
 
                     case 'identity':
                         $data = $request->getBody();
 
-                        break 1;
+                        break;
 
                     default:
                         return new UnsupportedContentEncoding([
@@ -80,7 +80,7 @@ abstract class JSONController extends Controller
                     case 'application/json':
                         $body = JSON::decode($request->getBody());
 
-                        break 1;
+                        break;
 
                     default:
                         return new UnsupportedContentType([

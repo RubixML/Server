@@ -196,7 +196,7 @@ class RESTClient implements Client, AsyncClient
                     case 'application/json':
                         $payload = JSON::decode($response->getBody());
 
-                        break 1;
+                        break;
 
                     default:
                         throw new RuntimeException('Unacceptable content'

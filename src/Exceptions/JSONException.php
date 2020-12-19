@@ -24,52 +24,52 @@ class JSONException extends RuntimeException
             case JSON_ERROR_SYNTAX:
                 $message = 'Syntax error.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_DEPTH:
                 $message = 'Maximum stack depth exceeded.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_STATE_MISMATCH:
                 $message = 'Invalid or malformed JSON.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_CTRL_CHAR:
                 $message = 'Unexpected control character found.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_RECURSION:
                 $message = 'Recursive references detected.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_UTF8:
                 $message = 'Malformed UTF-8 characters, check encoding.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_UTF16:
                 $message = 'Malformed UTF-16 characters, check encoding.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_UNSUPPORTED_TYPE:
                 $message = 'Unsupported type encountered.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_INVALID_PROPERTY_NAME:
                 $message = 'Invalid property name encountered.';
 
-                break 1;
+                break;
 
             case JSON_ERROR_INF_OR_NAN:
                 $message = 'INF or NAN values values cannot be encoded.';
 
-                break 1;
+                break;
 
             default:
                 $message = "Unknown JSON error. (code: $code')";
