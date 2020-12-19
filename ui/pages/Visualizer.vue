@@ -5,16 +5,17 @@
                 <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-import"></i></span>Import Dataset</h2>
                 <div class="tabs is-medium is-boxed">
                     <ul>
-                        <li :class="loader === 'csv' ? 'is-active' : ''">
+                        <li :class="{ 'is-active' : loader === 'csv' }">
                             <a @click="loader = 'csv'">CSV</a>
                         </li>
-                        <li :class="loader === 'ndjson' ? 'is-active' : ''">
+                        <li :class="{ 'is-active' : loader === 'ndjson' }">
                             <a @click="loader = 'ndjson'">NDJSON</a>
                         </li>
                     </ul>
                 </div>
                 <csv-loader v-show="loader === 'csv'"></csv-loader>
                 <ndjson-loader v-show="loader === 'ndjson'"></ndjson-loader>
+                <dataset-preview :dataset="dataset"></dataset-preview>
             </div>
         </section>
         <section class="section">
@@ -33,8 +34,8 @@ export default {
         return {
             loader: 'csv',
             dataset: {
-                data: null,
-                header: null,
+                header: [],
+                data: [],
             },
         };
     },
@@ -51,7 +52,18 @@ export default {
             this.dataset.data = payload.dataset.data.map((row) => {
                 return row instanceof Array ? row : Object.values(row);
             });
+
+            this.dataset.types = this.dataset.data.map((row) => {
+                return row.map((value) => {
+                    return this.isContinuous(value) ? 1 : 2;
+                });
+            });
         });
-    }
+    },
+    methods: {
+        isContinuous(value) {
+            return Number(value) == value;
+        },
+    },
 }
 </script>

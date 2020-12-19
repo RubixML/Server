@@ -1,22 +1,13 @@
 <template>
     <div>
-        <div v-if="dataset.data && dataset.header">
+        <div v-if="dataset.data.length && dataset.header.length">
             <div class="table-container">
                 <table class="table is-bordered is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
                             <th class="has-text-weight-medium">#</th>
                             <th v-for="(title, offset) in dataset.header" :key="offset" class="has-text-weight-medium" nowrap>
-                                <label class="checkbox">
-                                    <input type="checkbox"
-                                        v-if="isContinuous(offset)"
-                                        :value="offset"
-                                        v-model="selected"
-                                        :disabled="disabled && !selected.includes(offset)"
-                                    />
-                                    <input v-else type="checkbox" disabled />
-                                    <span class="ml-2" >{{ title }}</span>
-                                </label>
+                                {{ title }}
                             </th>
                         </tr>
                     </thead>
@@ -61,14 +52,9 @@
 </template>
 
 <script>
-import bus from '../bus';
-
 export default {
     data() {
         return {
-            selected: [
-                //
-            ],
             cursor: {
                 offset: 0,
                 limit: 5,
@@ -82,31 +68,10 @@ export default {
             type: Object,
             required: true,
         },
-        maxColumns: {
-            type: Number,
-            required: false,
-            default: Infinity,
-        },
     },
     computed: {
         preview() {
             return this.dataset.data.slice(this.cursor.offset, this.cursor.offset + this.cursor.limit);
-        },
-        disabled() {
-            return this.selected.length >= this.maxColumns;
-        },
-    },
-    watch: {
-        selected(newValue, oldValue) {
-            bus.$emit('dataset-columns-selected', {
-                selected: newValue,
-            });
-        },
-        dataset: {
-            deep: true,
-            handler: function(newValue, oldValue) {
-                this.selected = [];
-            },
         },
     },
     methods: {
@@ -121,11 +86,6 @@ export default {
         },
         previous() {
             this.cursor.offset = Math.max(0, this.cursor.offset - this.cursor.limit);
-        },
-        isContinuous(offset) {
-            const value = this.dataset.data[0][offset];
-
-            return Number(value) == value;
         },
     },
 }

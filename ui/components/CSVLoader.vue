@@ -10,7 +10,7 @@
                                 <span class="file-icon"><i class="fas fa-file-csv"></i></span>
                                 <span class="file-label">Choose a file</span>
                             </span>
-                            <span class="file-name" :class="file ? '' : 'is-placeholder'">
+                            <span class="file-name" :class="{ 'is-placeholder' : file }">
                                 {{ file ? file.name : 'example.csv' }}
                             </span>
                         </label>
@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="column is-one-quarter">
-            <button class="button is-medium is-danger is-fullwidth" :class="loading ? 'is-loading' : ''" :disabled="disabled" @click="loadDataset()">Load Dataset</button>
+            <button class="button is-medium is-danger is-fullwidth" :class="{ 'is-loading' : loading }" :disabled="disabled" @click="loadDataset()">Load Dataset</button>
         </div>
     </div>
 </template>

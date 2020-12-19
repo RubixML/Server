@@ -18,35 +18,51 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.js$/, loader: 'babel-loader' },
-            { test: /\.vue$/, loader: 'vue-loader' },
-            { test: /\.css$/, use: [
-                process.env.NODE_ENV === 'development'
-                  ? 'vue-style-loader'
-                  : MiniCssExtractPlugin.loader,
-                'css-loader',
-            ]},
-            { test: /\.(scss|sass)$/, use: [
-                MiniCssExtractPlugin.loader,
-                {
-                    loader: 'css-loader',
-                },
-                {
-                    loader: 'sass-loader',
-                    options: {
-                        sourceMap: process.env.NODE_ENV === 'development',
+            { 
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    process.env.NODE_ENV === 'development'
+                        ? 'vue-style-loader'
+                        : MiniCssExtractPlugin.loader,
+                    'css-loader',
+                ],
+            },
+            {
+                test: /\.(scss|sass)$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
                     },
-                },
-            ]},
-            { test: /\.(woff|woff2)$/, use: [
-                {
-                    loader: 'file-loader',
-                    options: {
-                        name: '[name].[ext]',
-                        outputPath: './fonts/',
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: process.env.NODE_ENV === 'development',
+                        },
                     },
-                },
-            ]},
+                ],
+            },
+            {
+                test: /\.(woff|woff2)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: './fonts/',
+                        },
+                    },
+                ],
+            },
         ],
     },
     plugins: [
@@ -74,7 +90,12 @@ module.exports = {
             new OptimizeCSSAssetsPlugin({}),
         ],
     },
+    performance: {
+        hints: false,
+    },
     resolve: {
-        alias: { vue: 'vue/dist/vue.esm.js' },
+        alias: {
+            vue: 'vue/dist/vue.esm.js',
+        },
     },
 };
