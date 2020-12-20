@@ -19,9 +19,9 @@
                             <span class="icon"><i class="fas fa-chart-bar"></i></span>
                             <span>Visualizer</span>
                         </div>
-                        <div class="navbar-dropdown">
-                            <router-link :to="{ name: 'dataset-2d-scatterplot' }" class="navbar-item" @click.native="open = false">
-                                <span>Scatterplot (2D)</span>
+                        <div class="navbar-dropdown is-shadowless">
+                            <router-link :to="{ name: 'bubble-chart' }" class="navbar-item" @click.native="open = false">
+                                <span>Bubble Chart</span>
                             </router-link>
                         </div>
                     </div>

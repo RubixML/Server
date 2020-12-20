@@ -13,7 +13,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(row, offset) in preview" :key="offset">
-                            <td>{{ cursor.offset + offset }}</td>
+                            <td class="has-text-weight-medium">{{ cursor.offset + offset }}</td>
                             <td v-for="(value, offset) in row" :key="offset" class="has-text-weight-light">
                                 {{ value }}
                             </td>

@@ -38,7 +38,10 @@ class StaticAssetsController extends Controller
             '/ui/dashboard' => [
                 'GET' => [$this, 'serveApp'],
             ],
-            '/ui/visualizer/scatterplot-2d' => [
+            '/ui/visualizer/scatterplot' => [
+                'GET' => [$this, 'serveApp'],
+            ],
+            '/ui/visualizer/bubble' => [
                 'GET' => [$this, 'serveApp'],
             ],
             '/app.js' => [

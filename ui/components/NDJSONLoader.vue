@@ -10,7 +10,7 @@
                                 <span class="file-icon"><i class="fas fa-file"></i></span>
                                 <span class="file-label">Choose a file</span>
                             </span>
-                            <span class="file-name" :class="{ 'is-placeholder' : file }">
+                            <span class="file-name" :class="{ 'is-placeholder' : !file }">
                                 {{ file ? file.name : 'example.ndjson' }}
                             </span>
                         </label>
