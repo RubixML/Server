@@ -122,7 +122,10 @@ class RESTClient implements Client, AsyncClient
 
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then([$this, 'unpackPayload']);
+            ->then([$this, 'unpackPayload'])
+            ->then(function ($data) {
+                return $data['predictions'];
+            });
     }
 
     /**
@@ -148,7 +151,10 @@ class RESTClient implements Client, AsyncClient
 
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then([$this, 'unpackPayload']);
+            ->then([$this, 'unpackPayload'])
+            ->then(function ($data) {
+                return $data['probabilities'];
+            });
     }
 
     /**
@@ -174,7 +180,10 @@ class RESTClient implements Client, AsyncClient
 
         return $this->client->sendAsync($request)
             ->then([$this, 'parseResponseBody'], [$this, 'onError'])
-            ->then([$this, 'unpackPayload']);
+            ->then([$this, 'unpackPayload'])
+            ->then(function ($data) {
+                return $data['scores'];
+            });
     }
 
     /**
