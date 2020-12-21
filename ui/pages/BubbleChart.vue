@@ -113,6 +113,8 @@
 </template>
 
 <script>
+import bus from '../bus';
+
 export default {
     data() {
         return {
@@ -206,6 +208,14 @@ export default {
                     ],
                 },
             },
+        });
+
+        bus.$on('dataset-imported', (payload) => {
+           this.dataColumns.xAxis = null;
+           this.dataColumns.yAxis = null;
+           this.dataColumns.scale = null;
+
+           this.updateDataset();
         });
     },
     methods: {

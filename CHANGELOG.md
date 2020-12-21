@@ -1,9 +1,10 @@
 - 0.2.4-beta
     - Added GraphQL API
-    - Added dataset scatterplot visualizer
-    - Dashboard memory chart shows real memory usage
+    - Added dataset Bubble Chart visualizer
+    - Dashboard memory chart now shows real memory usage
     - Removed Query Bus and associated application layer
     - Added inference rate chart to dashboard
+    - Added Gzip compression of static assets
 
 - 0.2.3-beta
     - Added web user interface

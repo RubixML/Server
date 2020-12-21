@@ -37,7 +37,7 @@ $ composer require rubix/server
 
 ---
 ### Servers
-Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implements their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache. By utilizing concurrency, each server instance is able to handle thousands of connections at the same time. Need more inference throughput? Model servers scale by adding more instances behind a load balancer.
+Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implements their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache. By utilizing concurrency, each server instance is able to handle thousands of connections at the same time.
 
 To boot up a server, pass a trained estimator instance to the `serve()` method:
 ```php
@@ -93,7 +93,7 @@ $server->setLogger(new Screen());
 ```
 
 ### HTTP Server
-A JSON over HTTP server exposing Representational State Transfer (REST) and GraphQL APIs. The HTTP Server operates with ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for real-time server monitoring.
+A JSON over HTTP server exposing Representational State Transfer (REST) and GraphQL APIs. The HTTP Server operates using ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for dataset visualization and real-time server monitoring.
 
 Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 
@@ -104,7 +104,7 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 2 | port | 8000 | int | The network port to run the HTTP services on. |
 | 3 | cert | null | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | [] | array | The stack of server middleware to run on each request/response. |
-| 5 | max concurrent requests | 20 | int | The maximum number of requests that can be handled concurrently. |
+| 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
 | 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
 **Example**
@@ -138,6 +138,7 @@ The HTTP server exposes the following resources and their methods.
 | GET | /server/dashboard | Return the properties of the server dashboard. |
 | GET | /server/dashboard/events | Subscribe to the dashboard events stream. |
 | GET | /ui/server | The server dashboard interface. |
+| GET | /ui/visualizer/bubble | Dataset bubble chart visualizer. |
 
 #### Web Interface
 The HTTP server provides its own high-level user interface to the GraphQL API it exposes under the hood. To access the on-demand web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.
@@ -334,8 +335,8 @@ Adds the necessary authorization headers to the request using the Basic scheme.
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
-| 1 | username | | string | The username. |
-| 2 | password | | string | The password. |
+| 1 | username | | string | The user's name. |
+| 2 | password | | string | The user's password. |
 
 **Example**
 
@@ -398,7 +399,7 @@ Yes, model server are designed to coexist with other web servers (including othe
 Since model servers are inference-only (i.e. they only support queries), they scale horizontally by adding more instances behind a load balancer such as [Nginx](http://nginx.org).
 
 #### Do servers support compression?
-Yes, the HTTP Server supports both Gzip and Deflate compression schemes applied to the request bodies. However, since response bodies tend to be considerably smaller compared to requests for this application, they do not support outbound message compression.
+Yes, the HTTP Server supports both Gzip and Deflate compression schemes applied to the request bodies and to the response bodies of requests for static assets.
 
 ## License
 The code is licensed [MIT](LICENSE.md) and the documentation is licensed [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
