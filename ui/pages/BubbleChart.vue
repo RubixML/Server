@@ -1,102 +1,106 @@
 <template>
     <div>
-        <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Settings</h2>
-        <div class="columns">
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">X Axis</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="dataColumns.xAxis" @change="updateDataset()">
-                                <option :value="null">Select column</option>
-                                <option v-for="(header, offset) in continuousHeaders"
-                                    :key="offset"
-                                    :value="header.offset"
-                                >{{ header.title }}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">Y Axis</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="dataColumns.yAxis" @change="updateDataset()">
-                                <option :value="null">Select column</option>
-                                <option v-for="(header, offset) in continuousHeaders"
-                                    :key="offset"
-                                    :value="header.offset"
-                                >{{ header.title }}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">Scale</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="dataColumns.scale" @change="updateDataset()">
-                                <option :value="null">Select column</option>
-                                <option v-for="(header, offset) in continuousHeaders"
-                                    :key="offset"
-                                    :value="header.offset"
-                                >{{ header.title }}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="columns mb-5">
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">Bubble Radius</label>
-                    <div class="control">
-                        <input v-model="bubbleRadius" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="50" type="range" @change="updateDataset()" />
-                        <output>{{ bubbleRadius }}</output>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">Bubble Stroke</label>
-                    <div class="control">
-                        <input v-model="bubbleStroke" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="5" type="range" @change="updateBubbleStroke()" />
-                        <output>{{ bubbleStroke }}</output>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-one-third">
-                <div class="field">
-                    <label class="label">Bubble Color</label>
-                    <div class="control">
-                        <div class="dropdown" :class="{ 'is-active' : colorPickerOpen }">
-                            <div class="dropdown-trigger">
-                                <span class="button" aria-haspopup="true" aria-controls="dropdown-menu2" @click="colorPickerOpen = !colorPickerOpen">
-                                    <span class="tag mx-2 px-5" :style="{ background: bubbleColorRgbString }"></span>
-                                    <span class="icon is-small">
-                                        <i class="fas fa-angle-down" aria-hidden="true"></i>
-                                    </span>
-                                </span>
+        <section class="section">
+            <div class="container">
+                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Properties</h2>
+                <div class="columns">
+                    <div class="column is-one-third">
+                        <div class="field">
+                            <label class="label">X Axis</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="settings.dataColumns.xAxis" @change="updateDataset()">
+                                        <option :value="null">Select column</option>
+                                        <option v-for="(header, offset) in continuousHeaders"
+                                            :key="offset"
+                                            :value="header.offset"
+                                        >{{ header.title }}</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="dropdown-menu" role="menu">
-                                <div class="dropdown-content">
-                                    <div class="dropdown-item">
-                                        <div>
-                                            <input v-model="bubbleColor.r" class="slider is-danger is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateBubbleColor()" />
-                                            <output>{{ bubbleColor.r }}</output>
-                                        </div>
-                                        <div>
-                                            <input v-model="bubbleColor.g" class="slider is-success is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateBubbleColor()" />
-                                            <output>{{ bubbleColor.g }}</output>
-                                        </div>
-                                        <div>
-                                            <input v-model="bubbleColor.b" class="slider is-info is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateBubbleColor()" />
-                                            <output>{{ bubbleColor.b }}</output>
+                        </div>
+                    </div>
+                    <div class="column is-one-third">
+                        <div class="field">
+                            <label class="label">Y Axis</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="settings.dataColumns.yAxis" @change="updateDataset()">
+                                        <option :value="null">Select column</option>
+                                        <option v-for="(header, offset) in continuousHeaders"
+                                            :key="offset"
+                                            :value="header.offset"
+                                        >{{ header.title }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-one-third">
+                        <div class="field">
+                            <label class="label">Scale</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="settings.dataColumns.scale" @change="updateDataset()">
+                                        <option :value="null">Select column</option>
+                                        <option v-for="(header, offset) in continuousHeaders"
+                                            :key="offset"
+                                            :value="header.offset"
+                                        >{{ header.title }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="columns mb-5">
+                    <div class="column is-one-third">
+                        <div class="field">
+                            <label class="label">Radius</label>
+                            <div class="control">
+                                <input v-model="settings.radius" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="50" type="range" @change="updateDataset()" />
+                                <output>{{ settings.radius }}</output>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-one-third">
+                        <div class="field">
+                            <label class="label">Stroke</label>
+                            <div class="control">
+                                <input v-model="settings.stroke" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="5" type="range" @change="updateStroke()" />
+                                <output>{{ settings.stroke }}</output>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-one-third">
+                        <div class="field">
+                            <label class="label">Color</label>
+                            <div class="control">
+                                <div class="dropdown" :class="{ 'is-active' : colorPickerOpen }">
+                                    <div class="dropdown-trigger">
+                                        <span class="button" aria-haspopup="true" aria-controls="dropdown-menu2" @click="colorPickerOpen = !colorPickerOpen">
+                                            <span class="tag mx-2 px-5" :style="{ background: rgbColorString }"></span>
+                                            <span class="icon is-small">
+                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="menu">
+                                        <div class="dropdown-content">
+                                            <div class="dropdown-item">
+                                                <div>
+                                                    <input v-model="settings.color.r" class="slider is-danger is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateColor()" />
+                                                    <output>{{ settings.color.r }}</output>
+                                                </div>
+                                                <div>
+                                                    <input v-model="settings.color.g" class="slider is-success is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateColor()" />
+                                                    <output>{{ settings.color.g }}</output>
+                                                </div>
+                                                <div>
+                                                    <input v-model="settings.color.b" class="slider is-info is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateColor()" />
+                                                    <output>{{ settings.color.b }}</output>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -105,10 +109,14 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <figure class="mt-5">
-            <canvas id="dataset-bubble-chart" width="550" height="550"></canvas>
-        </figure>
+        </section>
+        <section class="section">
+            <div class="container">
+                <figure class="mt-5">
+                    <canvas id="dataset-bubble-chart" width="550" height="550"></canvas>
+                </figure>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -118,19 +126,21 @@ import bus from '../bus';
 export default {
     data() {
         return {
-            dataColumns: {
-                xAxis: null,
-                yAxis: null,
-                scale: null,
-            },
-            bubbleColor: {
-                r: 143,
-                g: 59,
-                b: 222,
+            settings: {
+                dataColumns: {
+                    xAxis: null,
+                    yAxis: null,
+                    scale: null,
+                },
+                radius: 5,
+                stroke: 2,
+                color: {
+                    r: 143,
+                    g: 59,
+                    b: 222,
+                },
             },
             colorPickerOpen: false,
-            bubbleRadius: 5,
-            bubbleStroke: 2,
             chart: null,
         };
     },
@@ -141,6 +151,9 @@ export default {
         },
     },
     computed: {
+        rgbColorString() {
+            return 'rgb(' + Object.values(this.settings.color).join(', ') + ')';
+        },
         continuousHeaders() {
             return this.dataset.header.map((title, offset) => {
                 return {
@@ -150,9 +163,6 @@ export default {
             }).filter((header, offset) => {
                 return Number( this.dataset.data[0][offset]) == this.dataset.data[0][offset];
             });
-        },
-        bubbleColorRgbString() {
-            return 'rgb(' + Object.values(this.bubbleColor).join(', ') + ')';
         },
     },
     mounted() {
@@ -164,8 +174,8 @@ export default {
                 datasets: [
                    {
                         label: 'Bubbles',
-                        borderColor: this.bubbleColorRgbString,
-                        borderWidth: this.bubbleStroke,
+                        borderColor: this.rgbColorString,
+                        borderWidth: this.settings.stroke,
                         fill: true,
                    },
                 ],
@@ -211,24 +221,24 @@ export default {
         });
 
         bus.$on('dataset-imported', (payload) => {
-           this.dataColumns.xAxis = null;
-           this.dataColumns.yAxis = null;
-           this.dataColumns.scale = null;
+           this.settings.dataColumns.xAxis = null;
+           this.settings.dataColumns.yAxis = null;
+           this.settings.dataColumns.scale = null;
 
            this.updateDataset();
         });
     },
     methods: {
         updateDataset() {
-            if (this.dataColumns.xAxis !== null && this.dataColumns.yAxis !== null) {
-                this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[this.dataColumns.xAxis];
-                this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.dataColumns.yAxis];
+            if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
+                this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.xAxis];
+                this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.yAxis];
 
-                if (this.dataColumns.scale !== null) {
+                if (this.settings.dataColumns.scale !== null) {
                     let values = [];
 
                     this.dataset.data.forEach((row) => {
-                        values.push(row[this.dataColumns.scale])
+                        values.push(row[this.settings.dataColumns.scale])
                     });
 
                     const min = Math.min(...values);
@@ -247,9 +257,9 @@ export default {
 
                 this.dataset.data.forEach((row, offset) => {
                     data.push({
-                        x: row[this.dataColumns.xAxis],
-                        y: row[this.dataColumns.yAxis],
-                        r: weights[offset] * this.bubbleRadius,
+                        x: row[this.settings.dataColumns.xAxis],
+                        y: row[this.settings.dataColumns.yAxis],
+                        r: weights[offset] * this.settings.radius,
                     });
                 });
 
@@ -260,13 +270,13 @@ export default {
 
             this.chart.update();
         },
-        updateBubbleStroke() {
-            this.chart.data.datasets[0].borderWidth = this.bubbleStroke;
+        updateStroke() {
+            this.chart.data.datasets[0].borderWidth = this.settings.stroke;
 
             this.chart.update();
         },
-        updateBubbleColor() {
-            this.chart.data.datasets[0].borderColor = this.bubbleColorRgbString;
+        updateColor() {
+            this.chart.data.datasets[0].borderColor = this.rgbColorString;
 
             this.chart.update();
         },

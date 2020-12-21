@@ -18,11 +18,7 @@
                 <dataset-preview :dataset="dataset"></dataset-preview>
             </div>
         </section>
-        <section class="section">
-            <div class="container">
-                <router-view :dataset="dataset"></router-view>
-            </div>
-        </section>
+        <router-view :dataset="dataset"></router-view>
     </div>
 </template>
 
