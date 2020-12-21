@@ -2,7 +2,7 @@
     <div>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Properties</h2>
+                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-table"></i></span>Data Columns</h2>
                 <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">
@@ -53,7 +53,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="columns mb-5">
+                <h2 class="title is-size-5 mt-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Settings</h2>
+                <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">
                             <label class="label">Radius</label>
@@ -78,8 +79,8 @@
                             <div class="control">
                                 <div class="dropdown" :class="{ 'is-active' : colorPickerOpen }">
                                     <div class="dropdown-trigger">
-                                        <span class="button" aria-haspopup="true" aria-controls="dropdown-menu2" @click="colorPickerOpen = !colorPickerOpen">
-                                            <span class="tag mx-2 px-5" :style="{ background: rgbColorString }"></span>
+                                        <span class="button" aria-haspopup="true" @click="colorPickerOpen = !colorPickerOpen">
+                                            <span class="tag mx-3 px-5" :style="{ background: rgbColorString }"></span>
                                             <span class="icon is-small">
                                                 <i class="fas fa-angle-down" aria-hidden="true"></i>
                                             </span>
@@ -112,7 +113,7 @@
         </section>
         <section class="section">
             <div class="container">
-                <figure class="mt-5">
+                <figure>
                     <canvas id="dataset-bubble-chart" width="550" height="550"></canvas>
                 </figure>
             </div>
@@ -235,10 +236,8 @@ export default {
                 this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.yAxis];
 
                 if (this.settings.dataColumns.scale !== null) {
-                    let values = [];
-
-                    this.dataset.data.forEach((row) => {
-                        values.push(row[this.settings.dataColumns.scale])
+                    const values = this.dataset.data.map((row) => {
+                        return row[this.settings.dataColumns.scale];
                     });
 
                     const min = Math.min(...values);
@@ -253,14 +252,12 @@ export default {
                     var weights = Array(this.dataset.data.length).fill(1.0);
                 }
 
-                let data = [];
-
-                this.dataset.data.forEach((row, offset) => {
-                    data.push({
+                const data = this.dataset.data.map((row, offset) => {
+                    return {
                         x: row[this.settings.dataColumns.xAxis],
                         y: row[this.settings.dataColumns.yAxis],
                         r: weights[offset] * this.settings.radius,
-                    });
+                    };
                 });
 
                 this.chart.data.datasets[0].data = data;

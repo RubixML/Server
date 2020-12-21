@@ -49,18 +49,18 @@ export default {
             let reader = new FileReader();
             
             reader.onload = function (event) {
-                let lines = this.result.split(EOL).filter(Boolean);
+                const lines = this.result.split(EOL).filter(Boolean);
 
-                let data = [];
-
-                lines.forEach((line) => {
-                    data.push(JSON.parse(line));
+                const data = lines.map((line) => {
+                    return JSON.parse(line);
                 });
+
+                const header = data[0] instanceof Array ? null : data[0].keys();
                 
                 bus.$emit('dataset-imported', {
                     dataset: {
                         data,
-                        header: data[0] instanceof Array ? null : data[0].keys(),
+                        header,
                     },
                 });
             };
@@ -69,8 +69,6 @@ export default {
                 bus.$emit('dataset-import-failed', {
                     error: 'Unknown error',
                 });
-
-                this.loading = false;
             };
 
             reader.readAsText(this.file);

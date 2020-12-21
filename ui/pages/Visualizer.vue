@@ -30,8 +30,12 @@ export default {
         return {
             loader: 'csv',
             dataset: {
-                header: [],
-                data: [],
+                data: [
+                    //
+                ],
+                header: [
+                    //
+                ],
             },
         };
     },
@@ -48,18 +52,7 @@ export default {
             this.dataset.data = payload.dataset.data.map((row) => {
                 return row instanceof Array ? row : Object.values(row);
             });
-
-            this.dataset.types = this.dataset.data.map((row) => {
-                return row.map((value) => {
-                    return this.isContinuous(value) ? 1 : 2;
-                });
-            });
         });
-    },
-    methods: {
-        isContinuous(value) {
-            return Number(value) == value;
-        },
     },
 }
 </script>

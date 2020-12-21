@@ -56,11 +56,6 @@ export default {
         },
     },
     methods: {
-        changeFile(file) {
-            this.file = file;
-
-            this.loaded = false;
-        },
         loadDataset() {
             this.loading = true;
 
@@ -89,6 +84,11 @@ export default {
                     this.loading = false;
                 },
             });
+        },
+        changeFile(file) {
+            this.file = file;
+
+            this.loaded = false;
         },
     },
 }
