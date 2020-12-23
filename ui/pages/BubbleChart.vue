@@ -77,9 +77,9 @@
                         <div class="field">
                             <label class="label">Color</label>
                             <div class="control">
-                                <div class="dropdown" :class="{ 'is-active' : colorPickerOpen }">
+                                <div class="dropdown is-hoverable">
                                     <div class="dropdown-trigger">
-                                        <span class="button" aria-haspopup="true" @click="colorPickerOpen = !colorPickerOpen">
+                                        <span class="button" aria-haspopup="true">
                                             <span class="tag mx-3 px-5" :style="{ background: rgbColorString }"></span>
                                             <span class="icon is-small">
                                                 <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -141,7 +141,6 @@ export default {
                     b: 222,
                 },
             },
-            colorPickerOpen: false,
             chart: null,
         };
     },

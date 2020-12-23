@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Models;
 
-class ServerInfo
+class ProcessInfo
 {
     /**
      * The timestamp from when the server went up.

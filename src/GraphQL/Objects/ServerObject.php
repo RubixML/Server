@@ -5,7 +5,7 @@ namespace Rubix\Server\GraphQL\Objects;
 use Rubix\Server\Models\Server;
 use Rubix\Server\Models\HTTPStats;
 use Rubix\Server\Models\Memory;
-use Rubix\Server\Models\ServerInfo;
+use Rubix\Server\Models\ProcessInfo;
 use Rubix\Server\Models\ServerSettings;
 use GraphQL\Type\Definition\Type;
 
@@ -40,8 +40,8 @@ class ServerObject extends ObjectType
                     },
                 ],
                 'info' => [
-                    'type' => Type::nonNull(ServerInfoObject::singleton()),
-                    'resolve' => function (Server $server) : ServerInfo {
+                    'type' => Type::nonNull(ProcessInfoObject::singleton()),
+                    'resolve' => function (Server $server) : ProcessInfo {
                         return $server->info();
                     },
                 ],

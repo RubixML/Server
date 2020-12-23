@@ -38,9 +38,6 @@ class StaticAssetsController extends Controller
             '/ui/dashboard' => [
                 'GET' => [$this, 'serveApp'],
             ],
-            '/ui/visualizer/scatterplot' => [
-                'GET' => [$this, 'serveApp'],
-            ],
             '/ui/visualizer/line' => [
                 'GET' => [$this, 'serveApp'],
             ],
@@ -90,7 +87,7 @@ class StaticAssetsController extends Controller
      */
     public function serveApp(ServerRequestInterface $request)
     {
-        return $this->respondWithFile('/app.html');
+        return $this->respondWithFile('/index.html');
     }
 
     /**

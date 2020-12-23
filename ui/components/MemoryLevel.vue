@@ -1,5 +1,5 @@
 <template>
-    <nav class="level">
+    <div class="level">
         <div class="level-item has-text-centered">
             <div>
                 <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes currently allocated to the server process.">
@@ -16,7 +16,7 @@
                 <p class="title">{{ peak.toFixed(1) }}M</p>
             </div>
         </div>
-    </nav>
+    </div>
 </template>
 
 <script>

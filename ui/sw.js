@@ -1,5 +1,5 @@
-import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
+import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 
 precacheAndRoute([
     { url: '/', revision: '0' },

@@ -74,7 +74,7 @@ module.exports = {
         }),
         new CompressionPlugin({
             include: [
-                'app.js', 'app.css', 'sw.js',
+                'app.js', 'sw.js', 'app.css',
             ],
             filename: '[path][base].gz',
             algorithm: 'gzip',

@@ -118,7 +118,7 @@ export default {
                     offset,
                 };
             }).filter((header, offset) => {
-                return Number( this.dataset.data[0][offset]) == this.dataset.data[0][offset];
+                return Number(this.dataset.data[0][offset]) == this.dataset.data[0][offset];
             });
         },
     },
@@ -206,7 +206,7 @@ export default {
         updateDataset() {
             this.chart.data.datasets = [];
 
-            this.settings.lines.map((line) => {
+            this.settings.lines.forEach((line) => {
                 if (line.dataColumn !== null) {
                     const values = this.dataset.data.map((row) => {
                         return row[line.dataColumn];

@@ -16,6 +16,7 @@ use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
 use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
 use Rubix\Server\HTTP\Middleware\Internal\CatchServerErrors;
 use Rubix\Server\HTTP\Middleware\Internal\CheckRequestBodySize;
+use Rubix\Server\HTTP\Middleware\Internal\CircuitBreaker;
 use Rubix\Server\HTTP\Controllers\ModelController;
 use Rubix\Server\HTTP\Controllers\ServerController;
 use Rubix\Server\HTTP\Controllers\DashboardController;
@@ -309,6 +310,7 @@ class HTTPServer implements Server, Verbose
         $stack = array_merge($stack, $this->middlewares);
 
         $stack[] = new CheckRequestBodySize($postMaxSize);
+        $stack[] = new CircuitBreaker($server);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
         $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
         $stack[] = [$router, 'dispatch'];

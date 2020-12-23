@@ -1,5 +1,5 @@
 <template>
-    <nav class="level">
+    <div class="level">
         <div class="level-item has-text-centered">
             <div>
                 <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="Requests that returned a 100, 200, or 300 level response code.">
@@ -24,7 +24,7 @@
                 <p class="title">{{ requests.failed.toLocaleString() }}</p>
             </div>
         </div>
-    </nav>
+    </div>
 </template>
 
 <script>

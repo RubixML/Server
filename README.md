@@ -130,15 +130,16 @@ The HTTP server exposes the following resources and their methods.
 | Method | URI | Description |
 |---|---|---|
 | GET | / | The web user interface. |
+| GET | /dashboard/events | Subscribe to the dashboard events stream. |
 | POST | /graphql | Query the server using GraphQL. |
 | GET | /model | Return the properties of the model. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
 | POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
-| GET | /server/dashboard | Return the properties of the server dashboard. |
-| GET | /server/dashboard/events | Subscribe to the dashboard events stream. |
+| GET | /server | Return the properties of the server. |
 | GET | /ui/server | The server dashboard interface. |
 | GET | /ui/visualizer/bubble | Dataset bubble chart visualizer. |
+| GET | /ui/visualizer/line | Dataset line chart visualizer. |
 
 #### Web Interface
 The HTTP server provides its own high-level user interface to the GraphQL API it exposes under the hood. To access the on-demand web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.

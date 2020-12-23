@@ -24,7 +24,7 @@ class Server
     /**
      * The server info model.
      *
-     * @var \Rubix\Server\Models\ServerInfo
+     * @var \Rubix\Server\Models\ProcessInfo
      */
     protected $info;
 
@@ -43,7 +43,7 @@ class Server
     {
         $this->httpStats = new HTTPStats();
         $this->memory = new Memory($eventBus);
-        $this->info = new ServerInfo();
+        $this->info = new ProcessInfo();
         $this->settings = new ServerSettings($server);
     }
 
@@ -70,9 +70,9 @@ class Server
     /**
      * Return the server info model.
      *
-     * @return \Rubix\Server\Models\ServerInfo
+     * @return \Rubix\Server\Models\ProcessInfo
      */
-    public function info() : ServerInfo
+    public function info() : ProcessInfo
     {
         return $this->info;
     }
@@ -85,6 +85,20 @@ class Server
     public function settings() : ServerSettings
     {
         return $this->settings;
+    }
+
+    /**
+     * The amount of unutilized memory in bytes.
+     *
+     * @return int
+     */
+    public function memoryRemaining() : int
+    {
+        $memoryLimit = $this->settings->memoryLimit();
+
+        return $memoryLimit === -1
+            ? PHP_INT_MAX
+            : $memoryLimit - $this->memory->current();
     }
 
     /**

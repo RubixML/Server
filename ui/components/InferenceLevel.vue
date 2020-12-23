@@ -1,5 +1,5 @@
 <template>
-    <nav class="level">
+    <div class="level">
         <div class="level-item has-text-centered">
             <div>
                 <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of samples that have been predicted by the model.">
@@ -8,7 +8,7 @@
                 <p class="title">{{ model.numSamplesInferred.toLocaleString() }}</p>
             </div>
         </div>
-    </nav>
+    </div>
 </template>
 
 <script>
