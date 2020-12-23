@@ -41,10 +41,19 @@ class StaticAssetsController extends Controller
             '/ui/visualizer/scatterplot' => [
                 'GET' => [$this, 'serveApp'],
             ],
+            '/ui/visualizer/line' => [
+                'GET' => [$this, 'serveApp'],
+            ],
             '/ui/visualizer/bubble' => [
                 'GET' => [$this, 'serveApp'],
             ],
             '/app.js' => [
+                'GET' => [
+                    [$this, 'serveCompressedVersion'],
+                    $this,
+                ],
+            ],
+            '/sw.js' => [
                 'GET' => [
                     [$this, 'serveCompressedVersion'],
                     $this,
@@ -56,20 +65,19 @@ class StaticAssetsController extends Controller
                     $this,
                 ],
             ],
-            '/sw.js' => ['GET' => $this],
             '/manifest.json' => ['GET' => $this],
             '/images/app-icon-small.png' => ['GET' => $this],
             '/images/app-icon-apple-touch.png' => ['GET' => $this],
             '/images/app-icon-medium.png' => ['GET' => $this],
             '/images/app-icon-large.png' => ['GET' => $this],
-            '/fonts/roboto-300.woff' => ['GET' => $this],
-            '/fonts/roboto-300.woff2' => ['GET' => $this],
-            '/fonts/roboto-regular.woff' => ['GET' => $this],
-            '/fonts/roboto-regular.woff2' => ['GET' => $this],
-            '/fonts/roboto-500.woff' => ['GET' => $this],
-            '/fonts/roboto-500.woff2' => ['GET' => $this],
-            '/fonts/fa-solid-900.woff' => ['GET' => $this],
+            '/fonts/Roboto-300.woff2' => ['GET' => $this],
+            '/fonts/Roboto-300.woff' => ['GET' => $this],
+            '/fonts/Roboto-regular.woff2' => ['GET' => $this],
+            '/fonts/Roboto-regular.woff' => ['GET' => $this],
+            '/fonts/Roboto-500.woff2' => ['GET' => $this],
+            '/fonts/Roboto-500.woff' => ['GET' => $this],
             '/fonts/fa-solid-900.woff2' => ['GET' => $this],
+            '/fonts/fa-solid-900.woff' => ['GET' => $this],
             '/sounds/sharp.ogg' => ['GET' => $this],
         ];
     }

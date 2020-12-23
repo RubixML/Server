@@ -10,11 +10,12 @@ module.exports = {
     mode: process.env.NODE_ENV,
     entry: {
         app: './ui/app.js',
+        sw: './ui/sw.js',
     },
     output: {
         path: path.resolve(__dirname, 'assets'),
         publicPath: '/',
-        filename: 'app.js',
+        filename: '[name].js',
     },
     module: {
         rules: [
@@ -73,7 +74,7 @@ module.exports = {
         }),
         new CompressionPlugin({
             include: [
-                'app.js', 'app.css',
+                'app.js', 'app.css', 'sw.js',
             ],
             filename: '[path][base].gz',
             algorithm: 'gzip',

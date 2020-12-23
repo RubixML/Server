@@ -20,6 +20,9 @@
                             <span>Visualizer</span>
                         </div>
                         <div class="navbar-dropdown is-shadowless">
+                            <router-link :to="{ name: 'line-chart' }" class="navbar-item" @click.native="open = false">
+                                <span>Line Chart</span>
+                            </router-link>
                             <router-link :to="{ name: 'bubble-chart' }" class="navbar-item" @click.native="open = false">
                                 <span>Bubble Chart</span>
                             </router-link>

@@ -46,15 +46,13 @@ class DashboardController extends JSONController
      */
     public function connectEventStream(ServerRequestInterface $request) : EventStream
     {
-        $lastId = null;
-
         if ($request->hasHeader('Last-Event-ID')) {
             $lastId = (int) $request->getHeaderLine('Last-Event-ID');
         }
 
         $stream = new ThroughStream();
 
-        $this->channel->attach($stream, $lastId);
+        $this->channel->attach($stream, $lastId ?? null);
 
         return new EventStream($stream);
     }

@@ -8,7 +8,7 @@
                         <div class="field">
                             <label class="label">X Axis</label>
                             <div class="control">
-                                <div class="select">
+                                <div class="select is-fullwidth">
                                     <select v-model="settings.dataColumns.xAxis" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"
@@ -24,7 +24,7 @@
                         <div class="field">
                             <label class="label">Y Axis</label>
                             <div class="control">
-                                <div class="select">
+                                <div class="select is-fullwidth">
                                     <select v-model="settings.dataColumns.yAxis" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"
@@ -40,7 +40,7 @@
                         <div class="field">
                             <label class="label">Scale</label>
                             <div class="control">
-                                <div class="select">
+                                <div class="select is-fullwidth">
                                     <select v-model="settings.dataColumns.scale" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"

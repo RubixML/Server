@@ -1,4 +1,5 @@
 import Visualizer from './pages/Visualizer.vue';
+import LineChart from './pages/LineChart.vue';
 import BubbleChart from './pages/BubbleChart.vue';
 import Dashboard from './pages/Dashboard.vue';
 
@@ -13,6 +14,11 @@ export default [
         path: '/ui/visualizer',
         component: Visualizer,
         children: [
+            {
+                name: 'line-chart',
+                path: 'line',
+                component: LineChart,
+            },
             {
                 name: 'bubble-chart',
                 path: 'bubble',

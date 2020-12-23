@@ -40,7 +40,6 @@
         "papaparse": "^5.3.0",
         "sass": "^1.30.0",
         "sass-loader": "^9.0.3",
-        "vee-validate": "^3.4.5",
         "vue": "^2.6.12",
         "vue-apollo": "^3.0.5",
         "vue-loader": "^15.9.6",
@@ -49,6 +48,8 @@
         "vue-style-loader": "^4.1.2",
         "vue-template-compiler": "^2.6.12",
         "webpack": "^4.4.0",
-        "webpack-cli": "^3.3.0"
+        "webpack-cli": "^3.3.0",
+        "workbox-precaching": "^6.0.2",
+        "workbox-sw": "^6.0.2"
     }
 }
