@@ -1,4 +1,5 @@
-import { precacheAndRoute } from 'workbox-precaching';
+import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
+import { registerRoute, NavigationRoute } from 'workbox-routing';
 
 precacheAndRoute([
     { url: '/', revision: '0' },
@@ -19,3 +20,13 @@ precacheAndRoute([
     { url: '/fonts/fa-solid-900.woff', revision: '0' },
     { url: '/sounds/sharp.ogg', revision: '0' },
 ]);
+
+const handler = createHandlerBoundToURL('/');
+
+const navigationRoute = new NavigationRoute(handler, {
+    allowlist: [
+        new RegExp('/ui/'),
+      ],
+});
+
+registerRoute(navigationRoute);

@@ -1,6 +1,6 @@
 - 0.2.5-beta
     - Added Line Chart dataset visualizer
-    - Added service worker precache busting
+    - Added service worker precache busting and navigation routing
 
 - 0.2.4-beta
     - Added GraphQL API
