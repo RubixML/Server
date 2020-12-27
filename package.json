@@ -1,6 +1,5 @@
 {
     "name": "rubix-server",
-    "version": "0.2.4-beta",
     "description": "The Rubix ML Server web user interface (UI).",
     "author": "Andrew DalPino",
     "license": "MIT",

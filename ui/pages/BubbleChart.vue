@@ -161,7 +161,7 @@ export default {
                     offset,
                 };
             }).filter((header, offset) => {
-                return Number( this.dataset.data[0][offset]) == this.dataset.data[0][offset];
+                return Number(this.dataset.data[0][offset]) == this.dataset.data[0][offset];
             });
         },
     },

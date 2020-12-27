@@ -24,8 +24,7 @@ class CircuitBreaker
     }
 
     /**
-     * Return service unavailable if the server does not have enough memory to fulfill the largest
-     * possible request.
+     * Return service unavailable if the server does not have enough memory to fulfill the largest possible request.
      *
      * @internal
      *
