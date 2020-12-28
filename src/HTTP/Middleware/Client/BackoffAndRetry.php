@@ -13,7 +13,7 @@ use function usleep;
 
 /**
  * Backoff and Retry
- * 
+ *
  * The Backoff and Retry middleware handles Too Many Requests (429) and Service Unavailable (503)
  * responses by retrying the request after waiting for a period of time to avoid overloading the
  * server even further. An acceptable backoff period is gradually achieved by multiplicatively
