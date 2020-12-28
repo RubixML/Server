@@ -3,6 +3,7 @@
 namespace Rubix\Server\HTTP\Middleware\Client;
 
 use Psr\Http\Message\RequestInterface;
+use GuzzleHttp\Promise\PromiseInterface;
 
 use function base64_encode;
 
@@ -38,8 +39,8 @@ class BasicAuthenticator implements Middleware
      */
     public function __invoke() : callable
     {
-        return function (callable $handler) {
-            return function (RequestInterface $request, array $options) use ($handler) {
+        return function (callable $handler) : callable {
+            return function (RequestInterface $request, array $options) use ($handler) : PromiseInterface {
                 $request = $request->withHeader('Authorization', $this->credentials);
 
                 return $handler($request, $options);

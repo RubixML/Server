@@ -1,4 +1,6 @@
 - 0.2.5-beta
+    - Added Backoff and Retry client middleware
+    - Added server memory Circuit Breaker internal middleware
     - Added Line Chart dataset visualizer
     - Added service worker precache busting and navigation routing
 

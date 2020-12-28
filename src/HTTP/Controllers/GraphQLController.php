@@ -16,7 +16,7 @@ use Exception;
 class GraphQLController extends JSONController
 {
     /**
-     * The graph schema.
+     * The GraphQL schema.
      *
      * @var \Rubix\Server\GraphQL\Schema
      */

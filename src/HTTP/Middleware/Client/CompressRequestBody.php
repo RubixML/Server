@@ -5,6 +5,7 @@ namespace Rubix\Server\HTTP\Middleware\Client;
 use Rubix\Server\HTTP\Encoders\Gzip;
 use Rubix\Server\HTTP\Encoders\Encoder;
 use Psr\Http\Message\RequestInterface;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Utils;
 
 /**
@@ -16,6 +17,11 @@ use GuzzleHttp\Psr7\Utils;
  */
 class CompressRequestBody implements Middleware
 {
+    /**
+     * The maximum transfer unit in bytes.
+     *
+     * @var int
+     */
     protected const MAX_MTU = 65535;
 
     /**
@@ -40,8 +46,8 @@ class CompressRequestBody implements Middleware
      */
     public function __invoke() : callable
     {
-        return function (callable $handler) {
-            return function (RequestInterface $request, array $options) use ($handler) {
+        return function (callable $handler) : callable {
+            return function (RequestInterface $request, array $options) use ($handler) : PromiseInterface {
                 if ($request->getBody()->getSize() > self::MAX_MTU) {
                     $data = $this->encoder->encode($request->getBody());
 

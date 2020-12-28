@@ -4,11 +4,13 @@ include __DIR__ . '../../../vendor/autoload.php';
 
 use Rubix\Server\RESTClient;
 use Rubix\Server\HTTP\Middleware\Client\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\Client\BackoffAndRetry;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 
 $client = new RESTClient('127.0.0.1', 8000, false, [
     new BasicAuthenticator('user', 'secret'),
+    new BackoffAndRetry(),
 ]);
 
 $generator = new Agglomerate([

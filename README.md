@@ -30,6 +30,7 @@ $ composer require rubix/server
 - [Clients](#clients)
 	- [REST Client](#rest-client)
 - [Client Middleware](#client-middleware)
+	- [Backoff and Retry](#backoff-and-retry)
 	- [Basic Authenticator](#basic-authenticator-client-side)
 	- [Compress Request Body](#compress-request-body)
 	- [Shared Token Authenticator](#shared-token-authenticator-client-side)
@@ -311,7 +312,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)? |
 | 4 | middlewares | | array | The stack of client middleware to run on each request/response.  |
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
-| 6 | verify SSL certificate | true | bool | Should we verify the server's SSL certificate? |
+| 6 | verify SSL certificate | true | bool | Should we try to verify the server's SSL certificate? |
 
 **Example**
 
@@ -319,16 +320,35 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 use Rubix\Server\RESTClient;
 use Rubix\Server\HTTP\Middleware\Client\BasicAuthenticator;
 use Rubix\Server\HTTP\Middleware\Client\CompressRequestBody;
+use Rubix\Server\HTTP\Middleware\Client\BackoffAndRetry;
 use Rubix\Server\HTTP\Encoders\Gzip;
 
 $client = new RESTClient('127.0.0.1', 443, true, [
 	new BasicAuthenticator('user', 'password'),
 	new CompressRequestBody(new Gzip(1)),
+	new BackoffAndRetry(),
 ], 0.0, true);
 ```
 
 ### Client Middleware
 Similarly to Server middleware, client middlewares are functions that hook into the request/response cycle but from the client end. Some of the server middlewares have accompanying client middleware such as [Basic Authenticator](#basic-authenticator) and [Shared Token Authenticator](#shared-token-authenticator).
+
+### Backoff and Retry
+The Backoff and Retry middleware handles Too Many Requests (429) and Service Unavailable (503) responses by retrying the request after waiting for a period of time to avoid overloading the server even further. An acceptable backoff period is gradually achieved by multiplicatively increasing the delay between retries.
+
+#### Parameters
+| # | Param | Default | Type | Description |
+|---|---|---|---|---|
+| 1 | max retries | 3 | int | The maximum number of times to retry the request before giving up. |
+| 2 | initial delay | 0.5 | float | The number of seconds to delay between retries before exponential backoff is applied. |
+
+**Example**
+
+```php
+use Rubix\Server\HTTP\Middleware\Client\BackoffAndRetry;
+
+$middleware = new BackoffAndRetry(5, 0.5);
+```
 
 ### Basic Authenticator (Client Side)
 Adds the necessary authorization headers to the request using the Basic scheme.
