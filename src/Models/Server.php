@@ -92,7 +92,7 @@ class Server
      *
      * @return int
      */
-    public function memoryRemaining() : int
+    public function memoryAvailable() : int
     {
         $memoryLimit = $this->settings->memoryLimit();
 

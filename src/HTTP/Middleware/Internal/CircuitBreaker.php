@@ -34,7 +34,7 @@ class CircuitBreaker
      */
     public function __invoke(ServerRequestInterface $request, callable $next)
     {
-        if ($this->server->memoryRemaining() < $this->server->settings()->postMaxSize()) {
+        if ($this->server->memoryAvailable() < $this->server->settings()->postMaxSize()) {
             return new ServiceUnavailable();
         }
 

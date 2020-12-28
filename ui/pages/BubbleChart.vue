@@ -2,7 +2,7 @@
     <div>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-table"></i></span>Data Columns</h2>
+                <h2 class="title is-size-5 mt-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Settings</h2>
                 <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">
@@ -53,7 +53,6 @@
                         </div>
                     </div>
                 </div>
-                <h2 class="title is-size-5 mt-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Settings</h2>
                 <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">

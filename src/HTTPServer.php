@@ -298,8 +298,6 @@ class HTTPServer implements Server, Verbose
             new StaticAssetsController(),
         ]));
 
-        $postMaxSize = $server->settings()->postMaxSize();
-
         $stack = [
             new StreamingRequestMiddleware(),
             new DispatchEvents($eventBus),
@@ -309,10 +307,10 @@ class HTTPServer implements Server, Verbose
 
         $stack = array_merge($stack, $this->middlewares);
 
-        $stack[] = new CheckRequestBodySize($postMaxSize);
+        $stack[] = new CheckRequestBodySize($server->settings());
         $stack[] = new CircuitBreaker($server);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
-        $stack[] = new RequestBodyBufferMiddleware($postMaxSize);
+        $stack[] = new RequestBodyBufferMiddleware($server->settings()->postMaxSize());
         $stack[] = [$router, 'dispatch'];
 
         $http = new HTTP($loop, ...$stack);
@@ -334,6 +332,8 @@ class HTTPServer implements Server, Verbose
 
     /**
      * Shut down the server.
+     *
+     * @internal
      *
      * @param int $signal
      */

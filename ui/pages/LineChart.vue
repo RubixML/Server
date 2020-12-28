@@ -2,10 +2,11 @@
     <div>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-table"></i></span>Data Columns</h2>
+                <h2 class="title is-size-5 mt-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Settings</h2>
                 <div v-for="(line, offset) in settings.lines" :key ="offset" class="columns">
                     <div class="column is-one-quarter">
                         <div class="field">
+                            <label class="label">Data Column</label>
                             <div class="control">
                                 <div class="select is-fullwidth">
                                     <select v-model="line.dataColumn" @change="updateDataset()">
@@ -21,6 +22,7 @@
                     </div>
                     <div class="column is-one-quarter">
                         <div class="field">
+                            <label class="label">Thickness</label>
                             <div class="control">
                                 <input v-model="line.thickness" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="5" type="range" @change="updateDataset()" />
                                 <output>{{ line.thickness }}</output>
@@ -29,6 +31,7 @@
                     </div>
                     <div class="column is-one-quarter">
                         <div class="field">
+                            <label class="label">Tension</label>
                             <div class="control">
                                 <input v-model="line.tension" class="slider is-circle has-output is-fullwidth" step="0.1" min="0" max="1" type="range" @change="updateDataset()" />
                                 <output>{{ line.tension }}</output>
@@ -37,6 +40,7 @@
                     </div>
                     <div class="column is-one-quarter">
                         <div class="field">
+                            <label class="label">Color</label>
                             <div class="control">
                                 <div class="dropdown is-hoverable">
                                     <div class="dropdown-trigger">
@@ -71,7 +75,7 @@
                     </div>
                 </div>
                 <div class="has-text-centered">
-                    <button class="button" @click="addLine()" :disabled="settings.lines.length >= 10">
+                    <button class="button" @click="addLine()" :disabled="settings.lines.length >= settings.maxLines">
                         <span class="icon"><i class="fas fa-plus"></i></span><span>Add Line</span>
                     </button>
                     <button class="button" @click="removeLine()" :disabled="settings.lines.length <= 1">
@@ -100,6 +104,7 @@ export default {
                 lines: [
                     //
                 ],
+                maxLines: 10,
             },
             chart: null,
         };

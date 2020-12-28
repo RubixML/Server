@@ -2,24 +2,25 @@
 
 namespace Rubix\Server\HTTP\Middleware\Internal;
 
+use Rubix\Server\Models\ServerSettings;
 use Rubix\Server\HTTP\Responses\PayloadTooLarge;
 use Psr\Http\Message\ServerRequestInterface;
 
 class CheckRequestBodySize
 {
     /**
-     * The maximum request body size.
+     * The server settings model.
      *
-     * @var int
+     * @var \Rubix\Server\Models\ServerSettings
      */
-    protected $maxBodySize;
+    protected $settings;
 
     /**
-     * @param int $maxBodySize
+     * @param \Rubix\Server\Models\ServerSettings $settings
      */
-    public function __construct(int $maxBodySize)
+    public function __construct(ServerSettings $settings)
     {
-        $this->maxBodySize = $maxBodySize;
+        $this->settings = $settings;
     }
 
     /**
@@ -36,7 +37,7 @@ class CheckRequestBodySize
         if ($request->hasHeader('Content-Length')) {
             $size = (int) $request->getHeaderLine('Content-Length');
 
-            if ($size > $this->maxBodySize) {
+            if ($size > $this->settings->postMaxSize()) {
                 return new PayloadTooLarge();
             }
         }
