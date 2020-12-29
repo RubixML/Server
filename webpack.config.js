@@ -9,8 +9,8 @@ const path = require('path');
 module.exports = {
     mode: process.env.NODE_ENV,
     entry: {
-        app: './ui/app.js',
-        sw: './ui/sw.js',
+        app: './ui/app.ts',
+        sw: './ui/sw.ts',
     },
     output: {
         path: path.resolve(__dirname, 'assets'),
@@ -20,7 +20,7 @@ module.exports = {
     module: {
         rules: [
             { 
-                test: /\.js$/,
+                test: /\.(js|ts)$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
             },

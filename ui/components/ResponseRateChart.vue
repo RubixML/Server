@@ -4,7 +4,8 @@
     </figure>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import Chart from 'chart.js';
 import gql from 'graphql-tag';
 
@@ -23,7 +24,7 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     data() {
         return {
             chart: null,
@@ -129,7 +130,7 @@ export default {
         setInterval(this.update, ONE_SECOND);
     },
     methods: { 
-        update() {
+        update() : void {
             let datasets = this.chart.data.datasets;
 
             if (!this.last) {
@@ -159,5 +160,5 @@ export default {
             this.chart.update(0);
         }
     },
-}
+});
 </script>

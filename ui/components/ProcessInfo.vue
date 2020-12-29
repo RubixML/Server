@@ -41,7 +41,8 @@
     </table>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import moment from 'moment';
 import gql from 'graphql-tag';
 
@@ -61,7 +62,7 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     data() {
         return {
             uptime: '',
@@ -74,12 +75,12 @@ export default {
         },
     },
     computed: {
-        upSince() {
+        upSince() : string {
             return moment.unix(this.info.start).format('MMM. Do, YYYY [@] h:mmA');
         },
     },
     methods: {
-        updateUptime() {
+        updateUptime() : void {
             this.uptime = moment.unix(this.info.start).fromNow(true);
         }
     },
@@ -88,5 +89,5 @@ export default {
 
         setInterval(this.updateUptime, THIRTY_SECONDS);
     },
-}
+});
 </script>

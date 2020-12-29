@@ -51,8 +51,10 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue';
+
+export default Vue.extend({
     data() {
         return {
             cursor: {
@@ -70,25 +72,25 @@ export default {
         },
     },
     computed: {
-        preview() {
+        preview() : any[][] {
             return this.dataset.data.slice(this.cursor.offset, this.cursor.offset + this.cursor.limit);
         },
     },
     methods: {
-        more() {
+        more() : void {
             this.cursor.limit = Math.min(this.cursor.maxLimit, this.cursor.limit + this.cursor.increment);
         },
-        less() {
+        less() : void {
             this.cursor.limit = Math.max(0, this.cursor.limit - this.cursor.increment);
         },
-        next() {
+        next() : void {
             this.cursor.offset = Math.min(this.dataset.data.length, this.cursor.offset + this.cursor.limit);
         },
-        previous() {
+        previous() : void {
             this.cursor.offset = Math.max(0, this.cursor.offset - this.cursor.limit);
         },
     },
-}
+});
 </script>
 
 <style lang="scss" scoped>

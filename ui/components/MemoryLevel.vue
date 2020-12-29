@@ -19,7 +19,8 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
@@ -33,7 +34,7 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     props: {
         memory: {
             type: Object,
@@ -41,12 +42,12 @@ export default {
         },
     },
     computed: {
-        current() {
+        current() : number {
             return this.memory.current / MEGABYTE;
         },
-        peak() {
+        peak() : number {
             return this.memory.peak / MEGABYTE;
         },
     },
-}
+});
 </script>

@@ -38,12 +38,13 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import bus from '../bus';
 
 const VIBRATE_PATTERN = [100, 30, 100];
 
-export default {
+export default Vue.extend({
     data() {
         return {
             open: false,
@@ -62,5 +63,5 @@ export default {
             }
         });
     }
-}
+});
 </script>
