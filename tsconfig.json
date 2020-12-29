@@ -4,5 +4,12 @@
         "target": "es5",
         "moduleResolution": "node",
         "noImplicitThis": true
-    }
+    },
+    "include": [
+        "./ui/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "assets"
+    ],
 }

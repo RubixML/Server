@@ -121,10 +121,12 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
+import Chart from 'chart.js';
 import bus from '../bus';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             settings: {
@@ -151,10 +153,10 @@ export default {
         },
     },
     computed: {
-        rgbColorString() {
+        rgbColorString() : string {
             return 'rgb(' + Object.values(this.settings.color).join(', ') + ')';
         },
-        continuousHeaders() {
+        continuousHeaders() : any[] {
             return this.dataset.header.map((title, offset) => {
                 return {
                     title,
@@ -277,5 +279,5 @@ export default {
             this.chart.update();
         },
     },
-}
+});
 </script>

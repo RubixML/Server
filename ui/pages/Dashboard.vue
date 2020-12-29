@@ -47,7 +47,8 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import { fragment as RequestsLevelFragment } from '../components/RequestsLevel.vue';
 import { fragment as ResponseRateChartFragment } from '../components/ResponseRateChart.vue';
 import { fragment as TransfersLevelFragment } from '../components/TransfersLevel.vue';
@@ -61,7 +62,7 @@ import { fragment as ServerSettingsFragment } from '../components/ServerSettings
 import gql from 'graphql-tag';
 import bus from '../bus';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             server: {
@@ -149,5 +150,5 @@ export default {
             this.stream.close();
         }
     },
-}
+});
 </script>

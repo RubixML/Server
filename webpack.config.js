@@ -12,6 +12,11 @@ module.exports = {
         app: './ui/app.ts',
         sw: './ui/sw.ts',
     },
+    resolve: {
+        extensions: [
+            '.ts', '.js',
+        ],
+    },
     output: {
         path: path.resolve(__dirname, 'assets'),
         publicPath: '/',
@@ -93,10 +98,5 @@ module.exports = {
     },
     performance: {
         hints: false,
-    },
-    resolve: {
-        alias: {
-            vue: 'vue/dist/vue.esm.js',
-        },
     },
 };
