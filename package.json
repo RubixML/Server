@@ -15,6 +15,7 @@
         "@babel/core": "^7.12.10",
         "@babel/plugin-transform-typescript": "^7.12.1",
         "@babel/preset-env": "^7.12.11",
+        "@babel/preset-typescript": "^7.12.7",
         "@creativebulma/bulma-tooltip": "^1.2.0",
         "@fortawesome/fontawesome-free": "^5.14.0",
         "@types/chart.js": "^2.9.29",

@@ -68,10 +68,10 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin(),
-        new MiniCssExtractPlugin('app.css'),
         new MomentLocalesPlugin({
             localesToKeep: ['en'],
         }),
+        new MiniCssExtractPlugin('app.css'),
         new CompressionPlugin({
             include: [
                 'app.js', 'sw.js', 'app.css',
