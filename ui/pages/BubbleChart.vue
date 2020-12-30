@@ -121,30 +121,7 @@
         <section class="section">
             <div class="container">
                 <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
-                <div class="tabs is-medium is-boxed">
-                    <ul>
-                        <li :class="{ 'is-active' : settings.exportFormat === 'image/png' }">
-                            <a @click="settings.exportFormat = 'image/png'">PNG</a>
-                        </li>
-                        <li :class="{ 'is-active' : settings.exportFormat === 'image/webp' }">
-                            <a @click="settings.exportFormat = 'image/webp'">WEBP</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="field is-grouped">
-                    <div class="control has-icons-left has-icons-right is-expanded">
-                        <input class="input is-medium" type="text" v-model="settings.filename" placeholder="Filename" />
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-file-image"></i>
-                        </span>
-                        <span class="icon is-small is-right">
-                            <i class="fas fa-check"></i>
-                        </span>
-                    </div>
-                    <div class="control">
-                        <a :href="imageData" :download="settings.filename" class="button is-medium is-info px-5" :class="{ 'is-loading' : rendering }" @click="saveChart()">Save Chart</a>
-                    </div>
-                </div>
+                <export-chart v-if="canvas" :canvas="canvas"></export-chart>
             </div>
         </section>
     </div>
@@ -171,13 +148,9 @@ export default Vue.extend({
                     g: 59,
                     b: 222,
                 },
-                exportFormat: 'image/png',
-                filename: '',
             },
             canvas: null,
             chart: null,
-            imageData: null,
-            rendering: false,
         };
     },
     props: {
@@ -323,13 +296,6 @@ export default Vue.extend({
             this.chart.data.datasets[0].borderColor = this.rgbColorString;
 
             this.chart.update();
-        },
-        saveChart(event) : void {
-            this.rendering = true;
-
-            this.imageData = this.canvas.toDataURL(this.settings.exportFormat);
-
-            this.rendering = false;
         },
     },
 });

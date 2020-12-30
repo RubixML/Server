@@ -92,6 +92,12 @@
                 </figure>
             </div>
         </section>
+        <section class="section">
+            <div class="container">
+                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
+                <export-chart v-if="canvas" :canvas="canvas"></export-chart>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -109,6 +115,7 @@ export default Vue.extend({
                 ],
                 maxLines: 10,
             },
+            canvas: null,
             chart: null,
         };
     },
@@ -140,6 +147,8 @@ export default Vue.extend({
         }
 
         const context = element.getContext('2d');
+
+        this.canvas = element;
 
         this.chart = new Chart(context, {
             type: 'line',
