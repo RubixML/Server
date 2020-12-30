@@ -16,6 +16,9 @@ module.exports = {
         extensions: [
             '.ts', '.js',
         ],
+        alias: {
+            vue: 'vue/dist/vue.esm.js',
+        },
     },
     output: {
         path: path.resolve(__dirname, 'assets'),
@@ -28,6 +31,16 @@ module.exports = {
                 test: /\.(js|ts)$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
+                options: {
+                    presets: [
+                        '@babel/env',
+                        '@babel/preset-typescript',
+                        'babel-preset-typescript-vue',
+                    ],
+                    plugins: [
+                        '@babel/plugin-transform-typescript',
+                    ],
+                },
             },
             {
                 test: /\.vue$/,

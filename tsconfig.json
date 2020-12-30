@@ -3,7 +3,8 @@
         "module": "es2015",
         "target": "es5",
         "moduleResolution": "node",
-        "noImplicitThis": true
+        "noImplicitThis": true,
+        "downlevelIteration": true
     },
     "include": [
         "./ui/**/*.ts"

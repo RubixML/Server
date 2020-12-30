@@ -1,8 +1,0 @@
-{
-    "presets": [
-        "@babel/env", "@babel/preset-typescript", "babel-preset-typescript-vue"
-    ],
-    "plugins": [
-        "@babel/plugin-transform-typescript"
-    ]
-}

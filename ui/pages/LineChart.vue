@@ -131,7 +131,15 @@ export default Vue.extend({
         },
     },
     mounted() {
-        let context = document.getElementById('dataset-line-chart').getContext('2d');
+        const element = document.getElementById('dataset-line-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -193,7 +201,7 @@ export default Vue.extend({
         this.addLine();
     },
     methods: {
-        addLine() {
+        addLine() : void {
             this.settings.lines.push({
                 dataColumn: null,
                 thickness: 2,
@@ -206,12 +214,12 @@ export default Vue.extend({
                 colorPickerOpen: false,
             });
         },
-        removeLine() {
+        removeLine() : void {
             this.settings.lines.pop();
 
             this.updateDataset();
         },
-        updateDataset() {
+        updateDataset() : void {
             this.chart.data.datasets = [];
 
             this.settings.lines.forEach((line) => {

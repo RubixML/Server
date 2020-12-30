@@ -168,7 +168,15 @@ export default Vue.extend({
         },
     },
     mounted() {
-        let context = document.getElementById('dataset-bubble-chart').getContext('2d');
+        const element = document.getElementById('dataset-bubble-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'bubble',
@@ -231,7 +239,7 @@ export default Vue.extend({
         });
     },
     methods: {
-        updateDataset() {
+        updateDataset() : void {
             if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
                 this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.xAxis];
                 this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.yAxis];
@@ -268,12 +276,12 @@ export default Vue.extend({
 
             this.chart.update();
         },
-        updateStroke() {
+        updateStroke() : void {
             this.chart.data.datasets[0].borderWidth = this.settings.stroke;
 
             this.chart.update();
         },
-        updateColor() {
+        updateColor() : void {
             this.chart.data.datasets[0].borderColor = this.rgbColorString;
 
             this.chart.update();

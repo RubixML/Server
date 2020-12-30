@@ -51,7 +51,11 @@ export default Vue.extend({
                 this.message = payload.error.message;
                 this.open = true;
 
-                document.getElementById('sharp').play();
+                const element = document.getElementById('sharp');
+
+                if (element instanceof HTMLAudioElement) {
+                    element.play();
+                }
 
                 window.navigator.vibrate(VIBRATE_PATTERN);
             }

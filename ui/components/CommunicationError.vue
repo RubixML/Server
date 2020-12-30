@@ -21,13 +21,13 @@
                 </div>
                 <footer class="card-footer">
                     <div class="card-footer-item">
-                        <button class="button is-white" @click="open = false">
+                        <button class="button" @click="open = false">
                             <span class="icon"><i class="fas fa-times"></i></span>
                             <span>Dismiss</span>
                         </button>
                     </div>
                     <div class="card-footer-item">
-                        <button class="button is-white" @click="$router.go()">
+                        <button class="button" @click="$router.go()">
                             <span class="icon"><i class="fas fa-redo"></i></span>
                             <span>Retry</span>
                         </button>
@@ -57,7 +57,11 @@ export default Vue.extend({
                 this.message = payload.error.message;
                 this.open = true;
 
-                document.getElementById('sharp').play();
+                const element = document.getElementById('sharp');
+
+                if (element instanceof HTMLAudioElement) {
+                    element.play();
+                }
 
                 window.navigator.vibrate(VIBRATE_PATTERN);
             }

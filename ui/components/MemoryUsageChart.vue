@@ -34,7 +34,15 @@ export default Vue.extend({
         },
     },
     mounted() {
-        let context = document.getElementById('memory-usage-chart').getContext('2d');
+        const element = document.getElementById('memory-usage-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'bar',
