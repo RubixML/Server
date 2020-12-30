@@ -4,7 +4,8 @@
     </figure>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import Chart from 'chart.js';
 import gql from 'graphql-tag';
 
@@ -23,7 +24,7 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     data() {
         return {
             chart: null,
@@ -37,7 +38,15 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('response-rate-chart').getContext('2d');
+        const element = document.getElementById('response-rate-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -129,7 +138,7 @@ export default {
         setInterval(this.update, ONE_SECOND);
     },
     methods: { 
-        update() {
+        update() : void {
             let datasets = this.chart.data.datasets;
 
             if (!this.last) {
@@ -159,5 +168,5 @@ export default {
             this.chart.update(0);
         }
     },
-}
+});
 </script>

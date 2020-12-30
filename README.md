@@ -423,4 +423,4 @@ Since model servers are inference-only (i.e. they only support queries), they sc
 Yes, the HTTP Server supports both Gzip and Deflate compression schemes applied to the request bodies and to the response bodies of requests for static assets.
 
 ## License
-The code is licensed [MIT](LICENSE.md) and the documentation is licensed [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+The code is licensed [MIT](LICENSE) and the documentation is licensed [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).

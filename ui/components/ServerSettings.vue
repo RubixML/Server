@@ -41,7 +41,8 @@
     </table>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
@@ -59,7 +60,7 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     props: {
         settings: {
             type: Object,
@@ -67,16 +68,16 @@ export default {
         },
     },
     computed: {
-        memoryLimit() {
+        memoryLimit() : string {
             return this.settings.memoryLimit !== -1
                 ? (this.settings.memoryLimit / MEGABYTE).toFixed(1) + 'M'
                 : 'Unlimited';
         },
-        postMaxSize() {
+        postMaxSize() : string {
             return this.settings.postMaxSize > 0
                 ? (this.settings.postMaxSize / MEGABYTE).toFixed(1) + 'M'
                 : 'Unlimited';
         }
     },
-}
+});
 </script>

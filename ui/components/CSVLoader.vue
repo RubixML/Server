@@ -37,11 +37,12 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import Papa from 'papaparse';
 import bus from '../bus';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             file: null,
@@ -51,12 +52,12 @@ export default {
         };
     },
     computed: {
-        disabled() {
+        disabled() : boolean {
             return this.loaded || !this.file;
         },
     },
     methods: {
-        loadDataset() {
+        loadDataset() : void {
             this.loading = true;
 
             Papa.parse(this.file, {
@@ -85,13 +86,13 @@ export default {
                 },
             });
         },
-        changeFile(file) {
+        changeFile(file) : void {
             this.file = file;
 
             this.loaded = false;
         },
     },
-}
+});
 </script>
 
 <style lang="scss" scoped>

@@ -121,10 +121,12 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
+import Chart from 'chart.js';
 import bus from '../bus';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             settings: {
@@ -151,10 +153,10 @@ export default {
         },
     },
     computed: {
-        rgbColorString() {
+        rgbColorString() : string {
             return 'rgb(' + Object.values(this.settings.color).join(', ') + ')';
         },
-        continuousHeaders() {
+        continuousHeaders() : any[] {
             return this.dataset.header.map((title, offset) => {
                 return {
                     title,
@@ -166,7 +168,15 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('dataset-bubble-chart').getContext('2d');
+        const element = document.getElementById('dataset-bubble-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'bubble',
@@ -229,10 +239,12 @@ export default {
         });
     },
     methods: {
-        updateDataset() {
+        updateDataset() : void {
             if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
                 this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.xAxis];
                 this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.yAxis];
+
+                var weights;
 
                 if (this.settings.dataColumns.scale !== null) {
                     const values = this.dataset.data.map((row) => {
@@ -244,11 +256,11 @@ export default {
 
                     const delta = max - min;
 
-                    var weights = values.map((value) => {
+                    weights = values.map((value) => {
                         return (value - min) / delta;
                     });
                 } else {
-                    var weights = Array(this.dataset.data.length).fill(1.0);
+                    weights = Array(this.dataset.data.length).fill(1.0);
                 }
 
                 const data = this.dataset.data.map((row, offset) => {
@@ -266,16 +278,16 @@ export default {
 
             this.chart.update();
         },
-        updateStroke() {
+        updateStroke() : void {
             this.chart.data.datasets[0].borderWidth = this.settings.stroke;
 
             this.chart.update();
         },
-        updateColor() {
+        updateColor() : void {
             this.chart.data.datasets[0].borderColor = this.rgbColorString;
 
             this.chart.update();
         },
     },
-}
+});
 </script>

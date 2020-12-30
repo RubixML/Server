@@ -9,8 +9,16 @@ const path = require('path');
 module.exports = {
     mode: process.env.NODE_ENV,
     entry: {
-        app: './ui/app.js',
-        sw: './ui/sw.js',
+        app: './ui/app.ts',
+        sw: './ui/sw.ts',
+    },
+    resolve: {
+        extensions: [
+            '.ts', '.js',
+        ],
+        alias: {
+            vue: 'vue/dist/vue.esm.js',
+        },
     },
     output: {
         path: path.resolve(__dirname, 'assets'),
@@ -20,9 +28,19 @@ module.exports = {
     module: {
         rules: [
             { 
-                test: /\.js$/,
+                test: /\.(js|ts)$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
+                options: {
+                    presets: [
+                        '@babel/env',
+                        '@babel/preset-typescript',
+                        'babel-preset-typescript-vue',
+                    ],
+                    plugins: [
+                        '@babel/plugin-transform-typescript',
+                    ],
+                },
             },
             {
                 test: /\.vue$/,
@@ -68,10 +86,10 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin(),
-        new MiniCssExtractPlugin('app.css'),
         new MomentLocalesPlugin({
             localesToKeep: ['en'],
         }),
+        new MiniCssExtractPlugin('app.css'),
         new CompressionPlugin({
             include: [
                 'app.js', 'sw.js', 'app.css',
@@ -93,10 +111,5 @@ module.exports = {
     },
     performance: {
         hints: false,
-    },
-    resolve: {
-        alias: {
-            vue: 'vue/dist/vue.esm.js',
-        },
     },
 };

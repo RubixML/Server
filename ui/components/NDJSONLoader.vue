@@ -24,12 +24,13 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import bus from '../bus';
 
 const EOL = '\n';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             file: null,
@@ -38,12 +39,12 @@ export default {
         };
     },
     computed: {
-        disabled() {
+        disabled() : boolean {
             return this.loaded || !this.file;
         },
     },
     methods: {
-        loadDataset() {
+        loadDataset() : void {
             this.loading = true;
 
             let reader = new FileReader();
@@ -77,13 +78,13 @@ export default {
 
             this.loaded = true;
         },
-        changeFile(file) {
+        changeFile(file) : void {
             this.file = file;
 
             this.loaded = false;
         },
     },
-}
+});
 </script>
 
 <style lang="scss" scoped>

@@ -4,7 +4,8 @@
     </figure>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import Chart from 'chart.js';
 import gql from 'graphql-tag';
 
@@ -20,7 +21,7 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     data() {
         return {
             chart: null,
@@ -33,7 +34,15 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('memory-usage-chart').getContext('2d');
+        const element = document.getElementById('memory-usage-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'bar',
@@ -73,7 +82,6 @@ export default {
                             },
                             ticks: {
                                 beginAtZero: true,
-                                precision: 0,
                             },
                         },
                     ],
@@ -86,12 +94,12 @@ export default {
         setInterval(this.update, THREE_SECONDS);
     },
     methods: { 
-        update() {
+        update() : void {
             this.chart.data.datasets[0].data[0] = this.memory.current / MEGABYTE;
             this.chart.data.datasets[1].data[0] = this.memory.peak / MEGABYTE;
 
             this.chart.update();
         },
     },
-}
+});
 </script>

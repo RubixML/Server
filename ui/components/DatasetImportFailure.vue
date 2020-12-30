@@ -32,12 +32,13 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import bus from '../bus';
 
 const VIBRATE_PATTERN = [100, 30, 100];
 
-export default {
+export default Vue.extend({
     data() {
         return {
             open: false,
@@ -50,11 +51,15 @@ export default {
                 this.message = payload.error.message;
                 this.open = true;
 
-                document.getElementById('sharp').play();
+                const element = document.getElementById('sharp');
+
+                if (element instanceof HTMLAudioElement) {
+                    element.play();
+                }
 
                 window.navigator.vibrate(VIBRATE_PATTERN);
             }
         });
     }
-}
+});
 </script>

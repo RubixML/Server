@@ -22,10 +22,11 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import bus from '../bus';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             loader: 'csv',
@@ -54,5 +55,5 @@ export default {
             });
         });
     },
-}
+});
 </script>

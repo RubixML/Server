@@ -95,10 +95,12 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
+import Chart from 'chart.js';
 import bus from '../bus';
 
-export default {
+export default Vue.extend({
     data() {
         return {
             settings: {
@@ -117,7 +119,7 @@ export default {
         },
     },
     computed: {
-        continuousHeaders() {
+        continuousHeaders() : any[] {
             return this.dataset.header.map((title, offset) => {
                 return {
                     title,
@@ -129,7 +131,15 @@ export default {
         },
     },
     mounted() {
-        let context = document.getElementById('dataset-line-chart').getContext('2d');
+        const element = document.getElementById('dataset-line-chart');
+
+        if (!(element instanceof HTMLCanvasElement)) {
+            console.log('Canvas not found!');
+
+            return;
+        }
+
+        const context = element.getContext('2d');
 
         this.chart = new Chart(context, {
             type: 'line',
@@ -191,7 +201,7 @@ export default {
         this.addLine();
     },
     methods: {
-        addLine() {
+        addLine() : void {
             this.settings.lines.push({
                 dataColumn: null,
                 thickness: 2,
@@ -204,12 +214,12 @@ export default {
                 colorPickerOpen: false,
             });
         },
-        removeLine() {
+        removeLine() : void {
             this.settings.lines.pop();
 
             this.updateDataset();
         },
-        updateDataset() {
+        updateDataset() : void {
             this.chart.data.datasets = [];
 
             this.settings.lines.forEach((line) => {
@@ -234,5 +244,5 @@ export default {
             this.chart.update();
         },
     },
-}
+});
 </script>

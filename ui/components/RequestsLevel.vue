@@ -27,7 +27,8 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue';
 import gql from 'graphql-tag';
 
 export const fragment = gql`
@@ -42,12 +43,12 @@ export const fragment = gql`
     }
 `;
 
-export default {
+export default Vue.extend({
     props: {
         requests: {
             type: Object,
             required: true,
         },
     },
-}
+});
 </script>
