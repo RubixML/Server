@@ -16,7 +16,7 @@
                 <div class="navbar-item">
                     <div class="navbar-item has-dropdown is-hoverable">
                         <div class="navbar-link">
-                            <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                            <span class="icon"><i class="fas fa-chart-area"></i></span>
                             <span>Visualizer</span>
                         </div>
                         <div class="navbar-dropdown is-shadowless">

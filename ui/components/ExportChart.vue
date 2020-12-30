@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <ValidationObserver v-slot="{ invalid }">
         <div class="tabs is-medium is-boxed">
             <ul>
                 <li :class="{ 'is-active' : format === 'image/png' }">
@@ -10,27 +10,36 @@
                 </li>
             </ul>
         </div>
-        <div class="field is-grouped">
-            <div class="control has-icons-left is-expanded">
-                <input class="input is-medium" type="text" v-model="filename" placeholder="Filename" />
-                <span class="icon is-left"><i class="fas fa-file-image"></i></span>
+        <ValidationProvider name="filename" rules="required|alpha_dash|max:255" v-slot="{ errors }">
+            <div class="field is-grouped">
+                <div class="control has-icons-left is-expanded">
+                    <input class="input is-medium" type="text" maxlength="255" v-model="filename" placeholder="Filename" />
+                    <span class="icon is-left"><i class="fas fa-file"></i></span>
+                </div>
+                <div class="control">
+                    <a class="button is-medium is-info px-5"
+                        :class="{ 'is-loading' : rendering }"
+                        :href="imageData"
+                        :download="filename"
+                        :disabled="rendering || invalid"
+                        @click="saveChart()"
+                    >Save Chart</a>
+                </div>
             </div>
-            <div class="control">
-                <a :href="imageData" :download="filename" class="button is-medium is-info px-5" :class="{ 'is-loading' : rendering }" :disabled="rendering" @click="saveChart()">Save Chart</a>
-            </div>
-        </div>
+            <p class="help has-text-first-letter-capitalized">{{ errors[0] }}</p>
+        </ValidationProvider>
         <div class="columns">
             <div v-show="isLossy" class="column is-one-third">
                 <div class="field mt-5">
                     <label class="label">Quality</label>
                     <div class="control">
-                        <input v-model="qualityPercentage" class="slider is-circle has-output" step="1" min="0" max="100" type="range" />
+                        <input name="quality" type="range" v-model="qualityPercentage" class="slider is-circle has-output" step="1" min="0" max="100" />
                         <output>{{ qualityPercentage }}</output>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </ValidationObserver>
 </template>
 
 <script lang="ts">

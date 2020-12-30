@@ -1,24 +1,31 @@
 <template>
-    <div>
-        <div class="field is-grouped">
-            <div class="control is-expanded">
-                <div class="file has-name is-medium is-fullwidth">
-                    <label class="file-label">
-                        <input class="file-input" type="file" name="dataset" accept=".csv" @change="changeFile($event.target.files[0])" />
-                        <span class="file-cta">
-                            <span class="file-icon"><i class="fas fa-file-csv"></i></span>
-                            <span class="file-label">Choose a file</span>
-                        </span>
-                        <span class="file-name" :class="{ 'is-placeholder' : !file }">
-                            {{ file ? file.name : 'example.csv' }}
-                        </span>
-                    </label>
+    <ValidationObserver v-slot="{ invalid }">
+        <ValidationProvider name="dataset" ref="provider" rules="ext:csv" v-slot="{ errors }">
+            <div class="field is-grouped">
+                <div class="control is-expanded">
+                    <div class="file has-name is-medium is-fullwidth">
+                        <label class="file-label">
+                            <input class="file-input" type="file" accept=".csv" @change="changeFile($event)" />
+                            <span class="file-cta">
+                                <span class="file-icon"><i class="fas fa-file-csv"></i></span>
+                                <span class="file-label">Choose a file</span>
+                            </span>
+                            <span class="file-name" :class="{ 'is-placeholder' : !file }">
+                                {{ file ? file.name : 'example.csv' }}
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button is-medium is-danger"
+                        :class="{ 'is-loading' : loading }"
+                        :disabled="!ready || invalid"
+                        @click="loadDataset()"
+                    >Load Dataset</button>
                 </div>
             </div>
-            <div class="control">
-                <button class="button is-medium is-danger px-5" :class="{ 'is-loading' : loading }" :disabled="disabled" @click="loadDataset()">Load Dataset</button>
-            </div>
-        </div>
+            <p class="help has-text-first-letter-capitalized">{{ errors[0] }}</p>
+        </ValidationProvider>
         <div class="field mt-5">
             <div class="control">
                 <span class="mr-2">File has a header?</span>
@@ -32,7 +39,7 @@
                 </label>
             </div>
         </div>
-    </div>
+    </ValidationObserver>
 </template>
 
 <script lang="ts">
@@ -50,8 +57,8 @@ export default Vue.extend({
         };
     },
     computed: {
-        disabled() : boolean {
-            return this.loaded || !this.file;
+        ready() : boolean {
+            return this.file && !this.loaded;
         },
     },
     methods: {
@@ -84,8 +91,10 @@ export default Vue.extend({
                 },
             });
         },
-        changeFile(file) : void {
-            this.file = file;
+        changeFile(event) : void {
+            this.$refs.provider.validate(event);
+
+            this.file = event.target.files[0];
 
             this.loaded = false;
         },

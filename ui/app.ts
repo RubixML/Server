@@ -21,6 +21,8 @@ import ProcessInfo from './components/ProcessInfo.vue';
 import ServerSettings from './components/ServerSettings.vue';
 import CommunicationError from './components/CommunicationError.vue';
 import DatasetImportFailure from './components/DatasetImportFailure.vue';
+import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
+import { required, alpha_dash, max, ext } from 'vee-validate/dist/rules';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -76,6 +78,29 @@ Vue.component('process-info', ProcessInfo);
 Vue.component('server-settings', ServerSettings);
 Vue.component('communication-error', CommunicationError);
 Vue.component('dataset-import-failure', DatasetImportFailure);
+
+extend('required', {
+    ...required,
+    message: '{_field_} is required.',
+});
+
+extend('alpha_dash', {
+    ...alpha_dash,
+    message: 'Input must only contain alpha-numeric, dash, or underscore characters.',
+});
+
+extend('max', {
+    ...max,
+    message: 'Number of characters must not exceed {length}.',
+});
+
+extend('ext', {
+    ...ext,
+    message: 'Invalid file extension.',
+});
+
+Vue.component('ValidationProvider', ValidationProvider);
+Vue.component('ValidationObserver', ValidationObserver);
 
 Vue.use(VueRouter);
 Vue.use(VueApollo);
