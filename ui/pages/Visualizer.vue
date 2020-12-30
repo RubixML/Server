@@ -2,7 +2,7 @@
     <div>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-import"></i></span>Import Dataset</h2>
+                <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-file-import"></i></span>Import Dataset</h2>
                 <div class="tabs is-medium is-boxed">
                     <ul>
                         <li :class="{ 'is-active' : loader === 'csv' }">

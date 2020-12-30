@@ -1,5 +1,5 @@
 - 0.2.6-beta
-    - Added export chart feature
+    - Added export chart feature to Web UI
 
 - 0.2.5-beta
     - Added Backoff and Retry client middleware

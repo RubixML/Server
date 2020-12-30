@@ -2,7 +2,7 @@
     <div>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Properties</h2>
+                <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-sliders-h"></i></span>Chart Properties</h2>
                 <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">
@@ -112,7 +112,7 @@
         </section>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5 mt-5"><span class="icon mr-3"><i class="fas fa-eye"></i></span>Visualize</h2>
+                <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-eye"></i></span>Visualize</h2>
                 <figure>
                     <canvas id="dataset-bubble-chart" width="550" height="550"></canvas>
                 </figure>
@@ -120,7 +120,7 @@
         </section>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
+                <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
                 <export-chart v-if="canvas" :canvas="canvas"></export-chart>
             </div>
         </section>
