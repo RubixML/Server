@@ -2,7 +2,7 @@
     <div>
         <section class="section">
             <div class="container">
-                <h2 class="title is-size-5 mt-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Properties</h2>
+                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Chart Properties</h2>
                 <div v-for="(line, offset) in settings.lines" :key ="offset" class="columns">
                     <div class="column is-one-quarter">
                         <div class="field">
@@ -92,6 +92,12 @@
                 </figure>
             </div>
         </section>
+        <section class="section">
+            <div class="container">
+                <h2 class="title is-size-5"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
+                <export-chart v-if="canvas" :canvas="canvas"></export-chart>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -109,6 +115,7 @@ export default Vue.extend({
                 ],
                 maxLines: 10,
             },
+            canvas: null,
             chart: null,
         };
     },
@@ -141,6 +148,8 @@ export default Vue.extend({
 
         const context = element.getContext('2d');
 
+        this.canvas = element;
+
         this.chart = new Chart(context, {
             type: 'line',
             data: {
@@ -155,8 +164,8 @@ export default Vue.extend({
                 responsive: true,
                 maintainAspectRatio: false,
                 title: {
-                    display: true,
                     text: 'Line Chart',
+                    display: false,
                 },
                 legend: {
                     display: true,

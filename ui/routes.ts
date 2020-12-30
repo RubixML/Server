@@ -1,6 +1,6 @@
 import Visualizer from './pages/Visualizer.vue';
 import LineChart from './pages/LineChart.vue';
-import BubbleChart from './pages/BubbleChart.vue';
+import BubblePlot from './pages/BubblePlot.vue';
 import Dashboard from './pages/Dashboard.vue';
 
 export default [
@@ -20,9 +20,9 @@ export default [
                 component: LineChart,
             },
             {
-                name: 'bubble-chart',
+                name: 'bubble-plot',
                 path: 'bubble',
-                component: BubbleChart,
+                component: BubblePlot,
             },
         ],
     },

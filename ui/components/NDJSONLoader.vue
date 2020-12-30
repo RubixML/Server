@@ -1,25 +1,23 @@
 <template>
-    <div class="columns">
-        <div class="column is-three-quarters">
-            <div class="field">
-                <div class="control">
-                    <div class="file has-name is-medium is-fullwidth">
-                        <label class="file-label">
-                            <input class="file-input" type="file" name="dataset" accept=".ndjson" @change="changeFile($event.target.files[0])" />
-                            <span class="file-cta">
-                                <span class="file-icon"><i class="fas fa-file"></i></span>
-                                <span class="file-label">Choose a file</span>
-                            </span>
-                            <span class="file-name" :class="{ 'is-placeholder' : !file }">
-                                {{ file ? file.name : 'example.ndjson' }}
-                            </span>
-                        </label>
-                    </div>
+    <div>
+        <div class="field is-grouped">
+            <div class="control is-expanded">
+                <div class="file has-name is-medium is-fullwidth">
+                    <label class="file-label">
+                        <input class="file-input" type="file" name="dataset" accept=".ndjson" @change="changeFile($event.target.files[0])" />
+                        <span class="file-cta">
+                            <span class="file-icon"><i class="fas fa-file"></i></span>
+                            <span class="file-label">Choose a file</span>
+                        </span>
+                        <span class="file-name" :class="{ 'is-placeholder' : !file }">
+                            {{ file ? file.name : 'example.ndjson' }}
+                        </span>
+                    </label>
                 </div>
             </div>
-        </div>
-        <div class="column is-one-quarter">
-            <button class="button is-medium is-danger is-fullwidth" :class="{ 'is-loading' : loading }" :disabled="disabled" @click="loadDataset()">Load Dataset</button>
+            <div class="control">
+                <button class="button is-medium is-danger px-5" :class="{ 'is-loading' : loading }" :disabled="disabled" @click="loadDataset()">Load Dataset</button>
+            </div>
         </div>
     </div>
 </template>
@@ -50,11 +48,11 @@ export default Vue.extend({
             let reader = new FileReader();
             
             reader.onload = function (event) {
-                const lines = this.result.split(EOL).filter(Boolean);
-
-                const data = lines.map((line) => {
-                    return JSON.parse(line);
-                });
+                const data = String(this.result).split(EOL)
+                    .filter(Boolean)
+                    .map((line) => {
+                        return JSON.parse(line);
+                    });
 
                 const header = data[0] instanceof Array ? null : data[0].keys();
                 
