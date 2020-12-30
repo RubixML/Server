@@ -15,7 +15,7 @@
                 </div>
                 <csv-loader v-show="loader === 'csv'"></csv-loader>
                 <ndjson-loader v-show="loader === 'ndjson'"></ndjson-loader>
-                <dataset-preview :dataset="dataset"></dataset-preview>
+                <dataset-preview :dataset="dataset" class="mt-5"></dataset-preview>
             </div>
         </section>
         <router-view :dataset="dataset"></router-view>
