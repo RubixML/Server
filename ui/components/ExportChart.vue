@@ -68,6 +68,6 @@ export default Vue.extend({
 
             this.rendering = false;
         },
-    }
+    },
 });
 </script>

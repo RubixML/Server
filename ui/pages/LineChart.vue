@@ -164,8 +164,8 @@ export default Vue.extend({
                 responsive: true,
                 maintainAspectRatio: false,
                 title: {
-                    display: true,
                     text: 'Line Chart',
+                    display: false,
                 },
                 legend: {
                     display: true,

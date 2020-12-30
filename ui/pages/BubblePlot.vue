@@ -203,8 +203,8 @@ export default Vue.extend({
                 responsive: true,
                 maintainAspectRatio: false,
                 title: {
-                    display: true,
-                    text: 'Bubble Chart',
+                    text: 'Bubble Plot',
+                    display: false,
                 },
                 legend: {
                     display: false,

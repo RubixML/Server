@@ -23,8 +23,8 @@
                             <router-link :to="{ name: 'line-chart' }" class="navbar-item" @click.native="open = false">
                                 <span>Line Chart</span>
                             </router-link>
-                            <router-link :to="{ name: 'bubble-chart' }" class="navbar-item" @click.native="open = false">
-                                <span>Bubble Chart</span>
+                            <router-link :to="{ name: 'bubble-plot' }" class="navbar-item" @click.native="open = false">
+                                <span>Bubble Plot</span>
                             </router-link>
                         </div>
                     </div>
