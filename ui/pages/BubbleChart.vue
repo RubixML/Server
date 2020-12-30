@@ -244,6 +244,8 @@ export default Vue.extend({
                 this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.xAxis];
                 this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.yAxis];
 
+                var weights;
+
                 if (this.settings.dataColumns.scale !== null) {
                     const values = this.dataset.data.map((row) => {
                         return row[this.settings.dataColumns.scale];
@@ -254,11 +256,11 @@ export default Vue.extend({
 
                     const delta = max - min;
 
-                    var weights = values.map((value) => {
+                    weights = values.map((value) => {
                         return (value - min) / delta;
                     });
                 } else {
-                    var weights = Array(this.dataset.data.length).fill(1.0);
+                    weights = Array(this.dataset.data.length).fill(1.0);
                 }
 
                 const data = this.dataset.data.map((row, offset) => {
