@@ -50,7 +50,7 @@ export default Vue.extend({
                     {
                         label: 'Average',
                         data: Array(DATASET_SIZE).fill(0.0),
-                        borderColor: 'hsl(39, 100%, 50%)',
+                        borderColor: 'rgb(255, 159, 64)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -59,7 +59,7 @@ export default Vue.extend({
                     {
                         label: 'Samples',
                         data: Array(DATASET_SIZE).fill(0.0),
-                        borderColor: 'hsl(60, 100%, 47%)',
+                        borderColor: 'rgb(75, 192, 192)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,

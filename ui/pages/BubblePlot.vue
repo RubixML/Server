@@ -144,9 +144,9 @@ export default Vue.extend({
                 radius: 5,
                 stroke: 2,
                 color: {
-                    r: 143,
-                    g: 59,
-                    b: 222,
+                    r: 184,
+                    g: 107,
+                    b: 255,
                 },
             },
             canvas: null,

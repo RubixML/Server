@@ -50,11 +50,11 @@ export default Vue.extend({
                 datasets: [
                     {
                         label: 'Current',
-                        backgroundColor: 'hsl(141, 71%, 48%)',
+                        backgroundColor: 'rgb(35, 209, 96)',
                     },
                     {
                         label: 'Peak',
-                        backgroundColor: 'hsl(347, 100%, 69%)',
+                        backgroundColor: 'rgb(255, 97, 131)',
                     },
                 ],
                 labels: ['Usage'],

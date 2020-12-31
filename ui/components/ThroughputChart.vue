@@ -56,7 +56,7 @@ export default Vue.extend({
                     {
                         label: 'Received',
                         data: Array(DATASET_SIZE).fill(0.0),
-                        borderColor: 'hsl(204, 86%, 53%)',
+                        borderColor: 'rgb(32, 156, 238)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -65,7 +65,7 @@ export default Vue.extend({
                     {
                         label: 'Sent',
                         data: Array(DATASET_SIZE).fill(0.0),
-                        borderColor: 'hsl(271, 100%, 71%)',
+                        borderColor: 'rgb(184, 107, 255)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,

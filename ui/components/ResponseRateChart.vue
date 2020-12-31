@@ -56,7 +56,7 @@ export default Vue.extend({
                     {
                         label: 'Average',
                         data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(271, 100%, 71%)',
+                        borderColor: 'rgb(184, 107, 255)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -65,7 +65,7 @@ export default Vue.extend({
                     {
                         label: 'Successful',
                         data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(141, 71%, 48%)',
+                        borderColor: 'rgb(35, 209, 96)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -74,7 +74,7 @@ export default Vue.extend({
                     {
                         label: 'Rejected',
                         data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(204, 86%, 53%)',
+                        borderColor: 'rgb(255, 205, 86)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,
@@ -83,7 +83,7 @@ export default Vue.extend({
                     {
                         label: 'Failed',
                         data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'hsl(347, 100%, 69%)',
+                        borderColor: 'rgb(255, 97, 131)',
                         borderWidth: 2,
                         pointRadius: 0,
                         lineTension: 0,

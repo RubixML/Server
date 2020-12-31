@@ -116,12 +116,14 @@ export default Vue.extend({
                 maxLines: 10,
             },
             defaultLineColors: [
-                { r: 143, g: 59, b: 222 }, // Purple
-                { r: 35, g: 209, b: 96 }, // Green
+                { r: 184, g: 107, b: 255 }, // Purple
                 { r: 32, g: 156, b: 238 }, // Blue
+                { r: 35, g: 209, b: 96 }, // Green
                 { r: 255, g: 97, b: 131 }, // Red
-                { r: 255, g: 166, b: 0 }, // Orange
-                { r: 240, g: 240, b: 0 }, // Yellow
+                { r: 255, g: 159, b: 64 }, // Orange
+                { r: 75, g: 192, b: 192 }, // Teal
+                { r: 255, g: 205, b: 86 }, // Yellow
+                { r: 201, g: 203, b: 207 }, // Gray
             ],
             canvas: null,
             chart: null,
