@@ -115,6 +115,14 @@ export default Vue.extend({
                 ],
                 maxLines: 10,
             },
+            defaultLineColors: [
+                { r: 143, g: 59, b: 222 }, // Purple
+                { r: 35, g: 209, b: 96 }, // Green
+                { r: 32, g: 156, b: 238 }, // Blue
+                { r: 255, g: 97, b: 131 }, // Red
+                { r: 255, g: 166, b: 0 }, // Orange
+                { r: 240, g: 240, b: 0 }, // Yellow
+            ],
             canvas: null,
             chart: null,
         };
@@ -126,7 +134,7 @@ export default Vue.extend({
         },
     },
     computed: {
-        continuousHeaders() : any[] {
+        continuousHeaders() : Object[] {
             return this.dataset.header.map((title, offset) => {
                 return {
                     title,
@@ -211,16 +219,13 @@ export default Vue.extend({
     },
     methods: {
         addLine() : void {
+            const color = this.defaultLineColors[this.settings.lines.length % this.defaultLineColors.length];
+
             this.settings.lines.push({
                 dataColumn: null,
+                color,
                 thickness: 2,
                 tension: 1.0,
-                color: {
-                    r: 143,
-                    g: 59,
-                    b: 222,
-                },
-                colorPickerOpen: false,
             });
         },
         removeLine() : void {

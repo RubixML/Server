@@ -163,7 +163,7 @@ export default Vue.extend({
         rgbColorString() : string {
             return 'rgb(' + Object.values(this.settings.color).join(', ') + ')';
         },
-        continuousHeaders() : any[] {
+        continuousHeaders() : Object[] {
             return this.dataset.header.map((title, offset) => {
                 return {
                     title,

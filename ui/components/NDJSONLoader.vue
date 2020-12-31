@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="control">
-                    <button class="button is-medium is-danger"
+                    <button class="button is-medium is-info"
                         :class="{ 'is-loading' : loading }"
                         :disabled="!ready || invalid"
                         @click="loadDataset()"
@@ -54,12 +54,11 @@ export default Vue.extend({
 
             let reader = new FileReader();
             
-            reader.onload = function (event) {
-                const data = String(this.result).split(EOL)
+            reader.onload = function (event : ProgressEvent) {
+                const data = String(this.result)
+                    .split(EOL)
                     .filter(Boolean)
-                    .map((line) => {
-                        return JSON.parse(line);
-                    });
+                    .map((line) => JSON.parse(line));
 
                 const header = data[0] instanceof Array ? null : data[0].keys();
                 
@@ -71,9 +70,9 @@ export default Vue.extend({
                 });
             };
 
-            reader.onerror = function (event) {
+            reader.onerror = function (event : ProgressEvent) {
                 bus.$emit('dataset-import-failed', {
-                    error: 'Unknown error',
+                    error: 'Unknown error.',
                 });
             };
 
@@ -83,12 +82,16 @@ export default Vue.extend({
 
             this.loaded = true;
         },
-        changeFile(event) : void {
-            this.$refs.provider.validate(event);
+        changeFile(event : MouseEvent) : void {
+            this.$refs.provider.validate(event).then((result) => {
+                const target = event.target;
 
-            this.file = event.target.files[0];
+                if (result.valid && target instanceof HTMLInputElement) {
+                    this.file = target.files[0];
 
-            this.loaded = false;
+                    this.loaded = false;
+                }
+            });
         },
     },
 });

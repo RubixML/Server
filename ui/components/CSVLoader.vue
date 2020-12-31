@@ -7,7 +7,7 @@
                         <label class="file-label">
                             <input class="file-input" type="file" accept=".csv" @change="changeFile($event)" />
                             <span class="file-cta">
-                                <span class="file-icon"><i class="fas fa-file-csv"></i></span>
+                                <span class="file-icon"><i class="fas fa-file"></i></span>
                                 <span class="file-label">Choose a file</span>
                             </span>
                             <span class="file-name" :class="{ 'is-placeholder' : !file }">
@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="control">
-                    <button class="button is-medium is-danger"
+                    <button class="button is-medium is-info"
                         :class="{ 'is-loading' : loading }"
                         :disabled="!ready || invalid"
                         @click="loadDataset()"
@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Papa from 'papaparse';
+import Papa, { ParseError, ParseResult } from 'papaparse';
 import bus from '../bus';
 
 export default Vue.extend({
@@ -70,7 +70,7 @@ export default Vue.extend({
                 dynamicTyping: true,
                 worker: true,
                 skipEmptyLines: true,
-                complete: (result) => {
+                complete: (result : ParseResult<any>) => {
                     bus.$emit('dataset-imported', {
                         dataset: {
                             data: result.data,
@@ -82,7 +82,7 @@ export default Vue.extend({
 
                     this.loaded = true;
                 },
-                error: (error) => {
+                error: (error : ParseError) => {
                     bus.$emit('dataset-import-failed', {
                         error,
                     });
@@ -91,12 +91,16 @@ export default Vue.extend({
                 },
             });
         },
-        changeFile(event) : void {
-            this.$refs.provider.validate(event);
+        changeFile(event : MouseEvent) : void {
+            this.$refs.provider.validate(event).then((result) => {
+                const target = event.target;
 
-            this.file = event.target.files[0];
+                if (result.valid && target instanceof HTMLInputElement) {
+                    this.file = target.files[0];
 
-            this.loaded = false;
+                    this.loaded = false;
+                }
+            });
         },
     },
 });
