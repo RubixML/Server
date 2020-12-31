@@ -165,6 +165,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Chart from 'chart.js';
+import { PURPLE } from '../chart-colors';
 import bus from '../bus';
 
 export default Vue.extend({
@@ -178,11 +179,7 @@ export default Vue.extend({
                 },
                 radius: 5,
                 stroke: 2,
-                color: {
-                    r: 184,
-                    g: 107,
-                    b: 255,
-                },
+                color: PURPLE,
             },
             canvas: null,
             chart: null,

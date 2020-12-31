@@ -10,6 +10,7 @@ use Rubix\Server\GraphQL\InputObjects\DatasetInputObject;
 use Rubix\Server\GraphQL\Scalars\PredictionScalar;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Error\UserError;
+use Generator;
 
 class ModelObject extends ObjectType
 {
@@ -43,17 +44,13 @@ class ModelObject extends ObjectType
                 ],
                 'hyperparameters' => [
                     'type' => Type::nonNull(Type::listOf(HyperparameterObject::singleton())),
-                    'resolve' => function (Model $model) : array {
-                        $hyperparameters = [];
-
+                    'resolve' => function (Model $model) : Generator {
                         foreach ($model->hyperparameters() as $name => $value) {
-                            $hyperparameters[] = [
+                            yield [
                                 'name' => $name,
                                 'value' => $value,
                             ];
                         }
-
-                        return $hyperparameters;
                     },
                 ],
                 'interfaces' => [
@@ -78,23 +75,23 @@ class ModelObject extends ObjectType
                     'args' => [
                         'dataset' => Type::nonNull(DatasetInputObject::singleton()),
                     ],
-                    'resolve' => function (Model $model, array $args) : array {
+                    'resolve' => function (Model $model, array $args) : Generator {
                         if (!$model->isProbabilistic()) {
                             throw new UserError('Estimator must implement the Probabilistic interface.');
                         }
 
                         $probabilities = $model->proba(new Unlabeled($args['dataset']['samples']));
 
-                        foreach ($probabilities as &$dist) {
+                        foreach ($probabilities as $dist) {
                             foreach ($dist as $class => &$probability) {
                                 $probability = [
                                     'class' => $class,
                                     'value' => $probability,
                                 ];
                             }
-                        }
 
-                        return $probabilities;
+                            yield $dist;
+                        }
                     },
                 ],
                 'scores' => [

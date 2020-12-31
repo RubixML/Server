@@ -81,11 +81,11 @@ class BackoffAndRetry implements Middleware
     {
         $retry = function (ResponseInterface $response) use ($request, $handler, $options) : PromiseInterface {
             if (in_array($response->getStatusCode(), self::RETRY_CODES)) {
-                if ($options['tries'] <= $this->maxRetries) {
+                if ($options['tries_left']) {
                     usleep((int) ($options['delay'] * 1e6));
 
+                    --$options['tries_left'];
                     $options['delay'] *= 2.0;
-                    ++$options['tries'];
 
                     return $this->tryRequest($request, $handler, $options);
                 }
@@ -106,8 +106,8 @@ class BackoffAndRetry implements Middleware
     {
         return function (callable $handler) : callable {
             return function (RequestInterface $request, array $options) use ($handler) : PromiseInterface {
+                $options['tries_left'] = 1 + $this->maxRetries;
                 $options['delay'] = $this->initialDelay;
-                $options['tries'] = 1;
 
                 return $this->tryRequest($request, $handler, $options);
             };

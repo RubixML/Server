@@ -139,6 +139,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Chart from 'chart.js';
+import { COLORS } from '../chart-colors';
 import bus from '../bus';
 
 export default Vue.extend({
@@ -150,16 +151,6 @@ export default Vue.extend({
                 ],
                 maxLines: 10,
             },
-            defaultLineColors: [
-                { r: 184, g: 107, b: 255 }, // Purple
-                { r: 32, g: 156, b: 238 }, // Blue
-                { r: 35, g: 209, b: 96 }, // Green
-                { r: 255, g: 97, b: 131 }, // Red
-                { r: 255, g: 159, b: 64 }, // Orange
-                { r: 75, g: 192, b: 192 }, // Teal
-                { r: 255, g: 205, b: 86 }, // Yellow
-                { r: 201, g: 203, b: 207 }, // Gray
-            ],
             canvas: null,
             chart: null,
         };
@@ -256,7 +247,7 @@ export default Vue.extend({
     },
     methods: {
         addLine() : void {
-            const color = this.defaultLineColors[this.settings.lines.length % this.defaultLineColors.length];
+            const color = COLORS[this.settings.lines.length % COLORS.length];
 
             this.settings.lines.push({
                 dataColumn: null,
