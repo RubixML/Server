@@ -19,10 +19,12 @@ $generator = new Agglomerate([
     'blue' => new Blob([0, 0, 255], 20.0),
 ]);
 
-$predictions = $client->predict($generator->generate(10));
+$dataset = $generator->generate(10);
+
+$predictions = $client->predict($dataset);
 
 print_r($predictions);
 
-for ($i = 0; $i < 10000; ++$i) {
-    $client->predict($generator->generate(10));
+for ($i = 0; $i < 100000; ++$i) {
+    $client->predict($dataset);
 }

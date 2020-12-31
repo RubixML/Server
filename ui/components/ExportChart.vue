@@ -10,20 +10,19 @@
                 </li>
             </ul>
         </div>
-        <ValidationProvider name="filename" rules="required|alpha_dash|max:255" v-slot="{ errors }">
+        <ValidationProvider name="filename" ref="beek" rules="required|max:255" v-slot="{ errors }">
             <div class="field is-grouped">
                 <div class="control has-icons-left is-expanded">
                     <input class="input is-medium" type="text" maxlength="255" v-model="filename" placeholder="Filename" />
                     <span class="icon is-left"><i class="fas fa-file"></i></span>
                 </div>
                 <div class="control">
-                    <a class="button is-medium is-info px-5"
+                    <button class="button is-medium is-info"
                         :class="{ 'is-loading' : rendering }"
-                        :href="imageData"
                         :download="filename"
                         :disabled="rendering || invalid"
-                        @click="saveChart()"
-                    >Save Chart</a>
+                        @click="saveChart($event)"
+                    >Save Chart</button>
                 </div>
             </div>
             <p class="help has-text-first-letter-capitalized">{{ errors[0] }}</p>
@@ -33,7 +32,13 @@
                 <div class="field mt-5">
                     <label class="label">Quality</label>
                     <div class="control">
-                        <input name="quality" type="range" v-model="qualityPercentage" class="slider is-circle has-output" step="1" min="0" max="100" />
+                        <input class="slider is-circle has-output"
+                            type="range"
+                            v-model="qualityPercentage"
+                            step="1"
+                            min="0"
+                            max="100"
+                        />
                         <output>{{ qualityPercentage }}</output>
                     </div>
                 </div>
@@ -70,10 +75,16 @@ export default Vue.extend({
         },
     },
     methods: {
-        saveChart() : void {
+        saveChart(event : MouseEvent) : void {
             this.rendering = true;
 
-            this.imageData = this.canvas.toDataURL(this.format, this.quality);
+            let link = document.createElement('a');
+
+            link.download = this.filename;
+            link.href = this.canvas.toDataURL(this.format, this.quality);
+
+            link.click();
+            link.remove();
 
             this.rendering = false;
         },

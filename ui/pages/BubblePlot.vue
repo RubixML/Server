@@ -58,7 +58,14 @@
                         <div class="field">
                             <label class="label">Radius</label>
                             <div class="control">
-                                <input v-model="settings.radius" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="50" type="range" @change="updateDataset()" />
+                                <input class="slider is-circle has-output is-fullwidth"
+                                    type="range"
+                                    v-model="settings.radius"
+                                    step="1"
+                                    min="1"
+                                    max="50"
+                                    @change="updateDataset()"
+                                />
                                 <output>{{ settings.radius }}</output>
                             </div>
                         </div>
@@ -67,7 +74,14 @@
                         <div class="field">
                             <label class="label">Stroke</label>
                             <div class="control">
-                                <input v-model="settings.stroke" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="5" type="range" @change="updateStroke()" />
+                                <input class="slider is-circle has-output is-fullwidth"
+                                    type="range"
+                                    v-model="settings.stroke"
+                                    step="1"
+                                    min="1"
+                                    max="5"
+                                    @change="updateStroke()"
+                                />
                                 <output>{{ settings.stroke }}</output>
                             </div>
                         </div>
@@ -89,15 +103,36 @@
                                         <div class="dropdown-content">
                                             <div class="dropdown-item">
                                                 <div>
-                                                    <input v-model="settings.color.r" class="slider is-danger is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateColor()" />
+                                                    <input class="slider is-danger is-circle has-output is-fullwidth"
+                                                        type="range"
+                                                        v-model="settings.color.r"
+                                                        step="1"
+                                                        min="0"
+                                                        max="255"
+                                                        @change="updateColor()"
+                                                    />
                                                     <output>{{ settings.color.r }}</output>
                                                 </div>
                                                 <div>
-                                                    <input v-model="settings.color.g" class="slider is-success is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateColor()" />
+                                                    <input class="slider is-success is-circle has-output is-fullwidth"
+                                                        type="range"
+                                                        v-model="settings.color.g"
+                                                        step="1"
+                                                        min="0"
+                                                        max="255"
+                                                        @change="updateColor()"
+                                                    />
                                                     <output>{{ settings.color.g }}</output>
                                                 </div>
                                                 <div>
-                                                    <input v-model="settings.color.b" class="slider is-info is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateColor()" />
+                                                    <input class="slider is-info is-circle has-output is-fullwidth"
+                                                        type="range"
+                                                        v-model="settings.color.b"
+                                                        step="1"
+                                                        min="0"
+                                                        max="255"
+                                                        @change="updateColor()"
+                                                    />
                                                     <output>{{ settings.color.b }}</output>
                                                 </div>
                                             </div>

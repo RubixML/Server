@@ -19,7 +19,7 @@
                             <span class="icon"><i class="fas fa-chart-area"></i></span>
                             <span>Visualizer</span>
                         </div>
-                        <div class="navbar-dropdown is-shadowless">
+                        <div class="navbar-dropdown is-boxed is-shadowless">
                             <router-link :to="{ name: 'line-chart' }" class="navbar-item" @click.native="open = false">
                                 <span>Line Chart</span>
                             </router-link>

@@ -24,7 +24,14 @@
                         <div class="field">
                             <label class="label">Thickness</label>
                             <div class="control">
-                                <input v-model="line.thickness" class="slider is-circle has-output is-fullwidth" step="1" min="1" max="5" type="range" @change="updateDataset()" />
+                                <input class="slider is-circle has-output is-fullwidth"
+                                    type="range"
+                                    v-model="line.thickness"
+                                    step="1"
+                                    min="1"
+                                    max="5"
+                                    @change="updateDataset()"
+                                />
                                 <output>{{ line.thickness }}</output>
                             </div>
                         </div>  
@@ -33,7 +40,14 @@
                         <div class="field">
                             <label class="label">Tension</label>
                             <div class="control">
-                                <input v-model="line.tension" class="slider is-circle has-output is-fullwidth" step="0.1" min="0" max="1" type="range" @change="updateDataset()" />
+                                <input class="slider is-circle has-output is-fullwidth"
+                                    type="range"
+                                    v-model="line.tension"
+                                    step="1"
+                                    min="1"
+                                    max="5"
+                                    @change="updateDataset()"
+                                />
                                 <output>{{ line.tension }}</output>
                             </div>
                         </div>  
@@ -55,15 +69,36 @@
                                         <div class="dropdown-content">
                                             <div class="dropdown-item">
                                                 <div>
-                                                    <input v-model="line.color.r" class="slider is-danger is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateDataset()" />
+                                                    <input class="slider is-danger is-circle has-output is-fullwidth"
+                                                        type="range"
+                                                        v-model="line.color.r"
+                                                        step="1"
+                                                        min="0"
+                                                        max="255"
+                                                        @change="updateColor()"
+                                                    />
                                                     <output>{{ line.color.r }}</output>
                                                 </div>
                                                 <div>
-                                                    <input v-model="line.color.g" class="slider is-success is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateDataset()" />
+                                                    <input class="slider is-success is-circle has-output is-fullwidth"
+                                                        type="range"
+                                                        v-model="line.color.g"
+                                                        step="1"
+                                                        min="0"
+                                                        max="255"
+                                                        @change="updateColor()"
+                                                    />
                                                     <output>{{ line.color.g }}</output>
                                                 </div>
                                                 <div>
-                                                    <input v-model="line.color.b" class="slider is-info is-circle has-output is-fullwidth" step="1" min="0" max="255" type="range" @change="updateDataset()" />
+                                                    <input class="slider is-info is-circle has-output is-fullwidth"
+                                                        type="range"
+                                                        v-model="line.color.b"
+                                                        step="1"
+                                                        min="0"
+                                                        max="255"
+                                                        @change="updateColor()"
+                                                    />
                                                     <output>{{ line.color.b }}</output>
                                                 </div>
                                             </div>

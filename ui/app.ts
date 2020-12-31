@@ -22,7 +22,7 @@ import ServerSettings from './components/ServerSettings.vue';
 import CommunicationError from './components/CommunicationError.vue';
 import DatasetImportFailure from './components/DatasetImportFailure.vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
-import { required, alpha_dash, max, ext } from 'vee-validate/dist/rules';
+import { required, max, ext } from 'vee-validate/dist/rules';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -82,11 +82,6 @@ Vue.component('dataset-import-failure', DatasetImportFailure);
 extend('required', {
     ...required,
     message: '{_field_} is required.',
-});
-
-extend('alpha_dash', {
-    ...alpha_dash,
-    message: 'Input must only contain alpha-numeric, dash, or underscore characters.',
 });
 
 extend('max', {
