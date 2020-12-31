@@ -2,8 +2,8 @@
 
 namespace Rubix\Server\GraphQL\Objects;
 
-use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Models\Model;
+use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\GraphQL\Enums\EstimatorTypeEnum;
 use Rubix\Server\GraphQL\Enums\DataTypeEnum;
 use Rubix\Server\GraphQL\InputObjects\DatasetInputObject;
@@ -39,6 +39,21 @@ class ModelObject extends ObjectType
                     'type' => Type::nonNull(Type::listOf(DataTypeEnum::singleton())),
                     'resolve' => function (Model $model) : array {
                         return $model->compatibility();
+                    },
+                ],
+                'hyperparameters' => [
+                    'type' => Type::nonNull(Type::listOf(HyperparameterObject::singleton())),
+                    'resolve' => function (Model $model) : array {
+                        $hyperparameters = [];
+
+                        foreach ($model->hyperparameters() as $name => $value) {
+                            $hyperparameters[] = [
+                                'name' => $name,
+                                'value' => $value,
+                            ];
+                        }
+
+                        return $hyperparameters;
                     },
                 ],
                 'interfaces' => [

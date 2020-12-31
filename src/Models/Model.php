@@ -7,6 +7,7 @@ use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Ranking;
 use Rubix\ML\Datasets\Dataset;
+use Rubix\ML\Other\Helpers\Params;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Events\DatasetInferred;
 use Rubix\Server\Exceptions\InvalidArgumentException;
@@ -140,6 +141,16 @@ class Model
     }
 
     /**
+     * Return the hyper-parameters of the model.
+     *
+     * @return string[]
+     */
+    public function hyperparameters() : array
+    {
+        return array_map([Params::class, 'toString'], $this->estimator->params());
+    }
+
+    /**
      * Does the estimator implement the Probabilistic interface?
      *
      * @return bool
@@ -179,6 +190,7 @@ class Model
         return [
             'type' => $this->type(),
             'compatibility' => $this->compatibility(),
+            'hyperparameters' => $this->hyperparameters(),
             'interfaces' => [
                 'probabilistic' => $this->isProbabilistic(),
                 'ranking' => $this->isScoring(),
