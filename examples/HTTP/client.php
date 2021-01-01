@@ -25,6 +25,6 @@ $predictions = $client->predict($dataset);
 
 print_r($predictions);
 
-for ($i = 0; $i < 100000; ++$i) {
-    $client->predict($dataset);
-}
+// for ($i = 0; $i < 100000; ++$i) {
+//     $client->predict($dataset);
+// }

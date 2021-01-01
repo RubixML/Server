@@ -31,7 +31,7 @@ class EstimatorInterfacesObject extends ObjectType
                     },
                 ],
                 'scoring' => [
-                    'description' => 'Does the estimator implement the Ranking interface?',
+                    'description' => 'Does the estimator implement the Scoring interface?',
                     'type' => Type::nonNull(Type::boolean()),
                     'resolve' => function (Model $model) : bool {
                         return $model->isScoring();

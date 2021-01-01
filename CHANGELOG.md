@@ -1,3 +1,6 @@
+- 0.3.0-beta
+    - Update to Rubix ML 0.3.0
+
 - 0.2.6-beta
     - Added export chart feature to Web UI
 
