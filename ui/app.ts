@@ -26,6 +26,7 @@ import { required, max, ext } from 'vee-validate/dist/rules';
 import { ApolloClient } from 'apollo-client';
 import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { Workbox } from 'workbox-window';
 import routes from './routes';
 
 require('./scss/app.scss');
@@ -35,9 +36,9 @@ require('./scss/app.scss');
  */
 
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
-    });
+    const wb = new Workbox('/sw.js');
+  
+    wb.register();
 }
 
 /**

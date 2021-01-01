@@ -30,3 +30,5 @@ const navigationRoute = new NavigationRoute(handler, {
 });
 
 registerRoute(navigationRoute);
+
+skipWaiting();
