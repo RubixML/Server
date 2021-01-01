@@ -102,7 +102,7 @@ class ModelObject extends ObjectType
                     ],
                     'resolve' => function (Model $model, array $args) : array {
                         if ($model->isScoring()) {
-                            throw new UserError('Estimator must implement the Scoring interface.');
+                            throw new UserError('Estimator must implement the Ranking interface.');
                         }
 
                         return $model->score(new Unlabeled($args['dataset']['samples']));

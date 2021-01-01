@@ -5,7 +5,7 @@ namespace Rubix\Server\Models;
 use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
-use Rubix\ML\AnomalyDetectors\Scoring;
+use Rubix\ML\Ranking;
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Other\Helpers\Params;
 use Rubix\Server\Services\EventBus;
@@ -104,9 +104,9 @@ class Model
      */
     public function score(Dataset $dataset) : array
     {
-        if (!$this->estimator instanceof Scoring) {
+        if (!$this->estimator instanceof Ranking) {
             throw new RuntimeException('Estimator must implement'
-                . ' the Scoring interface.');
+                . ' the Ranking interface.');
         }
 
         $scores = $this->estimator->score($dataset);
@@ -161,13 +161,13 @@ class Model
     }
 
     /**
-     * Does the estimator implement the Scoring interface?
+     * Does the estimator implement the Ranking interface?
      *
      * @return bool
      */
     public function isScoring() : bool
     {
-        return $this->estimator instanceof Scoring;
+        return $this->estimator instanceof Ranking;
     }
 
     /**
