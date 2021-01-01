@@ -18,10 +18,6 @@ use function in_array;
 
 class StaticAssetsController extends Controller
 {
-    protected const DEFAULT_HEADERS = [
-        'Cache-Control' => 'max-age=604800',
-    ];
-
     protected const ASSETS_PATH = __DIR__ . '/../../../assets';
 
     /**
@@ -33,32 +29,32 @@ class StaticAssetsController extends Controller
     {
         return [
             '/' => [
-                'GET' => [$this, 'serveApp'],
+                'GET' => [$this, 'serveAppShell'],
             ],
             '/ui/dashboard' => [
-                'GET' => [$this, 'serveApp'],
+                'GET' => [$this, 'serveAppShell'],
             ],
             '/ui/visualizer/line' => [
-                'GET' => [$this, 'serveApp'],
+                'GET' => [$this, 'serveAppShell'],
             ],
             '/ui/visualizer/bubble' => [
-                'GET' => [$this, 'serveApp'],
+                'GET' => [$this, 'serveAppShell'],
             ],
             '/app.js' => [
                 'GET' => [
-                    [$this, 'serveCompressedVersion'],
+                    [$this, 'serveCompressedFile'],
                     $this,
                 ],
             ],
             '/sw.js' => [
                 'GET' => [
-                    [$this, 'serveCompressedVersion'],
+                    [$this, 'serveCompressedFile'],
                     $this,
                 ],
             ],
             '/app.css' => [
                 'GET' => [
-                    [$this, 'serveCompressedVersion'],
+                    [$this, 'serveCompressedFile'],
                     $this,
                 ],
             ],
@@ -85,7 +81,7 @@ class StaticAssetsController extends Controller
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function serveApp(ServerRequestInterface $request)
+    public function serveAppShell(ServerRequestInterface $request)
     {
         return $this->respondWithFile('/index.html');
     }
@@ -97,7 +93,7 @@ class StaticAssetsController extends Controller
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
-    public function serveCompressedVersion(ServerRequestInterface $request, callable $next)
+    public function serveCompressedFile(ServerRequestInterface $request, callable $next)
     {
         if ($request->hasHeader('Accept-Encoding')) {
             $accept = preg_split('/\s*,\s*/', $request->getHeaderLine('Accept-Encoding')) ?: [];
@@ -143,7 +139,7 @@ class StaticAssetsController extends Controller
 
             $response = new Success([
                 'Content-Type' => File::mime($path),
-            ] + self::DEFAULT_HEADERS, $data);
+            ], $data);
 
             $resolve($response);
         });

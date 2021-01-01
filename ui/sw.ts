@@ -2,7 +2,7 @@ import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 
 precacheAndRoute([
-    { url: '/', revision: '0' },
+    { url: '/', revision: '1' },
     { url: '/manifest.json', revision: '0' },
     { url: '/app.js', revision: '0' },
     { url: '/app.css', revision: '0' },
@@ -30,5 +30,3 @@ const navigationRoute = new NavigationRoute(handler, {
 });
 
 registerRoute(navigationRoute);
-
-skipWaiting();
