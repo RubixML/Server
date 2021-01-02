@@ -1,6 +1,6 @@
 <template>
-    <div class="pageloader is-bottom-to-top" :class="{ 'is-active' : loading }">
-        <div class="is-loading-grid"></div>
+    <div class="is-page-loader" v-show="loading">
+        <img src="/images/grid.svg" class="grid-loader" width="128" height="128" alt="Loading image" />
     </div>
 </template>
 
@@ -18,27 +18,28 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.pageloader {
+.is-page-loader {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: hsl(0, 0%, 96%);
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
     z-index: 9;
 }
 
-.pageloader::after {
-    display: none;
-}
-
 @media (prefers-color-scheme: dark) {
-    .pageloader {
-        background-color: hsl(0, 0%, 11%);
+    .is-page-loader {
+        background-color: hsl(228, 9.8%, 10%);
     }
 }
 
-.is-loading-grid {
-    width: 100%;
-    height: 100%;
-    background-image: url('../images/grid.svg');
-    background-size: 15%;
-    background-position: center;
-    background-repeat: no-repeat;
+.grid-loader {
+    width: 128px;
+    height: 128px;
 }
 </style>
