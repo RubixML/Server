@@ -57,7 +57,7 @@ export default Vue.extend({
             console.log('Notification sound not found on DOM.');
         }
 
-        bus.$on('service-worker-installed', (payload) => {
+        bus.$on('update-ready', (payload) => {
             if (!this.open) {
                 this.open = true;
 
