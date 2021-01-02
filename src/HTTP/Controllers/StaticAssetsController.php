@@ -67,6 +67,7 @@ class StaticAssetsController extends Controller
             '/images/app-icon-apple-touch.png' => ['GET' => $this],
             '/images/app-icon-medium.png' => ['GET' => $this],
             '/images/app-icon-large.png' => ['GET' => $this],
+            '/images/grid.svg' => ['GET' => $this],
             '/fonts/Roboto-300.woff2' => ['GET' => $this],
             '/fonts/Roboto-300.woff' => ['GET' => $this],
             '/fonts/Roboto-regular.woff2' => ['GET' => $this],

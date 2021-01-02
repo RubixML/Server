@@ -22,6 +22,7 @@ import ServerSettings from './components/ServerSettings.vue';
 import AppUpdateAvailable from './components/AppUpdateAvailable.vue';
 import CommunicationError from './components/CommunicationError.vue';
 import DatasetImportFailure from './components/DatasetImportFailure.vue';
+import PageLoader from './components/PageLoader.vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, max, ext } from 'vee-validate/dist/rules';
 import { ApolloClient } from 'apollo-client';
@@ -96,6 +97,7 @@ Vue.component('server-settings', ServerSettings);
 Vue.component('app-update-available', AppUpdateAvailable);
 Vue.component('communication-error', CommunicationError);
 Vue.component('dataset-import-failure', DatasetImportFailure);
+Vue.component('page-loader', PageLoader);
 
 extend('required', {
     ...required,

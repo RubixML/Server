@@ -44,6 +44,7 @@
                 </div>
             </div>
         </section>
+        <page-loader :loading="loading"></page-loader>
     </div>
 </template>
 
@@ -66,16 +67,19 @@ export default Vue.extend({
     data() {
         return {
             server: {
-                httpStats: undefined,
-                memory: undefined,
-                info: undefined,
-                settings: undefined,
+                httpStats: null,
+                memory: null,
+                info: null,
+                settings: null,
             },
-            model: undefined,
+            model: null,
             stream: null,
+            loading: false,
         };
     },
     mounted() {
+        this.loading = true;
+
         this.$apollo.query({
             query: gql`
                 query getDashboard {
@@ -138,6 +142,8 @@ export default Vue.extend({
                 });
 
                 this.stream = stream;
+
+                this.loading = false;
             });
         }).catch((error) => {
             bus.$emit('communication-error', {
