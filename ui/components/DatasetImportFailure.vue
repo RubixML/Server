@@ -28,7 +28,7 @@
                         <div class="field is-grouped">
                             <div class="control">
                                 <button class="button" @click="open = false">
-                                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                                    <span class="icon"><i class="fas fa-times"></i></span>
                                     <span>Dismiss</span>
                                 </button>
                             </div>

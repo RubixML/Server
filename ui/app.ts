@@ -22,7 +22,6 @@ import ServerSettings from './components/ServerSettings.vue';
 import AppUpdateAvailable from './components/AppUpdateAvailable.vue';
 import CommunicationError from './components/CommunicationError.vue';
 import DatasetImportFailure from './components/DatasetImportFailure.vue';
-import UpdateInstalledToast from './components/UpdateInstalledToast.vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, max, ext } from 'vee-validate/dist/rules';
 import { ApolloClient } from 'apollo-client';
@@ -47,10 +46,12 @@ if ('serviceWorker' in navigator) {
         }
     });
 
-    wb.addEventListener('activated', (event) => {
-        if (event.isUpdate) {
-            bus.$emit('update-installed');
-        }
+    bus.$on('update-accepted', () => {
+        wb.addEventListener('controlling', () => {
+            window.location.reload();
+        });
+        
+        wb.messageSkipWaiting();
     });
   
     wb.register();
@@ -95,7 +96,6 @@ Vue.component('server-settings', ServerSettings);
 Vue.component('app-update-available', AppUpdateAvailable);
 Vue.component('communication-error', CommunicationError);
 Vue.component('dataset-import-failure', DatasetImportFailure);
-Vue.component('update-installed-toast', UpdateInstalledToast);
 
 extend('required', {
     ...required,

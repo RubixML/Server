@@ -14,7 +14,7 @@
                     </div>
                     <div class="block">
                         <p class="help">
-                            Close and reopen window to install or ignore until later.
+                            Install the update now or ignore to install later.
                         </p>
                     </div>
                 </div>
@@ -22,8 +22,14 @@
                     <div class="card-footer-item">
                         <div class="field is-grouped">
                             <div class="control">
+                                <button class="button" @click="update()">
+                                    <span class="icon"><i class="fas fa-check"></i></span>
+                                    <span>Update</span>
+                                </button>
+                            </div>
+                            <div class="control">
                                 <button class="button" @click="open = false">
-                                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                                    <span class="icon"><i class="fas fa-times"></i></span>
                                     <span>Dismiss</span>
                                 </button>
                             </div>
@@ -67,6 +73,11 @@ export default Vue.extend({
         });
     },
     methods: {
+        update() : void {
+            bus.$emit('update-accepted');
+
+            this.open = false;
+        },
         beep() : void {
             if (this.sound) {
                 this.sound.play();

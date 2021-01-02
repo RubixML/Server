@@ -1,8 +1,8 @@
 import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 
-precacheAndRoute([
-    { url: '/', revision: '1' },
+const precacheManifest = [
+    { url: '/', revision: '0' },
     { url: '/manifest.json', revision: '0' },
     { url: '/app.js', revision: '0' },
     { url: '/app.css', revision: '0' },
@@ -19,7 +19,9 @@ precacheAndRoute([
     { url: '/fonts/fa-solid-900.woff2', revision: '0' },
     { url: '/fonts/fa-solid-900.woff', revision: '0' },
     { url: '/sounds/sharp.ogg', revision: '0' },
-]);
+];
+
+precacheAndRoute(precacheManifest);
 
 const handler = createHandlerBoundToURL('/');
 
@@ -30,3 +32,9 @@ const navigationRoute = new NavigationRoute(handler, {
 });
 
 registerRoute(navigationRoute);
+
+addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        skipWaiting();
+    }
+});
