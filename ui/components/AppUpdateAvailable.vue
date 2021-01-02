@@ -2,40 +2,26 @@
     <div class="modal" :class="{ 'is-active' : open }">
         <div class="modal-background"></div>
         <div class="modal-content">
-            <div class="card has-text-centered">
-                <div class="card-content">
-                    <div class="block">
-                        <span class="icon is-large"><i class="fas fa-3x fa-rocket"></i></span>
-                    </div>
-                    <div class="block">
-                        <p class="is-size-5">
-                            An update is ready to be installed!
-                        </p>
-                    </div>
-                    <div class="block">
-                        <p class="help">
-                            Install the update now or ignore to install later.
-                        </p>
-                    </div>
+            <div class="box has-text-centered">
+                <div class="block">
+                    <span class="icon is-large"><i class="fas fa-2x fa-rocket"></i></span>
                 </div>
-                <footer class="card-footer">
-                    <div class="card-footer-item">
-                        <div class="field is-grouped">
-                            <div class="control">
-                                <button class="button" @click="update()">
-                                    <span class="icon"><i class="fas fa-check"></i></span>
-                                    <span>Update</span>
-                                </button>
-                            </div>
-                            <div class="control">
-                                <button class="button" @click="open = false">
-                                    <span class="icon"><i class="fas fa-times"></i></span>
-                                    <span>Dismiss</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+                <p class="block is-size-5">
+                    An update is ready to be installed
+                </p>
+                <p class="block help">
+                    Install the new update now or ignore to install later.
+                </p>
+                <div class="block buttons is-centered">
+                    <button class="button is-info" @click="update()">
+                        <span class="icon"><i class="fas fa-check"></i></span>
+                        <span>Update</span>
+                    </button>
+                    <button class="button is-danger" @click="open = false">
+                        <span class="icon"><i class="fas fa-times"></i></span>
+                        <span>Dismiss</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

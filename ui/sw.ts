@@ -1,6 +1,10 @@
 import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 
+/**
+ * Precache static assets.
+ */
+
 const precacheManifest = [
     { url: '/', revision: '0' },
     { url: '/manifest.json', revision: '0' },
@@ -24,6 +28,10 @@ const precacheManifest = [
 
 precacheAndRoute(precacheManifest);
 
+/**
+ * Serve the app shell for navigation requests.
+ */
+
 const handler = createHandlerBoundToURL('/');
 
 const navigationRoute = new NavigationRoute(handler, {
@@ -33,6 +41,10 @@ const navigationRoute = new NavigationRoute(handler, {
 });
 
 registerRoute(navigationRoute);
+
+/**
+ * Listen for skip waiting signal from main thread.
+ */
 
 addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {

@@ -75,7 +75,7 @@
                                                         step="1"
                                                         min="0"
                                                         max="255"
-                                                        @change="updateColor()"
+                                                        @change="updateDataset()"
                                                     />
                                                     <output>{{ line.color.r }}</output>
                                                 </div>
@@ -86,7 +86,7 @@
                                                         step="1"
                                                         min="0"
                                                         max="255"
-                                                        @change="updateColor()"
+                                                        @change="updateDataset()"
                                                     />
                                                     <output>{{ line.color.g }}</output>
                                                 </div>
@@ -97,7 +97,7 @@
                                                         step="1"
                                                         min="0"
                                                         max="255"
-                                                        @change="updateColor()"
+                                                        @change="updateDataset()"
                                                     />
                                                     <output>{{ line.color.b }}</output>
                                                 </div>
@@ -139,7 +139,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Chart from 'chart.js';
-import { COLORS } from '../chart-colors';
+import { ALL_COLORS } from '../chart-colors';
 import bus from '../bus';
 
 export default Vue.extend({
@@ -247,7 +247,7 @@ export default Vue.extend({
     },
     methods: {
         addLine() : void {
-            const color = COLORS[this.settings.lines.length % COLORS.length];
+            const color = ALL_COLORS[this.settings.lines.length % ALL_COLORS.length];
 
             this.settings.lines.push({
                 dataColumn: null,

@@ -24,7 +24,7 @@
             <div class="container">
                 <div class="columns">
                     <div class="column is-half">
-                        <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-cogs"></i></span>Settings</h2>
+                        <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-cog"></i></span>Settings</h2>
                         <server-settings v-if="server.settings" :settings="server.settings"></server-settings>
                     </div>
                     <div class="column is-half">

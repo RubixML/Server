@@ -14,7 +14,7 @@ export const YELLOW = { r: 255, g: 205, b: 86 };
 
 export const GRAY = { r: 201, g: 203, b: 207 };
 
-export const COLORS = [
+export const ALL_COLORS = [
     PURPLE,
     BLUE,
     GREEN,
