@@ -1,6 +1,6 @@
 <template>
     <div class="pageloader is-bottom-to-top" :class="{ 'is-active' : loading }">
-        <img src="/images/grid.svg" width="100" height="100" class="is-loading-image" />
+        <div class="is-loading-grid"></div>
     </div>
 </template>
 
@@ -33,13 +33,12 @@ export default Vue.extend({
     }
 }
 
-.is-loading-image {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100px;
-    height: 100px;
-    margin-top: -50px;
-    margin-left: -50px;
+.is-loading-grid {
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/grid.svg');
+    background-size: 15%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 </style>

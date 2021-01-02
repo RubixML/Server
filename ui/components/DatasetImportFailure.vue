@@ -18,7 +18,7 @@
                     {{ message }}
                 </p>
                 <div class="block buttons is-centered">
-                    <button class="button is-danger" @click="open = false">
+                    <button class="button is-danger is-outlined" @click="open = false">
                         <span class="icon"><i class="fas fa-times"></i></span>
                         <span>Dismiss</span>
                     </button>
@@ -47,8 +47,6 @@ export default Vue.extend({
 
         if (element instanceof HTMLAudioElement) {
             this.sound = element;
-        } else {
-            console.log('Notification sound not found on DOM.');
         }
 
         bus.$on('dataset-import-failed', (payload) => {

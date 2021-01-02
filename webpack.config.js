@@ -71,13 +71,26 @@ module.exports = {
                 ],
             },
             {
+                test: /\.(png|svg)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'images',
+                            publicPath: 'images',
+                        },
+                    },
+                ],
+            },
+            {
                 test: /\.(woff|woff2)$/,
                 use: [
                     {
                         loader: 'file-loader',
                         options: {
                             name: '[name].[ext]',
-                            outputPath: './fonts/',
+                            outputPath: 'fonts',
                         },
                     },
                 ],

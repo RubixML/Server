@@ -13,11 +13,11 @@
                     Install the new update now or ignore to install later.
                 </p>
                 <div class="block buttons is-centered">
-                    <button class="button is-info" @click="update()">
+                    <button class="button is-info is-outlined" @click="update()">
                         <span class="icon"><i class="fas fa-check"></i></span>
                         <span>Update</span>
                     </button>
-                    <button class="button is-danger" @click="open = false">
+                    <button class="button is-outlined is-danger" @click="open = false">
                         <span class="icon"><i class="fas fa-times"></i></span>
                         <span>Dismiss</span>
                     </button>
@@ -45,8 +45,6 @@ export default Vue.extend({
 
         if (element instanceof HTMLAudioElement) {
             this.sound = element;
-        } else {
-            console.log('Notification sound not found on DOM.');
         }
 
         bus.$on('update-ready', (payload) => {
