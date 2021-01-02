@@ -35,7 +35,7 @@ import bus from  './bus';
 require('./scss/app.scss');
 
 /**
- * Register the background service worker.
+ * Register the service worker.
  */
 
 if ('serviceWorker' in navigator) {

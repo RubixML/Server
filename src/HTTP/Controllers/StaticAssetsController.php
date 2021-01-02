@@ -18,6 +18,10 @@ use function in_array;
 
 class StaticAssetsController extends Controller
 {
+    protected const DEFAULT_HEADERS = [
+        'Cache-Control' => 'no-cache',
+    ];
+
     protected const ASSETS_PATH = __DIR__ . '/../../../assets';
 
     /**
@@ -83,7 +87,7 @@ class StaticAssetsController extends Controller
      */
     public function serveAppShell(ServerRequestInterface $request)
     {
-        return $this->respondWithFile('/index.html');
+        return $this->respondWithFile('/app.html');
     }
 
     /**
@@ -139,7 +143,7 @@ class StaticAssetsController extends Controller
 
             $response = new Success([
                 'Content-Type' => File::mime($path),
-            ], $data);
+            ] + self::DEFAULT_HEADERS, $data);
 
             $resolve($response);
         });
