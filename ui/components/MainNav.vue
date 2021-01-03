@@ -2,7 +2,7 @@
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <span class="navbar-item">
-                <img src="/images/app-icon-small.png" width="28" height="28" loading="eager" alt="The Rubix ML logo" />
+                <img src="../images/app-icon-small.png" width="28" height="28" loading="eager" alt="The Rubix ML logo" />
             </span>
             <h1 class="navbar-item"><span>Rubix</span><span class="has-text-weight-medium ml-1">ML</span></h1>
             <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" @click="open = !open">

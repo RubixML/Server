@@ -1,0 +1,35 @@
+{
+    "name": "Rubix ML Server",
+    "short_name": "Server",
+    "description": "The Rubix ML Server user interface (UI).",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "lang": "en-US",
+    "icons": [
+        {
+            "src": "/images/app-icon-small.png",
+            "type": "image/png",
+            "sizes": "128x128"
+        },
+        {
+            "src": "/images/app-icon-apple-touch.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/app-icon-medium.png",
+            "type": "image/png",
+            "sizes": "256x256"
+        },
+        {
+            "src": "/images/app-icon-large.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "background_color": "#FFFFFF",
+    "theme_color": "#FFFFFF",
+    "scope": "/"
+}

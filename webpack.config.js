@@ -3,15 +3,14 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const path = require('path');
 
 module.exports = [{
     name: 'app',
     mode: process.env.NODE_ENV,
-    entry: {
-        app: './ui/app.ts',
-    },
+    entry: './ui/app.ts',
     resolve: {
         extensions: [
             '.ts', '.js', '.vue', '.json',
@@ -28,7 +27,7 @@ module.exports = [{
     module: {
         rules: [
             { 
-                test: /\.(js|ts)$/,
+                test: /\.(ts|js)$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
                 options: {
@@ -47,15 +46,6 @@ module.exports = [{
                 loader: 'vue-loader',
             },
             {
-                test: /\.css$/,
-                use: [
-                    process.env.NODE_ENV === 'development'
-                        ? 'vue-style-loader'
-                        : MiniCssExtractPlugin.loader,
-                    'css-loader',
-                ],
-            },
-            {
                 test: /\.(scss|sass)$/,
                 use: [
                     MiniCssExtractPlugin.loader,
@@ -69,6 +59,15 @@ module.exports = [{
                         },
                     },
                 ],
+            },
+            {
+                test: /\.png$/,
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]',
+                    outputPath: 'images',
+                    publicPath: 'images',
+                },
             },
             {
                 test: /\.svg$/,
@@ -91,6 +90,16 @@ module.exports = [{
             localesToKeep: ['en'],
         }),
         new MiniCssExtractPlugin('app.css'),
+        new CopyPlugin({
+            patterns: [
+                { from: 'ui/app.html', to: 'app.html' },
+                { from: 'ui/manifest.json', to: 'manifest.json' },
+                { from: 'ui/images/app-icon-apple-touch.png', to: 'images/' },
+                { from: 'ui/images/app-icon-medium.png', to: 'images/' },
+                { from: 'ui/images/app-icon-large.png', to: 'images/' },
+                { from: 'ui/sounds/sharp.ogg', to: 'sounds/' },
+            ],
+        }),
         new CompressionPlugin({
             include: [
                 'app.js', 'app.css',
@@ -116,9 +125,7 @@ module.exports = [{
 }, {
     name: 'sw',
     mode: process.env.NODE_ENV,
-    entry: {
-        sw: './ui/sw.ts',
-    },
+    entry: './ui/sw.ts',
     resolve: {
         extensions: [
             '.ts', '.js', '.json',
