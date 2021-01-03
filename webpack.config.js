@@ -7,13 +7,14 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const path = require('path');
 
 module.exports = [{
+    name: 'app',
     mode: process.env.NODE_ENV,
     entry: {
         app: './ui/app.ts',
     },
     resolve: {
         extensions: [
-            '.ts', '.js',
+            '.ts', '.js', '.vue', '.json',
         ],
         alias: {
             vue: 'vue/dist/vue.esm.js',
@@ -70,43 +71,17 @@ module.exports = [{
                 ],
             },
             {
-                test: /\.(png|svg)$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'images',
-                            publicPath: 'images',
-                        },
-                    },
-                ],
+                test: /\.svg$/,
+                loader: 'svg-url-loader',
             },
             {
                 test: /\.(woff|woff2)$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'fonts',
-                            publicPath: 'fonts',
-                        },
-                    },
-                ],
-            },
-            {
-                test: /\.ogg$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'sounds',
-                            publicPath: 'sounds',
-                        },
-                    },
-                ],
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]',
+                    outputPath: 'fonts',
+                    publicPath: 'fonts',
+                },
             },
         ],
     },
@@ -131,21 +106,22 @@ module.exports = [{
     ],
     optimization: {
         minimizer: [
-            new TerserJSPlugin({}),
-            new OptimizeCSSAssetsPlugin({}),
+            new TerserJSPlugin(),
+            new OptimizeCSSAssetsPlugin(),
         ],
     },
     performance: {
         hints: false,
     },
 }, {
+    name: 'sw',
     mode: process.env.NODE_ENV,
     entry: {
-        app: './ui/sw.ts',
+        sw: './ui/sw.ts',
     },
     resolve: {
         extensions: [
-            '.ts', '.js',
+            '.ts', '.js', '.json',
         ],
     },
     output: {

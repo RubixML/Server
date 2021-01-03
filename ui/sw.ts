@@ -14,7 +14,6 @@ const precacheManifest = [
     { url: '/images/app-icon-apple-touch.png', revision: '0' },
     { url: '/images/app-icon-medium.png', revision: '0' },
     { url: '/images/app-icon-large.png', revision: '0' },
-    { url: '/images/grid.svg', revision: '0' },
     { url: '/fonts/Roboto-300.woff2', revision: '0' },
     { url: '/fonts/Roboto-300.woff', revision: '0' },
     { url: '/fonts/Roboto-regular.woff2', revision: '0' },

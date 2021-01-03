@@ -1,6 +1,6 @@
 <template>
     <div class="is-page-loader" v-show="loading">
-        <img src="/images/grid.svg" class="grid-loader" width="128" height="128" alt="Loading image" />
+        <img src="../images/grid.svg" class="grid-loader" width="128" height="128" alt="Loading image" />
     </div>
 </template>
 
