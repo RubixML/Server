@@ -6,11 +6,10 @@ const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
 const path = require('path');
 
-module.exports = {
+module.exports = [{
     mode: process.env.NODE_ENV,
     entry: {
         app: './ui/app.ts',
-        sw: './ui/sw.ts',
     },
     resolve: {
         extensions: [
@@ -96,6 +95,19 @@ module.exports = {
                     },
                 ],
             },
+            {
+                test: /\.ogg$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'sounds',
+                            publicPath: 'sounds',
+                        },
+                    },
+                ],
+            },
         ],
     },
     plugins: [
@@ -106,7 +118,7 @@ module.exports = {
         new MiniCssExtractPlugin('app.css'),
         new CompressionPlugin({
             include: [
-                'app.js', 'sw.js', 'app.css',
+                'app.js', 'app.css',
             ],
             filename: '[path][base].gz',
             algorithm: 'gzip',
@@ -126,4 +138,59 @@ module.exports = {
     performance: {
         hints: false,
     },
-};
+}, {
+    mode: process.env.NODE_ENV,
+    entry: {
+        app: './ui/sw.ts',
+    },
+    resolve: {
+        extensions: [
+            '.ts', '.js',
+        ],
+    },
+    output: {
+        path: path.resolve(__dirname, 'assets'),
+        publicPath: '/',
+        filename: '[name].js',
+    },
+    module: {
+        rules: [
+            { 
+                test: /\.(js|ts)$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                    presets: [
+                        '@babel/env',
+                        '@babel/preset-typescript',
+                    ],
+                    plugins: [
+                        '@babel/plugin-transform-typescript',
+                    ],
+                },
+            },
+        ],
+    },
+    plugins: [
+        new CompressionPlugin({
+            include: [
+                'sw.js',
+            ],
+            filename: '[path][base].gz',
+            algorithm: 'gzip',
+            compressionOptions: {
+                level: process.env.NODE_ENV === 'development' ? 1 : 9,
+            },
+            minRatio: Infinity,
+            deleteOriginalAssets: false,
+        }),
+    ],
+    optimization: {
+        minimizer: [
+            new TerserJSPlugin({}),
+        ],
+    },
+    performance: {
+        hints: false,
+    },
+}];
