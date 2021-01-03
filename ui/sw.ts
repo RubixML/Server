@@ -1,5 +1,5 @@
+import { precacheAndRoute, createHandlerBoundToURL, cleanupOutdatedCaches } from 'workbox-precaching';
 import { registerRoute, NavigationRoute } from 'workbox-routing';
-import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 
 /**
  * Precache static assets.
@@ -51,3 +51,9 @@ addEventListener('message', (event) => {
         skipWaiting();
     }
 });
+
+/**
+ * Clean up caches used by previous versions.
+ */
+
+cleanupOutdatedCaches();

@@ -108,6 +108,12 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
 | 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
+#### PHP INI Configuration
+| Name | Default | Description |
+|---|---|---|
+| memory_limit | 128M | The maximum amount of memory the server is allowed to consume. |
+| post_max_size | 8M | The maximum size of a request body the server can buffer. |
+
 **Example**
 
 ```php
@@ -142,18 +148,12 @@ The HTTP server exposes the following resources and their methods.
 | GET | /ui/visualizer/bubble | Dataset bubble chart visualizer. |
 | GET | /ui/visualizer/line | Dataset line chart visualizer. |
 
-#### Web Interface
-The HTTP server provides its own high-level user interface to the GraphQL API it exposes under the hood. To access the on-demand web UI, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your web browser. The example below is a screen capture of the server dashboard in dark mode.
+#### Web Client
+The HTTP server provides its own high-level user interface (UI) to the GraphQL API it exposes under the hood offering features such as server monitoring and data visualization. To access the web interface, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your favorite modern web browser.
+
+The example below is a screen capture of the server dashboard in dark mode.
 
 ![Server Web UI Screenshot](https://raw.githubusercontent.com/RubixML/Server/master/docs/images/server-web-ui-screenshot.png)
-
-#### PHP Configuration
-This server respects the following `php.ini` configuration variables.
-
-| Name | Default | Description |
-|---|---|---|
-| memory_limit | 128M | The maximum amount of memory the server is allowed to consume. |
-| post_max_size | 8M | The maximum size of a request body the server can buffer. |
 
 #### References
 >- R. Fielding et al. (2014). Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content.
