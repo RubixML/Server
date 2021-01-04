@@ -65,7 +65,7 @@ class HTTPServer implements Server, Verbose
 
     protected const DASHBOARD_MEMORY_UPDATE_INTERVAL = 3.0;
 
-    protected const ASSETS_PATH = __DIR__ . '../assets';
+    protected const ASSETS_PATH = __DIR__ . '/../assets';
 
     /**
      * The host address to bind the server to.
