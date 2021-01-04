@@ -3,6 +3,7 @@
 namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Helpers\File;
+use Rubix\Server\Services\InMemoryCache;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
 use Rubix\Server\HTTP\Responses\InternalServerError;
@@ -14,7 +15,6 @@ use React\Promise\Promise;
 use function React\Promise\resolve;
 use function realpath;
 use function is_dir;
-use function is_file;
 use function is_readable;
 use function file_get_contents;
 use function in_array;
@@ -34,10 +34,18 @@ class StaticAssetsController extends Controller
     protected $basePath;
 
     /**
+     * The cache.
+     *
+     * @var \Rubix\Server\Services\InMemoryCache
+     */
+    protected $cache;
+
+    /**
      * @param string $basePath
+     * @param \Rubix\Server\Services\InMemoryCache $cache
      * @throws \Rubix\Server\Exceptions\RuntimeException
      */
-    public function __construct(string $basePath)
+    public function __construct(string $basePath, InMemoryCache $cache)
     {
         $basePath = realpath($basePath);
 
@@ -50,6 +58,7 @@ class StaticAssetsController extends Controller
         }
 
         $this->basePath = $basePath;
+        $this->cache = $cache;
     }
 
     /**
@@ -158,8 +167,12 @@ class StaticAssetsController extends Controller
     {
         $path = realpath($this->basePath . $path);
 
-        if ($path === false or !is_file($path)) {
+        if ($path === false) {
             return new NotFound();
+        }
+
+        if ($this->cache->has($path)) {
+            return $this->cache->get($path);
         }
 
         if (strpos($path, $this->basePath) !== 0) {
@@ -176,6 +189,8 @@ class StaticAssetsController extends Controller
             $response = new Success([
                 'Content-Type' => File::mime($path),
             ] + self::DEFAULT_HEADERS, $data);
+
+            $this->cache->put($path, $response);
 
             $resolve($response);
         });

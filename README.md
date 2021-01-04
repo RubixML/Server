@@ -106,7 +106,8 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 3 | cert | null | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | [] | array | The stack of server middleware to run on each request/response. |
 | 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
-| 6 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
+| 6 | cache max age | 60 | int | The maximum number of seconds to hold an item in the cache since it was last accessed. |
+| 7 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
 #### PHP INI Configuration
 | Name | Default | Description |
@@ -128,7 +129,7 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-], 100, 100);
+], 50, 86400, 100);
 ```
 
 #### Routes
@@ -187,7 +188,7 @@ $middleware = new AccessLog(new Screen());
 ### Basic Authenticator
 An implementation of HTTP Basic Auth as described in [RFC7617](https://tools.ietf.org/html/rfc7617).
 
-> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+> **Note:** This authorization strategy is only secure to man-in-the-middle attacks over HTTPS.
 
 #### Parameters
 | # | Param | Default | Type | Description |
@@ -209,7 +210,7 @@ $middleware = new BasicAuthenticator([
 ### Shared Token Authenticator
 Authenticates incoming requests using a shared key that is kept secret between the client and server. It uses the `Authorization` header with the `Bearer` prefix to indicate the shared key.
 
-> **Note:** This authorization strategy is only secure over an encrypted communication channel such as HTTPS with SSL or TLS.
+> **Note:** This authorization strategy is only secure to man-in-the-middle attacks over HTTPS.
 
 #### Parameters
 | # | Param | Default | Type | Description |
@@ -312,7 +313,7 @@ Interfaces: [Client](#clients), [AsyncClient](#async-clients)
 | 3 | secure | false | bool | Should we use an encrypted HTTP channel (HTTPS)? |
 | 4 | middlewares | | array | The stack of client middleware to run on each request/response.  |
 | 5 | timeout | | float | The number of seconds to wait before giving up on the request. |
-| 6 | verify SSL certificate | true | bool | Should we try to verify the server's SSL certificate? |
+| 6 | verify certificate | true | bool | Should we try to verify the server's TLS certificate? |
 
 **Example**
 

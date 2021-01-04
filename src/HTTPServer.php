@@ -11,6 +11,7 @@ use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\SSEChannel;
+use Rubix\Server\Services\InMemoryCache;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
 use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
@@ -31,6 +32,7 @@ use Rubix\Server\Listeners\StopTimers;
 use Rubix\Server\Listeners\CloseSSEChannels;
 use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Jobs\UpdateMemoryUsage;
+use Rubix\Server\Jobs\EvictCaches;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\ML\Other\Loggers\BlackHole;
 use GraphQL\Executor\Promise\Adapter\ReactPromiseAdapter;
@@ -66,6 +68,8 @@ class HTTPServer implements Server, Verbose
     protected const DASHBOARD_MEMORY_UPDATE_INTERVAL = 3.0;
 
     protected const ASSETS_PATH = __DIR__ . '/../assets';
+
+    protected const CACHE_EVICTION_INTERVAL = 5.0;
 
     /**
      * The host address to bind the server to.
@@ -103,6 +107,13 @@ class HTTPServer implements Server, Verbose
     protected $maxConcurrentRequests;
 
     /**
+     * The maximum number of seconds to hold an item in the cache since it was last accessed.
+     *
+     * @var int
+     */
+    protected $cacheMaxAge;
+
+    /**
      * The maximum number of events to store in the server-sent events (SSE) reconnect buffer.
      *
      * @var int
@@ -136,6 +147,7 @@ class HTTPServer implements Server, Verbose
      * @param string|null $cert
      * @param \Rubix\Server\HTTP\Middleware\Server\Middleware[] $middlewares
      * @param int $maxConcurrentRequests
+     * @param int $cacheMaxAge
      * @param int $sseReconnectBuffer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
@@ -145,6 +157,7 @@ class HTTPServer implements Server, Verbose
         ?string $cert = null,
         array $middlewares = [],
         int $maxConcurrentRequests = 10,
+        int $cacheMaxAge = 60,
         int $sseReconnectBuffer = 50
     ) {
         if (empty($host)) {
@@ -168,6 +181,12 @@ class HTTPServer implements Server, Verbose
                 . " be greater than 0, $maxConcurrentRequests given.");
         }
 
+        if ($cacheMaxAge < self::CACHE_EVICTION_INTERVAL) {
+            throw new InvalidArgumentException('Cache max age must be'
+                . ' greater than ' . self::CACHE_EVICTION_INTERVAL
+                . ", $cacheMaxAge given.");
+        }
+
         if ($sseReconnectBuffer < 0) {
             throw new InvalidArgumentException('SSE retry buffer must'
                 . " be greater than 0, $sseReconnectBuffer given.");
@@ -178,6 +197,7 @@ class HTTPServer implements Server, Verbose
         $this->cert = $cert;
         $this->middlewares = $middlewares;
         $this->maxConcurrentRequests = $maxConcurrentRequests;
+        $this->cacheMaxAge = $cacheMaxAge;
         $this->sseReconnectBuffer = $sseReconnectBuffer;
         $this->logger = new BlackHole();
     }
@@ -264,13 +284,22 @@ class HTTPServer implements Server, Verbose
 
         $eventBus = new EventBus($scheduler, $this->logger);
 
+        $assetsCache = new InMemoryCache($this->cacheMaxAge);
+
         $dashboardChannel = new SSEChannel($this->sseReconnectBuffer);
 
         $model = new Model($estimator, $eventBus);
 
         $server = new ServerModel($this, $eventBus);
 
-        $memoryTimer = $scheduler->repeat(
+        $cacheEvictor = $scheduler->repeat(
+            self::CACHE_EVICTION_INTERVAL,
+            new EvictCaches([
+                $assetsCache,
+            ])
+        );
+
+        $memoryUpdater = $scheduler->repeat(
             self::DASHBOARD_MEMORY_UPDATE_INTERVAL,
             new UpdateMemoryUsage($server->memory())
         );
@@ -280,7 +309,8 @@ class HTTPServer implements Server, Verbose
             new DashboardEmitter($dashboardChannel),
             new LogFailures($this->logger),
             new StopTimers($scheduler, [
-                $memoryTimer,
+                $cacheEvictor,
+                $memoryUpdater,
             ]),
             new CloseSSEChannels([
                 $dashboardChannel,
@@ -297,7 +327,7 @@ class HTTPServer implements Server, Verbose
             new ServerController($server),
             new DashboardController($dashboardChannel),
             new GraphQLController($schema, new ReactPromiseAdapter()),
-            new StaticAssetsController(self::ASSETS_PATH),
+            new StaticAssetsController(self::ASSETS_PATH, $assetsCache),
         ]));
 
         $stack = [

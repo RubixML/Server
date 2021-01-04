@@ -1,3 +1,6 @@
+- 0.2.7-beta
+    - Added static assets cache
+    
 - 0.2.6-beta
     - Added export chart feature to web UI
     - Added web UI automatic updates

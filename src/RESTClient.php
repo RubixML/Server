@@ -52,7 +52,7 @@ class RESTClient implements Client, AsyncClient
      * @param bool $secure
      * @param \Rubix\Server\HTTP\Middleware\Client\Middleware[] $middlewares
      * @param float $timeout
-     * @param bool $verifySSLCertificate
+     * @param bool $verifyCertificate
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(
@@ -61,7 +61,7 @@ class RESTClient implements Client, AsyncClient
         bool $secure = false,
         array $middlewares = [],
         float $timeout = 0.0,
-        bool $verifySSLCertificate = true
+        bool $verifyCertificate = true
     ) {
         if (empty($host)) {
             throw new InvalidArgumentException('Host address cannot be empty.');
@@ -94,7 +94,7 @@ class RESTClient implements Client, AsyncClient
             'base_uri' => $baseUri,
             'headers' => self::HEADERS,
             'timeout' => $timeout,
-            'verify' => $verifySSLCertificate,
+            'verify' => $verifyCertificate,
             'handler' => $stack,
         ]);
     }
