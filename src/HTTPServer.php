@@ -65,6 +65,8 @@ class HTTPServer implements Server, Verbose
 
     protected const DASHBOARD_MEMORY_UPDATE_INTERVAL = 3.0;
 
+    protected const ASSETS_PATH = __DIR__ . '../assets';
+
     /**
      * The host address to bind the server to.
      *
@@ -295,7 +297,7 @@ class HTTPServer implements Server, Verbose
             new ServerController($server),
             new DashboardController($dashboardChannel),
             new GraphQLController($schema, new ReactPromiseAdapter()),
-            new StaticAssetsController(),
+            new StaticAssetsController(self::ASSETS_PATH),
         ]));
 
         $stack = [

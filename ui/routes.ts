@@ -7,28 +7,28 @@ export default [
     { 
         name: 'home',
         path: '/',
-        redirect: { name: 'dashboard' }
+        redirect: { name: 'dashboard' },
     },
     {
         name: 'visualizer',
-        path: '/ui/visualizer',
+        path: '/visualizer',
         component: Visualizer,
         children: [
             {
                 name: 'line-chart',
-                path: 'line',
+                path: '/visualizer/line',
                 component: LineChart,
             },
             {
                 name: 'bubble-plot',
-                path: 'bubble',
+                path: '/visualizer/bubble',
                 component: BubblePlot,
             },
         ],
     },
     {
         name: 'dashboard',
-        path: '/ui/dashboard',
+        path: '/dashboard',
         component: Dashboard,
     },
 ];

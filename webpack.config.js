@@ -3,14 +3,16 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
-const CopyPlugin = require("copy-webpack-plugin");
-const CompressionPlugin = require("compression-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const path = require('path');
 
 module.exports = [{
     name: 'app',
     mode: process.env.NODE_ENV,
-    entry: './ui/app.ts',
+    entry: {
+        app: './ui/app.ts',
+    },
     resolve: {
         extensions: [
             '.ts', '.js', '.vue', '.json',
@@ -21,8 +23,8 @@ module.exports = [{
     },
     output: {
         path: path.resolve(__dirname, 'assets'),
-        publicPath: '/',
-        filename: '[name].js',
+        publicPath: '/ui/',
+        filename: 'app.js',
     },
     module: {
         rules: [
@@ -66,7 +68,8 @@ module.exports = [{
                 options: {
                     name: '[name].[ext]',
                     outputPath: 'images',
-                    publicPath: 'images',
+                    publicPath: '/images',
+                    esModule: false,
                 },
             },
             {
@@ -79,7 +82,7 @@ module.exports = [{
                 options: {
                     name: '[name].[ext]',
                     outputPath: 'fonts',
-                    publicPath: 'fonts',
+                    publicPath: '/fonts',
                 },
             },
         ],
@@ -125,7 +128,9 @@ module.exports = [{
 }, {
     name: 'sw',
     mode: process.env.NODE_ENV,
-    entry: './ui/sw.ts',
+    entry: {
+        sw: './ui/sw.ts',
+    },
     resolve: {
         extensions: [
             '.ts', '.js', '.json',
@@ -133,8 +138,7 @@ module.exports = [{
     },
     output: {
         path: path.resolve(__dirname, 'assets'),
-        publicPath: '/',
-        filename: '[name].js',
+        filename: 'sw.js',
     },
     module: {
         rules: [

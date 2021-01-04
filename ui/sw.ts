@@ -6,7 +6,7 @@ import { registerRoute, NavigationRoute } from 'workbox-routing';
  */
 
 const precacheManifest = [
-    { url: '/', revision: '0' },
+    { url: '/ui', revision: '0' },
     { url: '/manifest.json', revision: '0' },
     { url: '/app.js', revision: '0' },
     { url: '/app.css', revision: '0' },
@@ -31,7 +31,7 @@ precacheAndRoute(precacheManifest);
  * Serve the app shell for navigation requests.
  */
 
-const handler = createHandlerBoundToURL('/');
+const handler = createHandlerBoundToURL('/ui');
 
 const navigationRoute = new NavigationRoute(handler, {
     allowlist: [

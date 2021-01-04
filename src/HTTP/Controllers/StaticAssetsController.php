@@ -6,15 +6,19 @@ use Rubix\Server\Helpers\File;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
 use Rubix\Server\HTTP\Responses\InternalServerError;
+use Rubix\Server\Exceptions\RuntimeException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\Promise;
 
 use function React\Promise\resolve;
+use function realpath;
+use function is_dir;
 use function is_file;
 use function is_readable;
 use function file_get_contents;
 use function in_array;
+use function preg_split;
 
 class StaticAssetsController extends Controller
 {
@@ -22,7 +26,31 @@ class StaticAssetsController extends Controller
         'Cache-Control' => 'no-cache',
     ];
 
-    protected const ASSETS_PATH = __DIR__ . '/../../../assets';
+    /**
+     * The full path to the assets folder without directory traversal.
+     *
+     * @var string
+     */
+    protected $basePath;
+
+    /**
+     * @param string $basePath
+     * @throws \Rubix\Server\Exceptions\RuntimeException
+     */
+    public function __construct(string $basePath)
+    {
+        $basePath = realpath($basePath);
+
+        if (!$basePath or !is_dir($basePath)) {
+            throw new RuntimeException("Static assets not found at $basePath.");
+        }
+
+        if (!is_readable($basePath)) {
+            throw new RuntimeException('Static assets folder is not readable.');
+        }
+
+        $this->basePath = $basePath;
+    }
 
     /**
      * Return the routes this controller handles.
@@ -32,7 +60,7 @@ class StaticAssetsController extends Controller
     public function routes() : array
     {
         return [
-            '/' => [
+            '/ui' => [
                 'GET' => [$this, 'serveAppShell'],
             ],
             '/ui/dashboard' => [
@@ -67,7 +95,6 @@ class StaticAssetsController extends Controller
             '/images/app-icon-apple-touch.png' => ['GET' => $this],
             '/images/app-icon-medium.png' => ['GET' => $this],
             '/images/app-icon-large.png' => ['GET' => $this],
-            '/images/grid.svg' => ['GET' => $this],
             '/fonts/Roboto-300.woff2' => ['GET' => $this],
             '/fonts/Roboto-300.woff' => ['GET' => $this],
             '/fonts/Roboto-regular.woff2' => ['GET' => $this],
@@ -129,9 +156,13 @@ class StaticAssetsController extends Controller
      */
     protected function respondWithFile(string $path)
     {
-        $path = realpath(self::ASSETS_PATH . $path);
+        $path = realpath($this->basePath . $path);
 
         if ($path === false or !is_file($path)) {
+            return new NotFound();
+        }
+
+        if (strpos($path, $this->basePath) !== 0) {
             return new NotFound();
         }
 
