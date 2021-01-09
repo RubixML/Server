@@ -69,6 +69,16 @@ class ServerSettings
     }
 
     /**
+     * Return the maximum number of seconds to hold an item in the cache since it was last accessed.
+     *
+     * @return int
+     */
+    public function cacheMaxAge() : int
+    {
+        return $this->server->cacheMaxAge();
+    }
+
+    /**
      * Return the size of the SSE reconnect buffer.
      *
      * @return int
@@ -106,10 +116,11 @@ class ServerSettings
     public function asArray() : array
     {
         return [
-            'host' => $this->server->host(),
-            'port' => $this->server->port(),
-            'maxConcurrentRequests' => $this->server->maxConcurrentRequests(),
-            'sseReconnectBuffer' => $this->server->sseReconnectBuffer(),
+            'host' => $this->host(),
+            'port' => $this->port(),
+            'maxConcurrentRequests' => $this->maxConcurrentRequests(),
+            'cacheMaxAge' => $this->cacheMaxAge(),
+            'sseReconnectBuffer' => $this->sseReconnectBuffer(),
             'memoryLimit' => $this->memoryLimit,
             'postMaxSize' => $this->postMaxSize,
         ];

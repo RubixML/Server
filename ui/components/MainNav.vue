@@ -13,26 +13,24 @@
         </div>
         <div id="nav-menu" class="navbar-menu" :class="{ 'is-active' : open }">
             <div class="navbar-end">
-                <div class="navbar-item">
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <div class="navbar-link">
-                            <span class="icon"><i class="fas fa-chart-area"></i></span>
-                            <span>Visualizer</span>
-                        </div>
-                        <div class="navbar-dropdown is-boxed is-shadowless">
-                            <router-link :to="{ name: 'line-chart' }" class="navbar-item" @click.native="open = false">
-                                <span>Line Chart</span>
-                            </router-link>
-                            <router-link :to="{ name: 'bubble-plot' }" class="navbar-item" @click.native="open = false">
-                                <span>Bubble Plot</span>
-                            </router-link>
-                        </div>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <div class="navbar-link">
+                        <span class="icon"><i class="fas fa-chart-area"></i></span>
+                        <span>Visualizer</span>
                     </div>
-                    <router-link :to="{ name: 'dashboard' }" class="navbar-item" @click.native="open = false">
-                        <span class="icon"><i class="fas fa-server"></i></span>
-                        <span>Dashboard</span>
-                    </router-link>
+                    <div class="navbar-dropdown is-boxed is-shadowless">
+                        <router-link :to="{ name: 'line-chart' }" class="navbar-item" @click.native="open = false">
+                            <span>Line Chart</span>
+                        </router-link>
+                        <router-link :to="{ name: 'bubble-plot' }" class="navbar-item" @click.native="open = false">
+                            <span>Bubble Plot</span>
+                        </router-link>
+                    </div>
                 </div>
+                <router-link :to="{ name: 'dashboard' }" class="navbar-item" @click="open = false">
+                    <span class="icon"><i class="fas fa-server"></i></span>
+                    <span>Dashboard</span>
+                </router-link>
             </div>
         </div>
     </nav>

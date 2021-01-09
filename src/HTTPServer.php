@@ -239,6 +239,18 @@ class HTTPServer implements Server, Verbose
     }
 
     /**
+     * Return the maximum number of seconds to hold an item in the cache since it was last accessed.
+     *
+     * @internal
+     *
+     * @return int
+     */
+    public function cacheMaxAge() : int
+    {
+        return $this->cacheMaxAge;
+    }
+
+    /**
      * Return the size of the SSE reconnect buffer.
      *
      * @internal

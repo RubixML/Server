@@ -3,9 +3,12 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
 const path = require('path');
+
+const assetsDir = path.resolve(__dirname, 'assets');
 
 module.exports = [{
     name: 'app',
@@ -22,7 +25,7 @@ module.exports = [{
         },
     },
     output: {
-        path: path.resolve(__dirname, 'assets'),
+        path: assetsDir,
         publicPath: '/ui/',
         filename: 'app.js',
     },
@@ -67,8 +70,8 @@ module.exports = [{
                 loader: 'file-loader',
                 options: {
                     name: '[name].[ext]',
-                    outputPath: 'images',
-                    publicPath: '/images',
+                    outputPath: '/images/',
+                    publicPath: '/images/',
                     esModule: false,
                 },
             },
@@ -81,8 +84,8 @@ module.exports = [{
                 loader: 'file-loader',
                 options: {
                     name: '[name].[ext]',
-                    outputPath: 'fonts',
-                    publicPath: '/fonts',
+                    outputPath: '/fonts/',
+                    publicPath: '/fonts/',
                 },
             },
         ],
@@ -137,7 +140,7 @@ module.exports = [{
         ],
     },
     output: {
-        path: path.resolve(__dirname, 'assets'),
+        path: assetsDir,
         filename: 'sw.js',
     },
     module: {
@@ -174,7 +177,7 @@ module.exports = [{
     ],
     optimization: {
         minimizer: [
-            new TerserJSPlugin({}),
+            new TerserJSPlugin(),
         ],
     },
     performance: {
