@@ -21,7 +21,7 @@ class SSEChannel
     /**
      * The current open response body streams.
      *
-     * @var \SplObjectStorage
+     * @var \SplObjectStorage<object,mixed>
      */
     protected $streams;
 
