@@ -3,7 +3,6 @@
 namespace Rubix\Server\Models;
 
 use Rubix\Server\HTTPServer;
-use React\Http\Io\IniUtil;
 
 class ServerSettings
 {
@@ -15,27 +14,11 @@ class ServerSettings
     protected $server;
 
     /**
-     * The maximum number of bytes that the server can consume.
-     *
-     * @var int
-     */
-    protected $memoryLimit;
-
-    /**
-     * The maximum size of a request body in bytes.
-     *
-     * @var int
-     */
-    protected $postMaxSize;
-
-    /**
      * @param \Rubix\Server\HTTPServer $server
      */
     public function __construct(HTTPServer $server)
     {
         $this->server = $server;
-        $this->memoryLimit = IniUtil::iniSizeToBytes((string) ini_get('memory_limit'));
-        $this->postMaxSize = IniUtil::iniSizeToBytes((string) ini_get('post_max_size'));
     }
 
     /**
@@ -95,7 +78,7 @@ class ServerSettings
      */
     public function memoryLimit() : int
     {
-        return $this->memoryLimit;
+        return $this->server->memoryLimit();
     }
 
     /**
@@ -105,7 +88,7 @@ class ServerSettings
      */
     public function postMaxSize() : int
     {
-        return $this->postMaxSize;
+        return $this->server->postMaxSize();
     }
 
     /**
@@ -121,8 +104,8 @@ class ServerSettings
             'maxConcurrentRequests' => $this->maxConcurrentRequests(),
             'cacheMaxAge' => $this->cacheMaxAge(),
             'sseReconnectBuffer' => $this->sseReconnectBuffer(),
-            'memoryLimit' => $this->memoryLimit,
-            'postMaxSize' => $this->postMaxSize,
+            'memoryLimit' => $this->memoryLimit(),
+            'postMaxSize' => $this->postMaxSize(),
         ];
     }
 }

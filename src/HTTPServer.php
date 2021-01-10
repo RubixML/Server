@@ -43,6 +43,7 @@ use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
 use React\Http\Server as HTTP;
+use React\Http\Io\IniUtil;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -119,6 +120,20 @@ class HTTPServer implements Server, Verbose
      * @var int
      */
     protected $sseReconnectBuffer;
+
+    /**
+     * The maximum number of bytes that the server can consume.
+     *
+     * @var int
+     */
+    protected $memoryLimit;
+
+    /**
+     * The maximum size of a request body in bytes.
+     *
+     * @var int
+     */
+    protected $postMaxSize;
 
     /**
      * A PSR-3 logger instance.
@@ -199,6 +214,8 @@ class HTTPServer implements Server, Verbose
         $this->maxConcurrentRequests = $maxConcurrentRequests;
         $this->cacheMaxAge = $cacheMaxAge;
         $this->sseReconnectBuffer = $sseReconnectBuffer;
+        $this->memoryLimit = IniUtil::iniSizeToBytes((string) ini_get('memory_limit'));
+        $this->postMaxSize = IniUtil::iniSizeToBytes((string) ini_get('post_max_size'));
         $this->logger = new BlackHole();
     }
 
@@ -260,6 +277,30 @@ class HTTPServer implements Server, Verbose
     public function sseReconnectBuffer() : int
     {
         return $this->sseReconnectBuffer;
+    }
+
+    /**
+     * Return the maximum memory allowed in bytes.
+     *
+     * @internal
+     *
+     * @return int
+     */
+    public function memoryLimit() : int
+    {
+        return $this->memoryLimit;
+    }
+
+    /**
+     * Return the maximum size of a request body in bytes.
+     *
+     * @internal
+     *
+     * @return int
+     */
+    public function postMaxSize() : int
+    {
+        return $this->postMaxSize;
     }
 
     /**

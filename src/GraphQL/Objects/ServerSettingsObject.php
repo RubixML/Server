@@ -44,6 +44,13 @@ class ServerSettingsObject extends ObjectType
                         return $settings->maxConcurrentRequests();
                     },
                 ],
+                'cacheMaxAge' => [
+                    'description' => 'the maximum number of seconds to hold an item in the cache since it was last accessed.',
+                    'type' => Type::nonNull(Type::int()),
+                    'resolve' => function (ServerSettings $settings) : int {
+                        return $settings->cacheMaxAge();
+                    },
+                ],
                 'sseReconnectBuffer' => [
                     'description' => 'The size of the server-sent events (SSE) reconnect buffer.',
                     'type' => Type::nonNull(Type::int()),

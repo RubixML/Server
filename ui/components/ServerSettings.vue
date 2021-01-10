@@ -20,6 +20,12 @@
                 <td class="has-text-right">{{ settings.maxConcurrentRequests.toLocaleString() }}</td>
             </tr>
             <tr>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum number of seconds to hold an item in the cache since it was last accessed.">
+                    <span class="has-text-weight-medium">Cache Max Age</span>
+                </span></td>
+                <td class="has-text-right has-text-first-letter-capitalized">{{ cacheMaxAge }}</td>
+            </tr>
+            <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The size of the server-sent events (SSE) reconnect buffer.">
                     <span class="has-text-weight-medium">SSE Reconnect Buffer</span>
                 </span></td>
@@ -43,6 +49,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import moment from 'moment';
 import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
@@ -53,6 +60,7 @@ export const fragment = gql`
             host
             port
             maxConcurrentRequests
+            cacheMaxAge
             sseReconnectBuffer
             memoryLimit
             postMaxSize
@@ -68,6 +76,9 @@ export default Vue.extend({
         },
     },
     computed: {
+        cacheMaxAge() : string {
+            return moment().add(this.settings.cacheMaxAge, 'seconds').fromNow(true);
+        },
         memoryLimit() : string {
             return this.settings.memoryLimit !== -1
                 ? (this.settings.memoryLimit / MEGABYTE).toFixed(1) + 'M'
