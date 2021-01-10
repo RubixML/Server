@@ -6,10 +6,10 @@
                 <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">
-                            <label class="label">X Axis</label>
+                            <label for="x-axis-data" class="label">X Axis</label>
                             <div class="control">
                                 <div class="select is-fullwidth">
-                                    <select v-model="settings.dataColumns.xAxis" @change="updateDataset()">
+                                    <select id="x-axis-data" v-model="settings.dataColumns.xAxis" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"
                                             :key="offset"
@@ -22,10 +22,10 @@
                     </div>
                     <div class="column is-one-third">
                         <div class="field">
-                            <label class="label">Y Axis</label>
+                            <label for="y-axis-data" class="label">Y Axis</label>
                             <div class="control">
                                 <div class="select is-fullwidth">
-                                    <select v-model="settings.dataColumns.yAxis" @change="updateDataset()">
+                                    <select id="y-axis-data" v-model="settings.dataColumns.yAxis" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"
                                             :key="offset"
@@ -38,10 +38,10 @@
                     </div>
                     <div class="column is-one-third">
                         <div class="field">
-                            <label class="label">Scale</label>
+                            <label for="scale-data" class="label">Scale</label>
                             <div class="control">
                                 <div class="select is-fullwidth">
-                                    <select v-model="settings.dataColumns.scale" @change="updateDataset()">
+                                    <select id="scale-data" v-model="settings.dataColumns.scale" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"
                                             :key="offset"
@@ -56,9 +56,10 @@
                 <div class="columns">
                     <div class="column is-one-third">
                         <div class="field">
-                            <label class="label">Radius</label>
+                            <label for="bubble-radius" class="label">Radius</label>
                             <div class="control">
                                 <input class="slider is-circle has-output is-fullwidth"
+                                    id="bubble-radius"
                                     type="range"
                                     v-model="settings.radius"
                                     step="1"
@@ -72,9 +73,10 @@
                     </div>
                     <div class="column is-one-third">
                         <div class="field">
-                            <label class="label">Stroke</label>
+                            <label for="bubble-stroke" class="label">Stroke</label>
                             <div class="control">
                                 <input class="slider is-circle has-output is-fullwidth"
+                                    id="bubble-stroke"
                                     type="range"
                                     v-model="settings.stroke"
                                     step="1"

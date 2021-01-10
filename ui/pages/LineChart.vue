@@ -3,13 +3,13 @@
         <section class="section">
             <div class="container">
                 <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-sliders-h"></i></span>Chart Properties</h2>
-                <div v-for="(line, offset) in settings.lines" :key ="offset" class="columns">
+                <div v-for="(line, offset) in settings.lines" :key="offset" class="columns">
                     <div class="column is-one-quarter">
                         <div class="field">
-                            <label class="label">Data Column</label>
+                            <label :for="'line-' + offset + '-data'" class="label">Data Column</label>
                             <div class="control">
                                 <div class="select is-fullwidth">
-                                    <select v-model="line.dataColumn" @change="updateDataset()">
+                                    <select :id="'line-' + offset + '-data'" v-model="line.dataColumn" @change="updateDataset()">
                                         <option :value="null">Select column</option>
                                         <option v-for="(header, offset) in continuousHeaders"
                                             :key="offset"
@@ -22,9 +22,10 @@
                     </div>
                     <div class="column is-one-quarter">
                         <div class="field">
-                            <label class="label">Thickness</label>
+                            <label :for="'line-' + offset + '-thickness'" class="label">Thickness</label>
                             <div class="control">
                                 <input class="slider is-circle has-output is-fullwidth"
+                                    :id="'line-' + offset + '-thickness'"
                                     type="range"
                                     v-model="line.thickness"
                                     step="1"
@@ -38,9 +39,10 @@
                     </div>
                     <div class="column is-one-quarter">
                         <div class="field">
-                            <label class="label">Tension</label>
+                            <label :for="'line-' + offset + '-tension'" class="label">Tension</label>
                             <div class="control">
                                 <input class="slider is-circle has-output is-fullwidth"
+                                    :id="'line-' + offset + '-tension'"
                                     type="range"
                                     v-model="line.tension"
                                     step="1"
