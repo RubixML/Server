@@ -37,6 +37,13 @@ class ServerSettingsObject extends ObjectType
                         return $settings->port();
                     },
                 ],
+                'tls' => [
+                    'description' => 'Is transport layer security (TLS) enabled?',
+                    'type' => Type::nonNull(Type::boolean()),
+                    'resolve' => function (ServerSettings $settings) : bool {
+                        return $settings->tls();
+                    },
+                ],
                 'maxConcurrentRequests' => [
                     'description' => 'The maximum number of requests to handle concurrently.',
                     'type' => Type::nonNull(Type::int()),

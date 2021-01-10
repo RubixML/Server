@@ -244,6 +244,18 @@ class HTTPServer implements Server, Verbose
     }
 
     /**
+     * Is transport layer security (TLS) enabled?
+     *
+     * @internal
+     *
+     * @return bool
+     */
+    public function tls() : bool
+    {
+        return isset($this->cert);
+    }
+
+    /**
      * Return the maximum number of concurrent requests.
      *
      * @internal

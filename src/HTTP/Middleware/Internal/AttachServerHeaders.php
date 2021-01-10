@@ -8,12 +8,10 @@ use React\Promise\PromiseInterface;
 
 use function React\Promise\resolve;
 
-use const Rubix\Server\VERSION;
-
 class AttachServerHeaders
 {
     /**
-     * The full server name including version number.
+     * The name of the server.
      *
      * @var string
      */
@@ -24,7 +22,7 @@ class AttachServerHeaders
      */
     public function __construct(string $serverName)
     {
-        $this->serverName = "$serverName/" . VERSION;
+        $this->serverName = $serverName;
     }
 
     /**

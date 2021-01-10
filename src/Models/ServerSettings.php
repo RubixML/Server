@@ -42,6 +42,16 @@ class ServerSettings
     }
 
     /**
+     * Is transport layer security (TLS) enabled?
+     *
+     * @return bool
+     */
+    public function tls() : bool
+    {
+        return $this->server->tls();
+    }
+
+    /**
      * Return the maximum number of concurrent requests.
      *
      * @return int
@@ -101,6 +111,7 @@ class ServerSettings
         return [
             'host' => $this->host(),
             'port' => $this->port(),
+            'tls' => $this->tls(),
             'maxConcurrentRequests' => $this->maxConcurrentRequests(),
             'cacheMaxAge' => $this->cacheMaxAge(),
             'sseReconnectBuffer' => $this->sseReconnectBuffer(),

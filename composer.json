@@ -8,7 +8,7 @@
     "keywords": [
         "ai", "api", "cloud", "distributed", "graphql", "graph ql", "inference", "inference engine",
         "inference server", "infrastructure", "json api", "machine learning", "microservice", "ml",
-        "ml infrastructure", "ml server", "model server", "model deployment", "php", "pap ai",
+        "ml infrastructure", "ml server", "model server", "model deployment", "php", "php ai",
         "php machine learning", "php ml", "prediction", "rest api", "rest server", "rest client",
         "rubix", "rubix ml", "rubixml", "server"
     ],
@@ -48,10 +48,7 @@
     "autoload": {
         "psr-4": {
             "Rubix\\Server\\": "src/"
-        },
-        "files": [
-            "src/constants.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

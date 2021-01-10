@@ -14,6 +14,12 @@
                 <td class="has-text-right">{{ settings.port }}</td>
             </tr>
             <tr>
+                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="Is transport layer security (TLS) enabled?">
+                    <span class="has-text-weight-medium">TLS</span>
+                </span></td>
+                <td class="has-text-right">{{ settings.tls ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
                 <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The maximum number of requests to handle concurrently.">
                     <span class="has-text-weight-medium">Max Concurrent Requests</span>
                 </span></td>
@@ -59,6 +65,7 @@ export const fragment = gql`
         settings {
             host
             port
+            tls
             maxConcurrentRequests
             cacheMaxAge
             sseReconnectBuffer

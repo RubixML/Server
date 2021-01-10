@@ -29,7 +29,7 @@ use Exception;
 class RESTClient implements Client, AsyncClient
 {
     protected const HEADERS = [
-        'User-Agent' => 'Rubix ML REST Client/' . VERSION,
+        'User-Agent' => 'Rubix ML REST Client',
         'Accept' => 'application/json',
     ];
 

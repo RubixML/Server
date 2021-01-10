@@ -18,18 +18,10 @@ class ProcessInfo
      */
     protected $pid;
 
-    /**
-     * The version numbers model.
-     *
-     * @var \Rubix\Server\Models\Versions
-     */
-    protected $versions;
-
     public function __construct()
     {
         $this->start = time();
         $this->pid = getmypid() ?: null;
-        $this->versions = new Versions();
     }
 
     /**
@@ -53,16 +45,6 @@ class ProcessInfo
     }
 
     /**
-     * Return the version numbers model.
-     *
-     * @return \Rubix\Server\Models\Versions
-     */
-    public function versions() : Versions
-    {
-        return $this->versions;
-    }
-
-    /**
      * Return the model as an associative array.
      *
      * @return mixed[]
@@ -72,7 +54,6 @@ class ProcessInfo
         return [
             'start' => $this->start,
             'pid' => $this->pid,
-            'versions' => $this->versions->asArray(),
         ];
     }
 }

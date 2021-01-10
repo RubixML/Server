@@ -3,7 +3,6 @@
 namespace Rubix\Server\GraphQL\Objects;
 
 use Rubix\Server\Models\ProcessInfo;
-use Rubix\Server\Models\Versions;
 use GraphQL\Type\Definition\Type;
 
 class ProcessInfoObject extends ObjectType
@@ -36,12 +35,6 @@ class ProcessInfoObject extends ObjectType
                     'type' => Type::int(),
                     'resolve' => function (ProcessInfo $info) : ?int {
                         return $info->pid();
-                    },
-                ],
-                'versions' => [
-                    'type' => Type::nonNull(VersionsObject::singleton()),
-                    'resolve' => function (ProcessInfo $info) : Versions {
-                        return $info->versions();
                     },
                 ],
             ],

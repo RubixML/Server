@@ -19,24 +19,6 @@
                 </span></td>
                 <td class="has-text-right">{{ info.pid }}</td>
             </tr>
-            <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of the library the server is running on.">
-                    <span class="has-text-weight-medium">Server Version</span>
-                </span></td>
-                <td class="has-text-right">{{ info.versions.server}}</td>
-            </tr>
-            <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of Rubix ML the model is running on.">
-                    <span class="has-text-weight-medium">ML Version</span>
-                </span></td>
-                <td class="has-text-right">{{ info.versions.ml }}</td>
-            </tr>
-            <tr>
-                <td><span class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The version of PHP the server is running on.">
-                    <span class="has-text-weight-medium">PHP Version</span>
-                </span></td>
-                <td class="has-text-right">{{ info.versions.php }}</td>
-            </tr>
         </tbody>
     </table>
 </template>
@@ -53,11 +35,6 @@ export const fragment = gql`
         info {
             start
             pid
-            versions {
-                server
-                ml
-                php
-            }
         }
     }
 `;
