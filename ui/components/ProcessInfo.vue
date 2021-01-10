@@ -53,7 +53,7 @@ export default Vue.extend({
     },
     computed: {
         upSince() : string {
-            return moment.unix(this.info.start).format('MMM. Do, YYYY [@] h:mmA');
+            return moment.unix(this.info.start).format('MMM. Do, YYYY [at] h:mmA');
         },
     },
     methods: {

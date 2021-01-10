@@ -66,7 +66,7 @@ module.exports = [{
                 ],
             },
             {
-                test: /\.png$/,
+                test: /\.(png|webp)$/,
                 loader: 'file-loader',
                 options: {
                     name: '[name].[ext]',
@@ -88,6 +88,16 @@ module.exports = [{
                     publicPath: '/fonts/',
                 },
             },
+            {
+                test: /\.ogg$/,
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]',
+                    outputPath: '/sounds/',
+                    publicPath: '/sounds/',
+                    esModule: false,
+                },
+            },
         ],
     },
     plugins: [
@@ -103,7 +113,6 @@ module.exports = [{
                 { from: 'ui/images/app-icon-apple-touch.png', to: 'images/' },
                 { from: 'ui/images/app-icon-medium.png', to: 'images/' },
                 { from: 'ui/images/app-icon-large.png', to: 'images/' },
-                { from: 'ui/sounds/sharp.ogg', to: 'sounds/' },
             ],
         }),
         new CompressionPlugin({
