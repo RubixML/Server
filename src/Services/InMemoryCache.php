@@ -83,8 +83,10 @@ class InMemoryCache
     {
         $now = time();
 
-        $this->store = array_filter($this->store, function ($item) use ($now) {
-            return $now < $item->expiresAt();
-        });
+        foreach ($this->store as $key => $item) {
+            if ($now >= $item->expiresAt()) {
+                unset($this->store[$key]);
+            }
+        }
     }
 }

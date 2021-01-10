@@ -32,7 +32,7 @@ use Rubix\Server\Listeners\StopTimers;
 use Rubix\Server\Listeners\CloseSSEChannels;
 use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Jobs\UpdateMemoryUsage;
-use Rubix\Server\Jobs\EvictCaches;
+use Rubix\Server\Jobs\EvictCacheItems;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\ML\Other\Loggers\BlackHole;
 use GraphQL\Executor\Promise\Adapter\ReactPromiseAdapter;
@@ -347,9 +347,7 @@ class HTTPServer implements Server, Verbose
 
         $cacheEvictor = $scheduler->repeat(
             self::CACHE_EVICTION_INTERVAL,
-            new EvictCaches([
-                $assetsCache,
-            ])
+            new EvictCacheItems($assetsCache)
         );
 
         $memoryUpdater = $scheduler->repeat(
@@ -392,10 +390,10 @@ class HTTPServer implements Server, Verbose
 
         $stack = array_merge($stack, $this->middlewares);
 
-        $stack[] = new CheckRequestBodySize($server->settings());
+        $stack[] = new CheckRequestBodySize($this->postMaxSize);
         $stack[] = new CircuitBreaker($server);
         $stack[] = new LimitConcurrentRequestsMiddleware($this->maxConcurrentRequests);
-        $stack[] = new RequestBodyBufferMiddleware($server->settings()->postMaxSize());
+        $stack[] = new RequestBodyBufferMiddleware($this->postMaxSize);
         $stack[] = [$router, 'dispatch'];
 
         $http = new HTTP($loop, ...$stack);
