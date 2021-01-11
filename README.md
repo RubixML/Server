@@ -1,5 +1,5 @@
-# Rubix ML Server
-Bring your [Rubix ML](https://github.com/RubixML/RubixML) models into production by serving them with one of our stand-alone model inference servers. Servers wrap your trained estimator in an API that can be queried locally or over the network in real-time using standard protocols. In addition, the library provides client implementations for making queries from your applications.
+# Rubix Server
+Bring your [Rubix ML](https://github.com/RubixML/ML) models into production by serving them with one of our stand-alone model inference servers. Servers wrap your trained estimator in an API that can be queried locally or over the network in real-time using standard protocols. In addition, the library provides client implementations for making queries from your applications.
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
