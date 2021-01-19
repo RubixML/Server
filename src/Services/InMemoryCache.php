@@ -19,7 +19,9 @@ class InMemoryCache
      *
      * @var \Rubix\Server\Services\CacheItem[]
      */
-    protected $store;
+    protected $store = [
+        //
+    ];
 
     /**
      * @param int $expiresAfter
