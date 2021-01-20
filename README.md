@@ -106,7 +106,7 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 | 3 | cert | null | string | The path to the certificate used to authenticate and encrypt the HTTP channel. |
 | 4 | middlewares | [] | array | The stack of server middleware to run on each request/response. |
 | 5 | max concurrent requests | 10 | int | The maximum number of requests that can be handled concurrently. |
-| 6 | cache max age | 60 | int | The maximum number of seconds to hold an item in the cache since it was last accessed. |
+| 6 | static assets cache| InMemoryCache | Cache | The cache used to serve static asset requests. |
 | 7 | sse reconnect buffer | 50 | int | The maximum number of events to store in the server-sent events (SSE) reconnect buffer. |
 
 #### PHP INI Configuration
@@ -122,6 +122,7 @@ use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use Rubix\ML\Other\Loggers\Screen;
 use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
+use Rubix\Server\Services\Caches\InMemoryCache;
 
 $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 	new AccessLogGenerator(new Screen()),
@@ -129,7 +130,7 @@ $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
 		'morgan' => 'secret',
 		'taylor' => 'secret',
 	]),
-], 50, 86400, 100);
+], 50, new InMemoryCache(86400), 100);
 ```
 
 #### Routes

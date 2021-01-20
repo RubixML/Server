@@ -1,6 +1,6 @@
 <?php
 
-namespace Rubix\Server\Services;
+namespace Rubix\Server\Services\Caches;
 
 interface Cache
 {

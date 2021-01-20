@@ -8,7 +8,7 @@ use Rubix\ML\Classifiers\KDNeighbors;
 use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
-use Rubix\Server\Services\InMemoryCache;
+use Rubix\Server\Services\Caches\InMemoryCache;
 use Rubix\ML\Other\Loggers\Screen;
 
 $generator = new Agglomerate([

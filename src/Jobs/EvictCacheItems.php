@@ -2,19 +2,19 @@
 
 namespace Rubix\Server\Jobs;
 
-use Rubix\Server\Services\Cache;
+use Rubix\Server\Services\Caches\Cache;
 
 class EvictCacheItems implements Job
 {
     /**
      * The cache whose items to evict.
      *
-     * @var \Rubix\Server\Services\Cache
+     * @var \Rubix\Server\Services\Caches\Cache
      */
     protected $cache;
 
     /**
-     * @param \Rubix\Server\Services\Cache $cache
+     * @param \Rubix\Server\Services\Caches\Cache $cache
      */
     public function __construct(Cache $cache)
     {

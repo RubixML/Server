@@ -3,7 +3,7 @@
 namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Helpers\File;
-use Rubix\Server\Services\Cache;
+use Rubix\Server\Services\Caches\Cache;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
 use Rubix\Server\HTTP\Responses\InternalServerError;
@@ -36,13 +36,13 @@ class StaticAssetsController extends Controller
     /**
      * The cache.
      *
-     * @var \Rubix\Server\Services\Cache
+     * @var \Rubix\Server\Services\Caches\Cache
      */
     protected $cache;
 
     /**
      * @param string $basePath
-     * @param \Rubix\Server\Services\Cache $cache
+     * @param \Rubix\Server\Services\Caches\Cache $cache
      * @throws \Rubix\Server\Exceptions\RuntimeException
      */
     public function __construct(string $basePath, Cache $cache)

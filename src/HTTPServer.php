@@ -10,9 +10,9 @@ use Rubix\Server\Services\Subscriptions;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
-use Rubix\Server\Services\Cache;
-use Rubix\Server\Services\InMemoryCache;
 use Rubix\Server\Services\SSEChannel;
+use Rubix\Server\Services\Caches\Cache;
+use Rubix\Server\Services\Caches\InMemoryCache;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
 use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
@@ -109,9 +109,9 @@ class HTTPServer implements Server, Verbose
     protected $maxConcurrentRequests;
 
     /**
-     * The static assets cache.
+     * The cache used to serve static asset requests.
      *
-     * @var \Rubix\Server\Services\Cache
+     * @var \Rubix\Server\Services\Caches\Cache
      */
     protected $staticAssetsCache;
 
@@ -163,7 +163,7 @@ class HTTPServer implements Server, Verbose
      * @param string|null $cert
      * @param \Rubix\Server\HTTP\Middleware\Server\Middleware[] $middlewares
      * @param int $maxConcurrentRequests
-     * @param \Rubix\Server\Services\Cache $staticAssetsCache
+     * @param \Rubix\Server\Services\Caches\Cache $staticAssetsCache
      * @param int $sseReconnectBuffer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
