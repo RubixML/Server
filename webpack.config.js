@@ -14,7 +14,7 @@ module.exports = [{
     name: 'app',
     mode: process.env.NODE_ENV,
     entry: {
-        app: './ui/app.ts',
+        app: path.resolve('./ui/app.ts'),
     },
     resolve: {
         extensions: [
@@ -141,7 +141,7 @@ module.exports = [{
     name: 'sw',
     mode: process.env.NODE_ENV,
     entry: {
-        sw: './ui/sw.ts',
+        sw: path.resolve('./ui/sw.ts'),
     },
     resolve: {
         extensions: [

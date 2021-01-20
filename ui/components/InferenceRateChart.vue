@@ -1,12 +1,10 @@
 <template>
-    <figure>
-        <canvas id="inference-rate-chart" width="480" height="320"></canvas>
-    </figure>
+    <figure id="inference-rate-chart"></figure>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import Chart from 'chart.js';
+import Plotly from 'plotly.js-basic-dist';
 import gql from 'graphql-tag';
 
 const ONE_SECOND = 1000;
@@ -21,8 +19,12 @@ export const fragment = gql`
 export default Vue.extend({
     data() {
         return {
-            chart: null,
-            last: null,
+            datasets: {
+                total: [],
+            },
+            last: {
+                numSamplesInferred: null,
+            }
         };
     },
     props: {
@@ -32,111 +34,82 @@ export default Vue.extend({
         },
     },
     mounted() {
-        const element = document.getElementById('inference-rate-chart');
+        const labels = [...Array(DATASET_SIZE).keys()].reverse();
+        const zeros = Array(DATASET_SIZE).fill(0);
 
-        if (!(element instanceof HTMLCanvasElement)) {
-            console.log('Canvas not found!');
-
-            return;
-        }
-
-        const context = element.getContext('2d');
-
-        this.chart = new Chart(context, {
-            type: 'line',
-            data: {
-                labels: [...Array(DATASET_SIZE).keys()].reverse(),
-                datasets: [
-                    {
-                        label: 'Average',
-                        data: Array(DATASET_SIZE).fill(0.0),
-                        borderColor: 'rgb(255, 159, 64)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: false,
-                    },
-                    {
-                        label: 'Samples',
-                        data: Array(DATASET_SIZE).fill(0.0),
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                ],
+        Plotly.newPlot('inference-rate-chart', [
+            {
+                name: 'Average',
+                x: labels,
+                y: zeros,
+                type: 'scatter',
+                line: {
+                    width: 2,
+                    color: 'rgb(75, 192, 192)',
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(75, 192, 192, 0.1)',
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+            {
+                name: 'Samples',
+                x: labels,
+                y: zeros,
+                type: 'scatter',
+                line: {
+                    width: 2,
+                    color: 'rgb(255, 205, 86)',
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(255, 205, 86, 0.1)',
+            },
+        ], {
+            title: {
+                text: 'Inference Rate',
+                font: {
+                    size: 14,
+                },
+            },
+            legend: {
+                orientation: 'h',
+            },
+            xaxis: {
                 title: {
-                    display: true,
-                    text: 'Inference Rate',
+                    text: 'Seconds',
                 },
-                tooltips: {
-                    enabled: false,
-                },
-                hover: {
-                    mode: 'point',
-                    intersect: true,
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Seconds',
-                            },
-                            ticks: {
-                                precision: 0,
-                            },
-                            display: true,
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Samples',
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                precision: 0,
-                            },
-                            display: true,
-                        }
-                    ],
-                },
+                autorange: 'reversed',
             },
+            yaxis: {
+                title: {
+                    text: 'Samples',
+                },
+                rangemode: 'tozero',
+            },
+            paper_bgcolor: 'rgba(0, 0, 0, 0)',
+            plot_bgcolor: 'rgba(0, 0, 0, 0)',
+        }, {
+            responsive: true,
+            displayModeBar: false,
         });
+
+        this.last.numSamplesInferred = this.model.numSamplesInferred;
 
         setInterval(this.update, ONE_SECOND);
     },
     methods: { 
         update() : void {
-            let datasets = this.chart.data.datasets;
+            const inferred = this.model.numSamplesInferred - this.last.numSamplesInferred;
 
-            if (!this.last) {
-                this.last = Object.assign({}, this.model);
+            this.datasets.total.push(inferred);
+
+            if (this.datasets.total.length > DATASET_SIZE) {
+                this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
             }
+    
+            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
 
-            datasets[1].data.push((this.model.numSamplesInferred - this.last.numSamplesInferred));
- 
-            datasets.forEach((dataset) => {
-                if (dataset.data.length > DATASET_SIZE) {
-                    dataset.data = dataset.data.slice(-DATASET_SIZE);
-                }
-            });
+            this.last.numSamplesInferred = this.model.numSamplesInferred;
 
-            const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[1].data.length;
-
-            datasets[0].data.push(mu);
-
-            this.last = Object.assign({}, this.model);
-
-            this.chart.update(0);
+            Plotly.extendTraces('inference-rate-chart', {y: [[mu], [inferred]]}, [0, 1], DATASET_SIZE);
         },
     },
 });

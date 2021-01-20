@@ -27,7 +27,7 @@ $server = new HTTPServer('127.0.0.1', 8000, null, [
     new BasicAuthenticator([
         'user' => 'secret',
     ]),
-]);
+], 5, 0);
 
 $server->setLogger(new Screen());
 

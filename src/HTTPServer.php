@@ -196,10 +196,9 @@ class HTTPServer implements Server, Verbose
                 . " be greater than 0, $maxConcurrentRequests given.");
         }
 
-        if ($cacheMaxAge < self::CACHE_EVICTION_INTERVAL) {
+        if ($cacheMaxAge < 0) {
             throw new InvalidArgumentException('Cache max age must be'
-                . ' greater than ' . self::CACHE_EVICTION_INTERVAL
-                . ", $cacheMaxAge given.");
+                . " greater than 0, $cacheMaxAge given.");
         }
 
         if ($sseReconnectBuffer < 0) {
