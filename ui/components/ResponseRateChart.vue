@@ -32,13 +32,37 @@ export default Vue.extend({
                 successful: null,
                 rejected: null,
                 failed: null,
-            }
+            },
+            timer: null,
         };
     },
     props: {
         requests: {
             type: Object,
             required: true,
+        },
+    },
+    methods: { 
+        update() : void {
+            const successful = this.requests.successful - this.last.successful;
+            const rejected = this.requests.rejected - this.last.rejected;
+            const failed = this.requests.failed - this.last.failed;
+
+            const total = successful + rejected + failed;
+
+            this.datasets.total.push(total);
+
+            if (this.datasets.total.length > DATASET_SIZE) {
+                this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
+            }
+            
+            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
+
+            Plotly.extendTraces('response-rate-chart', {y: [[mu], [successful], [rejected], [failed]]}, [0, 1, 2, 3], DATASET_SIZE);
+        
+            this.last.successful = this.requests.successful;
+            this.last.rejected = this.requests.rejected;
+            this.last.failed = this.requests.failed;
         },
     },
     mounted() {
@@ -95,26 +119,35 @@ export default Vue.extend({
                 fillcolor: 'rgba(255, 97, 131, 0.1)',
             },
         ], {
-            title: {
-                text: 'Response Rate',
-                font: {
-                    size: 14,
-                },
-            },
             legend: {
                 orientation: 'h',
+                y: 1.2,
             },
             xaxis: {
                 title: {
                     text: 'Seconds',
+                    font: {
+                        size: 12,
+                    },
                 },
                 autorange: 'reversed',
+                gridcolor: 'rgb(120, 120, 120)',
             },
             yaxis: {
                 title: {
                     text: 'Requests',
+                    font: {
+                        size: 12,
+                    },
                 },
                 rangemode: 'tozero',
+                gridcolor: 'rgb(120, 120, 120)',
+            },
+            margin: {
+                l: 80,
+                r: 40,
+                t: 40,
+                b: 40,
             },
             paper_bgcolor: 'rgba(0, 0, 0, 0)',
             plot_bgcolor: 'rgba(0, 0, 0, 0)',
@@ -127,27 +160,11 @@ export default Vue.extend({
         this.last.rejected = this.requests.rejected;
         this.last.failed = this.requests.failed;
 
-        setInterval(this.update, ONE_SECOND);
+        this.timer = setInterval(this.update, ONE_SECOND);
     },
-    methods: { 
-        update() : void {
-            const successful = this.requests.successful - this.last.successful;
-            const rejected = this.requests.rejected - this.last.rejected;
-            const failed = this.requests.failed - this.last.failed;
-
-            const total = successful + rejected + failed;
-
-            this.datasets.total.push(total);
-
-            if (this.datasets.total.length > DATASET_SIZE) {
-                this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
-            }
-    
-            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
-
-            this.last = Object.assign({}, this.requests);
-
-            Plotly.extendTraces('response-rate-chart', {y: [[mu], [successful], [rejected], [failed]]}, [0, 1, 2, 3], DATASET_SIZE);
+    beforeDestroy() {
+        if (this.timer) {
+            clearInterval(this.timer);
         }
     },
 });

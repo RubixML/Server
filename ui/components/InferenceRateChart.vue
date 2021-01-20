@@ -24,13 +24,31 @@ export default Vue.extend({
             },
             last: {
                 numSamplesInferred: null,
-            }
+            },
+            timer: null,
         };
     },
     props: {
         model: {
             type: Object,
             required: true,
+        },
+    },
+    methods: { 
+        update() : void {
+            const inferred = this.model.numSamplesInferred - this.last.numSamplesInferred;
+
+            this.datasets.total.push(inferred);
+
+            if (this.datasets.total.length > DATASET_SIZE) {
+                this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
+            }
+    
+            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
+
+            this.last.numSamplesInferred = this.model.numSamplesInferred;
+
+            Plotly.extendTraces('inference-rate-chart', {y: [[mu], [inferred]]}, [0, 1], DATASET_SIZE);
         },
     },
     mounted() {
@@ -63,26 +81,35 @@ export default Vue.extend({
                 fillcolor: 'rgba(255, 205, 86, 0.1)',
             },
         ], {
-            title: {
-                text: 'Inference Rate',
-                font: {
-                    size: 14,
-                },
-            },
             legend: {
                 orientation: 'h',
+                y: 1.2,
             },
             xaxis: {
                 title: {
                     text: 'Seconds',
+                    font: {
+                        size: 12,
+                    },
                 },
                 autorange: 'reversed',
+                gridcolor: 'rgb(120, 120, 120)',
             },
             yaxis: {
                 title: {
                     text: 'Samples',
+                    font: {
+                        size: 12,
+                    },
                 },
                 rangemode: 'tozero',
+                gridcolor: 'rgb(120, 120, 120)',
+            },
+            margin: {
+                l: 80,
+                r: 40,
+                t: 40,
+                b: 40,
             },
             paper_bgcolor: 'rgba(0, 0, 0, 0)',
             plot_bgcolor: 'rgba(0, 0, 0, 0)',
@@ -93,24 +120,12 @@ export default Vue.extend({
 
         this.last.numSamplesInferred = this.model.numSamplesInferred;
 
-        setInterval(this.update, ONE_SECOND);
+        this.timer = setInterval(this.update, ONE_SECOND);
     },
-    methods: { 
-        update() : void {
-            const inferred = this.model.numSamplesInferred - this.last.numSamplesInferred;
-
-            this.datasets.total.push(inferred);
-
-            if (this.datasets.total.length > DATASET_SIZE) {
-                this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
-            }
-    
-            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
-
-            this.last.numSamplesInferred = this.model.numSamplesInferred;
-
-            Plotly.extendTraces('inference-rate-chart', {y: [[mu], [inferred]]}, [0, 1], DATASET_SIZE);
-        },
+    beforeDestroy() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     },
 });
 </script>

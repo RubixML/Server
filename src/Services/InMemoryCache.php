@@ -5,7 +5,7 @@ namespace Rubix\Server\Services;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 
-class InMemoryCache
+class InMemoryCache implements Cache
 {
     /**
      * The number of seconds to keep an item in the cache for since the last time it was accessed.
@@ -90,5 +90,13 @@ class InMemoryCache
                 unset($this->store[$key]);
             }
         }
+    }
+
+    /**
+     * Flush all items out of the cache.
+     */
+    public function flush() : void
+    {
+        $this->store = [];
     }
 }

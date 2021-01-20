@@ -26,20 +26,12 @@
                     <div class="column is-half">
                         <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-cog"></i></span>Settings</h2>
                         <server-settings v-if="server.settings" :settings="server.settings"></server-settings>
+                        <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-microchip"></i></span>Process Info</h2>
+                        <process-info v-if="server.info" :info="server.info"></process-info>
                     </div>
                     <div class="column is-half">
                         <memory-level v-if="server.memory" :memory="server.memory"></memory-level>
                         <memory-usage-chart v-if="server.memory" :memory="server.memory"></memory-usage-chart>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="section">
-            <div class="container">
-                <div class="columns">
-                    <div class="column is-half">
-                        <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-microchip"></i></span>Process Info</h2>
-                        <process-info v-if="server.info" :info="server.info"></process-info>
                     </div>
                 </div>
             </div>

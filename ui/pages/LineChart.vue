@@ -124,15 +124,7 @@
         <section class="section">
             <div class="container">
                 <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-eye"></i></span>Visualize</h2>
-                <figure>
-                    <canvas id="dataset-line-chart" width="550" height="550"></canvas>
-                </figure>
-            </div>
-        </section>
-        <section class="section">
-            <div class="container">
-                <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
-                <export-chart v-if="canvas" :canvas="canvas"></export-chart>
+                <figure id="dataset-line-chart"></figure>
             </div>
         </section>
     </div>
@@ -140,7 +132,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Chart from 'chart.js';
+import Plotly from 'plotly.js-basic-dist';
 import { ALL_COLORS } from '../chart-colors';
 import bus from '../bus';
 
@@ -153,8 +145,6 @@ export default Vue.extend({
                 ],
                 maxLines: 10,
             },
-            canvas: null,
-            chart: null,
         };
     },
     props: {
@@ -176,71 +166,59 @@ export default Vue.extend({
         },
     },
     mounted() {
-        const element = document.getElementById('dataset-line-chart');
-
-        if (!(element instanceof HTMLCanvasElement)) {
-            console.log('Canvas not found!');
-
-            return;
-        }
-
-        const context = element.getContext('2d');
-
-        this.canvas = element;
-
-        this.chart = new Chart(context, {
-            type: 'line',
-            data: {
-                labels: [
-                    //
-                ],
-                datasets: [
-                    //
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                title: {
-                    text: 'Line Chart',
-                    display: false,
-                },
-                legend: {
-                    display: true,
-                },
-                tooltips: {
-                    enabled: true,
-                    mode: 'nearest',
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true,
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            scaleLabel: {
-                                display: false,
-                                labelString: '',
-                            },
-                            display: true,
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            scaleLabel: {
-                                display: false,
-                                labelString: '',
-                            },
-                            display: true,
-                        }
-                    ],
-                },
-            },
-        });
+        // this.chart = new Chart(context, {
+        //     type: 'line',
+        //     data: {
+        //         labels: [
+        //             //
+        //         ],
+        //         datasets: [
+        //             //
+        //         ],
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         maintainAspectRatio: false,
+        //         title: {
+        //             text: 'Line Chart',
+        //             display: false,
+        //         },
+        //         legend: {
+        //             display: true,
+        //         },
+        //         tooltips: {
+        //             enabled: true,
+        //             mode: 'nearest',
+        //         },
+        //         hover: {
+        //             mode: 'nearest',
+        //             intersect: true,
+        //         },
+        //         scales: {
+        //             xAxes: [
+        //                 {
+        //                     scaleLabel: {
+        //                         display: false,
+        //                         labelString: '',
+        //                     },
+        //                     display: true,
+        //                 },
+        //             ],
+        //             yAxes: [
+        //                 {
+        //                     scaleLabel: {
+        //                         display: false,
+        //                         labelString: '',
+        //                     },
+        //                     display: true,
+        //                 }
+        //             ],
+        //         },
+        //     },
+        // });
 
         bus.$on('dataset-imported', (payload) => {
-            this.chart.data.labels = [...Array(payload.dataset.data.length).keys()];
+            // this.chart.data.labels = [...Array(payload.dataset.data.length).keys()];
 
             this.updateDataset();
         });
@@ -264,28 +242,28 @@ export default Vue.extend({
             this.updateDataset();
         },
         updateDataset() : void {
-            this.chart.data.datasets = [];
+            // this.chart.data.datasets = [];
 
-            this.settings.lines.forEach((line) => {
-                if (line.dataColumn !== null) {
-                    const values = this.dataset.data.map((row) => {
-                        return row[line.dataColumn];
-                    });
+            // this.settings.lines.forEach((line) => {
+            //     if (line.dataColumn !== null) {
+            //         const values = this.dataset.data.map((row) => {
+            //             return row[line.dataColumn];
+            //         });
 
-                    this.chart.data.datasets.push({
-                        label: this.dataset.header[line.dataColumn],
-                        data: values,
-                        borderWidth: line.thickness,
-                        borderColor: 'rgb(' + Object.values(line.color).join(', ') + ')',
-                        tension: 1.0 - line.tension,
-                        pointRadius: 0,
-                        pointHitRadius: line.thickness,
-                        fill: false,
-                    });
-                }
-            });
+            //         this.chart.data.datasets.push({
+            //             label: this.dataset.header[line.dataColumn],
+            //             data: values,
+            //             borderWidth: line.thickness,
+            //             borderColor: 'rgb(' + Object.values(line.color).join(', ') + ')',
+            //             tension: 1.0 - line.tension,
+            //             pointRadius: 0,
+            //             pointHitRadius: line.thickness,
+            //             fill: false,
+            //         });
+            //     }
+            // });
 
-            this.chart.update();
+            // this.chart.update();
         },
     },
 });
