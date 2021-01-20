@@ -111,7 +111,7 @@ class HTTPServer implements Server, Verbose
     /**
      * The static assets cache.
      *
-     * @var int
+     * @var \Rubix\Server\Services\Cache
      */
     protected $staticAssetsCache;
 
@@ -173,7 +173,7 @@ class HTTPServer implements Server, Verbose
         ?string $cert = null,
         array $middlewares = [],
         int $maxConcurrentRequests = 10,
-        Cache $staticAssetsCache = null,
+        ?Cache $staticAssetsCache = null,
         int $sseReconnectBuffer = 50
     ) {
         if (empty($host)) {
