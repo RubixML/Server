@@ -38,7 +38,7 @@ $ composer require rubix/server
 
 ---
 ### Servers
-Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implements their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache. By utilizing concurrency, each server instance is able to handle thousands of connections at the same time.
+Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implement their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache. By utilizing concurrency, each server instance is able to handle thousands of connections at the same time.
 
 To boot up a server, pass a trained estimator instance to the `serve()` method:
 ```php
