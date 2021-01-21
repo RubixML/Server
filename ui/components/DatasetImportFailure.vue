@@ -42,6 +42,16 @@ export default Vue.extend({
             message: 'Unknown error.',
         };
     },
+    methods: {
+        ding() : void {
+            if (this.sound) {
+                this.sound.play();
+            }
+        },
+        vibrate() : void {
+            window.navigator.vibrate(VIBRATE_PATTERN);
+        },
+    },
     mounted() {
         const element = document.getElementById('sharp');
 
@@ -54,20 +64,10 @@ export default Vue.extend({
                 this.message = payload.error.message;
                 this.open = true;
                 
-                this.beep();
+                this.ding();
                 this.vibrate();
             }
         });
-    },
-    methods: {
-        beep() : void {
-            if (this.sound) {
-                this.sound.play();
-            }
-        },
-        vibrate() : void {
-            window.navigator.vibrate(VIBRATE_PATTERN);
-        },
     },
 });
 </script>

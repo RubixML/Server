@@ -184,13 +184,13 @@ export default Vue.extend({
     },
     computed: {
         continuousHeaders() : Object[] {
-            return this.dataset.header.map((title, offset) => {
+            return this.dataset.header.map((title : string, offset : number) => {
                 return {
                     title,
                     offset,
                 };
-            }).filter((header, offset) => {
-                return Number(this.dataset.data[0][offset]) == this.dataset.data[0][offset];
+            }).filter((header, offset : number) => {
+                return this.dataset.types[offset] === 'continuous';
             });
         },
     },
@@ -217,7 +217,7 @@ export default Vue.extend({
 
             this.settings.lines.forEach((line) => {
                 if (line.dataColumn !== null) {
-                    const values = this.dataset.data.map((row) => {
+                    const values = this.dataset.data.map((row : Array<string|number>) => {
                         return row[line.dataColumn];
                     });
 
@@ -240,11 +240,11 @@ export default Vue.extend({
         },
     },
     mounted() {
-        this.addLine();
-
-        bus.$on('dataset-imported', (payload) => {
+        bus.$on('dataset-imported', () => {
             this.updateDataset();
         });
+
+        this.addLine();
 
         Plotly.newPlot('dataset-line-chart', [], this.layout, {
             responsive: true,

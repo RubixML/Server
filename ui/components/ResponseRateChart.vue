@@ -58,7 +58,7 @@ export default Vue.extend({
                 this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
             }
             
-            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
+            const mu = this.datasets.total.reduce((sigma : number, count : number) => sigma + count, 0) / this.datasets.total.length;
 
             Plotly.extendTraces('response-rate-chart', {y: [[mu], [successful], [rejected], [failed]]}, [0, 1, 2, 3], DATASET_SIZE);
         
@@ -67,7 +67,7 @@ export default Vue.extend({
             this.last.failed = this.requests.failed;
         },
     },
-    mounted() {
+    mounted() : void {
         const labels = [...Array(DATASET_SIZE).keys()].reverse();
         const zeros = Array(DATASET_SIZE).fill(0);
 
@@ -134,6 +134,7 @@ export default Vue.extend({
                 },
                 autorange: 'reversed',
                 gridcolor: 'rgb(120, 120, 120)',
+                fixedrange: true,
             },
             yaxis: {
                 title: {
@@ -144,6 +145,7 @@ export default Vue.extend({
                 },
                 rangemode: 'tozero',
                 gridcolor: 'rgb(120, 120, 120)',
+                fixedrange: true,
             },
             margin: {
                 l: 80,
@@ -153,9 +155,18 @@ export default Vue.extend({
             },
             paper_bgcolor: 'rgba(0, 0, 0, 0)',
             plot_bgcolor: 'rgba(0, 0, 0, 0)',
+            modebar: {
+                color: 'rgb(128, 128, 128)',
+                activecolor: 'rgb(192, 192, 192)',
+                bgcolor: 'rgba(0, 0, 0, 0)',
+            },
         }, {
             responsive: true,
-            displayModeBar: false,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtons: [
+                ['toImage'],
+            ],
         });
 
         this.last.successful = this.requests.successful;
@@ -164,7 +175,7 @@ export default Vue.extend({
 
         this.timer = setInterval(this.update, ONE_SECOND);
     },
-    beforeDestroy() {
+    beforeDestroy() : void {
         if (this.timer) {
             clearInterval(this.timer);
         }

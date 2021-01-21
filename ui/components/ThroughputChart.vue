@@ -51,7 +51,7 @@ export default Vue.extend({
             this.last.sent = this.transfers.sent;
         },
     },
-    mounted() {
+    mounted() : void {
         const labels = [...Array(DATASET_SIZE).keys()].reverse();
         const zeros = Array(DATASET_SIZE).fill(0);
 
@@ -95,6 +95,7 @@ export default Vue.extend({
                 type: 'linear',
                 autorange: 'reversed',
                 gridcolor: 'rgb(120, 120, 120)',
+                fixedrange: true,
             },
             yaxis: {
                 title: {
@@ -106,6 +107,7 @@ export default Vue.extend({
                 type: 'linear',
                 rangemode: 'tozero',
                 gridcolor: 'rgb(120, 120, 120)',
+                fixedrange: true,
             },
             margin: {
                 l: 80,
@@ -115,9 +117,18 @@ export default Vue.extend({
             },
             paper_bgcolor: 'rgba(0, 0, 0, 0)',
             plot_bgcolor: 'rgba(0, 0, 0, 0)',
+            modebar: {
+                color: 'rgb(128, 128, 128)',
+                activecolor: 'rgb(192, 192, 192)',
+                bgcolor: 'rgba(0, 0, 0, 0)',
+            },
         }, {
             responsive: true,
-            displayModeBar: false,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtons: [
+                ['toImage'],
+            ],
         });
 
         this.last.received = this.transfers.received;
@@ -125,7 +136,7 @@ export default Vue.extend({
 
         this.timer = setInterval(this.update, ONE_SECOND);
     },
-    beforeDestroy() {
+    beforeDestroy() : void {
         if (this.timer) {
             clearInterval(this.timer);
         }

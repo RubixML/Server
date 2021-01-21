@@ -208,22 +208,22 @@ export default Vue.extend({
     },
     computed: {
         continuousHeaders() : Object[] {
-            return this.dataset.header.map((title, offset) => {
+            return this.dataset.header.map((title : string, offset : number) => {
                 return {
                     title,
                     offset,
                 };
-            }).filter((header, offset) => {
+            }).filter((header, offset : number) => {
                 return this.dataset.types[offset] === 'continuous';
             });
         },
         categoricalHeaders() : Object[] {
-            return this.dataset.header.map((title, offset) => {
+            return this.dataset.header.map((title : string, offset : number) => {
                 return {
                     title,
                     offset,
                 };
-            }).filter((header, offset) => {
+            }).filter((header, offset : number) => {
                 return this.dataset.types[offset] === 'categorical';
             });
         },
@@ -240,7 +240,7 @@ export default Vue.extend({
                 const xData = [];
                 const yData = [];
 
-                this.dataset.data.forEach(row => {
+                this.dataset.data.forEach((row : Array<string|number>) => {
                     xData.push(row[this.settings.dataColumns.xAxis]);
                     yData.push(row[this.settings.dataColumns.yAxis]);
                 });
@@ -248,14 +248,14 @@ export default Vue.extend({
                 var weights;
 
                 if (this.settings.dataColumns.scale !== null) {
-                    const values = this.dataset.data.map(row => row[this.settings.dataColumns.scale]);
+                    const values = this.dataset.data.map((row : Array<string|number>) => row[this.settings.dataColumns.scale]);
 
                     const min = Math.min(...values);
                     const max = Math.max(...values);
 
                     const delta = max - min;
 
-                    weights = values.map(value => (value - min) / delta);
+                    weights = values.map((value : number) => (value - min) / delta);
                 } else {
                     weights = Array(this.dataset.data.length).fill(1.0);
                 }
@@ -267,7 +267,7 @@ export default Vue.extend({
                     marker: {
                         symbol: 'circle',
                         color: this.rgbColorString,
-                        size: weights.map(weight => weight * this.settings.radius),
+                        size: weights.map((weight : number) => weight * this.settings.radius),
                     },
                 }], this.layout);
             } else {
@@ -276,7 +276,7 @@ export default Vue.extend({
         },
     },
     mounted() {
-        bus.$on('dataset-imported', (payload) => {
+        bus.$on('dataset-imported', () => {
            this.settings.dataColumns.xAxis = null;
            this.settings.dataColumns.yAxis = null;
            this.settings.dataColumns.scale = null;

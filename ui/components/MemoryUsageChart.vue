@@ -46,7 +46,7 @@ export default Vue.extend({
             Plotly.extendTraces('memory-usage-chart', {y: [[this.current], [this.peak]]}, [0, 1], 1);
         },
     },
-    mounted() {
+    mounted() : void {
         Plotly.newPlot('memory-usage-chart', [
             {
                 name: 'Current',
@@ -79,6 +79,7 @@ export default Vue.extend({
                     },
                 },
                 gridcolor: 'rgb(120, 120, 120)',
+                fixedrange: true,
             },
             yaxis: {
                 title: {
@@ -87,8 +88,10 @@ export default Vue.extend({
                         size: 12,
                     },
                 },
+                type: 'linear',
                 rangemode: 'tozero',
                 gridcolor: 'rgb(120, 120, 120)',
+                fixedrange: true,
             },
             margin: {
                 l: 80,
@@ -98,14 +101,23 @@ export default Vue.extend({
             },
             paper_bgcolor: 'rgba(0, 0, 0, 0)',
             plot_bgcolor: 'rgba(0, 0, 0, 0)',
+            modebar: {
+                color: 'rgb(128, 128, 128)',
+                activecolor: 'rgb(192, 192, 192)',
+                bgcolor: 'rgba(0, 0, 0, 0)',
+            },
         }, {
             responsive: true,
-            displayModeBar: false,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtons: [
+                ['toImage'],
+            ],
         });
 
         this.timer = setInterval(this.update, THREE_SECONDS);
     },
-    beforeDestroy() {
+    beforeDestroy() : void {
         if (this.timer) {
             clearInterval(this.timer);
         }

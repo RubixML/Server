@@ -106,12 +106,12 @@ export default Vue.extend({
             this.model = response.data.model;
 
             this.$sse('/dashboard/events', { format: 'json' }).then((stream) => {
-                stream.subscribe('request-received', (message) => {
-                    this.server.httpStats.transfers.received += message.size;
+                stream.subscribe('request-received', (event) => {
+                    this.server.httpStats.transfers.received += event.size;
                 });
 
-                stream.subscribe('response-sent', (message) => {
-                    const code = message.code;
+                stream.subscribe('response-sent', (event) => {
+                    const code = event.code;
 
                     if (code >= 100 && code < 400) {
                         this.server.httpStats.requests.successful++;
@@ -121,16 +121,16 @@ export default Vue.extend({
                         this.server.httpStats.requests.failed++;
                     }
 
-                    this.server.httpStats.transfers.sent += message.size;
+                    this.server.httpStats.transfers.sent += event.size;
                 });
 
-                stream.subscribe('dataset-inferred', (message) => {
-                    this.model.numSamplesInferred += message.numSamples;
+                stream.subscribe('dataset-inferred', (event) => {
+                    this.model.numSamplesInferred += event.numSamples;
                 });
 
-                stream.subscribe('memory-usage-updated', (message) => {
-                    this.server.memory.current = message.current;
-                    this.server.memory.peak = message.peak;
+                stream.subscribe('memory-usage-updated', (event) => {
+                    this.server.memory.current = event.current;
+                    this.server.memory.peak = event.peak;
                 });
 
                 this.stream = stream;

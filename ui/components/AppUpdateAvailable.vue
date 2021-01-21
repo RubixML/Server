@@ -40,29 +40,13 @@ export default Vue.extend({
             open: false,
         };
     },
-    mounted() {
-        const element = document.getElementById('sharp');
-
-        if (element instanceof HTMLAudioElement) {
-            this.sound = element;
-        }
-
-        bus.$on('update-ready', (payload) => {
-            if (!this.open) {
-                this.open = true;
-
-                this.beep();
-                this.vibrate();
-            }
-        });
-    },
     methods: {
         update() : void {
             bus.$emit('update-accepted');
 
             this.open = false;
         },
-        beep() : void {
+        ding() : void {
             if (this.sound) {
                 this.sound.play();
             }
@@ -70,6 +54,22 @@ export default Vue.extend({
         vibrate() : void {
             window.navigator.vibrate(VIBRATE_PATTERN);
         },
+    },
+    mounted() {
+        const element = document.getElementById('sharp');
+
+        if (element instanceof HTMLAudioElement) {
+            this.sound = element;
+        }
+
+        bus.$on('update-ready', () => {
+            if (!this.open) {
+                this.open = true;
+
+                this.ding();
+                this.vibrate();
+            }
+        });
     },
 });
 </script>

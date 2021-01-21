@@ -42,7 +42,8 @@ export const fragment = gql`
 export default Vue.extend({
     data() {
         return {
-            uptime: '',
+            uptime: null,
+            timer: null,
         };
     },
     props: {
@@ -64,7 +65,12 @@ export default Vue.extend({
     mounted() {
         this.updateUptime();
 
-        setInterval(this.updateUptime, THIRTY_SECONDS);
+        this.timer = setInterval(this.updateUptime, THIRTY_SECONDS);
+    },
+    beforeDestroy() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     },
 });
 </script>

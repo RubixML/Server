@@ -30,15 +30,9 @@ export default Vue.extend({
     data() {
         return {
             dataset: {
-                data: [
-                    //
-                ],
-                types: [
-                    //
-                ],
-                header: [
-                    //
-                ],
+                data: [],
+                types: [],
+                header: [],
             },
             loader: 'csv',
         };
@@ -48,17 +42,17 @@ export default Vue.extend({
             if (payload.dataset.header) {
                 this.dataset.header = payload.dataset.header;
             } else {
-                this.dataset.header = [...payload.dataset.data[0].keys()].map(offset => 'Column ' + offset);
+                this.dataset.header = [...payload.dataset.data[0].keys()].map((offset : number) => 'Column ' + offset);
             }
 
-            this.dataset.data = payload.dataset.data.map(row => {
+            this.dataset.data = payload.dataset.data.map((row : Array<string|number>) => {
                 if (!(row instanceof Array)) {
                     return Object.values(row);
                 }
 
                 return row;
             }).map(row => {
-                return row.map(value => {
+                return row.map((value : string|number) => {
                     if (Number(value) == value) {
                         return Number(value);
                     }
@@ -67,7 +61,9 @@ export default Vue.extend({
                 });
             });
 
-            this.dataset.types = this.dataset.data[0].map(value => typeof value === 'string' ? 'categorical' : 'continuous');
+            this.dataset.types = this.dataset.data[0].map((value : string|number) => {
+                return typeof value === 'string' ? 'categorical' : 'continuous';
+            });
         });
     },
 });
