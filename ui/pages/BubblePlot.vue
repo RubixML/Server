@@ -73,6 +73,23 @@
                     </div>
                     <div class="column is-one-third">
                         <div class="field">
+                            <label for="bubble-stroke" class="label">Stroke</label>
+                            <div class="control">
+                                <input class="slider is-circle has-output is-fullwidth"
+                                    id="bubble-stroke"
+                                    type="range"
+                                    v-model="settings.stroke"
+                                    step="1"
+                                    min="0"
+                                    max="5"
+                                    @change="updateDataset()"
+                                />
+                                <output>{{ settings.stroke }}</output>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-one-third">
+                        <div class="field">
                             <label class="label">Color</label>
                             <div class="control">
                                 <div class="dropdown is-hoverable">
@@ -157,6 +174,7 @@ export default Vue.extend({
                     scale: null,
                 },
                 radius: 10,
+                stroke: 1,
                 color: PURPLE,
             },
             layout: {
@@ -167,9 +185,6 @@ export default Vue.extend({
                 xaxis: {
                     title: {
                         text: '',
-                        font: {
-                            size: 12,
-                        },
                     },
                     type: 'auto',
                     gridcolor: 'rgb(128, 128, 128)',
@@ -177,9 +192,6 @@ export default Vue.extend({
                 yaxis: {
                     title: {
                         text: '',
-                        font: {
-                            size: 12,
-                        },
                     },
                     type: 'auto',
                     gridcolor: 'rgb(128, 128, 128)',
@@ -218,16 +230,16 @@ export default Vue.extend({
     },
     methods: {
         updateDataset() : void {
-            let data : any[];
+            let data : any[] = [];
 
             if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
-                this.layout.xaxis.title.text = this.dataset.headers[this.settings.dataColumns.xAxis];
-                this.layout.yaxis.title.text = this.dataset.headers[this.settings.dataColumns.yAxis];
+                this.layout.xaxis.title.text = this.dataset.headers[this.settings.dataColumns.xAxis].title;
+                this.layout.yaxis.title.text = this.dataset.headers[this.settings.dataColumns.yAxis].title;
 
-                let xData : (string|number)[] = [];
-                let yData : (string|number)[] = [];
+                let xData : number[] = [];
+                let yData : number[] = [];
 
-                this.dataset.data.forEach((row : (string|number)[]) => {
+                this.dataset.data.forEach((row : number[]) => {
                     xData.push(row[this.settings.dataColumns.xAxis]);
                     yData.push(row[this.settings.dataColumns.yAxis]);
                 });
@@ -235,21 +247,21 @@ export default Vue.extend({
                 let sizes : number[];
 
                 if (this.settings.dataColumns.scale !== null) {
-                    const values : number[] = this.dataset.data.map((row : (string|number)[]) => row[this.settings.dataColumns.scale]);
+                    const values : number[] = this.dataset.data.map((row : number[]) => row[this.settings.dataColumns.scale]);
 
                     const min : number = Math.min(...values);
                     const max : number = Math.max(...values);
 
                     const delta : number = max - min;
 
-                    const weights : number[] = values.map((value : number) => (value - min) / delta)
+                    const weights : number[] = values.map((value : number) => (value - min) / delta);
                     
                     sizes = weights.map((weight : number) => weight * this.settings.radius);
                 } else {
                     sizes = Array(this.dataset.data.length).fill(this.settings.radius);
                 }
 
-                data = [{
+                data.push({
                     x: xData,
                     y: yData,
                     type: 'scattergl',
@@ -259,12 +271,10 @@ export default Vue.extend({
                         color: this.rgbColorString,
                         size: sizes,
                         line: {
-                            width: 0,
+                            width: this.settings.stroke,
                         },
                     },
-                }];
-            } else {
-                data = [];
+                });
             }
 
             Plotly.react('dataset-bubble-chart', data, this.layout);
