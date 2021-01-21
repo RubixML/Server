@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 const EOL = '\n';
 

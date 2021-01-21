@@ -143,9 +143,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Plotly from 'plotly.js-basic-dist';
+import Plotly from '../providers/plotly';
 import { PURPLE } from '../chart-colors';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 export default Vue.extend({
     data() {
@@ -215,16 +215,6 @@ export default Vue.extend({
                 };
             }).filter((header, offset : number) => {
                 return this.dataset.types[offset] === 'continuous';
-            });
-        },
-        categoricalHeaders() : Object[] {
-            return this.dataset.header.map((title : string, offset : number) => {
-                return {
-                    title,
-                    offset,
-                };
-            }).filter((header, offset : number) => {
-                return this.dataset.types[offset] === 'categorical';
             });
         },
         rgbColorString() : string {

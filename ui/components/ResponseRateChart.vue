@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Plotly from 'plotly.js-basic-dist';
+import Plotly from '../providers/plotly';
 import gql from 'graphql-tag';
 
 const ONE_SECOND = 1000;

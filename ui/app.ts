@@ -23,13 +23,11 @@ import CommunicationError from './components/CommunicationError.vue';
 import DatasetImportFailure from './components/DatasetImportFailure.vue';
 import PageLoader from './components/PageLoader.vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
+import { apolloClient } from './providers/apollo';
 import { required, max, ext } from 'vee-validate/dist/rules';
-import { ApolloClient } from 'apollo-client';
-import { createHttpLink } from 'apollo-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import { Workbox } from 'workbox-window';
 import routes from './routes';
-import bus from  './bus';
+import bus from  './providers/bus';
 
 require('./scss/app.scss');
 
@@ -56,21 +54,6 @@ if ('serviceWorker' in navigator) {
   
     wb.register();
 }
-
-/**
- * Boot up the Apollo Graph QL client.
- */
-
-const httpLink = createHttpLink({
-    uri: '/graphql',
-});
-
-const cache = new InMemoryCache();
-  
-const apolloClient = new ApolloClient({
-    link: httpLink,
-    cache,
-});
 
 /**
  * Register the Vue components and instantiate the Vue app.

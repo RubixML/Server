@@ -4,7 +4,7 @@
             <div class="container">
                 <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-sliders-h"></i></span>Chart Properties</h2>
                 <div v-for="(line, offset) in settings.lines" :key="offset" class="columns">
-                    <div class="column is-one-quarter">
+                    <div class="column is-one-third">
                         <div class="field">
                             <label :for="'line-' + offset + '-data'" class="label">Data Column</label>
                             <div class="control">
@@ -20,41 +20,45 @@
                             </div>
                         </div>
                     </div>
-                    <div class="column is-one-quarter">
-                        <div class="field">
-                            <label :for="'line-' + offset + '-thickness'" class="label">Thickness</label>
-                            <div class="control">
-                                <input class="slider is-circle has-output is-fullwidth"
-                                    :id="'line-' + offset + '-thickness'"
-                                    type="range"
-                                    v-model="line.thickness"
-                                    step="1"
-                                    min="1"
-                                    max="5"
-                                    @change="updateDataset()"
-                                />
-                                <output>{{ line.thickness }}</output>
+                    <div class="column is-one-third">
+                        <div class="columns">
+                            <div class="column is-half">
+                                <div class="field">
+                                    <label :for="'line-' + offset + '-thickness'" class="label">Thickness</label>
+                                    <div class="control">
+                                        <input class="slider is-circle has-output is-fullwidth"
+                                            :id="'line-' + offset + '-thickness'"
+                                            type="range"
+                                            v-model="line.thickness"
+                                            step="1"
+                                            min="1"
+                                            max="10"
+                                            @change="updateDataset()"
+                                        />
+                                        <output>{{ line.thickness }}</output>
+                                    </div>
+                                </div>
                             </div>
-                        </div>  
-                    </div>
-                    <div class="column is-one-quarter">
-                        <div class="field">
-                            <label :for="'line-' + offset + '-tension'" class="label">Tension</label>
-                            <div class="control">
-                                <input class="slider is-circle has-output is-fullwidth"
-                                    :id="'line-' + offset + '-tension'"
-                                    type="range"
-                                    v-model="line.tension"
-                                    step="0.1"
-                                    min="0"
-                                    max="1.3"
-                                    @change="updateDataset()"
-                                />
-                                <output>{{ line.tension }}</output>
+                            <div class="column is-half">
+                                <div class="field">
+                                    <label :for="'line-' + offset + '-tension'" class="label">Tension</label>
+                                    <div class="control">
+                                        <input class="slider is-circle has-output is-fullwidth"
+                                            :id="'line-' + offset + '-tension'"
+                                            type="range"
+                                            v-model="line.tension"
+                                            step="0.1"
+                                            min="0"
+                                            max="1.3"
+                                            @change="updateDataset()"
+                                        />
+                                        <output>{{ line.tension }}</output>
+                                    </div>
+                                </div>
                             </div>
-                        </div>  
+                        </div>   
                     </div>
-                    <div class="column is-one-quarter">
+                    <div class="column is-one-third">
                         <div class="field">
                             <label class="label">Color</label>
                             <div class="control">
@@ -134,17 +138,15 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Plotly from 'plotly.js-basic-dist';
+import Plotly from '../providers/plotly';
 import { ALL_COLORS } from '../chart-colors';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 export default Vue.extend({
     data() {
         return {
             settings: {
-                lines: [
-                    //
-                ],
+                lines: [],
                 maxLines: 10,
             },
             layout: {

@@ -45,7 +45,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Papa, { ParseError, ParseResult } from 'papaparse';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 export default Vue.extend({
     data() {

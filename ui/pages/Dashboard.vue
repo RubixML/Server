@@ -53,7 +53,7 @@ import { fragment as MemoryUsageChartFragment } from '../components/MemoryUsageC
 import { fragment as ProcessInfoFragment } from '../components/ProcessInfo.vue';
 import { fragment as ServerSettingsFragment } from '../components/ServerSettings.vue';
 import gql from 'graphql-tag';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 export default Vue.extend({
     data() {

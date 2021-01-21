@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 const VIBRATE_PATTERN = [100, 30, 100];
 

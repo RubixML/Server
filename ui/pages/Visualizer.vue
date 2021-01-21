@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import bus from '../bus';
+import bus from '../providers/bus';
 
 export default Vue.extend({
     data() {

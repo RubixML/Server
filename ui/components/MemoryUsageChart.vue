@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Plotly from 'plotly.js-basic-dist';
+import Plotly from '../providers/plotly';
 import gql from 'graphql-tag';
 
 const MEGABYTE = 1000000;
@@ -78,7 +78,7 @@ export default Vue.extend({
                         size: 12,
                     },
                 },
-                gridcolor: 'rgb(120, 120, 120)',
+                gridcolor: 'rgb(128, 128, 128)',
                 fixedrange: true,
             },
             yaxis: {
@@ -90,7 +90,7 @@ export default Vue.extend({
                 },
                 type: 'linear',
                 rangemode: 'tozero',
-                gridcolor: 'rgb(120, 120, 120)',
+                gridcolor: 'rgb(128, 128, 128)',
                 fixedrange: true,
             },
             margin: {
