@@ -76,7 +76,7 @@ export default Vue.extend({
                 name: 'Average',
                 x: labels,
                 y: zeros,
-                type: 'scatter',
+                type: 'scattergl',
                 line: {
                     width: 2,
                     color: 'rgb(184, 107, 255)',
@@ -89,6 +89,7 @@ export default Vue.extend({
                 x: labels,
                 y: zeros,
                 type: 'scatter',
+                mode: 'lines',
                 line: {
                     width: 2,
                     color: 'rgb(35, 209, 96)',
@@ -100,7 +101,7 @@ export default Vue.extend({
                 name: 'Rejected',
                 x: labels,
                 y: zeros,
-                type: 'scatter',
+                type: 'scattergl',
                 line: {
                     width: 2,
                     color: 'rgb(255, 159, 64)',

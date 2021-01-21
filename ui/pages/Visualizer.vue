@@ -42,9 +42,9 @@ export default Vue.extend({
             let titles : string[];
 
             if (event.dataset.header) {
-                let titles = event.dataset.header;
+                titles = event.dataset.header;
             } else {
-                let titles = [...event.dataset.data[0].keys()].map((offset : number) => 'Column ' + offset);
+                titles = [...event.dataset.data[0].keys()].map((offset : number) => 'Column ' + offset);
             }
 
             this.dataset.headers = titles.map((title : string, offset : number) => { 

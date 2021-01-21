@@ -1,3 +1,7 @@
+- 0.2.8-beta
+    - Web UI charts now driven by Plotly
+    - Dataset visualizers now use WebGL under the hood
+
 - 0.2.7-beta
     - Added static assets cache
     

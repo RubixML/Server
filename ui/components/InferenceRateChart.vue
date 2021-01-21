@@ -62,7 +62,7 @@ export default Vue.extend({
                 name: 'Average',
                 x: labels,
                 y: zeros,
-                type: 'scatter',
+                type: 'scattergl',
                 line: {
                     width: 2,
                     color: 'rgb(75, 192, 192)',
@@ -75,6 +75,7 @@ export default Vue.extend({
                 x: labels,
                 y: zeros,
                 type: 'scatter',
+                mode: 'lines',
                 line: {
                     width: 2,
                     color: 'rgb(255, 205, 86)',

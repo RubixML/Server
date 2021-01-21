@@ -60,7 +60,7 @@ export default Vue.extend({
                 name: 'Received',
                 x: labels,
                 y: zeros,
-                type: 'scatter',
+                type: 'scattergl',
                 line: {
                     width: 2,
                     color: 'rgb(32, 156, 238)',
@@ -73,6 +73,7 @@ export default Vue.extend({
                 x: labels,
                 y: zeros,
                 type: 'scatter',
+                mode: 'lines',
                 line: {
                     width: 2,
                     color: 'rgb(184, 107, 255)',

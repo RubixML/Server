@@ -38,7 +38,7 @@
                     </div>
                     <div class="column is-one-third">
                         <div class="field">
-                            <label for="scale-data" class="label">Scale</label>
+                            <label for="scale-data" class="label">Size</label>
                             <div class="control">
                                 <div class="select is-fullwidth">
                                     <select id="scale-data" v-model="settings.dataColumns.scale" @change="updateDataset()">
@@ -156,7 +156,7 @@ export default Vue.extend({
                     yAxis: null,
                     scale: null,
                 },
-                radius: 5,
+                radius: 10,
                 color: PURPLE,
             },
             layout: {
@@ -244,23 +244,27 @@ export default Vue.extend({
 
                     const weights : number[] = values.map((value : number) => (value - min) / delta)
                     
-                    let sizes = weights.map((weight : number) => weight * this.settings.radius);
+                    sizes = weights.map((weight : number) => weight * this.settings.radius);
                 } else {
-                    let sizes = Array(this.dataset.data.length).fill(this.settings.radius);
+                    sizes = Array(this.dataset.data.length).fill(this.settings.radius);
                 }
 
-                let data = [{
+                data = [{
                     x: xData,
                     y: yData,
+                    type: 'scattergl',
                     mode: 'markers',
                     marker: {
                         symbol: 'circle',
                         color: this.rgbColorString,
                         size: sizes,
+                        line: {
+                            width: 0,
+                        },
                     },
                 }];
             } else {
-                let data = [];
+                data = [];
             }
 
             Plotly.react('dataset-bubble-chart', data, this.layout);

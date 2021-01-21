@@ -47,6 +47,10 @@ module.exports = [{
                 },
             },
             {
+                test: /\.js$/,
+                loader: 'ify-loader',
+            },
+            {
                 test: /\.vue$/,
                 loader: 'vue-loader',
             },

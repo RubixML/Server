@@ -21,42 +21,21 @@
                         </div>
                     </div>
                     <div class="column is-one-third">
-                        <div class="columns">
-                            <div class="column is-half">
-                                <div class="field">
-                                    <label :for="'line-' + offset + '-thickness'" class="label">Thickness</label>
-                                    <div class="control">
-                                        <input class="slider is-circle has-output is-fullwidth"
-                                            :id="'line-' + offset + '-thickness'"
-                                            type="range"
-                                            v-model="line.thickness"
-                                            step="1"
-                                            min="1"
-                                            max="10"
-                                            @change="updateDataset()"
-                                        />
-                                        <output>{{ line.thickness }}</output>
-                                    </div>
-                                </div>
+                        <div class="field">
+                            <label :for="'line-' + offset + '-thickness'" class="label">Thickness</label>
+                            <div class="control">
+                                <input class="slider is-circle has-output is-fullwidth"
+                                    :id="'line-' + offset + '-thickness'"
+                                    type="range"
+                                    v-model="line.thickness"
+                                    step="1"
+                                    min="1"
+                                    max="10"
+                                    @change="updateDataset()"
+                                />
+                                <output>{{ line.thickness }}</output>
                             </div>
-                            <div class="column is-half">
-                                <div class="field">
-                                    <label :for="'line-' + offset + '-tension'" class="label">Tension</label>
-                                    <div class="control">
-                                        <input class="slider is-circle has-output is-fullwidth"
-                                            :id="'line-' + offset + '-tension'"
-                                            type="range"
-                                            v-model="line.tension"
-                                            step="0.1"
-                                            min="0"
-                                            max="1.3"
-                                            @change="updateDataset()"
-                                        />
-                                        <output>{{ line.tension }}</output>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>   
+                        </div> 
                     </div>
                     <div class="column is-one-third">
                         <div class="field">
@@ -206,7 +185,6 @@ export default Vue.extend({
                 dataColumn: null,
                 color,
                 thickness: 2,
-                tension: 1.0,
             });
         },
         removeLine() : void {
@@ -228,18 +206,15 @@ export default Vue.extend({
 
                 const color : string = 'rgb(' + Object.values(line.color).join(', ') + ')';
 
-                const smoothing : number = 1.3 - line.tension;
-
                 const trace = {
                     name,
                     x: this.labels,
                     y: values,
-                    type: 'scatter',
+                    type: 'scattergl',
+                    mode: 'lines',
                     line: {
                         width: line.thickness,
                         color,
-                        shape: 'spline',
-                        smoothing,
                     },
                 };
 
