@@ -42,8 +42,8 @@ export default Vue.extend({
     },
     methods: { 
         update() : void {
-            const received = (this.transfers.received - this.last.received) / MEGABYTE;
-            const sent = (this.transfers.sent - this.last.sent) / MEGABYTE;
+            const received : number = (this.transfers.received - this.last.received) / MEGABYTE;
+            const sent : number = (this.transfers.sent - this.last.sent) / MEGABYTE;
 
             Plotly.extendTraces('throughput-chart', {y: [[received], [sent]]}, [0, 1], DATASET_SIZE);
 
@@ -52,8 +52,8 @@ export default Vue.extend({
         },
     },
     mounted() : void {
-        const labels = [...Array(DATASET_SIZE).keys()].reverse();
-        const zeros = Array(DATASET_SIZE).fill(0);
+        const labels : number[] = [...Array(DATASET_SIZE).keys()].reverse();
+        const zeros : number[] = Array(DATASET_SIZE).fill(0);
 
         Plotly.newPlot('throughput-chart', [
             {

@@ -142,6 +142,34 @@ import Plotly from '../providers/plotly';
 import { ALL_COLORS } from '../chart-colors';
 import bus from '../providers/bus';
 
+const CHART_LAYOUT = {
+    legend: {
+        orientation: 'h',
+        y: 1.2,
+    },
+    xaxis: {
+        type: 'linear',
+        gridcolor: 'rgb(128, 128, 128)',
+    },
+    yaxis: {
+        type: 'auto',
+        gridcolor: 'rgb(128, 128, 128)',
+    },
+    margin: {
+        l: 40,
+        r: 40,
+        t: 80,
+        b: 40,
+    },
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    plot_bgcolor: 'rgba(0, 0, 0, 0)',
+    modebar: {
+        color: 'rgb(128, 128, 128)',
+        activecolor: 'rgb(192, 192, 192)',
+        bgcolor: 'rgba(0, 0, 0, 0)',
+    },
+};
+
 export default Vue.extend({
     data() {
         return {
@@ -149,33 +177,7 @@ export default Vue.extend({
                 lines: [],
                 maxLines: 10,
             },
-            layout: {
-                legend: {
-                    orientation: 'h',
-                    y: 1.2,
-                },
-                xaxis: {
-                    type: 'linear',
-                    gridcolor: 'rgb(128, 128, 128)',
-                },
-                yaxis: {
-                    type: 'auto',
-                    gridcolor: 'rgb(128, 128, 128)',
-                },
-                margin: {
-                    l: 40,
-                    r: 40,
-                    t: 80,
-                    b: 40,
-                },
-                paper_bgcolor: 'rgba(0, 0, 0, 0)',
-                plot_bgcolor: 'rgba(0, 0, 0, 0)',
-                modebar: {
-                    color: 'rgb(128, 128, 128)',
-                    activecolor: 'rgb(192, 192, 192)',
-                    bgcolor: 'rgba(0, 0, 0, 0)',
-                },
-            },
+            labels: null,
         };
     },
     props: {
@@ -185,14 +187,14 @@ export default Vue.extend({
         },
     },
     computed: {
-        continuousHeaders() : Object[] {
-            return this.dataset.header.map((title : string, offset : number) => {
-                return {
-                    title,
-                    offset,
-                };
-            }).filter((header, offset : number) => {
+        continuousHeaders() : any[] {
+            return this.dataset.headers.filter((header, offset : number) => {
                 return this.dataset.types[offset] === 'continuous';
+            });
+        },
+        activeLines() : any[] {
+            return this.settings.lines.filter((line) => {
+                return line.dataColumn !== null;
             });
         },
     },
@@ -208,47 +210,55 @@ export default Vue.extend({
             });
         },
         removeLine() : void {
-            this.settings.lines.pop();
+            const line = this.settings.lines.pop();
 
-            this.updateDataset();
+            if (line.dataColumn !== null) {
+                this.updateDataset();
+            }
         },
         updateDataset() : void {
-            let data = [];
+            let data : any[] = [];
 
-            const labels = Array(this.dataset.data.length).keys();
+            this.activeLines.forEach((line) => {
+                const name : string = this.dataset.headers[line.dataColumn];
 
-            this.settings.lines.forEach((line) => {
-                if (line.dataColumn !== null) {
-                    const values = this.dataset.data.map((row : Array<string|number>) => {
-                        return row[line.dataColumn];
-                    });
+                const values : number[] = this.dataset.data.map((row : (string|number)[]) => {
+                    return row[line.dataColumn];
+                });
 
-                    data.push({
-                        name: this.dataset.header[line.dataColumn],
-                        x: labels,
-                        y: values,
-                        type: 'scatter',
-                        line: {
-                            width: line.thickness,
-                            color: 'rgb(' + Object.values(line.color).join(', ') + ')',
-                            shape: 'spline',
-                            smoothing: 1.3 - line.tension,
-                        },
-                    });
-                }
+                const color : string = 'rgb(' + Object.values(line.color).join(', ') + ')';
+
+                const smoothing : number = 1.3 - line.tension;
+
+                const trace = {
+                    name,
+                    x: this.labels,
+                    y: values,
+                    type: 'scatter',
+                    line: {
+                        width: line.thickness,
+                        color,
+                        shape: 'spline',
+                        smoothing,
+                    },
+                };
+
+                data.push(trace);
             });
 
-            Plotly.react('dataset-line-chart', data, this.layout);
+            Plotly.react('dataset-line-chart', data, CHART_LAYOUT);
         },
     },
-    mounted() {
-        bus.$on('dataset-imported', () => {
+    mounted() : void {
+        bus.$on('dataset-imported', (event) => {
+            this.labels = Array(event.dataset.data.length).keys();
+
             this.updateDataset();
         });
 
         this.addLine();
 
-        Plotly.newPlot('dataset-line-chart', [], this.layout, {
+        Plotly.newPlot('dataset-line-chart', [], CHART_LAYOUT, {
             responsive: true,
             displayModeBar: true,
             displaylogo: false,

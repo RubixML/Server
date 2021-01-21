@@ -46,11 +46,11 @@ export default Vue.extend({
     },
     methods: { 
         update() : void {
-            const successful = this.requests.successful - this.last.successful;
-            const rejected = this.requests.rejected - this.last.rejected;
-            const failed = this.requests.failed - this.last.failed;
+            const successful : number = this.requests.successful - this.last.successful;
+            const rejected : number = this.requests.rejected - this.last.rejected;
+            const failed : number = this.requests.failed - this.last.failed;
 
-            const total = successful + rejected + failed;
+            const total : number = successful + rejected + failed;
 
             this.datasets.total.push(total);
 
@@ -58,7 +58,7 @@ export default Vue.extend({
                 this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
             }
             
-            const mu = this.datasets.total.reduce((sigma : number, count : number) => sigma + count, 0) / this.datasets.total.length;
+            const mu : number = this.datasets.total.reduce((sigma : number, count : number) => sigma + count, 0) / this.datasets.total.length;
 
             Plotly.extendTraces('response-rate-chart', {y: [[mu], [successful], [rejected], [failed]]}, [0, 1, 2, 3], DATASET_SIZE);
         
@@ -68,8 +68,8 @@ export default Vue.extend({
         },
     },
     mounted() : void {
-        const labels = [...Array(DATASET_SIZE).keys()].reverse();
-        const zeros = Array(DATASET_SIZE).fill(0);
+        const labels : number[] = [...Array(DATASET_SIZE).keys()].reverse();
+        const zeros : number[] = Array(DATASET_SIZE).fill(0);
 
         Plotly.newPlot('response-rate-chart', [
             {

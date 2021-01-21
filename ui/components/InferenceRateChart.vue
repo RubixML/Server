@@ -38,7 +38,7 @@ export default Vue.extend({
     },
     methods: { 
         update() : void {
-            const inferred = this.model.numSamplesInferred - this.last.numSamplesInferred;
+            const inferred : number = this.model.numSamplesInferred - this.last.numSamplesInferred;
 
             this.datasets.total.push(inferred);
 
@@ -46,7 +46,7 @@ export default Vue.extend({
                 this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
             }
     
-            const mu = this.datasets.total.reduce((sigma : number, count : number) => sigma + count, 0) / this.datasets.total.length;
+            const mu : number = this.datasets.total.reduce((sigma : number, count : number) => sigma + count, 0) / this.datasets.total.length;
 
             Plotly.extendTraces('inference-rate-chart', {y: [[mu], [inferred]]}, [0, 1], DATASET_SIZE);
 
@@ -54,8 +54,8 @@ export default Vue.extend({
         },
     },
     mounted() : void {
-        const labels = [...Array(DATASET_SIZE).keys()].reverse();
-        const zeros = Array(DATASET_SIZE).fill(0);
+        const labels : number[] = [...Array(DATASET_SIZE).keys()].reverse();
+        const zeros : number[] = Array(DATASET_SIZE).fill(0);
 
         Plotly.newPlot('inference-rate-chart', [
             {

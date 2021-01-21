@@ -53,15 +53,15 @@ export default Vue.extend({
         },
     },
     mounted() {
-        const element = document.getElementById('sharp');
+        const element : HTMLElement = document.getElementById('sharp');
 
         if (element instanceof HTMLAudioElement) {
             this.sound = element;
         }
 
-        bus.$on('dataset-import-failed', (payload) => {
+        bus.$on('dataset-import-failed', (event) => {
             if (!this.open) {
-                this.message = payload.error.message;
+                this.message = event.error.message;
                 this.open = true;
                 
                 this.ding();

@@ -93,7 +93,7 @@ export default Vue.extend({
         },
         changeFile(event : MouseEvent) : void {
             this.$refs.provider.validate(event).then((result) => {
-                const target = event.target;
+                const target : EventTarget = event.target;
 
                 if (result.valid && target instanceof HTMLInputElement) {
                     this.file = target.files[0];

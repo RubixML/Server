@@ -207,13 +207,8 @@ export default Vue.extend({
         },
     },
     computed: {
-        continuousHeaders() : Object[] {
-            return this.dataset.header.map((title : string, offset : number) => {
-                return {
-                    title,
-                    offset,
-                };
-            }).filter((header, offset : number) => {
+        continuousHeaders() : any[] {
+            return this.dataset.headers.filter((header, offset : number) => {
                 return this.dataset.types[offset] === 'continuous';
             });
         },
@@ -223,46 +218,52 @@ export default Vue.extend({
     },
     methods: {
         updateDataset() : void {
+            let data : any[];
+
             if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
-                this.layout.xaxis.title.text = this.dataset.header[this.settings.dataColumns.xAxis];
-                this.layout.yaxis.title.text = this.dataset.header[this.settings.dataColumns.yAxis];
+                this.layout.xaxis.title.text = this.dataset.headers[this.settings.dataColumns.xAxis];
+                this.layout.yaxis.title.text = this.dataset.headers[this.settings.dataColumns.yAxis];
 
-                const xData = [];
-                const yData = [];
+                let xData : (string|number)[] = [];
+                let yData : (string|number)[] = [];
 
-                this.dataset.data.forEach((row : Array<string|number>) => {
+                this.dataset.data.forEach((row : (string|number)[]) => {
                     xData.push(row[this.settings.dataColumns.xAxis]);
                     yData.push(row[this.settings.dataColumns.yAxis]);
                 });
 
-                var weights;
+                let sizes : number[];
 
                 if (this.settings.dataColumns.scale !== null) {
-                    const values = this.dataset.data.map((row : Array<string|number>) => row[this.settings.dataColumns.scale]);
+                    const values : number[] = this.dataset.data.map((row : (string|number)[]) => row[this.settings.dataColumns.scale]);
 
-                    const min = Math.min(...values);
-                    const max = Math.max(...values);
+                    const min : number = Math.min(...values);
+                    const max : number = Math.max(...values);
 
-                    const delta = max - min;
+                    const delta : number = max - min;
 
-                    weights = values.map((value : number) => (value - min) / delta);
+                    const weights : number[] = values.map((value : number) => (value - min) / delta)
+                    
+                    let sizes = weights.map((weight : number) => weight * this.settings.radius);
                 } else {
-                    weights = Array(this.dataset.data.length).fill(1.0);
+                    let sizes = Array(this.dataset.data.length).fill(this.settings.radius);
                 }
 
-                Plotly.react('dataset-bubble-chart', [{
+                let data = [{
                     x: xData,
                     y: yData,
                     mode: 'markers',
                     marker: {
                         symbol: 'circle',
                         color: this.rgbColorString,
-                        size: weights.map((weight : number) => weight * this.settings.radius),
+                        size: sizes,
                     },
-                }], this.layout);
+                }];
             } else {
-                Plotly.react('dataset-bubble-chart', [], this.layout);
+                let data = [];
             }
+
+            Plotly.react('dataset-bubble-chart', data, this.layout);
         },
     },
     mounted() {

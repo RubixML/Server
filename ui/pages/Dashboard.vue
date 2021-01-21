@@ -69,7 +69,7 @@ export default Vue.extend({
             loading: false,
         };
     },
-    mounted() {
+    mounted() : void {
         this.loading = true;
 
         this.$apollo.query({
@@ -143,7 +143,7 @@ export default Vue.extend({
             });
         });
     },
-    beforeDestroy() {
+    beforeDestroy() : void {
         if (this.stream) {
             this.stream.close();
         }

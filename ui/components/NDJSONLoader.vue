@@ -55,10 +55,10 @@ export default Vue.extend({
             let reader = new FileReader();
             
             reader.onload = function (event : ProgressEvent) {
-                const data = String(this.result)
+                const data : any[] = String(this.result)
                     .split(EOL)
                     .filter(Boolean)
-                    .map((line) => JSON.parse(line));
+                    .map((line : string) => JSON.parse(line));
 
                 const header = data[0] instanceof Array ? null : data[0].keys();
                 
@@ -84,7 +84,7 @@ export default Vue.extend({
         },
         changeFile(event : MouseEvent) : void {
             this.$refs.provider.validate(event).then((result) => {
-                const target = event.target;
+                const target : EventTarget = event.target;
 
                 if (result.valid && target instanceof HTMLInputElement) {
                     this.file = target.files[0];

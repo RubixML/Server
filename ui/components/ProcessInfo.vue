@@ -62,12 +62,12 @@ export default Vue.extend({
             this.uptime = moment.unix(this.info.start).fromNow(true);
         }
     },
-    mounted() {
+    mounted() : void {
         this.updateUptime();
 
         this.timer = setInterval(this.updateUptime, THIRTY_SECONDS);
     },
-    beforeDestroy() {
+    beforeDestroy() : void {
         if (this.timer) {
             clearInterval(this.timer);
         }

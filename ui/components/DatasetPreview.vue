@@ -1,13 +1,13 @@
 <template>
     <div>
-        <div v-if="dataset.data.length && dataset.header.length">
+        <div v-if="dataset.data.length && dataset.headers.length">
             <div class="table-container">
                 <table class="table is-bordered is-striped is-narrow is-fullwidth">
                     <thead>
                         <tr>
                             <th class="has-text-weight-medium">#</th>
-                            <th v-for="(title, offset) in dataset.header" :key="offset" class="has-text-weight-medium" nowrap>
-                                {{ title }}
+                            <th v-for="header in dataset.headers" :key="header.offset" class="has-text-weight-medium" nowrap>
+                                {{ header.title }}
                             </th>
                         </tr>
                     </thead>

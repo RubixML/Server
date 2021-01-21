@@ -30,28 +30,34 @@ export default Vue.extend({
     data() {
         return {
             dataset: {
+                headers: [],
                 data: [],
                 types: [],
-                header: [],
             },
             loader: 'csv',
         };
     },
-    mounted() {
-        bus.$on('dataset-imported', payload => {
-            if (payload.dataset.header) {
-                this.dataset.header = payload.dataset.header;
+    mounted() : void {
+        bus.$on('dataset-imported', (event) => {
+            let titles : string[];
+
+            if (event.dataset.header) {
+                let titles = event.dataset.header;
             } else {
-                this.dataset.header = [...payload.dataset.data[0].keys()].map((offset : number) => 'Column ' + offset);
+                let titles = [...event.dataset.data[0].keys()].map((offset : number) => 'Column ' + offset);
             }
 
-            this.dataset.data = payload.dataset.data.map((row : Array<string|number>) => {
+            this.dataset.headers = titles.map((title : string, offset : number) => { 
+                return { title, offset };
+            });
+
+            this.dataset.data = event.dataset.data.map((row : (string|number)[]) => {
                 if (!(row instanceof Array)) {
                     return Object.values(row);
                 }
 
                 return row;
-            }).map(row => {
+            }).map((row : (string|number)[]) => {
                 return row.map((value : string|number) => {
                     if (Number(value) == value) {
                         return Number(value);
