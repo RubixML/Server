@@ -1,11 +1,11 @@
 <?php
 
-namespace Rubix\Server\Services;
+namespace Rubix\Server\Services\Caches;
 
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\Server\Exceptions\RuntimeException;
 
-class InMemoryCache
+class InMemoryCache implements Cache
 {
     /**
      * The number of seconds to keep an item in the cache for since the last time it was accessed.
@@ -17,7 +17,7 @@ class InMemoryCache
     /**
      * The item store.
      *
-     * @var \Rubix\Server\Services\CacheItem[]
+     * @var \Rubix\Server\Services\Caches\CacheItem[]
      */
     protected $store = [
         //
@@ -56,7 +56,9 @@ class InMemoryCache
      */
     public function put(string $key, $data) : void
     {
-        $this->store[$key] = new CacheItem($data, $this->expiresAfter);
+        if ($this->expiresAfter > 0) {
+            $this->store[$key] = new CacheItem($data, $this->expiresAfter);
+        }
     }
 
     /**
@@ -90,5 +92,13 @@ class InMemoryCache
                 unset($this->store[$key]);
             }
         }
+    }
+
+    /**
+     * Flush all items out of the cache.
+     */
+    public function flush() : void
+    {
+        $this->store = [];
     }
 }

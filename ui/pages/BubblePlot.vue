@@ -64,27 +64,10 @@
                                     v-model="settings.radius"
                                     step="1"
                                     min="1"
-                                    max="50"
+                                    max="100"
                                     @change="updateDataset()"
                                 />
                                 <output>{{ settings.radius }}</output>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column is-one-third">
-                        <div class="field">
-                            <label for="bubble-stroke" class="label">Stroke</label>
-                            <div class="control">
-                                <input class="slider is-circle has-output is-fullwidth"
-                                    id="bubble-stroke"
-                                    type="range"
-                                    v-model="settings.stroke"
-                                    step="1"
-                                    min="1"
-                                    max="5"
-                                    @change="updateStroke()"
-                                />
-                                <output>{{ settings.stroke }}</output>
                             </div>
                         </div>
                     </div>
@@ -111,7 +94,7 @@
                                                         step="1"
                                                         min="0"
                                                         max="255"
-                                                        @change="updateColor()"
+                                                        @change="updateDataset()"
                                                     />
                                                     <output>{{ settings.color.r }}</output>
                                                 </div>
@@ -122,7 +105,7 @@
                                                         step="1"
                                                         min="0"
                                                         max="255"
-                                                        @change="updateColor()"
+                                                        @change="updateDataset()"
                                                     />
                                                     <output>{{ settings.color.g }}</output>
                                                 </div>
@@ -133,7 +116,7 @@
                                                         step="1"
                                                         min="0"
                                                         max="255"
-                                                        @change="updateColor()"
+                                                        @change="updateDataset()"
                                                     />
                                                     <output>{{ settings.color.b }}</output>
                                                 </div>
@@ -150,15 +133,9 @@
         <section class="section">
             <div class="container">
                 <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-eye"></i></span>Visualize</h2>
-                <figure>
-                    <canvas id="dataset-bubble-chart" width="550" height="550"></canvas>
+                <figure class="image is-5by3">
+                    <div id="dataset-bubble-chart" class="has-ratio"></div>
                 </figure>
-            </div>
-        </section>
-        <section class="section">
-            <div class="container">
-                <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-file-export"></i></span>Export Chart</h2>
-                <export-chart v-if="canvas" :canvas="canvas"></export-chart>
             </div>
         </section>
     </div>
@@ -166,7 +143,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Chart from 'chart.js';
+import Plotly from 'plotly.js-basic-dist';
 import { PURPLE } from '../chart-colors';
 import bus from '../bus';
 
@@ -180,11 +157,47 @@ export default Vue.extend({
                     scale: null,
                 },
                 radius: 5,
-                stroke: 2,
                 color: PURPLE,
             },
-            canvas: null,
-            chart: null,
+            layout: {
+                legend: {
+                    orientation: 'h',
+                    y: 1.2,
+                },
+                xaxis: {
+                    title: {
+                        text: '',
+                        font: {
+                            size: 12,
+                        },
+                    },
+                    type: 'auto',
+                    gridcolor: 'rgb(128, 128, 128)',
+                },
+                yaxis: {
+                    title: {
+                        text: '',
+                        font: {
+                            size: 12,
+                        },
+                    },
+                    type: 'auto',
+                    gridcolor: 'rgb(128, 128, 128)',
+                },
+                margin: {
+                    l: 40,
+                    r: 40,
+                    t: 80,
+                    b: 40,
+                },
+                paper_bgcolor: 'rgba(0, 0, 0, 0)',
+                plot_bgcolor: 'rgba(0, 0, 0, 0)',
+                modebar: {
+                    color: 'rgb(128, 128, 128)',
+                    activecolor: 'rgb(192, 192, 192)',
+                    bgcolor: 'rgba(0, 0, 0, 0)',
+                },
+            },
         };
     },
     props: {
@@ -194,9 +207,6 @@ export default Vue.extend({
         },
     },
     computed: {
-        rgbColorString() : string {
-            return 'rgb(' + Object.values(this.settings.color).join(', ') + ')';
-        },
         continuousHeaders() : Object[] {
             return this.dataset.header.map((title, offset) => {
                 return {
@@ -204,75 +214,68 @@ export default Vue.extend({
                     offset,
                 };
             }).filter((header, offset) => {
-                return Number(this.dataset.data[0][offset]) == this.dataset.data[0][offset];
+                return this.dataset.types[offset] === 'continuous';
             });
+        },
+        categoricalHeaders() : Object[] {
+            return this.dataset.header.map((title, offset) => {
+                return {
+                    title,
+                    offset,
+                };
+            }).filter((header, offset) => {
+                return this.dataset.types[offset] === 'categorical';
+            });
+        },
+        rgbColorString() : string {
+            return 'rgb(' + Object.values(this.settings.color).join(', ') + ')';
+        },
+    },
+    methods: {
+        updateDataset() : void {
+            if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
+                this.layout.xaxis.title.text = this.dataset.header[this.settings.dataColumns.xAxis];
+                this.layout.yaxis.title.text = this.dataset.header[this.settings.dataColumns.yAxis];
+
+                const xData = [];
+                const yData = [];
+
+                this.dataset.data.forEach(row => {
+                    xData.push(row[this.settings.dataColumns.xAxis]);
+                    yData.push(row[this.settings.dataColumns.yAxis]);
+                });
+
+                var weights;
+
+                if (this.settings.dataColumns.scale !== null) {
+                    const values = this.dataset.data.map(row => row[this.settings.dataColumns.scale]);
+
+                    const min = Math.min(...values);
+                    const max = Math.max(...values);
+
+                    const delta = max - min;
+
+                    weights = values.map(value => (value - min) / delta);
+                } else {
+                    weights = Array(this.dataset.data.length).fill(1.0);
+                }
+
+                Plotly.react('dataset-bubble-chart', [{
+                    x: xData,
+                    y: yData,
+                    mode: 'markers',
+                    marker: {
+                        symbol: 'circle',
+                        color: this.rgbColorString,
+                        size: weights.map(weight => weight * this.settings.radius),
+                    },
+                }], this.layout);
+            } else {
+                Plotly.react('dataset-bubble-chart', [], this.layout);
+            }
         },
     },
     mounted() {
-        const element = document.getElementById('dataset-bubble-chart');
-
-        if (!(element instanceof HTMLCanvasElement)) {
-            console.log('Canvas not found!');
-
-            return;
-        }
-
-        const context = element.getContext('2d');
-
-        this.canvas = element;
-
-        this.chart = new Chart(context, {
-            type: 'bubble',
-            data: {
-                datasets: [
-                   {
-                        label: 'Bubbles',
-                        borderColor: this.rgbColorString,
-                        borderWidth: this.settings.stroke,
-                        fill: true,
-                   },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                title: {
-                    text: 'Bubble Plot',
-                    display: false,
-                },
-                legend: {
-                    display: false,
-                },
-                tooltips: {
-                    enabled: true,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true,
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            scaleLabel: {
-                                display: false,
-                                labelString: '',
-                            },
-                            display: true,
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            scaleLabel: {
-                                display: false,
-                                labelString: '',
-                            },
-                            display: true,
-                        }
-                    ],
-                },
-            },
-        });
-
         bus.$on('dataset-imported', (payload) => {
            this.settings.dataColumns.xAxis = null;
            this.settings.dataColumns.yAxis = null;
@@ -280,57 +283,12 @@ export default Vue.extend({
 
            this.updateDataset();
         });
-    },
-    methods: {
-        updateDataset() : void {
-            if (this.settings.dataColumns.xAxis !== null && this.settings.dataColumns.yAxis !== null) {
-                this.chart.options.scales.xAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.xAxis];
-                this.chart.options.scales.yAxes[0].scaleLabel.labelString = this.dataset.header[this.settings.dataColumns.yAxis];
 
-                var weights;
-
-                if (this.settings.dataColumns.scale !== null) {
-                    const values = this.dataset.data.map((row) => {
-                        return row[this.settings.dataColumns.scale];
-                    });
-
-                    const min = Math.min(...values);
-                    const max = Math.max(...values);
-
-                    const delta = max - min;
-
-                    weights = values.map((value) => {
-                        return (value - min) / delta;
-                    });
-                } else {
-                    weights = Array(this.dataset.data.length).fill(1.0);
-                }
-
-                const data = this.dataset.data.map((row, offset) => {
-                    return {
-                        x: row[this.settings.dataColumns.xAxis],
-                        y: row[this.settings.dataColumns.yAxis],
-                        r: weights[offset] * this.settings.radius,
-                    };
-                });
-
-                this.chart.data.datasets[0].data = data;
-            } else {
-                this.chart.data.datasets[0].data = [];
-            }
-
-            this.chart.update();
-        },
-        updateStroke() : void {
-            this.chart.data.datasets[0].borderWidth = this.settings.stroke;
-
-            this.chart.update();
-        },
-        updateColor() : void {
-            this.chart.data.datasets[0].borderColor = this.rgbColorString;
-
-            this.chart.update();
-        },
+        Plotly.newPlot('dataset-bubble-chart', [], this.layout, {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+        });
     },
 });
 </script>

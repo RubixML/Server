@@ -1,12 +1,12 @@
 <template>
-    <figure>
-        <canvas id="response-rate-chart" width="640" height="360"></canvas>
+    <figure class="image is-3by1">
+        <div id="response-rate-chart" class="has-ratio"></div>
     </figure>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import Chart from 'chart.js';
+import Plotly from 'plotly.js-basic-dist';
 import gql from 'graphql-tag';
 
 const ONE_SECOND = 1000;
@@ -27,8 +27,15 @@ export const fragment = gql`
 export default Vue.extend({
     data() {
         return {
-            chart: null,
-            last: null,
+            datasets: {
+                total: [],
+            },
+            last: {
+                successful: null,
+                rejected: null,
+                failed: null,
+            },
+            timer: null,
         };
     },
     props: {
@@ -37,138 +44,129 @@ export default Vue.extend({
             required: true,
         },
     },
-    mounted() {
-        const element = document.getElementById('response-rate-chart');
-
-        if (!(element instanceof HTMLCanvasElement)) {
-            console.log('Canvas not found!');
-
-            return;
-        }
-
-        const context = element.getContext('2d');
-
-        this.chart = new Chart(context, {
-            type: 'line',
-            data: {
-                labels: [...Array(60).keys()].reverse(),
-                datasets: [
-                    {
-                        label: 'Average',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'rgb(184, 107, 255)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: false,
-                    },
-                    {
-                        label: 'Successful',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'rgb(35, 209, 96)',
-                        backgroundColor: 'rgba(35, 209, 96, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                    {
-                        label: 'Rejected',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'rgb(255, 205, 86)',
-                        backgroundColor: 'rgba(255, 205, 86, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                    {
-                        label: 'Failed',
-                        data: Array(DATASET_SIZE).fill(0),
-                        borderColor: 'rgb(255, 97, 131)',
-                        backgroundColor: 'rgba(255, 97, 131, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        lineTension: 0,
-                        fill: 'origin',
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                title: {
-                    display: true,
-                    text: 'Response Rate',
-                },
-                tooltips: {
-                    enabled: false,
-                },
-                hover: {
-                    mode: 'point',
-                    intersect: true,
-                },
-                scales: {
-                    xAxes: [
-                        {
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Seconds',
-                            },
-                            ticks: {
-                                precision: 0,
-                            },
-                            display: true,
-                        },
-                    ],
-                    yAxes: [
-                        {
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Requests',
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                precision: 0,
-                            },
-                            display: true,
-                        }
-                    ],
-                },
-            },
-        });
-
-        setInterval(this.update, ONE_SECOND);
-    },
     methods: { 
         update() : void {
-            let datasets = this.chart.data.datasets;
-
-            if (!this.last) {
-                this.last = Object.assign({}, this.requests);
-            }
-
             const successful = this.requests.successful - this.last.successful;
             const rejected = this.requests.rejected - this.last.rejected;
             const failed = this.requests.failed - this.last.failed;
 
-            datasets[1].data.push(successful);
-            datasets[2].data.push(rejected);
-            datasets[3].data.push(failed);
- 
-            datasets.forEach((dataset) => {
-                if (dataset.data.length > DATASET_SIZE) {
-                    dataset.data = dataset.data.slice(-DATASET_SIZE);
-                }
-            });
+            const total = successful + rejected + failed;
 
-            const mu = datasets[1].data.reduce((sigma, count) => sigma + count, 0) / datasets[1].data.length;
+            this.datasets.total.push(total);
 
-            datasets[0].data.push(mu);
+            if (this.datasets.total.length > DATASET_SIZE) {
+                this.datasets.total = this.datasets.total.slice(-DATASET_SIZE);
+            }
+            
+            const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
 
-            this.last = Object.assign({}, this.requests);
+            Plotly.extendTraces('response-rate-chart', {y: [[mu], [successful], [rejected], [failed]]}, [0, 1, 2, 3], DATASET_SIZE);
+        
+            this.last.successful = this.requests.successful;
+            this.last.rejected = this.requests.rejected;
+            this.last.failed = this.requests.failed;
+        },
+    },
+    mounted() {
+        const labels = [...Array(DATASET_SIZE).keys()].reverse();
+        const zeros = Array(DATASET_SIZE).fill(0);
 
-            this.chart.update(0);
+        Plotly.newPlot('response-rate-chart', [
+            {
+                name: 'Average',
+                x: labels,
+                y: zeros,
+                type: 'scatter',
+                line: {
+                    width: 2,
+                    color: 'rgb(184, 107, 255)',
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(184, 107, 255, 0.1)',
+            },
+            {
+                name: 'Successful',
+                x: labels,
+                y: zeros,
+                type: 'scatter',
+                line: {
+                    width: 2,
+                    color: 'rgb(35, 209, 96)',
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(35, 209, 96, 0.1)',
+            },
+            {
+                name: 'Rejected',
+                x: labels,
+                y: zeros,
+                type: 'scatter',
+                line: {
+                    width: 2,
+                    color: 'rgb(255, 159, 64)',
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(255, 159, 64, 0.1)',
+            },
+            {
+                name: 'Failed',
+                x: labels,
+                y: zeros,
+                type: 'scatter',
+                line: {
+                    width: 2,
+                    color: 'rgb(255, 97, 131)',
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(255, 97, 131, 0.1)',
+            },
+        ], {
+            legend: {
+                orientation: 'h',
+                y: 1.2,
+            },
+            xaxis: {
+                title: {
+                    text: 'Seconds',
+                    font: {
+                        size: 12,
+                    },
+                },
+                autorange: 'reversed',
+                gridcolor: 'rgb(120, 120, 120)',
+            },
+            yaxis: {
+                title: {
+                    text: 'Requests',
+                    font: {
+                        size: 12,
+                    },
+                },
+                rangemode: 'tozero',
+                gridcolor: 'rgb(120, 120, 120)',
+            },
+            margin: {
+                l: 80,
+                r: 40,
+                t: 40,
+                b: 40,
+            },
+            paper_bgcolor: 'rgba(0, 0, 0, 0)',
+            plot_bgcolor: 'rgba(0, 0, 0, 0)',
+        }, {
+            responsive: true,
+            displayModeBar: false,
+        });
+
+        this.last.successful = this.requests.successful;
+        this.last.rejected = this.requests.rejected;
+        this.last.failed = this.requests.failed;
+
+        this.timer = setInterval(this.update, ONE_SECOND);
+    },
+    beforeDestroy() {
+        if (this.timer) {
+            clearInterval(this.timer);
         }
     },
 });

@@ -29,30 +29,45 @@ import bus from '../bus';
 export default Vue.extend({
     data() {
         return {
-            loader: 'csv',
             dataset: {
                 data: [
+                    //
+                ],
+                types: [
                     //
                 ],
                 header: [
                     //
                 ],
             },
+            loader: 'csv',
         };
     },
     mounted() {
-        bus.$on('dataset-imported', (payload) => {
+        bus.$on('dataset-imported', payload => {
             if (payload.dataset.header) {
                 this.dataset.header = payload.dataset.header;
             } else {
-                this.dataset.header = [...payload.dataset.data[0].keys()].map((offset) => {
-                    return 'Column ' + offset;
-                });
+                this.dataset.header = [...payload.dataset.data[0].keys()].map(offset => 'Column ' + offset);
             }
 
-            this.dataset.data = payload.dataset.data.map((row) => {
-                return row instanceof Array ? row : Object.values(row);
+            this.dataset.data = payload.dataset.data.map(row => {
+                if (!(row instanceof Array)) {
+                    return Object.values(row);
+                }
+
+                return row;
+            }).map(row => {
+                return row.map(value => {
+                    if (Number(value) == value) {
+                        return Number(value);
+                    }
+
+                    return value;
+                });
             });
+
+            this.dataset.types = this.dataset.data[0].map(value => typeof value === 'string' ? 'categorical' : 'continuous');
         });
     },
 });

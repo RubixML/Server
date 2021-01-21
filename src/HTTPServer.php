@@ -11,7 +11,8 @@ use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Router;
 use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\SSEChannel;
-use Rubix\Server\Services\InMemoryCache;
+use Rubix\Server\Services\Caches\Cache;
+use Rubix\Server\Services\Caches\InMemoryCache;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
 use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
@@ -108,11 +109,11 @@ class HTTPServer implements Server, Verbose
     protected $maxConcurrentRequests;
 
     /**
-     * The maximum number of seconds to hold an item in the cache since it was last accessed.
+     * The cache used to serve static asset requests.
      *
-     * @var int
+     * @var \Rubix\Server\Services\Caches\Cache
      */
-    protected $cacheMaxAge;
+    protected $staticAssetsCache;
 
     /**
      * The maximum number of events to store in the server-sent events (SSE) reconnect buffer.
@@ -162,7 +163,7 @@ class HTTPServer implements Server, Verbose
      * @param string|null $cert
      * @param \Rubix\Server\HTTP\Middleware\Server\Middleware[] $middlewares
      * @param int $maxConcurrentRequests
-     * @param int $cacheMaxAge
+     * @param \Rubix\Server\Services\Caches\Cache $staticAssetsCache
      * @param int $sseReconnectBuffer
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
@@ -172,7 +173,7 @@ class HTTPServer implements Server, Verbose
         ?string $cert = null,
         array $middlewares = [],
         int $maxConcurrentRequests = 10,
-        int $cacheMaxAge = 60,
+        ?Cache $staticAssetsCache = null,
         int $sseReconnectBuffer = 50
     ) {
         if (empty($host)) {
@@ -196,12 +197,6 @@ class HTTPServer implements Server, Verbose
                 . " be greater than 0, $maxConcurrentRequests given.");
         }
 
-        if ($cacheMaxAge < self::CACHE_EVICTION_INTERVAL) {
-            throw new InvalidArgumentException('Cache max age must be'
-                . ' greater than ' . self::CACHE_EVICTION_INTERVAL
-                . ", $cacheMaxAge given.");
-        }
-
         if ($sseReconnectBuffer < 0) {
             throw new InvalidArgumentException('SSE retry buffer must'
                 . " be greater than 0, $sseReconnectBuffer given.");
@@ -212,7 +207,7 @@ class HTTPServer implements Server, Verbose
         $this->cert = $cert;
         $this->middlewares = $middlewares;
         $this->maxConcurrentRequests = $maxConcurrentRequests;
-        $this->cacheMaxAge = $cacheMaxAge;
+        $this->staticAssetsCache = $staticAssetsCache ?? new InMemoryCache(60);
         $this->sseReconnectBuffer = $sseReconnectBuffer;
         $this->memoryLimit = IniUtil::iniSizeToBytes((string) ini_get('memory_limit'));
         $this->postMaxSize = IniUtil::iniSizeToBytes((string) ini_get('post_max_size'));
@@ -265,18 +260,6 @@ class HTTPServer implements Server, Verbose
     public function maxConcurrentRequests() : int
     {
         return $this->maxConcurrentRequests;
-    }
-
-    /**
-     * Return the maximum number of seconds to hold an item in the cache since it was last accessed.
-     *
-     * @internal
-     *
-     * @return int
-     */
-    public function cacheMaxAge() : int
-    {
-        return $this->cacheMaxAge;
     }
 
     /**
@@ -349,8 +332,6 @@ class HTTPServer implements Server, Verbose
 
         $eventBus = new EventBus($scheduler, $this->logger);
 
-        $assetsCache = new InMemoryCache($this->cacheMaxAge);
-
         $dashboardChannel = new SSEChannel($this->sseReconnectBuffer);
 
         $model = new Model($estimator, $eventBus);
@@ -359,7 +340,7 @@ class HTTPServer implements Server, Verbose
 
         $cacheEvictor = $scheduler->repeat(
             self::CACHE_EVICTION_INTERVAL,
-            new EvictCacheItems($assetsCache)
+            new EvictCacheItems($this->staticAssetsCache)
         );
 
         $memoryUpdater = $scheduler->repeat(
@@ -390,7 +371,7 @@ class HTTPServer implements Server, Verbose
             new ServerController($server),
             new DashboardController($dashboardChannel),
             new GraphQLController($schema, new ReactPromiseAdapter()),
-            new StaticAssetsController(self::ASSETS_PATH, $assetsCache),
+            new StaticAssetsController(self::ASSETS_PATH, $this->staticAssetsCache),
         ]));
 
         $stack = [

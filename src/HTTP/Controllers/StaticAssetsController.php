@@ -3,7 +3,7 @@
 namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\Server\Helpers\File;
-use Rubix\Server\Services\InMemoryCache;
+use Rubix\Server\Services\Caches\Cache;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\NotFound;
 use Rubix\Server\HTTP\Responses\InternalServerError;
@@ -36,16 +36,16 @@ class StaticAssetsController extends Controller
     /**
      * The cache.
      *
-     * @var \Rubix\Server\Services\InMemoryCache
+     * @var \Rubix\Server\Services\Caches\Cache
      */
     protected $cache;
 
     /**
      * @param string $basePath
-     * @param \Rubix\Server\Services\InMemoryCache $cache
+     * @param \Rubix\Server\Services\Caches\Cache $cache
      * @throws \Rubix\Server\Exceptions\RuntimeException
      */
-    public function __construct(string $basePath, InMemoryCache $cache)
+    public function __construct(string $basePath, Cache $cache)
     {
         $basePath = realpath($basePath);
 
@@ -56,6 +56,8 @@ class StaticAssetsController extends Controller
         if (!is_readable($basePath)) {
             throw new RuntimeException('Static assets folder is not readable.');
         }
+
+        $cache->flush();
 
         $this->basePath = $basePath;
         $this->cache = $cache;
