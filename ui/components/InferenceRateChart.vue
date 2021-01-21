@@ -1,5 +1,7 @@
 <template>
-    <figure id="inference-rate-chart"></figure>
+    <figure class="image is-16by9">
+        <div id="inference-rate-chart" class="has-ratio"></div>
+    </figure>
 </template>
 
 <script lang="ts">
@@ -46,9 +48,9 @@ export default Vue.extend({
     
             const mu = this.datasets.total.reduce((sigma, count) => sigma + count, 0) / this.datasets.total.length;
 
-            this.last.numSamplesInferred = this.model.numSamplesInferred;
-
             Plotly.extendTraces('inference-rate-chart', {y: [[mu], [inferred]]}, [0, 1], DATASET_SIZE);
+
+            this.last.numSamplesInferred = this.model.numSamplesInferred;
         },
     },
     mounted() {

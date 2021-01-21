@@ -1,5 +1,7 @@
 <template>
-    <figure id="memory-usage-chart"></figure>
+    <figure class="image is-3by2">
+        <div id="memory-usage-chart" class="has-ratio"></div>
+    </figure>
 </template>
 
 <script lang="ts">

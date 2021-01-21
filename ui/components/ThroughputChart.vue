@@ -1,5 +1,7 @@
 <template>
-    <figure id="throughput-chart"></figure>
+    <figure class="image is-16by9">
+        <div id="throughput-chart" class="has-ratio"></div>
+    </figure>
 </template>
 
 <script lang="ts">
@@ -42,11 +44,11 @@ export default Vue.extend({
         update() : void {
             const received = (this.transfers.received - this.last.received) / MEGABYTE;
             const sent = (this.transfers.sent - this.last.sent) / MEGABYTE;
- 
-            this.last.received = this.transfers.received;
-            this.last.sent = this.transfers.sent;
 
             Plotly.extendTraces('throughput-chart', {y: [[received], [sent]]}, [0, 1], DATASET_SIZE);
+
+            this.last.received = this.transfers.received;
+            this.last.sent = this.transfers.sent;
         },
     },
     mounted() {

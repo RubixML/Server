@@ -1,5 +1,7 @@
 <template>
-    <figure id="response-rate-chart"></figure>
+    <figure class="image is-3by1">
+        <div id="response-rate-chart" class="has-ratio"></div>
+    </figure>
 </template>
 
 <script lang="ts">

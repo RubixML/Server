@@ -45,9 +45,9 @@
                                     :id="'line-' + offset + '-tension'"
                                     type="range"
                                     v-model="line.tension"
-                                    step="1"
-                                    min="1"
-                                    max="5"
+                                    step="0.1"
+                                    min="0"
+                                    max="1.3"
                                     @change="updateDataset()"
                                 />
                                 <output>{{ line.tension }}</output>
@@ -124,7 +124,9 @@
         <section class="section">
             <div class="container">
                 <h2 class="title is-size-4"><span class="icon mr-3"><i class="fas fa-eye"></i></span>Visualize</h2>
-                <figure id="dataset-line-chart"></figure>
+                <figure class="image is-5by3">
+                    <div id="dataset-line-chart" class="has-ratio"></div>
+                </figure>
             </div>
         </section>
     </div>
@@ -144,6 +146,33 @@ export default Vue.extend({
                     //
                 ],
                 maxLines: 10,
+            },
+            layout: {
+                legend: {
+                    orientation: 'h',
+                    y: 1.2,
+                },
+                xaxis: {
+                    type: 'linear',
+                    gridcolor: 'rgb(128, 128, 128)',
+                },
+                yaxis: {
+                    type: 'auto',
+                    gridcolor: 'rgb(128, 128, 128)',
+                },
+                margin: {
+                    l: 40,
+                    r: 40,
+                    t: 80,
+                    b: 40,
+                },
+                paper_bgcolor: 'rgba(0, 0, 0, 0)',
+                plot_bgcolor: 'rgba(0, 0, 0, 0)',
+                modebar: {
+                    color: 'rgb(128, 128, 128)',
+                    activecolor: 'rgb(192, 192, 192)',
+                    bgcolor: 'rgba(0, 0, 0, 0)',
+                },
             },
         };
     },
@@ -165,66 +194,6 @@ export default Vue.extend({
             });
         },
     },
-    mounted() {
-        // this.chart = new Chart(context, {
-        //     type: 'line',
-        //     data: {
-        //         labels: [
-        //             //
-        //         ],
-        //         datasets: [
-        //             //
-        //         ],
-        //     },
-        //     options: {
-        //         responsive: true,
-        //         maintainAspectRatio: false,
-        //         title: {
-        //             text: 'Line Chart',
-        //             display: false,
-        //         },
-        //         legend: {
-        //             display: true,
-        //         },
-        //         tooltips: {
-        //             enabled: true,
-        //             mode: 'nearest',
-        //         },
-        //         hover: {
-        //             mode: 'nearest',
-        //             intersect: true,
-        //         },
-        //         scales: {
-        //             xAxes: [
-        //                 {
-        //                     scaleLabel: {
-        //                         display: false,
-        //                         labelString: '',
-        //                     },
-        //                     display: true,
-        //                 },
-        //             ],
-        //             yAxes: [
-        //                 {
-        //                     scaleLabel: {
-        //                         display: false,
-        //                         labelString: '',
-        //                     },
-        //                     display: true,
-        //                 }
-        //             ],
-        //         },
-        //     },
-        // });
-
-        bus.$on('dataset-imported', (payload) => {
-            // this.chart.data.labels = [...Array(payload.dataset.data.length).keys()];
-
-            this.updateDataset();
-        });
-
-        this.addLine();
-    },
     methods: {
         addLine() : void {
             const color = ALL_COLORS[this.settings.lines.length % ALL_COLORS.length];
@@ -242,29 +211,46 @@ export default Vue.extend({
             this.updateDataset();
         },
         updateDataset() : void {
-            // this.chart.data.datasets = [];
+            let data = [];
 
-            // this.settings.lines.forEach((line) => {
-            //     if (line.dataColumn !== null) {
-            //         const values = this.dataset.data.map((row) => {
-            //             return row[line.dataColumn];
-            //         });
+            const labels = Array(this.dataset.data.length).keys();
 
-            //         this.chart.data.datasets.push({
-            //             label: this.dataset.header[line.dataColumn],
-            //             data: values,
-            //             borderWidth: line.thickness,
-            //             borderColor: 'rgb(' + Object.values(line.color).join(', ') + ')',
-            //             tension: 1.0 - line.tension,
-            //             pointRadius: 0,
-            //             pointHitRadius: line.thickness,
-            //             fill: false,
-            //         });
-            //     }
-            // });
+            this.settings.lines.forEach((line) => {
+                if (line.dataColumn !== null) {
+                    const values = this.dataset.data.map((row) => {
+                        return row[line.dataColumn];
+                    });
 
-            // this.chart.update();
+                    data.push({
+                        name: this.dataset.header[line.dataColumn],
+                        x: labels,
+                        y: values,
+                        type: 'scatter',
+                        line: {
+                            width: line.thickness,
+                            color: 'rgb(' + Object.values(line.color).join(', ') + ')',
+                            shape: 'spline',
+                            smoothing: 1.3 - line.tension,
+                        },
+                    });
+                }
+            });
+
+            Plotly.react('dataset-line-chart', data, this.layout);
         },
+    },
+    mounted() {
+        this.addLine();
+
+        bus.$on('dataset-imported', (payload) => {
+            this.updateDataset();
+        });
+
+        Plotly.newPlot('dataset-line-chart', [], this.layout, {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+        });
     },
 });
 </script>
