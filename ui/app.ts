@@ -5,9 +5,6 @@ import VueSSE from 'vue-sse';
 import App from './App.vue';
 import MainNav from './components/MainNav.vue';
 import MainFooter from './components/MainFooter.vue';
-import CSVLoader from './components/CSVLoader.vue';
-import NDJSONLoader from './components/NDJSONLoader.vue';
-import DatasetPreview from './components/DatasetPreview.vue';
 import RequestsLevel from './components/RequestsLevel.vue';
 import ResponseRateChart from './components/ResponseRateChart.vue';
 import TransfersLevel from './components/TransfersLevel.vue';
@@ -20,11 +17,8 @@ import ProcessInfo from './components/ProcessInfo.vue';
 import ServerSettings from './components/ServerSettings.vue';
 import AppUpdateAvailable from './components/AppUpdateAvailable.vue';
 import CommunicationError from './components/CommunicationError.vue';
-import DatasetImportFailure from './components/DatasetImportFailure.vue';
 import PageLoader from './components/PageLoader.vue';
-import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { apolloClient } from './providers/apollo';
-import { required, max, ext } from 'vee-validate/dist/rules';
 import { Workbox } from 'workbox-window';
 import routes from './routes';
 import bus from  './providers/bus';
@@ -62,9 +56,6 @@ if ('serviceWorker' in navigator) {
 Vue.component('app', App);
 Vue.component('main-nav', MainNav);
 Vue.component('main-footer', MainFooter);
-Vue.component('csv-loader', CSVLoader);
-Vue.component('ndjson-loader', NDJSONLoader);
-Vue.component('dataset-preview', DatasetPreview);
 Vue.component('requests-level', RequestsLevel);
 Vue.component('response-rate-chart', ResponseRateChart);
 Vue.component('transfers-level', TransfersLevel);
@@ -77,26 +68,7 @@ Vue.component('process-info', ProcessInfo);
 Vue.component('server-settings', ServerSettings);
 Vue.component('app-update-available', AppUpdateAvailable);
 Vue.component('communication-error', CommunicationError);
-Vue.component('dataset-import-failure', DatasetImportFailure);
 Vue.component('page-loader', PageLoader);
-
-extend('required', {
-    ...required,
-    message: '{_field_} is required.',
-});
-
-extend('max', {
-    ...max,
-    message: 'Number of characters must not exceed {length}.',
-});
-
-extend('ext', {
-    ...ext,
-    message: 'Invalid file extension.',
-});
-
-Vue.component('ValidationProvider', ValidationProvider);
-Vue.component('ValidationObserver', ValidationObserver);
 
 Vue.use(VueRouter);
 Vue.use(VueApollo);

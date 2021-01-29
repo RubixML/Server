@@ -7,7 +7,6 @@
         <main-footer></main-footer>
         <app-update-available></app-update-available>
         <communication-error></communication-error>
-        <dataset-import-failure></dataset-import-failure>
         <audio id="sharp" src="./sounds/sharp.ogg" crossOrigin="anonymous"></audio>
     </div>
 </template>
