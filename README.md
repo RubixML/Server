@@ -1,5 +1,10 @@
 # Rubix Server
-Bring your [Rubix ML](https://github.com/RubixML/ML) models into production by serving them with one of our stand-alone model inference servers. Servers wrap your trained estimator in an API that can be queried locally or over the network in real-time using standard protocols. In addition, the library provides client implementations for making queries from your applications.
+Rubix Server is a library for bringing your trained [Rubix ML](https://github.com/RubixML/ML) models into production. Inference servers are stand-alone services that run on your private or public network and wrap your trained estimator in an API that can be queried locally or over the network in real-time using standard protocols. In addition, the library provides async-compatible client implementations for making queries to the server from your PHP applications.
+
+**Optimized** for low latency and high throughput
+**Scalable** horizontally by adding more instances
+**Monitoring** with real-time analytics dashboard
+**Robust** to common attacks and failure modes
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -11,13 +16,11 @@ $ composer require rubix/server
 ## Requirements
 - [PHP](https://php.net/manual/en/install.php) 7.2 or above
 
-#### Recommended
-- [Tensor extension](https://github.com/RubixML/Tensor) for fast Matrix/Vector computing
-
 #### Optional
 - [Event extension](https://pecl.php.net/package/event) for high-volume servers
 
 ## Documentation
+The latest documentation can be found here.
 
 ### Table of Contents
 - [Servers](#servers)
@@ -140,8 +143,6 @@ The HTTP server exposes the following resources and their methods.
 |---|---|---|
 | GET | /ui | The web user interface. |
 | GET | /ui/dashboard | The server dashboard interface. |
-| GET | /ui/visualizer/bubble | Dataset bubble plot visualizer. |
-| GET | /ui/visualizer/line | Dataset line chart visualizer. |
 | GET | /model | Return the properties of the model. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
@@ -150,8 +151,8 @@ The HTTP server exposes the following resources and their methods.
 | GET | /dashboard/events | Subscribe to the dashboard events stream. |
 | POST | /graphql | Query the server using GraphQL. |
 
-#### Web Client
-The HTTP server provides its own high-level user interface (UI) to the GraphQL API it exposes under the hood offering features such as server monitoring and data visualization. To access the web interface, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your favorite modern web browser.
+#### Server Analytics
+The HTTP server provides its own high-level user interface (UI) to the GraphQL API it exposes under the hood offering features such as server monitoring and traffic visualization. To access the web interface, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your favorite modern web browser.
 
 The example below is a screen capture of the server dashboard in dark mode.
 
