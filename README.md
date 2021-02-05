@@ -1,10 +1,10 @@
 # Rubix Server
 Rubix Server is a library for bringing your trained [Rubix ML](https://github.com/RubixML/ML) models into production. Inference servers are stand-alone services that run on your private or public network and wrap your trained estimator in an API that can be queried locally or over the network in real-time using standard protocols. In addition, the library provides async-compatible client implementations for making queries to the server from your PHP applications.
 
-**Optimized** for low latency and high throughput
-**Scalable** horizontally by adding more instances
-**Monitoring** with real-time analytics dashboard
-**Robust** to common attacks and failure modes
+- **Optimized** for low latency predictions
+- **Scalable** horizontally by adding more instances
+- **Monitoring** with real-time analytics dashboard
+- **Robust** to common attacks and failure modes
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
@@ -20,7 +20,7 @@ $ composer require rubix/server
 - [Event extension](https://pecl.php.net/package/event) for high-volume servers
 
 ## Documentation
-The latest documentation can be found here.
+The latest documentation can be found below.
 
 ### Table of Contents
 - [Servers](#servers)
@@ -37,6 +37,8 @@ The latest documentation can be found here.
 	- [Basic Authenticator](#basic-authenticator-client-side)
 	- [Compress Request Body](#compress-request-body)
 	- [Shared Token Authenticator](#shared-token-authenticator-client-side)
+- [Loggers](#loggers)
+	- [File](#file)
 - [FAQs](#faqs)
 
 ---
@@ -91,9 +93,9 @@ $ kill -s QUIT 1234
 Servers that implement the Verbose interface accept any PSR-3 compatible logger instance and begin logging critical information such as errors and start/stop events. To set a logger pass the PSR-3 logger instance to the `setLogger()` method on the server instance.
 
 ```php
-use Rubix\ML\Other\Loggers\Screen;
+use Rubix\Server\Loggers\File;
 
-$server->setLogger(new Screen());
+$server->setLogger(new File('example.log'));
 ```
 
 ### HTTP Server
@@ -123,12 +125,12 @@ Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 ```php
 use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
-use Rubix\ML\Other\Loggers\Screen;
+use Rubix\Server\Loggers\File;
 use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
 use Rubix\Server\Services\Caches\InMemoryCache;
 
 $server = new HTTPServer('127.0.0.1', 443, '/cert.pem', [
-	new AccessLogGenerator(new Screen()),
+	new AccessLogGenerator(new File('access.log')),
 	new BasicAuthenticator([
 		'morgan' => 'secret',
 		'taylor' => 'secret',
@@ -177,9 +179,9 @@ Generates an HTTP access log using a format similar to the Apache log format.
 
 ```php
 use Rubix\Server\HTTP\Middleware\Server\AccessLog;
-use Rubix\ML\Other\Loggers\Screen;
+use Rubix\Server\Loggers\File;
 
-$middleware = new AccessLog(new Screen());
+$middleware = new AccessLog(new File('access.log'));
 ```
 
 ```sh
@@ -403,6 +405,26 @@ Adds the necessary authorization headers to the request using the Bearer scheme.
 use Rubix\Server\HTTP\Middleware\Client\SharedtokenAuthenticator;
 
 $middleware = new SharedTokenAuthenticator('secret');
+```
+
+### Loggers
+PSR-3 compatible loggers for capturing important server events.
+
+### File
+A simple append-only file logger.
+
+## Parameters
+| # | Name | Default | Type | Description |
+|---|---|---|---|---|
+| 1 | path | | string | The path to the append-only log file. A new file will be created if it doesn't exist yet. |
+| 2 | channel | '' | string | The channel name that appears on each line. |
+| 3 | timestampFormat | 'Y-m-d H:i:s' | string | The format of the timestamp. |
+
+## Example
+```php
+use Rubix\Server\Loggers\File;
+
+$logger = new File('server.log', 'example', 'Y-m-d H:i:s');
 ```
 
 ### FAQs

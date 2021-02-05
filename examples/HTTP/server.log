@@ -1,0 +1,20 @@
+[2021-02-05 01:57:53] INFO: HTTP Server booting up
+[2021-02-05 01:57:55] INFO: Listening at 127.0.0.1 on port 8000
+[2021-02-05 01:57:56] INFO: 127.0.0.1 "GET /dashboard/events HTTP/1.1" 200 - "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:18] INFO: 127.0.0.1 "GET /ui/dashboard HTTP/1.1" 200 912 - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:18] INFO: 127.0.0.1 "GET /app.css HTTP/1.1" 200 59635 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:18] INFO: 127.0.0.1 "GET /app.js HTTP/1.1" 200 418989 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:19] INFO: 127.0.0.1 "GET /fonts/Roboto-regular.woff2 HTTP/1.1" 200 51116 "http://127.0.0.1:8000/app.css" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "POST /graphql HTTP/1.1" 200 561 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /images/app-icon-small.png HTTP/1.1" 200 9339 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /fonts/fa-solid-900.woff2 HTTP/1.1" 200 80252 "http://127.0.0.1:8000/app.css" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /fonts/Roboto-500.woff2 HTTP/1.1" 200 51400 "http://127.0.0.1:8000/app.css" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /fonts/Roboto-300.woff2 HTTP/1.1" 200 50812 "http://127.0.0.1:8000/app.css" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /sounds/sharp.ogg HTTP/1.1" 200 32826 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /dashboard/events HTTP/1.1" 200 - "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /images/app-icon-small.png HTTP/1.1" 200 9339 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /manifest.json HTTP/1.1" 200 944 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:21] INFO: 127.0.0.1 "GET /images/app-icon-apple-touch.png HTTP/1.1" 200 11249 "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
+[2021-02-05 01:58:36] INFO: HTTP Server booting up
+[2021-02-05 01:58:36] INFO: Listening at 127.0.0.1 on port 8000
+[2021-02-05 01:58:38] INFO: 127.0.0.1 "GET /dashboard/events HTTP/1.1" 200 - "http://127.0.0.1:8000/ui/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"

@@ -2,6 +2,7 @@
     - Web UI charts now driven by Plotly
     - Added snapshot feature to live charts
     - Move dataset visualizers to Visualizer package
+    - Add append-only File logger
 
 - 0.2.7-beta
     - Added static assets cache
