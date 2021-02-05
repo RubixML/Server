@@ -1,4 +1,4 @@
-name: Build
+name: "Code Checks"
 
 on: [push, pull_request]
 
@@ -8,8 +8,8 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: [ubuntu-latest, macos-latest]
-        php-versions: ['7.2', '7.3', '7.4', '8.0']
+        operating-system: [windows-latest, ubuntu-latest, macos-latest]
+        php-versions: ['7.2', '7.3', '7.4']
 
     steps:
       - name: Checkout
@@ -19,7 +19,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: igbinary
+          tools: pecl
+          extensions: igbinary, fileinfo
           ini-values: memory_limit=-1    
 
       - name: Validate composer.json
