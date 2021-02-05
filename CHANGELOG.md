@@ -1,5 +1,6 @@
 - 0.2.8-beta
     - Web UI charts now driven by Plotly
+    - Added snapshot feature to live charts
     - Move dataset visualizers to Visualizer package
 
 - 0.2.7-beta
