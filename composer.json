@@ -42,6 +42,9 @@
         "phpstan/phpstan-phpunit": "0.12.*",
         "phpunit/phpunit": "8.5.*"
     },
+    "provide": {
+        "psr/log": "^1.1"
+    },
     "suggest": {
         "ext-event": "For high volume servers"
     },
