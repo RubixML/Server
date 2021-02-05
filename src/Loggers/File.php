@@ -3,6 +3,7 @@
 namespace Rubix\Server\Loggers;
 
 use Rubix\Server\Exceptions\InvalidArgumentException;
+use Rubix\Server\Exceptions\RuntimeException;
 
 /**
  * File
@@ -40,7 +41,8 @@ class File extends Logger
      * @param string $path
      * @param string $channel
      * @param string $timestampFormat
-     * @throws \Rubix\Sever\Exceptions\InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws \Rubix\Server\Exceptions\RuntimeException
      */
     public function __construct(string $path, string $channel = '', string $timestampFormat = 'Y-m-d H:i:s')
     {
@@ -55,7 +57,7 @@ class File extends Logger
         } else {
             if (!is_writable(dirname($path))) {
                 if (!is_writable($path)) {
-                    throw new InvalidArgumentException("Folder must be writable.");
+                    throw new InvalidArgumentException('Folder must be writable.');
                 }
             }
         }
