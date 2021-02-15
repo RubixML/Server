@@ -43,7 +43,7 @@ The latest documentation can be found below.
 
 ---
 ### Servers
-Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implement their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache. By utilizing concurrency, each server instance is able to handle thousands of connections at the same time.
+Rubix model servers are stand-alone processes that wrap an estimator in an API that can be queried over a network connection. Since servers implement their own networking stack, they can be run directly from the PHP command line interface (CLI) without the need for an intermediary server such as Nginx or Apache.
 
 To boot up a server, pass a trained estimator instance to the `serve()` method:
 ```php
@@ -99,7 +99,7 @@ $server->setLogger(new File('example.log'));
 ```
 
 ### HTTP Server
-A JSON over HTTP server exposing Representational State Transfer (REST) and GraphQL APIs. The HTTP Server operates using ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for dataset visualization and real-time server monitoring.
+A JSON over HTTP server exposing Representational State Transfer (REST) and GraphQL APIs. The HTTP Server operates using ubiquitous standards making it compatible with a wide range of systems. In addition, it provides its own web-based user interface for real-time server monitoring.
 
 Interfaces: [Server](#servers), [Verbose](#verbose-interface)
 
@@ -154,7 +154,7 @@ The HTTP server exposes the following resources and their methods.
 | POST | /graphql | Query the server using GraphQL. |
 
 #### Server Analytics
-The HTTP server provides its own high-level user interface (UI) to the GraphQL API it exposes under the hood offering features such as server monitoring and traffic visualization. To access the web interface, navigate to `http://hostname:port` (or `https://hostname:port` if using a secure socket connection) using your favorite modern web browser.
+The HTTP server provides its own high-level user interface (UI) to the GraphQL API it exposes under the hood offering features such as server monitoring and traffic visualization. To access the web interface, navigate to `http://hostname:port/ui` (or `https://hostname:port/ui` if using a secure socket connection) using your favorite modern web browser.
 
 The example below is a screen capture of the server dashboard in dark mode.
 
