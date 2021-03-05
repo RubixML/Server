@@ -8,6 +8,7 @@ use Rubix\Server\GraphQL\Enums\EstimatorTypeEnum;
 use Rubix\Server\GraphQL\Enums\DataTypeEnum;
 use Rubix\Server\GraphQL\InputObjects\DatasetInputObject;
 use Rubix\Server\GraphQL\Scalars\PredictionScalar;
+use Rubix\Server\GraphQL\Scalars\LongIntegerScalar;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Error\UserError;
 use Generator;
@@ -110,7 +111,7 @@ class ModelObject extends ObjectType
                 ],
                 'numSamplesInferred' => [
                     'description' => 'The number of samples that have been predicted by the model so far.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (Model $model) : int {
                         return $model->numSamplesInferred();
                     },

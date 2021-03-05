@@ -3,6 +3,7 @@
 namespace Rubix\Server\GraphQL\Objects;
 
 use Rubix\Server\Models\HTTPStats;
+use Rubix\Server\GraphQL\Scalars\LongIntegerScalar;
 use GraphQL\Type\Definition\Type;
 
 class RequestsObject extends ObjectType
@@ -25,21 +26,21 @@ class RequestsObject extends ObjectType
             'fields' => [
                 'successful' => [
                     'description' => 'The number of successful requests handled by the server.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : int {
                         return $httpStats->numSuccessful();
                     },
                 ],
                 'rejected' => [
                     'description' => 'The number of requests that were rejected due to a 400 level error.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : int {
                         return $httpStats->numRejected();
                     },
                 ],
                 'failed' => [
                     'description' => 'The number of requests that failed due to a 500 level error.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : int {
                         return $httpStats->numFailed();
                     },

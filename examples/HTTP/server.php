@@ -4,7 +4,7 @@ include __DIR__ . '../../../vendor/autoload.php';
 
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
-use Rubix\ML\Classifiers\KDNeighbors;
+use Rubix\ML\Classifiers\GaussianNB;
 use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
@@ -17,7 +17,7 @@ $generator = new Agglomerate([
     'blue' => new Blob([0, 0, 255], 10.0),
 ]);
 
-$estimator = new KDNeighbors(5);
+$estimator = new GaussianNB();
 
 $dataset = $generator->generate(100);
 

@@ -3,6 +3,7 @@
 namespace Rubix\Server\GraphQL\Objects;
 
 use Rubix\Server\Models\ServerSettings;
+use Rubix\Server\GraphQL\Scalars\LongIntegerScalar;
 use GraphQL\Type\Definition\Type;
 
 class ServerSettingsObject extends ObjectType
@@ -53,14 +54,14 @@ class ServerSettingsObject extends ObjectType
                 ],
                 'memoryLimit' => [
                     'description' => 'The maximum amount of memory the server is allowed to consume in bytes.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->memoryLimit();
                     },
                 ],
                 'postMaxSize' => [
                     'description' => 'The maximum size of a request body in bytes.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (ServerSettings $settings) : int {
                         return $settings->postMaxSize();
                     },

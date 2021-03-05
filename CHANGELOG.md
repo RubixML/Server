@@ -1,3 +1,6 @@
+- 0.2.9-beta
+    - Fixed GraphQL long integer representation
+
 - 0.2.8-beta
     - Web UI charts now driven by Plotly
     - Added snapshot feature to live charts

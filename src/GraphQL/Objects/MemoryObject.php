@@ -3,6 +3,7 @@
 namespace Rubix\Server\GraphQL\Objects;
 
 use Rubix\Server\Models\Memory;
+use Rubix\Server\GraphQL\Scalars\LongIntegerScalar;
 use GraphQL\Type\Definition\Type;
 
 class MemoryObject extends ObjectType
@@ -25,14 +26,14 @@ class MemoryObject extends ObjectType
             'fields' => [
                 'current' => [
                     'description' => 'The current memory usage of the server.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (Memory $memory) : int {
                         return $memory->current();
                     },
                 ],
                 'peak' => [
                     'description' => 'The maximum amount of memory consumed by the server so far.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (Memory $memory) : int {
                         return $memory->peak();
                     },

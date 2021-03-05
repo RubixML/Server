@@ -3,6 +3,7 @@
 namespace Rubix\Server\GraphQL\Objects;
 
 use Rubix\Server\Models\HTTPStats;
+use Rubix\Server\GraphQL\Scalars\LongIntegerScalar;
 use GraphQL\Type\Definition\Type;
 
 class TransfersObject extends ObjectType
@@ -25,14 +26,14 @@ class TransfersObject extends ObjectType
             'fields' => [
                 'received' => [
                     'description' => 'The number of bytes that have been received in request bodies so far.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : int {
                         return $httpStats->bytesReceived();
                     },
                 ],
                 'sent' => [
                     'description' => 'The number of bytes that have been sent in response bodies so far.',
-                    'type' => Type::nonNull(Type::int()),
+                    'type' => Type::nonNull(LongIntegerScalar::singleton()),
                     'resolve' => function (HTTPStats $httpStats) : int {
                         return $httpStats->bytesSent();
                     },
