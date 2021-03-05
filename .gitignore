@@ -5,6 +5,7 @@ composer.lock
 .php_cs.cache
 npm-debug.log
 Thumbs.db
+server.log
 .DS_Store
 .log
 /.idea
