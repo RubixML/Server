@@ -9,7 +9,7 @@ use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
 use Rubix\Server\Services\Caches\InMemoryCache;
-use Rubix\Server\Loggers\File;
+use Rubix\ML\Other\Loggers\Screen;
 
 $generator = new Agglomerate([
     'red' => new Blob([255, 0, 0], 10.0),
@@ -23,7 +23,7 @@ $dataset = $generator->generate(100);
 
 $estimator->train($dataset);
 
-$logger = new File('server.log');
+$logger = new Screen('server.log');
 
 $server = new HTTPServer('127.0.0.1', 8000, null, [
     new AccessLogGenerator($logger),
