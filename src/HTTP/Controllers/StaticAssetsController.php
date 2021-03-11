@@ -77,12 +77,6 @@ class StaticAssetsController extends Controller
             '/ui/dashboard' => [
                 'GET' => [$this, 'serveAppShell'],
             ],
-            '/ui/visualizer/line' => [
-                'GET' => [$this, 'serveAppShell'],
-            ],
-            '/ui/visualizer/bubble' => [
-                'GET' => [$this, 'serveAppShell'],
-            ],
             '/app.js' => [
                 'GET' => [
                     [$this, 'serveCompressedFile'],

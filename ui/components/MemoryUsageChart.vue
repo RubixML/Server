@@ -108,7 +108,6 @@ export default Vue.extend({
             },
         }, {
             responsive: true,
-            displayModeBar: true,
             displaylogo: false,
             modeBarButtons: [
                 ['toImage'],

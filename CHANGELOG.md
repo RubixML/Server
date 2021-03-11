@@ -1,3 +1,8 @@
+- 0.2.10-beta
+    - Only show chart snapshot on hover
+    - Removed old static asset routes
+    - Removed Encoder abstraction
+
 - 0.2.9-beta
     - Fixed GraphQL long integer representation
 

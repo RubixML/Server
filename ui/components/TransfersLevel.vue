@@ -5,7 +5,7 @@
                 <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes received in request bodies.">
                     <span class="heading"><span class="icon"><i class="fas fa-download mr-3"></i></span>Received</span>
                 </p>
-                <p class="title">{{ received.toFixed(1) }}M</p>
+                <p class="title">{{ received }}</p>
             </div>
         </div>
         <div class="level-item has-text-centered">
@@ -13,7 +13,7 @@
                 <p class="has-tooltip-arrow has-tooltip-top has-tooltip-multiline" data-tooltip="The number of bytes sent in response bodies.">
                     <span class="heading"><span class="icon"><i class="fas fa-upload mr-3"></i></span>Sent</span>
                 </p>
-                <p class="title">{{ sent.toFixed(1) }}M</p>
+                <p class="title">{{ sent }}</p>
             </div>
         </div>
     </div>
@@ -44,11 +44,11 @@ export default Vue.extend({
         },
     },
     computed: {
-        received() : number {
-            return this.transfers.received / MEGABYTE;
+        received() : string {
+            return (this.transfers.received / MEGABYTE).toFixed(1) + 'M';
         },
-        sent() : number {
-            return this.transfers.sent / MEGABYTE;
+        sent() : string {
+            return (this.transfers.sent / MEGABYTE).toFixed(1) + 'M';
         },
     },
 });

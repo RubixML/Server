@@ -373,22 +373,20 @@ $middleware = new BasicAuthenticator('morgan', 'secret');
 ```
 
 ### Compress Request Body
-Apply a compression algorithm (*Encoder*) to the request body.
-
-> **Note:** The request body must be larger than the standard max MTU (maximum transfer unit) otherwise the body will be sent uncompressed.
+Apply the Gzip compression algorithm to the request body.
 
 #### Parameters
 | # | Param | Default | Type | Description |
 |---|---|---|---|---|
-| 1 | encoder | Gzip | object | The encoder used to compress the request body. |
+| 1 | level | 1 | int | The compression level between 0 and 9 with 0 meaning no compression. |
+| 2 | threshold | 65535 | int | The minimum size of the request body in bytes in order to be compressed. |
 
 **Example**
 
 ```php
 use Rubix\Server\HTTP\Middleware\Client\CompressRequestBody;
-use Rubix\Server\HTTP\Encoders\Deflate;
 
-$middleware = new CompressRequestBody(new Deflate(5));
+$middleware = new CompressRequestBody(5, 65535);
 ```
 
 ### Shared Token Authenticator (Client Side)

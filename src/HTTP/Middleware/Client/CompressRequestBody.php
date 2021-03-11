@@ -2,11 +2,12 @@
 
 namespace Rubix\Server\HTTP\Middleware\Client;
 
-use Rubix\Server\HTTP\Encoders\Gzip;
-use Rubix\Server\HTTP\Encoders\Encoder;
+use Rubix\Server\Exceptions\InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Utils;
+
+use function gzencode;
 
 /**
  * Compress Request Body
@@ -25,18 +26,38 @@ class CompressRequestBody implements Middleware
     protected const MAX_MTU = 65535;
 
     /**
-     * The content encoder.
+     * The compression level between 0 and 9 with 0 meaning no compression.
      *
-     * @var \Rubix\Server\HTTP\Encoders\Encoder
+     * @var int
      */
-    protected $encoder;
+    protected $level;
 
     /**
-     * @param \Rubix\Server\HTTP\Encoders\Encoder|null $encoder
+     * The minimum size of the request body in bytes in order to be compressed.
+     *
+     * @var int
      */
-    public function __construct(?Encoder $encoder = null)
+    protected $threshold;
+
+    /**
+     * @param int $level
+     * @param int $threshold
+     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     */
+    public function __construct(int $level = 1, int $threshold = self::MAX_MTU)
     {
-        $this->encoder = $encoder ?? new Gzip(1);
+        if ($level < 0 or $level > 9) {
+            throw new InvalidArgumentException('Level must be'
+                . " between 0 and 9, $level given.");
+        }
+
+        if ($threshold < 0) {
+            throw new InvalidArgumentException('Threshold must be'
+                . " greater than 0, $threshold given.");
+        }
+
+        $this->level = $level;
+        $this->threshold = $threshold;
     }
 
     /**
@@ -48,11 +69,11 @@ class CompressRequestBody implements Middleware
     {
         return function (callable $handler) : callable {
             return function (RequestInterface $request, array $options) use ($handler) : PromiseInterface {
-                if ($request->getBody()->getSize() > self::MAX_MTU) {
-                    $data = $this->encoder->encode($request->getBody());
+                if ($request->getBody()->getSize() > $this->threshold) {
+                    $data = gzencode($request->getBody(), $this->level);
 
                     $request = $request->withBody(Utils::streamFor($data))
-                        ->withHeader('Content-Encoding', $this->encoder->scheme());
+                        ->withHeader('Content-Encoding', 'gzip');
                 }
 
                 return $handler($request, $options);
