@@ -39,6 +39,7 @@ The latest documentation can be found below.
 	- [Shared Token Authenticator](#shared-token-authenticator-client-side)
 - [Loggers](#loggers)
 	- [File](#file)
+- [Docker Image](#docker-image)
 - [FAQs](#faqs)
 
 ---
@@ -408,26 +409,29 @@ $middleware = new SharedTokenAuthenticator('secret');
 ### Loggers
 PSR-3 compatible loggers for capturing important server events.
 
-### File
+#### File
 A simple append-only file logger.
 
-## Parameters
+#### Parameters
 | # | Name | Default | Type | Description |
 |---|---|---|---|---|
 | 1 | path | | string | The path to the append-only log file. A new file will be created if it doesn't exist yet. |
 | 2 | channel | '' | string | The channel name that appears on each line. |
 | 3 | timestampFormat | 'Y-m-d H:i:s' | string | The format of the timestamp. |
 
-## Example
+**Example**
 ```php
 use Rubix\Server\Loggers\File;
 
 $logger = new File('server.log', 'example', 'Y-m-d H:i:s');
 ```
 
-### FAQs
+## Docker Image
+The [torchello/rubix-ml-server-docker](https://hub.docker.com/r/torchello/rubix-ml-server-docker) is available for a quick start with a trained estimator or to be used for deployment. See `README` at the Docker Hub page to get more details.
+
+## FAQs
 Here you will find answers to the most frequently asked questions.
-#### How do I run the server?
+### How do I run the server?
 All model servers are designed to be run from the PHP command line interface ([CLI](http://php.net/manual/en/features.commandline.php)). Model servers are long-running asynchronous processes that handle concurrent requests and implement their own networking stack avoiding the need for a third-party web server such as Nginx or Apache.
 
 To run the server, you can execute your script containing the server code by entering the following on the command line.
@@ -436,13 +440,13 @@ To run the server, you can execute your script containing the server code by ent
 $ php server.php
 ```
 
-#### Can I run the model server on the same host as a regular web server?
+### Can I run the model server on the same host as a regular web server?
 Yes, model server are designed to coexist with other web servers (including other model servers) seamlessly. Just make sure that each server runs on its own unique port.
 
-#### How do I scale inference throughput?
+### How do I scale inference throughput?
 Since model servers are inference-only (i.e. they only support queries), they scale horizontally by adding more instances behind a load balancer such as [Nginx](http://nginx.org).
 
-#### Do servers support compression?
+### Do servers support compression?
 Yes, the HTTP Server supports both Gzip and Deflate compression schemes applied to the request bodies and to the response bodies of requests for static assets.
 
 ## License
