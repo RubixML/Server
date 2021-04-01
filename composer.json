@@ -13,10 +13,11 @@
         "rubix", "rubix ml", "rubixml", "server"
     ],
     "authors": [
-        {
+        { 
             "name": "Andrew DalPino",
+            "role": "Project Lead",
             "homepage": "https://github.com/andrewdalpino",
-            "role": "Lead Engineer"
+            "email": "support@andrewdalpino.com"
         },
         {
             "name": "Contributors",
@@ -75,9 +76,9 @@
         "sort-packages": true
     },
     "support": {
-        "email": "support@rubixml.com",
         "issues": "https://github.com/RubixML/Server/issues",
-        "source": "https://github.com/RubixML/Server"
+        "source": "https://github.com/RubixML/Server",
+        "email": "support@andrewdalpino.com"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
