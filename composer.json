@@ -78,6 +78,7 @@
     "support": {
         "issues": "https://github.com/RubixML/Server/issues",
         "source": "https://github.com/RubixML/Server",
+        "chat": "https://t.me/RubixML",
         "email": "support@andrewdalpino.com"
     },
     "minimum-stability": "dev",
