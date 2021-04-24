@@ -13,6 +13,9 @@ Install Rubix Server using [Composer](https://getcomposer.org/):
 $ composer require rubix/server
 ```
 
+### Docker Image
+A [Docker Image](https://hub.docker.com/r/torchello/rubix-ml-server-docker) is available for a quick start or deployment.
+
 ## Requirements
 - [PHP](https://php.net/manual/en/install.php) 7.2 or above
 
@@ -425,9 +428,6 @@ use Rubix\Server\Loggers\File;
 
 $logger = new File('server.log', 'example', 'Y-m-d H:i:s');
 ```
-
-## Docker Image
-The [torchello/rubix-ml-server-docker](https://hub.docker.com/r/torchello/rubix-ml-server-docker) is available for a quick start with a trained estimator or to be used for deployment. See `README` at the Docker Hub page to get more details.
 
 ## FAQs
 Here you will find answers to the most frequently asked questions.
