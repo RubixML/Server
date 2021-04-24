@@ -1,4 +1,4 @@
-- 0.2.10-beta
+- 0.4.0-beta
     - Only show chart snapshot on hover
     - Removed old static asset routes
     - Removed Encoder abstraction
