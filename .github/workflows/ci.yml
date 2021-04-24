@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [windows-latest, ubuntu-latest, macos-latest]
-        php-versions: ['7.2', '7.3', '7.4']
+        php-versions: ['7.4', '8.0']
 
     steps:
       - name: Checkout
@@ -20,7 +20,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           tools: pecl
-          extensions: igbinary, fileinfo
+          extensions: fileinfo
           ini-values: memory_limit=-1    
 
       - name: Validate composer.json
