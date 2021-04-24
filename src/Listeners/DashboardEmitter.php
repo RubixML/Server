@@ -85,7 +85,7 @@ class DashboardEmitter implements Listener
     public function onDatasetInferred(DatasetInferred $event) : void
     {
         $this->channel->emit('dataset-inferred', [
-            'numSamples' => $event->dataset()->numRows(),
+            'numSamples' => $event->dataset()->numSamples(),
         ]);
     }
 

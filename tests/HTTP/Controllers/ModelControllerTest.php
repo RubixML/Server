@@ -5,7 +5,7 @@ namespace Rubix\Server\Tests\HTTP\Controllers;
 use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\KNearestNeighbors;
-use Rubix\ML\Other\Loggers\BlackHole;
+use Rubix\ML\Loggers\BlackHole;
 use Rubix\Server\Models\Model;
 use Rubix\Server\Services\EventBus;
 use Rubix\Server\Services\Scheduler;

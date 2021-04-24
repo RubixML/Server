@@ -9,7 +9,7 @@ use Rubix\Server\HTTPServer;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
 use Rubix\Server\Services\Caches\InMemoryCache;
-use Rubix\ML\Other\Loggers\Screen;
+use Rubix\ML\Loggers\Screen;
 
 $generator = new Agglomerate([
     'red' => new Blob([255, 0, 0], 10.0),

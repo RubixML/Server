@@ -35,7 +35,7 @@ use Rubix\Server\Listeners\CloseSocket;
 use Rubix\Server\Jobs\UpdateMemoryUsage;
 use Rubix\Server\Jobs\EvictCacheItems;
 use Rubix\Server\Exceptions\InvalidArgumentException;
-use Rubix\ML\Other\Loggers\BlackHole;
+use Rubix\ML\Loggers\BlackHole;
 use GraphQL\Executor\Promise\Adapter\ReactPromiseAdapter;
 use React\EventLoop\Factory as Loop;
 use React\Socket\Server as Socket;

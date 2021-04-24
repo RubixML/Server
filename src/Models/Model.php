@@ -6,7 +6,7 @@ use Rubix\ML\Estimator;
 use Rubix\ML\Learner;
 use Rubix\ML\Probabilistic;
 use Rubix\ML\Datasets\Dataset;
-use Rubix\ML\Other\Helpers\Params;
+use Rubix\ML\Helpers\Params;
 use Rubix\Server\Services\EventBus;
 use Rubix\ML\AnomalyDetectors\Scoring;
 use Rubix\Server\Events\DatasetInferred;

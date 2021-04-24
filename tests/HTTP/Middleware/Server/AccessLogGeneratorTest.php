@@ -2,7 +2,7 @@
 
 namespace Rubix\Server\Tests\HTTP\Middleware\Server;
 
-use Rubix\ML\Other\Loggers\BlackHole;
+use Rubix\ML\Loggers\BlackHole;
 use Rubix\Server\HTTP\Middleware\Server\Middleware;
 use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
 use PHPUnit\Framework\TestCase;
