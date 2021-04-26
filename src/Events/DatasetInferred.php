@@ -14,7 +14,7 @@ use Rubix\ML\Datasets\Dataset;
 class DatasetInferred implements Event
 {
     /**
-     * The request.
+     * The dataset that was used to make the predictions.
      *
      * @var \Rubix\ML\Datasets\Dataset
      */

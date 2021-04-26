@@ -17,10 +17,7 @@ $ composer require rubix/server
 A [Docker Image](https://hub.docker.com/r/torchello/rubix-ml-server-docker) is available for a quick start or deployment.
 
 ## Requirements
-- [PHP](https://php.net/manual/en/install.php) 7.2 or above
-
-#### Optional
-- [Event extension](https://pecl.php.net/package/event) for high-volume servers
+- [PHP](https://php.net/manual/en/install.php) 7.4 or above
 
 ## Documentation
 The latest documentation can be found below.

@@ -1,3 +1,6 @@
+- 1.0.0-beta
+    - Update to Rubix ML 1.0
+
 - 0.4.0-beta
     - Only show chart snapshot on hover
     - Removed old static asset routes
