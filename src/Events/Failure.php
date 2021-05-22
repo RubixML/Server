@@ -18,7 +18,7 @@ abstract class Failure implements Event
      *
      * @var \Exception
      */
-    protected $exception;
+    protected \Exception $exception;
 
     /**
      * @param \Exception $exception

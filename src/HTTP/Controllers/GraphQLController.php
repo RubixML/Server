@@ -20,14 +20,14 @@ class GraphQLController extends JSONController
      *
      * @var \Rubix\Server\GraphQL\Schema
      */
-    protected $schema;
+    protected \Rubix\Server\GraphQL\Schema $schema;
 
     /**
      * The promise adapter.
      *
      * @var \GraphQL\Executor\Promise\PromiseAdapter
      */
-    protected $adapter;
+    protected \GraphQL\Executor\Promise\PromiseAdapter $adapter;
 
     /**
      * @param \Rubix\Server\GraphQL\Schema $schema

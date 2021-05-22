@@ -20,7 +20,7 @@ class Subscriptions implements ArrayAccess
      *
      * @var array[]
      */
-    protected $subscriptions;
+    protected array $subscriptions;
 
     /**
      * Subscribe an array of listeners to their events.

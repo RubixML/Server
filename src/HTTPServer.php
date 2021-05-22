@@ -78,84 +78,84 @@ class HTTPServer implements Server, Verbose
      *
      * @var string
      */
-    protected $host;
+    protected string $host;
 
     /**
      * The transmission control protocol (TCP) port to run the HTTP services on.
      *
      * @var int
      */
-    protected $port;
+    protected int $port;
 
     /**
      * The path to the certificate used to authenticate and encrypt the secure (HTTPS) channel.
      *
      * @var string|null
      */
-    protected $cert;
+    protected ?string $cert;
 
     /**
      * The HTTP middleware stack.
      *
      * @var \Rubix\Server\HTTP\Middleware\Server\Middleware[]
      */
-    protected $middlewares;
+    protected array $middlewares;
 
     /**
      * The maximum number of requests that can be handled concurrently.
      *
      * @var int
      */
-    protected $maxConcurrentRequests;
+    protected int $maxConcurrentRequests;
 
     /**
      * The cache used to serve static asset requests.
      *
      * @var \Rubix\Server\Services\Caches\Cache
      */
-    protected $staticAssetsCache;
+    protected \Rubix\Server\Services\Caches\Cache $staticAssetsCache;
 
     /**
      * The maximum number of events to store in the server-sent events (SSE) reconnect buffer.
      *
      * @var int
      */
-    protected $sseReconnectBuffer;
+    protected int $sseReconnectBuffer;
 
     /**
      * The maximum number of bytes that the server can consume.
      *
      * @var int
      */
-    protected $memoryLimit;
+    protected int $memoryLimit;
 
     /**
      * The maximum size of a request body in bytes.
      *
      * @var int
      */
-    protected $postMaxSize;
+    protected int $postMaxSize;
 
     /**
      * A PSR-3 logger instance.
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * The event bus.
      *
      * @var \Rubix\Server\Services\EventBus
      */
-    protected $eventBus;
+    protected \Rubix\Server\Services\EventBus $eventBus;
 
     /**
      * The event loop.
      *
      * @var \React\EventLoop\LoopInterface
      */
-    protected $loop;
+    protected \React\EventLoop\LoopInterface $loop;
 
     /**
      * @param string $host

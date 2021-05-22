@@ -18,7 +18,7 @@ class ResponseSent implements Event
      *
      * @var \Psr\Http\Message\ResponseInterface
      */
-    protected $response;
+    protected \Psr\Http\Message\ResponseInterface $response;
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response

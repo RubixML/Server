@@ -11,7 +11,7 @@ class UpdateMemoryUsage implements Job
      *
      * @var \Rubix\Server\Models\Memory
      */
-    protected $memory;
+    protected \Rubix\Server\Models\Memory $memory;
 
     /**
      * @param \Rubix\Server\Models\Memory $memory

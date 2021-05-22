@@ -44,7 +44,7 @@ class RESTClient implements Client, AsyncClient
      *
      * @var \GuzzleHttp\Client
      */
-    protected $client;
+    protected \GuzzleHttp\Client $client;
 
     /**
      * @param string $host

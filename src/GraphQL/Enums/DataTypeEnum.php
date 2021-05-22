@@ -11,7 +11,7 @@ class DataTypeEnum extends EnumType
      *
      * @var self|null
      */
-    protected static $instance;
+    protected static ?self $instance = null;
 
     /**
      * @return self

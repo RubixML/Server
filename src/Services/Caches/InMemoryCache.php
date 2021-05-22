@@ -12,14 +12,14 @@ class InMemoryCache implements Cache
      *
      * @var int
      */
-    protected $expiresAfter;
+    protected int $expiresAfter;
 
     /**
      * The item store.
      *
      * @var \Rubix\Server\Services\Caches\CacheItem[]
      */
-    protected $store = [
+    protected array $store = [
         //
     ];
 

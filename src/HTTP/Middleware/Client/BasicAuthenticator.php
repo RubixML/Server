@@ -21,7 +21,7 @@ class BasicAuthenticator implements Middleware
      *
      * @var string
      */
-    protected $credentials;
+    protected string $credentials;
 
     /**
      * @param string $username

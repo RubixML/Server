@@ -39,14 +39,14 @@ class BackoffAndRetry implements Middleware
      *
      * @var int
      */
-    protected $maxRetries;
+    protected int $maxRetries;
 
     /**
      * The number of seconds to delay between retries before exponential backoff is applied.
      *
      * @var float
      */
-    protected $initialDelay;
+    protected float $initialDelay;
 
     /**
      * @param int $maxRetries

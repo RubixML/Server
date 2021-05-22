@@ -28,7 +28,7 @@ class Routes implements ArrayAccess
      *
      * @var array[]
      */
-    protected $routes;
+    protected array $routes;
 
     /**
      * Collect the routes from an array of controllers.

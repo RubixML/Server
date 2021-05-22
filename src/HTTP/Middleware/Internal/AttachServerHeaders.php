@@ -15,7 +15,7 @@ class AttachServerHeaders
      *
      * @var string
      */
-    protected $serverName;
+    protected string $serverName;
 
     /**
      * @param string $serverName

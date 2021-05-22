@@ -11,7 +11,7 @@ class EvictCacheItems implements Job
      *
      * @var \Rubix\Server\Services\Caches\Cache
      */
-    protected $cache;
+    protected \Rubix\Server\Services\Caches\Cache $cache;
 
     /**
      * @param \Rubix\Server\Services\Caches\Cache $cache

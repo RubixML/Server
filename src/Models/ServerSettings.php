@@ -11,7 +11,7 @@ class ServerSettings
      *
      * @var \Rubix\Server\HTTPServer
      */
-    protected $server;
+    protected \Rubix\Server\HTTPServer $server;
 
     /**
      * @param \Rubix\Server\HTTPServer $server

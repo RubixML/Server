@@ -11,7 +11,7 @@ class CloseSSEChannels implements Listener
      *
      * @var \Rubix\Server\Services\SSEChannel[]
      */
-    protected $channels;
+    protected array $channels;
 
     /**
      * @param \Rubix\Server\Services\SSEChannel[] $channels

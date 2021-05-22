@@ -28,14 +28,14 @@ class File extends Logger
      *
      * @var string
      */
-    protected $channel;
+    protected string $channel;
 
     /**
      * The format of the timestamp.
      *
      * @var string
      */
-    protected $timestampFormat;
+    protected string $timestampFormat;
 
     /**
      * @param string $path

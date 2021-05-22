@@ -24,7 +24,7 @@ class TrustedClients implements Middleware
      *
      * @var (int|string)[]
      */
-    protected $ips;
+    protected array $ips;
 
     /**
      * @param string[] $ips

@@ -13,7 +13,7 @@ class Scheduler
      *
      * @var \React\EventLoop\LoopInterface
      */
-    protected $loop;
+    protected \React\EventLoop\LoopInterface $loop;
 
     /**
      * @param \React\EventLoop\LoopInterface $loop

@@ -37,14 +37,14 @@ class BasicAuthenticator implements Middleware
      *
      * @var string[]
      */
-    protected $passwords;
+    protected array $passwords;
 
     /**
      * The unique name given to the scope of permissions required for this server.
      *
      * @var string
      */
-    protected $realm;
+    protected string $realm;
 
     /**
      * @param string[] $passwords

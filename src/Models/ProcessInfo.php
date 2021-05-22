@@ -9,14 +9,14 @@ class ProcessInfo
      *
      * @var int
      */
-    protected $start;
+    protected int $start;
 
     /**
      * The process ID (PID) of the server.
      *
      * @var int|null
      */
-    protected $pid;
+    protected ?int $pid;
 
     public function __construct()
     {

@@ -30,14 +30,14 @@ class CompressRequestBody implements Middleware
      *
      * @var int
      */
-    protected $level;
+    protected int $level;
 
     /**
      * The minimum size of the request body in bytes in order to be compressed.
      *
      * @var int
      */
-    protected $threshold;
+    protected int $threshold;
 
     /**
      * @param int $level

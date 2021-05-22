@@ -13,7 +13,7 @@ class RecordHTTPStats implements Listener
      *
      * @var \Rubix\Server\Models\HTTPStats
      */
-    protected $httpStats;
+    protected \Rubix\Server\Models\HTTPStats $httpStats;
 
     /**
      * @param \Rubix\Server\Models\HTTPStats $httpStats

@@ -12,28 +12,28 @@ class Server
      *
      * @var \Rubix\Server\Models\HTTPStats
      */
-    protected $httpStats;
+    protected \Rubix\Server\Models\HTTPStats $httpStats;
 
     /**
      * The memory model.
      *
      * @var \Rubix\Server\Models\Memory
      */
-    protected $memory;
+    protected \Rubix\Server\Models\Memory $memory;
 
     /**
      * The server info model.
      *
      * @var \Rubix\Server\Models\ProcessInfo
      */
-    protected $info;
+    protected \Rubix\Server\Models\ProcessInfo $info;
 
     /**
      * The server settings.
      *
      * @var \Rubix\Server\Models\ServerSettings
      */
-    protected $settings;
+    protected \Rubix\Server\Models\ServerSettings $settings;
 
     /**
      * @param \Rubix\Server\HTTPServer $server

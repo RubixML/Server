@@ -16,14 +16,14 @@ class CacheItem
      *
      * @var int
      */
-    protected $expiresAfter;
+    protected int $expiresAfter;
 
     /**
      * The timestamp of the last time the item was accessed.
      *
      * @var int
      */
-    protected $accessedAt;
+    protected int $accessedAt;
 
     /**
      * @param mixed $data

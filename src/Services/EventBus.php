@@ -22,21 +22,21 @@ class EventBus
      *
      * @var \Rubix\Server\Services\Scheduler
      */
-    protected $scheduler;
+    protected \Rubix\Server\Services\Scheduler $scheduler;
 
     /**
      * A PSR-3 logger instance.
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * The mapping of events to their listeners.
      *
      * @var \Rubix\Server\Services\Subscriptions|null
      */
-    protected $subscriptions;
+    protected ?\Rubix\Server\Services\Subscriptions $subscriptions;
 
     /**
      * @param \Rubix\Server\Services\Scheduler $scheduler

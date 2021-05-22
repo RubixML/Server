@@ -18,7 +18,7 @@ class CatchServerErrors
      *
      * @var \Rubix\Server\Services\EventBus
      */
-    protected $eventBus;
+    protected \Rubix\Server\Services\EventBus $eventBus;
 
     /**
      * @param \Rubix\Server\Services\EventBus $eventBus

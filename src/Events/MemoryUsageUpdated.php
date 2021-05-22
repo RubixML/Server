@@ -18,7 +18,7 @@ class MemoryUsageUpdated implements Event
      *
      * @var \Rubix\Server\Models\Memory
      */
-    protected $memory;
+    protected \Rubix\Server\Models\Memory $memory;
 
     /**
      * @param \Rubix\Server\Models\Memory $memory

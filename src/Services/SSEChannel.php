@@ -16,28 +16,28 @@ class SSEChannel
      *
      * @var int
      */
-    protected $bufferSize;
+    protected int $bufferSize;
 
     /**
      * The current open response body streams.
      *
      * @var \SplObjectStorage<object,mixed>
      */
-    protected $streams;
+    protected \SplObjectStorage $streams;
 
     /**
      * A counter used to identify individual events.
      *
      * @var int
      */
-    protected $id = 1;
+    protected int $id = 1;
 
     /**
      * The reconnect buffer.
      *
      * @var string[]
      */
-    protected $buffer = [
+    protected array $buffer = [
         //
     ];
 

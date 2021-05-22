@@ -15,7 +15,7 @@ class DashboardEmitter implements Listener
      *
      * @var \Rubix\Server\Services\SSEChannel
      */
-    protected $channel;
+    protected \Rubix\Server\Services\SSEChannel $channel;
 
     /**
      * @param \Rubix\Server\Services\SSEChannel $channel

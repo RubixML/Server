@@ -26,7 +26,7 @@ class AccessLogGenerator implements Middleware
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * @param \Psr\Log\LoggerInterface $logger

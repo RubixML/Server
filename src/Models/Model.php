@@ -22,21 +22,21 @@ class Model
      *
      * @var \Rubix\ML\Estimator
      */
-    protected $estimator;
+    protected \Rubix\ML\Estimator $estimator;
 
     /**
      * The event bus.
      *
      * @var \Rubix\Server\Services\EventBus
      */
-    protected $eventBus;
+    protected \Rubix\Server\Services\EventBus $eventBus;
 
     /**
      * The number of samples that have been predicted so far.
      *
      * @var int
      */
-    protected $numSamplesInferred = 0;
+    protected int $numSamplesInferred = 0;
 
     /**
      * @param \Rubix\ML\Estimator $estimator

@@ -31,14 +31,14 @@ class SharedTokenAuthenticator implements Middleware
      *
      * @var (int|string)[]
      */
-    protected $tokens;
+    protected array $tokens;
 
     /**
      * The unique name given to the scope of permissions required for this server.
      *
      * @var string
      */
-    protected $realm;
+    protected string $realm;
 
     /**
      * @param string[] $tokens

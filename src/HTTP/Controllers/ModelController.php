@@ -19,7 +19,7 @@ class ModelController extends JSONController
      *
      * @var \Rubix\Server\Models\Model
      */
-    protected $model;
+    protected \Rubix\Server\Models\Model $model;
 
     /**
      * @param \Rubix\Server\Models\Model $model

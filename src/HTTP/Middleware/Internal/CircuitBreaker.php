@@ -13,7 +13,7 @@ class CircuitBreaker
      *
      * @var \Rubix\Server\Models\Server
      */
-    protected $server;
+    protected \Rubix\Server\Models\Server $server;
 
     /**
      * @param \Rubix\Server\Models\Server $server

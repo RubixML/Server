@@ -18,7 +18,7 @@ class DatasetInferred implements Event
      *
      * @var \Rubix\ML\Datasets\Dataset
      */
-    protected $dataset;
+    protected \Rubix\ML\Datasets\Dataset $dataset;
 
     /**
      * @param \Rubix\ML\Datasets\Dataset $dataset

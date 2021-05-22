@@ -17,7 +17,7 @@ class Router
      *
      * @var \Rubix\Server\Services\Routes
      */
-    protected $routes;
+    protected \Rubix\Server\Services\Routes $routes;
 
     /**
      * @param \Rubix\Server\Services\Routes $routes

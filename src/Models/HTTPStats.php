@@ -12,35 +12,35 @@ class HTTPStats
      *
      * @var int
      */
-    protected $numSuccessful = 0;
+    protected int $numSuccessful = 0;
 
     /**
      * The number of rejected requests.
      *
      * @var int
      */
-    protected $numRejected = 0;
+    protected int $numRejected = 0;
 
     /**
      * The number of failed requests.
      *
      * @var int
      */
-    protected $numFailed = 0;
+    protected int $numFailed = 0;
 
     /**
      * The number of bytes that have been received by the server.
      *
      * @var int
      */
-    protected $bytesReceived = 0;
+    protected int $bytesReceived = 0;
 
     /**
      * The number of bytes that have been sent by the server.
      *
      * @var int
      */
-    protected $bytesSent = 0;
+    protected int $bytesSent = 0;
 
     /**
      * Record an HTTP request.

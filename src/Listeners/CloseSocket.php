@@ -12,7 +12,7 @@ class CloseSocket implements Listener
      *
      * @var \React\Socket\ServerInterface
      */
-    protected $socket;
+    protected \React\Socket\ServerInterface $socket;
 
     /**
      * @param \React\Socket\ServerInterface $socket

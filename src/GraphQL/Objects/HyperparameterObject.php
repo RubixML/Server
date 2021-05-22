@@ -11,7 +11,7 @@ class HyperparameterObject extends ObjectType
      *
      * @var self|null
      */
-    protected static $instance;
+    protected static ?self $instance = null;
 
     /**
      * @return self

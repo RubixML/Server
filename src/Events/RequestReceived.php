@@ -18,7 +18,7 @@ class RequestReceived implements Event
      *
      * @var \Psr\Http\Message\ServerRequestInterface
      */
-    protected $request;
+    protected \Psr\Http\Message\ServerRequestInterface $request;
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request

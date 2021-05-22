@@ -31,14 +31,14 @@ class StaticAssetsController extends Controller
      *
      * @var string
      */
-    protected $basePath;
+    protected string $basePath;
 
     /**
      * The cache.
      *
      * @var \Rubix\Server\Services\Caches\Cache
      */
-    protected $cache;
+    protected \Rubix\Server\Services\Caches\Cache $cache;
 
     /**
      * @param string $basePath

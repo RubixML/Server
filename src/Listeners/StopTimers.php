@@ -12,7 +12,7 @@ class StopTimers implements Listener
      *
      * @var \Rubix\Server\Services\Scheduler
      */
-    protected $scheduler;
+    protected \Rubix\Server\Services\Scheduler $scheduler;
 
     /**
      * The timers.

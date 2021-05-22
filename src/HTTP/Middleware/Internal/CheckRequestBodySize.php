@@ -12,7 +12,7 @@ class CheckRequestBodySize
      *
      * @var int
      */
-    protected $postMaxSize;
+    protected int $postMaxSize;
 
     /**
      * @param int $postMaxSize

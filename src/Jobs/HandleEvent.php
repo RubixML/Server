@@ -22,14 +22,14 @@ class HandleEvent implements Job
      *
      * @var \Rubix\Server\Events\Event
      */
-    protected $event;
+    protected \Rubix\Server\Events\Event $event;
 
     /**
      * A logger instance.
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * @param callable $handler
