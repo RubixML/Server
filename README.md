@@ -4,7 +4,7 @@ Rubix Server is a library for bringing your trained [Rubix ML](https://github.co
 - **Optimized** for low latency predictions
 - **Scalable** horizontally by adding more instances
 - **Monitoring** with real-time analytics dashboard
-- **Robust** to common attacks and failure modes
+- **Robust** to common threats and failure modes
 
 ## Installation
 Install Rubix Server using [Composer](https://getcomposer.org/):
