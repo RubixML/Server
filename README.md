@@ -149,7 +149,7 @@ The HTTP server exposes the following resources and their methods.
 | GET | /model | Return the properties of the model. |
 | POST | /model/predictions | Make a set of predictions on a dataset. |
 | POST | /model/probabilities | Return the joint probabilities of each sample in a dataset. |
-| POST | /model/anomaly_scores | Return the anomaly scores of each sample in a dataset. |
+| POST | /model/anomaly-scores | Return the anomaly scores of each sample in a dataset. |
 | GET | /server | Return the properties of the server. |
 | GET | /dashboard/events | Subscribe to the dashboard events stream. |
 | POST | /graphql | Query the server using GraphQL. |

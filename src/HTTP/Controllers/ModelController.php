@@ -60,7 +60,7 @@ class ModelController extends JSONController
         }
 
         if ($this->model->isScoring()) {
-            $routes['/model/anomaly_scores'] = [
+            $routes['/model/anomaly-scores'] = [
                 'POST' => [
                     [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],

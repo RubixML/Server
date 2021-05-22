@@ -11,7 +11,7 @@ class ScoreRequest extends JSONRequest
      */
     public function __construct(Dataset $dataset)
     {
-        parent::__construct('POST', '/model/anomaly_scores', [
+        parent::__construct('POST', '/model/anomaly-scores', [
             'samples' => $dataset->samples(),
         ]);
     }

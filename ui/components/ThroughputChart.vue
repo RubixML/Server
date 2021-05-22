@@ -127,7 +127,7 @@ export default Vue.extend({
             responsive: true,
             displaylogo: false,
             modeBarButtons: [
-                ['toImage'],
+                ['zoom2d', 'pan2d', 'resetScale2d', 'toImage'],
             ],
         });
 

@@ -1,3 +1,7 @@
+1.0.0
+    - Add pan and zoom to dashboard charts
+    - Rename anomaly scores HTTP resource
+
 - 1.0.0-beta
     - Update to Rubix ML 1.0
 
