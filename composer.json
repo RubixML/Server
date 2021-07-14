@@ -71,6 +71,12 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/andrewdalpino"
+        }
+    ],
     "support": {
         "issues": "https://github.com/RubixML/Server/issues",
         "source": "https://github.com/RubixML/Server",
