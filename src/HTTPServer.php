@@ -37,13 +37,13 @@ use Rubix\Server\Jobs\EvictCacheItems;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 use Rubix\ML\Loggers\BlackHole;
 use GraphQL\Executor\Promise\Adapter\ReactPromiseAdapter;
-use React\EventLoop\Factory as Loop;
-use React\Socket\Server as Socket;
+use React\EventLoop\Loop;
+use React\Socket\SocketServer as Socket;
 use React\Socket\SecureServer as SecureSocket;
 use React\Http\Middleware\StreamingRequestMiddleware;
 use React\Http\Middleware\LimitConcurrentRequestsMiddleware;
 use React\Http\Middleware\RequestBodyBufferMiddleware;
-use React\Http\Server as HTTP;
+use React\Http\HttpServer as HTTP;
 use React\Http\Io\IniUtil;
 use Psr\Log\LoggerInterface;
 
@@ -316,11 +316,11 @@ class HTTPServer implements Server, Verbose
      */
     public function serve(Estimator $estimator) : void
     {
-        $loop = Loop::create();
+        $loop = Loop::get();
 
         $this->logger->info('HTTP Server booting up');
 
-        $socket = new Socket("{$this->host}:{$this->port}", $loop);
+        $socket = new Socket("{$this->host}:{$this->port}", [], $loop);
 
         if ($this->cert) {
             $socket = new SecureSocket($socket, $loop, [
