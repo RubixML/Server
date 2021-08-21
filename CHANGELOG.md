@@ -1,3 +1,6 @@
+2.0.0
+    - Move clients into their own repository
+
 1.0.0
     - Add pan and zoom to dashboard charts
     - Rename anomaly scores HTTP resource

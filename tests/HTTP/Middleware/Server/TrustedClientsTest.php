@@ -1,20 +1,20 @@
 <?php
 
-namespace Rubix\Server\Tests\HTTP\Middleware\Server;
+namespace Rubix\Server\Tests\HTTP\Middleware;
 
-use Rubix\Server\HTTP\Middleware\Server\Middleware;
-use Rubix\Server\HTTP\Middleware\Server\TrustedClients;
+use Rubix\Server\HTTP\Middleware\Middleware;
+use Rubix\Server\HTTP\Middleware\TrustedClients;
 use PHPUnit\Framework\TestCase;
 use Rubix\Server\Exceptions\InvalidArgumentException;
 
 /**
  * @group Middleware
- * @covers \Rubix\Server\HTTP\Middleware\Server\TrustedClients
+ * @covers \Rubix\Server\HTTP\Middleware\TrustedClients
  */
 class TrustedClientsTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\Server\TrustedClients
+     * @var \Rubix\Server\HTTP\Middleware\TrustedClients
      */
     protected $middleware;
 

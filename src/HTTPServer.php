@@ -13,7 +13,7 @@ use Rubix\Server\Services\Routes;
 use Rubix\Server\Services\SSEChannel;
 use Rubix\Server\Services\Caches\Cache;
 use Rubix\Server\Services\Caches\InMemoryCache;
-use Rubix\Server\HTTP\Middleware\Server\Middleware;
+use Rubix\Server\HTTP\Middleware\Middleware;
 use Rubix\Server\HTTP\Middleware\Internal\DispatchEvents;
 use Rubix\Server\HTTP\Middleware\Internal\AttachServerHeaders;
 use Rubix\Server\HTTP\Middleware\Internal\CatchServerErrors;
@@ -97,7 +97,7 @@ class HTTPServer implements Server, Verbose
     /**
      * The HTTP middleware stack.
      *
-     * @var \Rubix\Server\HTTP\Middleware\Server\Middleware[]
+     * @var \Rubix\Server\HTTP\Middleware\Middleware[]
      */
     protected array $middlewares;
 
@@ -161,7 +161,7 @@ class HTTPServer implements Server, Verbose
      * @param string $host
      * @param int $port
      * @param string|null $cert
-     * @param \Rubix\Server\HTTP\Middleware\Server\Middleware[] $middlewares
+     * @param \Rubix\Server\HTTP\Middleware\Middleware[] $middlewares
      * @param int $maxConcurrentRequests
      * @param \Rubix\Server\Services\Caches\Cache $staticAssetsCache
      * @param int $sseReconnectBuffer

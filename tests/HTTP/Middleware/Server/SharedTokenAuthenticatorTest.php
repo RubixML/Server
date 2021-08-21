@@ -1,19 +1,19 @@
 <?php
 
-namespace Rubix\Server\Tests\HTTP\Middleware\Server;
+namespace Rubix\Server\Tests\HTTP\Middleware;
 
-use Rubix\Server\HTTP\Middleware\Server\Middleware;
-use Rubix\Server\HTTP\Middleware\Server\SharedTokenAuthenticator;
+use Rubix\Server\HTTP\Middleware\Middleware;
+use Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Middleware
- * @covers \Rubix\Server\HTTP\Middleware\Server\SharedTokenAuthenticator
+ * @covers \Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator
  */
 class SharedTokenAuthenticatorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\Server\SharedTokenAuthenticator
+     * @var \Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator
      */
     protected $middleware;
 
