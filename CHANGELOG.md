@@ -1,5 +1,8 @@
 2.0.0
     - Move clients into their own repository
+    
+1.0.1
+    - Do not use deprecated ReactPHP class names
 
 1.0.0
     - Add pan and zoom to dashboard charts
