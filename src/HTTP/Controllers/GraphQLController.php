@@ -5,6 +5,8 @@ namespace Rubix\Server\HTTP\Controllers;
 use Rubix\Server\GraphQL\Schema;
 use Rubix\Server\Helpers\JSON;
 use Rubix\Server\HTTP\Middleware\Internal\NormalizeInfNanValues;
+use Rubix\Server\HTTP\Middleware\Internal\DecompressRequestBody;
+use Rubix\Server\HTTP\Middleware\Internal\ParseRequestBody;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\HTTP\Responses\UnprocessableEntity;
 use Rubix\Server\Exceptions\ValidationException;
@@ -50,8 +52,8 @@ class GraphQLController extends JSONController
         return [
             '/graphql' => [
                 'POST' => [
-                    [$this, 'decompressRequestBody'],
-                    [$this, 'parseRequestBody'],
+                    new DecompressRequestBody(),
+                    new ParseRequestBody(),
                     new NormalizeInfNanValues(),
                     $this,
                 ],

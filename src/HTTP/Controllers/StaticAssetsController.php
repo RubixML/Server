@@ -80,35 +80,35 @@ class StaticAssetsController extends Controller
             '/app.js' => [
                 'GET' => [
                     [$this, 'serveCompressedFile'],
-                    $this,
+                    [$this, 'serveFile'],
                 ],
             ],
             '/sw.js' => [
                 'GET' => [
                     [$this, 'serveCompressedFile'],
-                    $this,
+                    [$this, 'serveFile'],
                 ],
             ],
             '/app.css' => [
                 'GET' => [
                     [$this, 'serveCompressedFile'],
-                    $this,
+                    [$this, 'serveFile'],
                 ],
             ],
-            '/manifest.json' => ['GET' => $this],
-            '/images/app-icon-small.png' => ['GET' => $this],
-            '/images/app-icon-apple-touch.png' => ['GET' => $this],
-            '/images/app-icon-medium.png' => ['GET' => $this],
-            '/images/app-icon-large.png' => ['GET' => $this],
-            '/fonts/Roboto-300.woff2' => ['GET' => $this],
-            '/fonts/Roboto-300.woff' => ['GET' => $this],
-            '/fonts/Roboto-regular.woff2' => ['GET' => $this],
-            '/fonts/Roboto-regular.woff' => ['GET' => $this],
-            '/fonts/Roboto-500.woff2' => ['GET' => $this],
-            '/fonts/Roboto-500.woff' => ['GET' => $this],
-            '/fonts/fa-solid-900.woff2' => ['GET' => $this],
-            '/fonts/fa-solid-900.woff' => ['GET' => $this],
-            '/sounds/sharp.ogg' => ['GET' => $this],
+            '/manifest.json' => ['GET' => [$this, 'serveFile']],
+            '/images/app-icon-small.png' => ['GET' => [$this, 'serveFile']],
+            '/images/app-icon-apple-touch.png' => ['GET' => [$this, 'serveFile']],
+            '/images/app-icon-medium.png' => ['GET' => [$this, 'serveFile']],
+            '/images/app-icon-large.png' => ['GET' => [$this, 'serveFile']],
+            '/fonts/Roboto-300.woff2' => ['GET' => [$this, 'serveFile']],
+            '/fonts/Roboto-300.woff' => ['GET' => [$this, 'serveFile']],
+            '/fonts/Roboto-regular.woff2' => ['GET' => [$this, 'serveFile']],
+            '/fonts/Roboto-regular.woff' => ['GET' => [$this, 'serveFile']],
+            '/fonts/Roboto-500.woff2' => ['GET' => [$this, 'serveFile']],
+            '/fonts/Roboto-500.woff' => ['GET' => [$this, 'serveFile']],
+            '/fonts/fa-solid-900.woff2' => ['GET' => [$this, 'serveFile']],
+            '/fonts/fa-solid-900.woff' => ['GET' => [$this, 'serveFile']],
+            '/sounds/sharp.ogg' => ['GET' => [$this, 'serveFile']],
         ];
     }
 
@@ -154,6 +154,17 @@ class StaticAssetsController extends Controller
     }
 
     /**
+     * Serve a file.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
+     */
+    public function serveFile(ServerRequestInterface $request)
+    {
+        return $this->respondWithFile($request->getUri()->getPath());
+    }
+
+    /**
      * Respond with the contents of a file located in the assets folder.
      *
      * @param string $path
@@ -190,16 +201,5 @@ class StaticAssetsController extends Controller
 
             $resolve($response);
         });
-    }
-
-    /**
-     * Handle the request and return a response or a deferred response.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
-     */
-    public function __invoke(ServerRequestInterface $request)
-    {
-        return $this->respondWithFile($request->getUri()->getPath());
     }
 }
