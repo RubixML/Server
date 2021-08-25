@@ -3,6 +3,7 @@
 namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\ML\Datasets\Unlabeled;
+use Rubix\Server\HTTP\Middleware\Internal\NormalizeInfNanValues;
 use Rubix\Server\Models\Model;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\Exceptions\ValidationException;
@@ -44,6 +45,7 @@ class ModelController extends JSONController
                 'POST' => [
                     [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
+                    new NormalizeInfNanValues(),
                     [$this, 'predict'],
                 ],
             ],
@@ -54,6 +56,7 @@ class ModelController extends JSONController
                 'POST' => [
                     [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
+                    new NormalizeInfNanValues(),
                     [$this, 'proba'],
                 ],
             ];
@@ -64,6 +67,7 @@ class ModelController extends JSONController
                 'POST' => [
                     [$this, 'decompressRequestBody'],
                     [$this, 'parseRequestBody'],
+                    new NormalizeInfNanValues(),
                     [$this, 'score'],
                 ],
             ];
