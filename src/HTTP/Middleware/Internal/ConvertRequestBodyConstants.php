@@ -4,12 +4,12 @@ namespace Rubix\Server\HTTP\Middleware\Internal;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-class NormalizeInfNanValues
+class ConvertRequestBodyConstants
 {
     /**
      * @var array<string, float>
      */
-    private array $replacements = [
+    private const REPLACEMENTS = [
         'INF' => INF,
         'NAN' => NAN,
     ];
@@ -18,7 +18,7 @@ class NormalizeInfNanValues
      * @param mixed[] $body
      * @return mixed[]
      */
-    private function normalize(array $body) : array
+    private function convert(array $body) : array
     {
         $body['samples'] = array_map([$this, 'normalizeSample'], $body['samples']);
 
@@ -32,7 +32,7 @@ class NormalizeInfNanValues
     private function normalizeSample(array $sample) : array
     {
         return array_map(function ($value) {
-            return $this->replacements[$value] ?? $value;
+            return self::REPLACEMENTS[$value] ?? $value;
         }, $sample);
     }
 
@@ -50,7 +50,7 @@ class NormalizeInfNanValues
         $body = $request->getParsedBody();
 
         if (is_array($body) && !empty($body['samples'])) {
-            $request = $request->withParsedBody($this->normalize($body));
+            $request = $request->withParsedBody($this->convert($body));
         }
 
         return $next($request);

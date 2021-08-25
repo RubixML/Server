@@ -3,17 +3,17 @@
 namespace Rubix\Server\Tests\HTTP\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Rubix\Server\HTTP\Middleware\Internal\NormalizeInfNanValues;
+use Rubix\Server\HTTP\Middleware\Internal\ConvertRequestBodyConstants;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @group Middleware
- * @covers \Rubix\Server\HTTP\Middleware\Internal\NormalizeInfNanValues
+ * @covers \Rubix\Server\HTTP\Middleware\Internal\ConvertRequestBodyConstants
  */
-class NormalizeInfNanValuesTest extends TestCase
+class ConvertRequestBodyConstantsTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\Internal\NormalizeInfNanValues
+     * @var \Rubix\Server\HTTP\Middleware\Internal\ConvertRequestBodyConstants
      */
     protected $middleware;
 
@@ -22,7 +22,7 @@ class NormalizeInfNanValuesTest extends TestCase
      */
     protected function setUp() : void
     {
-        $this->middleware = new NormalizeInfNanValues();
+        $this->middleware = new ConvertRequestBodyConstants();
     }
 
     /**
@@ -30,7 +30,7 @@ class NormalizeInfNanValuesTest extends TestCase
      */
     public function build() : void
     {
-        $this->assertInstanceOf(NormalizeInfNanValues::class, $this->middleware);
+        $this->assertInstanceOf(ConvertRequestBodyConstants::class, $this->middleware);
     }
 
     /**

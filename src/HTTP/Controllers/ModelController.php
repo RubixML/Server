@@ -3,12 +3,12 @@
 namespace Rubix\Server\HTTP\Controllers;
 
 use Rubix\ML\Datasets\Unlabeled;
-use Rubix\Server\HTTP\Middleware\Internal\NormalizeInfNanValues;
 use Rubix\Server\Models\Model;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\Exceptions\ValidationException;
 use Rubix\Server\HTTP\Middleware\Internal\DecompressRequestBody;
 use Rubix\Server\HTTP\Middleware\Internal\ParseRequestBody;
+use Rubix\Server\HTTP\Middleware\Internal\ConvertRequestBodyConstants;
 use Rubix\Server\Helpers\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Promise\Promise;
@@ -46,7 +46,7 @@ class ModelController extends JSONController
                 'POST' => [
                     new DecompressRequestBody(),
                     new ParseRequestBody(),
-                    new NormalizeInfNanValues(),
+                    new ConvertRequestBodyConstants(),
                     [$this, 'predict'],
                 ],
             ],
@@ -57,7 +57,7 @@ class ModelController extends JSONController
                 'POST' => [
                     new DecompressRequestBody(),
                     new ParseRequestBody(),
-                    new NormalizeInfNanValues(),
+                    new ConvertRequestBodyConstants(),
                     [$this, 'proba'],
                 ],
             ];
@@ -68,7 +68,7 @@ class ModelController extends JSONController
                 'POST' => [
                     new DecompressRequestBody(),
                     new ParseRequestBody(),
-                    new NormalizeInfNanValues(),
+                    new ConvertRequestBodyConstants(),
                     [$this, 'score'],
                 ],
             ];
