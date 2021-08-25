@@ -6,11 +6,18 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class NormalizeInfNanValues
 {
+    /**
+     * @var array<string, float>
+     */
     private array $replacements = [
         'INF' => INF,
         'NAN' => NAN,
     ];
 
+    /**
+     * @param mixed[] $body
+     * @return mixed[]
+     */
     private function normalize(array $body) : array
     {
         $body['samples'] = array_map([$this, 'normalizeSample'], $body['samples']);
@@ -18,6 +25,11 @@ class NormalizeInfNanValues
         return $body;
     }
 
+
+    /**
+     * @param mixed[] $sample
+     * @return mixed[]
+     */
     private function normalizeSample(array $sample) : array
     {
         return array_map(function ($value) {
@@ -38,7 +50,7 @@ class NormalizeInfNanValues
     {
         $body = $request->getParsedBody();
 
-        if (!empty($body['samples'])) {
+        if (is_array($body) && !empty($body['samples'])) {
             $request = $request->withParsedBody($this->normalize($body));
         }
 
