@@ -1,7 +1,8 @@
-2.0.0
+- 2.0.0
     - Move clients into their own repository
+    - INF and NAN string sample values are automatically converted to respective PHP constants
 
-1.0.0
+- 1.0.0
     - Add pan and zoom to dashboard charts
     - Rename anomaly scores HTTP resource
 
