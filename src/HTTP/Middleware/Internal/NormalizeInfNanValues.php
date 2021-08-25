@@ -25,7 +25,6 @@ class NormalizeInfNanValues
         return $body;
     }
 
-
     /**
      * @param mixed[] $sample
      * @return mixed[]
