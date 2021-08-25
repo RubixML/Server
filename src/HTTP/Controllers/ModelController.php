@@ -6,11 +6,12 @@ use Rubix\ML\Datasets\Unlabeled;
 use Rubix\Server\Models\Model;
 use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\Exceptions\ValidationException;
+use Rubix\Server\HTTP\Middleware\Internal\DecompressRequestBody;
+use Rubix\Server\HTTP\Middleware\Internal\ParseRequestBody;
 use Rubix\Server\Helpers\JSON;
+use Psr\Http\Message\ServerRequestInterface;
 use React\Promise\Promise;
 use Exception;
-
-use Psr\Http\Message\ServerRequestInterface;
 
 class ModelController extends JSONController
 {
@@ -42,8 +43,8 @@ class ModelController extends JSONController
             ],
             '/model/predictions' => [
                 'POST' => [
-                    [$this, 'decompressRequestBody'],
-                    [$this, 'parseRequestBody'],
+                    new DecompressRequestBody(),
+                    new ParseRequestBody(),
                     [$this, 'predict'],
                 ],
             ],
@@ -52,8 +53,8 @@ class ModelController extends JSONController
         if ($this->model->isProbabilistic()) {
             $routes['/model/probabilities'] = [
                 'POST' => [
-                    [$this, 'decompressRequestBody'],
-                    [$this, 'parseRequestBody'],
+                    new DecompressRequestBody(),
+                    new ParseRequestBody(),
                     [$this, 'proba'],
                 ],
             ];
@@ -62,8 +63,8 @@ class ModelController extends JSONController
         if ($this->model->isScoring()) {
             $routes['/model/anomaly-scores'] = [
                 'POST' => [
-                    [$this, 'decompressRequestBody'],
-                    [$this, 'parseRequestBody'],
+                    new DecompressRequestBody(),
+                    new ParseRequestBody(),
                     [$this, 'score'],
                 ],
             ];
