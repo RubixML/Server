@@ -18,8 +18,9 @@ class QueryObject extends ObjectType
     /**
      * @param \Rubix\Server\Models\Model $model
      * @param \Rubix\Server\Models\Server $server
+     * @return self
      */
-    public static function singleton(Model $model, Server $server)
+    public static function singleton(Model $model, Server $server) : self
     {
         return self::$instance ?? self::$instance = new self([
             'name' => 'Query',

@@ -7,33 +7,27 @@ use Psr\Http\Message\ServerRequestInterface;
 class ConvertRequestBodyConstants
 {
     /**
-     * @var array<string, float>
+     * @var array<string,float>
      */
-    private const REPLACEMENTS = [
+    protected const REPLACEMENTS = [
         'INF' => INF,
         'NAN' => NAN,
     ];
 
     /**
-     * @param mixed[] $body
-     * @return mixed[]
-     */
-    private function convert(array $body) : array
-    {
-        $body['samples'] = array_map([$this, 'normalizeSample'], $body['samples']);
-
-        return $body;
-    }
-
-    /**
      * @param mixed[] $sample
-     * @return mixed[]
      */
-    private function normalizeSample(array $sample) : array
+    protected function convertConstants(array &$sample) : void
     {
-        return array_map(function ($value) {
-            return self::REPLACEMENTS[$value] ?? $value;
-        }, $sample);
+        $replace = function (&$value) {
+            if (is_string($value)) {
+                if (isset(self::REPLACEMENTS[$value])) {
+                    $value = self::REPLACEMENTS[$value];
+                }
+            }
+        };
+
+        array_walk($sample, $replace);
     }
 
     /**
@@ -50,7 +44,9 @@ class ConvertRequestBodyConstants
         $body = $request->getParsedBody();
 
         if (is_array($body) && !empty($body['samples'])) {
-            $request = $request->withParsedBody($this->convert($body));
+            array_walk($body['samples'], [$this, 'convertConstants']);
+
+            $request = $request->withParsedBody($body);
         }
 
         return $next($request);
