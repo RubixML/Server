@@ -4,11 +4,9 @@ namespace Rubix\Server\GraphQL;
 
 use Rubix\Server\Models\Model;
 use Rubix\Server\Models\Server;
-use Rubix\Server\GraphQL\Objects\ModelObject;
-use Rubix\Server\GraphQL\Objects\ServerObject;
-use Rubix\Server\GraphQL\Objects\ObjectType;
+use Rubix\Server\GraphQL\Objects\QueryObject;
+use GraphQL\Type\SchemaConfig;
 use GraphQL\Type\Schema as BaseSchema;
-use GraphQL\Type\Definition\Type;
 
 class Schema extends BaseSchema
 {
@@ -18,24 +16,9 @@ class Schema extends BaseSchema
      */
     public function __construct(Model $model, Server $server)
     {
-        parent::__construct([
-            'query' => new ObjectType([
-                'name' => 'Query',
-                'fields' => [
-                    'model' => [
-                        'type' => Type::nonNull(ModelObject::singleton()),
-                        'resolve' => function () use ($model) : Model {
-                            return $model;
-                        },
-                    ],
-                    'server' => [
-                        'type' => Type::nonNull(ServerObject::singleton()),
-                        'resolve' => function () use ($server) : Server {
-                            return $server;
-                        },
-                    ],
-                ],
-            ]),
-        ]);
+        $config = SchemaConfig::create()
+            ->setQuery(QueryObject::singleton($model, $server));
+
+        parent::__construct($config);
     }
 }
