@@ -28,6 +28,7 @@
         "php": ">=7.4",
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/psr7": "^1.7",
+        "psr/container": "^1.1",
         "psr/http-message": "^1.0",
         "psr/log": "^1.1",
         "react/http": "^1.1",
@@ -36,7 +37,7 @@
         "webonyx/graphql-php": "^14.4"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "2.18.*",
+        "friendsofphp/php-cs-fixer": "3.1.*",
         "phpstan/phpstan": "0.12.*",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan-phpunit": "0.12.*",
@@ -62,9 +63,9 @@
         "analyze": "phpstan analyse -c phpstan.neon",
         "check": [
             "@putenv PHP_CS_FIXER_IGNORE_ENV=1",
-            "php-cs-fixer fix --config=.php_cs.dist -v --dry-run --using-cache=no"
+            "php-cs-fixer fix --config=.php-cs-fixer.dist.php -v --dry-run --using-cache=no"
         ],
-        "fix": "php-cs-fixer fix --config=.php_cs.dist",
+        "fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "test": "phpunit"
     },
     "config": {

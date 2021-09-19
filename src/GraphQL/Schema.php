@@ -7,6 +7,7 @@ use Rubix\Server\Models\Server;
 use Rubix\Server\GraphQL\Objects\QueryObject;
 use GraphQL\Type\SchemaConfig;
 use GraphQL\Type\Schema as BaseSchema;
+
 class Schema extends BaseSchema
 {
     /**
