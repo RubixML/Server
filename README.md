@@ -14,7 +14,7 @@ $ composer require rubix/server
 ```
 
 ### Docker Image
-A [Docker Image](https://hub.docker.com/r/torchello/rubix-ml-server-docker) is available for a quick start or deployment.
+A [Docker Image](https://gitlab.com/torchello/rubix-ml-server-docker) is available for a quick start or deployment.
 
 ## Requirements
 - [PHP](https://php.net/manual/en/install.php) 7.4 or above
@@ -39,7 +39,6 @@ The latest documentation can be found below.
 	- [Shared Token Authenticator](#shared-token-authenticator-client-side)
 - [Loggers](#loggers)
 	- [File](#file)
-- [Docker Image](#docker-image)
 - [FAQs](#faqs)
 
 ---
