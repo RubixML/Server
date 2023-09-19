@@ -1,7 +1,7 @@
 {
     "name": "rubix/server",
     "type": "library",
-    "description": "Serve your Rubix ML models in production with scalable stand-alone model servers.",
+    "description": "Deploy your Rubix ML models to production with scalable stand-alone inference servers.",
     "homepage": "https://github.com/RubixML/Server",
     "license": "MIT",
     "readme": "README.md",
@@ -26,22 +26,21 @@
     ],
     "require": {
         "php": ">=7.4",
-        "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/psr7": "^1.7",
         "psr/container": "^1.1",
         "psr/http-message": "^1.0",
         "psr/log": "^1.1",
         "react/http": "^1.1",
-        "rubix/ml": "^1.0",
+        "rubix/ml": "^2.0",
         "symfony/polyfill-php80": "^1.17",
         "webonyx/graphql-php": "^14.4"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
-        "phpstan/phpstan": "0.12.*",
+        "phpstan/phpstan": "^1.0",
         "phpstan/extension-installer": "^1.0",
-        "phpstan/phpstan-phpunit": "0.12.*",
-        "phpunit/phpunit": "8.5.*"
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
@@ -70,7 +69,10 @@
     },
     "config": {
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     },
     "funding": [
         {

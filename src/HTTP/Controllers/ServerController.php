@@ -27,7 +27,7 @@ class ServerController extends JSONController
     /**
      * Return the routes this controller handles.
      *
-     * @return array[]
+     * @return array<mixed>
      */
     public function routes() : array
     {

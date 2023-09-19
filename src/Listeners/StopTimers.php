@@ -34,7 +34,7 @@ class StopTimers implements Listener
     /**
      * Return the events that this listener subscribes to.
      *
-     * @return array[]
+     * @return array<array<\Rubix\Server\Listeners\Listener>>
      */
     public function events() : array
     {

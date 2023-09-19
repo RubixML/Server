@@ -66,7 +66,7 @@ class StaticAssetsController extends Controller
     /**
      * Return the routes this controller handles.
      *
-     * @return array[]
+     * @return array<mixed>
      */
     public function routes() : array
     {

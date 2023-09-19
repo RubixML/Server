@@ -18,14 +18,14 @@ class Subscriptions implements ArrayAccess
     /**
      * The mapping of events to their handlers.
      *
-     * @var array[]
+     * @var array<array<\Rubix\Server\Listeners\Listener|callable>>
      */
     protected array $subscriptions;
 
     /**
      * Subscribe an array of listeners to their events.
      *
-     * @param \Rubix\Server\Listeners\Listener[] $listeners
+     * @param array<\Rubix\Server\Listeners\Listener|callable> $listeners
      * @throws \InvalidArgumentException
      * @return self
      */
@@ -50,7 +50,7 @@ class Subscriptions implements ArrayAccess
     }
 
     /**
-     * @param array[] $subscriptions
+     * @param array<array<\Rubix\Server\Listeners\Listener|callable>> $subscriptions
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(array $subscriptions)

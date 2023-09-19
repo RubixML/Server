@@ -6,8 +6,8 @@ use Rubix\ML\Datasets\Generators\Blob;
 use Rubix\ML\Datasets\Generators\Agglomerate;
 use Rubix\ML\Classifiers\GaussianNB;
 use Rubix\Server\HTTPServer;
-use Rubix\Server\HTTP\Middleware\Server\AccessLogGenerator;
-use Rubix\Server\HTTP\Middleware\Server\BasicAuthenticator;
+use Rubix\Server\HTTP\Middleware\AccessLogGenerator;
+use Rubix\Server\HTTP\Middleware\BasicAuthenticator;
 use Rubix\Server\Services\Caches\InMemoryCache;
 use Rubix\ML\Loggers\Screen;
 

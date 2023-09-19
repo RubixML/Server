@@ -26,7 +26,7 @@ class Routes implements ArrayAccess
     /**
      * The routes and their controllers.
      *
-     * @var array[]
+     * @var array<array<\Rubix\Server\HTTP\Controllers\Controller>>
      */
     protected array $routes;
 
@@ -70,7 +70,7 @@ class Routes implements ArrayAccess
     }
 
     /**
-     * @param array[] $routes
+     * @param array<array<\Rubix\Server\HTTP\Controllers\Controller>> $routes
      * @throws \Rubix\Server\Exceptions\InvalidArgumentException
      */
     public function __construct(array $routes)

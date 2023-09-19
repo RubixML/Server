@@ -8,6 +8,7 @@ use Rubix\Server\HTTP\Responses\Success;
 use Rubix\Server\Exceptions\ValidationException;
 use Rubix\Server\HTTP\Middleware\Internal\DecompressRequestBody;
 use Rubix\Server\HTTP\Middleware\Internal\ParseRequestBody;
+use Rubix\Server\HTTP\Middleware\Internal\ConvertRequestBodyConstants;
 use Rubix\Server\Helpers\JSON;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Promise\Promise;
@@ -33,7 +34,7 @@ class ModelController extends JSONController
     /**
      * Return the routes this controller handles.
      *
-     * @return array[]
+     * @return array<mixed>
      */
     public function routes() : array
     {
@@ -45,6 +46,7 @@ class ModelController extends JSONController
                 'POST' => [
                     new DecompressRequestBody(),
                     new ParseRequestBody(),
+                    new ConvertRequestBodyConstants(),
                     [$this, 'predict'],
                 ],
             ],
@@ -55,6 +57,7 @@ class ModelController extends JSONController
                 'POST' => [
                     new DecompressRequestBody(),
                     new ParseRequestBody(),
+                    new ConvertRequestBodyConstants(),
                     [$this, 'proba'],
                 ],
             ];
@@ -65,6 +68,7 @@ class ModelController extends JSONController
                 'POST' => [
                     new DecompressRequestBody(),
                     new ParseRequestBody(),
+                    new ConvertRequestBodyConstants(),
                     [$this, 'score'],
                 ],
             ];
