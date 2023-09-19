@@ -37,10 +37,10 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
-        "phpstan/phpstan": "0.12.*",
+        "phpstan/phpstan": "^1.0",
         "phpstan/extension-installer": "^1.0",
-        "phpstan/phpstan-phpunit": "0.12.*",
-        "phpunit/phpunit": "8.5.*"
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
@@ -69,7 +69,10 @@
     },
     "config": {
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     },
     "funding": [
         {

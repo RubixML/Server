@@ -77,7 +77,7 @@ class Model
      *
      * @param \Rubix\ML\Datasets\Dataset $dataset
      * @throws \Rubix\Server\Exceptions\RuntimeException
-     * @return array[]
+     * @return array<array<float>>
      */
     public function proba(Dataset $dataset) : array
     {

@@ -7,7 +7,7 @@ interface Listener
     /**
      * Return the events that this listener subscribes to and their handlers.
      *
-     * @return array[]
+     * @return array<array<\Rubix\Server\Listeners\Listener|callable>>
      */
     public function events() : array;
 }

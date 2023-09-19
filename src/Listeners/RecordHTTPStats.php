@@ -26,7 +26,7 @@ class RecordHTTPStats implements Listener
     /**
      * Return the events that this listener subscribes to.
      *
-     * @return array[]
+     * @return array<array<\Rubix\Server\Listeners\Listener|callable>>
      */
     public function events() : array
     {

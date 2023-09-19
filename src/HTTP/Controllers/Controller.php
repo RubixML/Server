@@ -7,7 +7,7 @@ abstract class Controller
     /**
      * Return the routes this controller handles.
      *
-     * @return array[]
+     * @return array<mixed>
      */
     abstract public function routes() : array;
 }
