@@ -36,7 +36,6 @@
                 </div>
             </div>
         </section>
-        <page-loader :loading="loading"></page-loader>
     </div>
 </template>
 
@@ -66,7 +65,6 @@ export default Vue.extend({
             },
             model: null,
             stream: null,
-            loading: false,
         };
     },
     mounted() : void {
@@ -134,8 +132,6 @@ export default Vue.extend({
                 });
 
                 this.stream = stream;
-
-                this.loading = false;
             });
         }).catch((error) => {
             bus.$emit('communication-error', {

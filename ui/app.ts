@@ -17,7 +17,6 @@ import ProcessInfo from './components/ProcessInfo.vue';
 import ServerSettings from './components/ServerSettings.vue';
 import AppUpdateAvailable from './components/AppUpdateAvailable.vue';
 import CommunicationError from './components/CommunicationError.vue';
-import PageLoader from './components/PageLoader.vue';
 import { apolloClient } from './providers/apollo';
 import { Workbox } from 'workbox-window';
 import routes from './routes';
@@ -68,7 +67,6 @@ Vue.component('process-info', ProcessInfo);
 Vue.component('server-settings', ServerSettings);
 Vue.component('app-update-available', AppUpdateAvailable);
 Vue.component('communication-error', CommunicationError);
-Vue.component('page-loader', PageLoader);
 
 Vue.use(VueRouter);
 Vue.use(VueApollo);
