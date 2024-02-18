@@ -13,12 +13,12 @@ class DashboardEmitter implements Listener
     /**
      * The server-sent event (SSE) channel.
      *
-     * @var \Rubix\Server\Services\SSEChannel
+     * @var SSEChannel
      */
-    protected \Rubix\Server\Services\SSEChannel $channel;
+    protected SSEChannel $channel;
 
     /**
-     * @param \Rubix\Server\Services\SSEChannel $channel
+     * @param SSEChannel $channel
      */
     public function __construct(SSEChannel $channel)
     {
@@ -49,7 +49,7 @@ class DashboardEmitter implements Listener
     }
 
     /**
-     * @param \Rubix\Server\Events\RequestReceived $event
+     * @param RequestReceived $event
      */
     public function onRequestReceived(RequestReceived $event) : void
     {
@@ -67,7 +67,7 @@ class DashboardEmitter implements Listener
     }
 
     /**
-     * @param \Rubix\Server\Events\ResponseSent $event
+     * @param ResponseSent $event
      */
     public function onResponseSent(ResponseSent $event) : void
     {
@@ -80,7 +80,7 @@ class DashboardEmitter implements Listener
     }
 
     /**
-     * @param \Rubix\Server\Events\DatasetInferred $event
+     * @param DatasetInferred $event
      */
     public function onDatasetInferred(DatasetInferred $event) : void
     {
@@ -90,7 +90,7 @@ class DashboardEmitter implements Listener
     }
 
     /**
-     * @param \Rubix\Server\Events\MemoryUsageUpdated $event
+     * @param MemoryUsageUpdated $event
      */
     public function onMemoryUsageUpdated(MemoryUsageUpdated $event) : void
     {

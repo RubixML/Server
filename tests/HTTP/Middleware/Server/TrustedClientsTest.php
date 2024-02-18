@@ -14,7 +14,7 @@ use Rubix\Server\Exceptions\InvalidArgumentException;
 class TrustedClientsTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\TrustedClients
+     * @var TrustedClients
      */
     protected $middleware;
 

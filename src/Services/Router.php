@@ -15,12 +15,12 @@ class Router
     /**
      * The mapping of URIs to their method/controller pairs.
      *
-     * @var \Rubix\Server\Services\Routes
+     * @var Routes
      */
-    protected \Rubix\Server\Services\Routes $routes;
+    protected Routes $routes;
 
     /**
-     * @param \Rubix\Server\Services\Routes $routes
+     * @param Routes $routes
      */
     public function __construct(Routes $routes)
     {
@@ -30,7 +30,7 @@ class Router
     /**
      * Return the routing schema.
      *
-     * @return \Rubix\Server\Services\Routes
+     * @return Routes
      */
     public function routes() : Routes
     {
@@ -40,7 +40,7 @@ class Router
     /**
      * Dispatch the request to a controller and return an immediate or deferred response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param Request $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function dispatch(Request $request)

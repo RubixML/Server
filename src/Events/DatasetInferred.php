@@ -16,12 +16,12 @@ class DatasetInferred implements Event
     /**
      * The dataset that was used to make the predictions.
      *
-     * @var \Rubix\ML\Datasets\Dataset
+     * @var Dataset
      */
-    protected \Rubix\ML\Datasets\Dataset $dataset;
+    protected Dataset $dataset;
 
     /**
-     * @param \Rubix\ML\Datasets\Dataset $dataset
+     * @param Dataset $dataset
      */
     public function __construct(Dataset $dataset)
     {
@@ -31,7 +31,7 @@ class DatasetInferred implements Event
     /**
      * Return the dataset object.
      *
-     * @return \Rubix\ML\Datasets\Dataset
+     * @return Dataset
      */
     public function dataset() : Dataset
     {

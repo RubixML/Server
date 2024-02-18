@@ -60,7 +60,7 @@ class PredictionScalar extends ScalarType
     /**
      * Parses an externally provided literal value (hardcoded in GraphQL query) to use as an input.
      *
-     * @param \GraphQL\Language\AST\Node $node
+     * @param Node $node
      * @param mixed[]|null $variables
      * @return string|int|float
      */

@@ -11,8 +11,8 @@ use GraphQL\Type\Schema as BaseSchema;
 class Schema extends BaseSchema
 {
     /**
-     * @param \Rubix\Server\Models\Model $model
-     * @param \Rubix\Server\Models\Server $server
+     * @param Model $model
+     * @param Server $server
      */
     public function __construct(Model $model, Server $server)
     {

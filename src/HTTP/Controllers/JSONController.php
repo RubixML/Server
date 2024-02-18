@@ -16,8 +16,8 @@ abstract class JSONController extends Controller
     /**
      * Respond with bad request.
      *
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\BadRequest
+     * @param Exception $exception
+     * @return BadRequest
      */
     public function respondWithBadRequest(Exception $exception) : BadRequest
     {
@@ -31,8 +31,8 @@ abstract class JSONController extends Controller
     /**
      * Respond with unprocessable entity.
      *
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\UnprocessableEntity
+     * @param Exception $exception
+     * @return UnprocessableEntity
      */
     public function respondWithUnprocessable(Exception $exception) : UnprocessableEntity
     {

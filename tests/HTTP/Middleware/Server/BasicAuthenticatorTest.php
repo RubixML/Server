@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class BasicAuthenticatorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\BasicAuthenticator
+     * @var BasicAuthenticator
      */
     protected $middleware;
 

@@ -7,7 +7,7 @@ use React\Stream\ReadableStreamInterface;
 class EventStream extends Success
 {
     /**
-     * @param \React\Stream\ReadableStreamInterface $stream
+     * @param ReadableStreamInterface $stream
      */
     public function __construct(ReadableStreamInterface $stream)
     {

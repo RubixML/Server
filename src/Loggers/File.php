@@ -41,8 +41,8 @@ class File extends Logger
      * @param string $path
      * @param string $channel
      * @param string $timestampFormat
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function __construct(string $path, string $channel = '', string $timestampFormat = 'Y-m-d H:i:s')
     {

@@ -16,12 +16,12 @@ class MemoryUsageUpdated implements Event
     /**
      * The memory model.
      *
-     * @var \Rubix\Server\Models\Memory
+     * @var Memory
      */
-    protected \Rubix\Server\Models\Memory $memory;
+    protected Memory $memory;
 
     /**
-     * @param \Rubix\Server\Models\Memory $memory
+     * @param Memory $memory
      */
     public function __construct(Memory $memory)
     {
@@ -31,7 +31,7 @@ class MemoryUsageUpdated implements Event
     /**
      * Return the memory model.
      *
-     * @return \Rubix\Server\Models\Memory
+     * @return Memory
      */
     public function memory() : Memory
     {

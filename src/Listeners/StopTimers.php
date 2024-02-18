@@ -10,9 +10,9 @@ class StopTimers implements Listener
     /**
      * The job scheduler.
      *
-     * @var \Rubix\Server\Services\Scheduler
+     * @var Scheduler
      */
-    protected \Rubix\Server\Services\Scheduler $scheduler;
+    protected Scheduler $scheduler;
 
     /**
      * The timers.
@@ -22,7 +22,7 @@ class StopTimers implements Listener
     protected $timers;
 
     /**
-     * @param \Rubix\Server\Services\Scheduler $scheduler
+     * @param Scheduler $scheduler
      * @param \React\EventLoop\TimerInterface[] $timers
      */
     public function __construct(Scheduler $scheduler, array $timers)
@@ -46,7 +46,7 @@ class StopTimers implements Listener
     /**
      * Close the open SSE timers.
      *
-     * @param \Rubix\Server\Events\ShuttingDown $event
+     * @param ShuttingDown $event
      */
     public function __invoke(ShuttingDown $event) : void
     {

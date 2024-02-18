@@ -43,7 +43,7 @@ class LongIntegerScalar extends ScalarType
      * Parses an externally provided value (query variable) to use as an input
      *
      * @param mixed $value
-     * @throws \GraphQL\Error\Error
+     * @throws Error
      * @return int
      */
     public function parseValue($value)
@@ -58,7 +58,7 @@ class LongIntegerScalar extends ScalarType
     /**
      * Parses an externally provided literal value (hardcoded in GraphQL query) to use as an input.
      *
-     * @param \GraphQL\Language\AST\Node $node
+     * @param Node $node
      * @param mixed[]|null $variables
      * @return mixed
      */

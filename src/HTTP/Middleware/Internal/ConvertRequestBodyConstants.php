@@ -35,7 +35,7 @@ class ConvertRequestBodyConstants
      *
      * @internal
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \React\Promise\PromiseInterface
      */

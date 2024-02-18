@@ -18,7 +18,7 @@ class Response extends GuzzleResponse
      * @param string|null|\React\Stream\ReadableStreamInterface|\Psr\Http\Message\StreamInterface $data
      * @param string $version
      * @param string|null $reason
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         int $status,

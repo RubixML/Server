@@ -9,12 +9,12 @@ class EvictCacheItems implements Job
     /**
      * The cache whose items to evict.
      *
-     * @var \Rubix\Server\Services\Caches\Cache
+     * @var Cache
      */
-    protected \Rubix\Server\Services\Caches\Cache $cache;
+    protected Cache $cache;
 
     /**
-     * @param \Rubix\Server\Services\Caches\Cache $cache
+     * @param Cache $cache
      */
     public function __construct(Cache $cache)
     {

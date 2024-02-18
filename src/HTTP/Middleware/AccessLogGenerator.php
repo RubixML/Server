@@ -24,12 +24,12 @@ class AccessLogGenerator implements Middleware
     /**
      * A PSR-3 logger instance.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected \Psr\Log\LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(LoggerInterface $logger)
     {
@@ -39,7 +39,7 @@ class AccessLogGenerator implements Middleware
     /**
      * Run the middleware over the request.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */

@@ -11,12 +11,12 @@ class RecordHTTPStats implements Listener
     /**
      * The server model.
      *
-     * @var \Rubix\Server\Models\HTTPStats
+     * @var HTTPStats
      */
-    protected \Rubix\Server\Models\HTTPStats $httpStats;
+    protected HTTPStats $httpStats;
 
     /**
-     * @param \Rubix\Server\Models\HTTPStats $httpStats
+     * @param HTTPStats $httpStats
      */
     public function __construct(HTTPStats $httpStats)
     {
@@ -41,7 +41,7 @@ class RecordHTTPStats implements Listener
     }
 
     /**
-     * @param \Rubix\Server\Events\RequestReceived $event
+     * @param RequestReceived $event
      */
     public function onRequestReceived(RequestReceived $event) : void
     {
@@ -49,7 +49,7 @@ class RecordHTTPStats implements Listener
     }
 
     /**
-     * @param \Rubix\Server\Events\ResponseSent $event
+     * @param ResponseSent $event
      */
     public function onResponseSent(ResponseSent $event) : void
     {

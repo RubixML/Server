@@ -20,16 +20,16 @@ class Model
     /**
      * The estimator instance.
      *
-     * @var \Rubix\ML\Estimator
+     * @var Estimator
      */
-    protected \Rubix\ML\Estimator $estimator;
+    protected Estimator $estimator;
 
     /**
      * The event bus.
      *
-     * @var \Rubix\Server\Services\EventBus
+     * @var EventBus
      */
-    protected \Rubix\Server\Services\EventBus $eventBus;
+    protected EventBus $eventBus;
 
     /**
      * The number of samples that have been predicted so far.
@@ -39,9 +39,9 @@ class Model
     protected int $numSamplesInferred = 0;
 
     /**
-     * @param \Rubix\ML\Estimator $estimator
-     * @param \Rubix\Server\Services\EventBus $eventBus
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @param Estimator $estimator
+     * @param EventBus $eventBus
+     * @throws InvalidArgumentException
      */
     public function __construct(Estimator $estimator, EventBus $eventBus)
     {
@@ -58,7 +58,7 @@ class Model
     /**
      * Make predictions on a dataset.
      *
-     * @param \Rubix\ML\Datasets\Dataset $dataset
+     * @param Dataset $dataset
      * @return mixed[]
      */
     public function predict(Dataset $dataset) : array
@@ -75,8 +75,8 @@ class Model
     /**
      * Predict the probabilities of a dataset.
      *
-     * @param \Rubix\ML\Datasets\Dataset $dataset
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @param Dataset $dataset
+     * @throws RuntimeException
      * @return array<array<float>>
      */
     public function proba(Dataset $dataset) : array
@@ -98,8 +98,8 @@ class Model
     /**
      * Predict the anomaly scores of a dataset.
      *
-     * @param \Rubix\ML\Datasets\Dataset $dataset
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @param Dataset $dataset
+     * @throws RuntimeException
      * @return float[]
      */
     public function score(Dataset $dataset) : array

@@ -9,12 +9,12 @@ class ServerSettings
     /**
      * The server instance.
      *
-     * @var \Rubix\Server\HTTPServer
+     * @var HTTPServer
      */
-    protected \Rubix\Server\HTTPServer $server;
+    protected HTTPServer $server;
 
     /**
-     * @param \Rubix\Server\HTTPServer $server
+     * @param HTTPServer $server
      */
     public function __construct(HTTPServer $server)
     {

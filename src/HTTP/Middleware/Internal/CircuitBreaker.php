@@ -11,12 +11,12 @@ class CircuitBreaker
     /**
      * The server model.
      *
-     * @var \Rubix\Server\Models\Server
+     * @var Server
      */
-    protected \Rubix\Server\Models\Server $server;
+    protected Server $server;
 
     /**
-     * @param \Rubix\Server\Models\Server $server
+     * @param Server $server
      */
     public function __construct(Server $server)
     {
@@ -28,7 +28,7 @@ class CircuitBreaker
      *
      * @internal
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */

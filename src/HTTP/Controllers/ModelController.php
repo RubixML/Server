@@ -19,12 +19,12 @@ class ModelController extends JSONController
     /**
      * The model model.
      *
-     * @var \Rubix\Server\Models\Model
+     * @var Model
      */
-    protected \Rubix\Server\Models\Model $model;
+    protected Model $model;
 
     /**
-     * @param \Rubix\Server\Models\Model $model
+     * @param Model $model
      */
     public function __construct(Model $model)
     {
@@ -80,7 +80,7 @@ class ModelController extends JSONController
     /**
      * Handle the request and return a response or a deferred response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function getModel(ServerRequestInterface $request)
@@ -95,7 +95,7 @@ class ModelController extends JSONController
     /**
      * Handle the request and return a response or a deferred response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function predict(ServerRequestInterface $request)
@@ -129,7 +129,7 @@ class ModelController extends JSONController
     /**
      * Handle the request and return a response or a deferred response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function proba(ServerRequestInterface $request)
@@ -163,7 +163,7 @@ class ModelController extends JSONController
     /**
      * Handle the request and return a response or a deferred response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function score(ServerRequestInterface $request)

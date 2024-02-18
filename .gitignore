@@ -8,6 +8,7 @@ npm-debug.log
 Thumbs.db
 server.log
 .DS_Store
+.venv
 .log
 /.idea
 /.vscode

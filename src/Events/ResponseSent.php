@@ -16,12 +16,12 @@ class ResponseSent implements Event
     /**
      * The response.
      *
-     * @var \Psr\Http\Message\ResponseInterface
+     * @var ResponseInterface
      */
-    protected \Psr\Http\Message\ResponseInterface $response;
+    protected ResponseInterface $response;
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      */
     public function __construct(ResponseInterface $response)
     {
@@ -31,7 +31,7 @@ class ResponseSent implements Event
     /**
      * Return the response.
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function response() : ResponseInterface
     {

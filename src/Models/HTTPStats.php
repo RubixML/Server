@@ -45,7 +45,7 @@ class HTTPStats
     /**
      * Record an HTTP request.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      */
     public function recordRequest(ServerRequestInterface $request) : void
     {
@@ -59,7 +59,7 @@ class HTTPStats
     /**
      * Record an HTTP response.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      */
     public function recordResponse(ResponseInterface $response) : void
     {

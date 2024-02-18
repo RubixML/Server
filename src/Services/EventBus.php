@@ -20,27 +20,27 @@ class EventBus
     /**
      * The job scheduler.
      *
-     * @var \Rubix\Server\Services\Scheduler
+     * @var Scheduler
      */
-    protected \Rubix\Server\Services\Scheduler $scheduler;
+    protected Scheduler $scheduler;
 
     /**
      * A PSR-3 logger instance.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected \Psr\Log\LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
      * The mapping of events to their listeners.
      *
-     * @var \Rubix\Server\Services\Subscriptions|null
+     * @var Subscriptions|null
      */
-    protected ?\Rubix\Server\Services\Subscriptions $subscriptions;
+    protected ?Subscriptions $subscriptions;
 
     /**
-     * @param \Rubix\Server\Services\Scheduler $scheduler
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param Scheduler $scheduler
+     * @param LoggerInterface $logger
      */
     public function __construct(Scheduler $scheduler, LoggerInterface $logger)
     {
@@ -51,7 +51,7 @@ class EventBus
     /**
      * Add the mapping of events to their listeners.
      *
-     * @param \Rubix\Server\Services\Subscriptions $subscriptions
+     * @param Subscriptions $subscriptions
      */
     public function setSubscriptions(Subscriptions $subscriptions) : void
     {
@@ -61,7 +61,7 @@ class EventBus
     /**
      * Return the mapping of events to their listeners.
      *
-     * @return \Rubix\Server\Services\Subscriptions|null
+     * @return Subscriptions|null
      */
     public function subscriptions() : ?Subscriptions
     {
@@ -71,7 +71,7 @@ class EventBus
     /**
      * Dispatch an event and call any handlers listening for it.
      *
-     * @param \Rubix\Server\Events\Event $event
+     * @param Event $event
      */
     public function dispatch(Event $event) : void
     {

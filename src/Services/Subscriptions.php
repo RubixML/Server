@@ -51,7 +51,7 @@ class Subscriptions implements ArrayAccess
 
     /**
      * @param array<array<\Rubix\Server\Listeners\Listener|callable>> $subscriptions
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $subscriptions)
     {
@@ -74,7 +74,7 @@ class Subscriptions implements ArrayAccess
      * Return an array of handlers for an event class.
      *
      * @param string $class
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return mixed[]
      */
     public function offsetGet($class) : array
@@ -89,7 +89,7 @@ class Subscriptions implements ArrayAccess
     /**
      * @param string $class
      * @param mixed[] $handlers
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @throws RuntimeException
      */
     public function offsetSet($class, $handlers) : void
     {
@@ -109,7 +109,7 @@ class Subscriptions implements ArrayAccess
 
     /**
      * @param string $class
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @throws RuntimeException
      */
     public function offsetUnset($class) : void
     {

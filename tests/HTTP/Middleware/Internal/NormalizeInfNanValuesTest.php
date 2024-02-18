@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class ConvertRequestBodyConstantsTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\Internal\ConvertRequestBodyConstants
+     * @var ConvertRequestBodyConstants
      */
     protected $middleware;
 

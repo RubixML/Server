@@ -43,7 +43,7 @@ class SharedTokenAuthenticator implements Middleware
     /**
      * @param string[] $tokens
      * @param string $realm
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $tokens, string $realm = 'auth')
     {
@@ -58,7 +58,7 @@ class SharedTokenAuthenticator implements Middleware
     /**
      * Run the middleware over the request.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */

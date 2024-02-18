@@ -11,12 +11,12 @@ class LogFailures implements Listener
     /**
      * A PSR-3 logger instance.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected \Psr\Log\LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(LoggerInterface $logger)
     {
@@ -38,7 +38,7 @@ class LogFailures implements Listener
     /**
      * Log
      *
-     * @param \Rubix\Server\Events\Failure $event
+     * @param Failure $event
      */
     public function __invoke(Failure $event) : void
     {

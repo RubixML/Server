@@ -13,12 +13,12 @@ class Memory
     /**
      * The event bus.
      *
-     * @var \Rubix\Server\Services\EventBus
+     * @var EventBus
      */
-    protected \Rubix\Server\Services\EventBus $eventBus;
+    protected EventBus $eventBus;
 
     /**
-     * @param \Rubix\Server\Services\EventBus $eventBus
+     * @param EventBus $eventBus
      */
     public function __construct(EventBus $eventBus)
     {

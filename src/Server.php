@@ -9,7 +9,7 @@ interface Server
     /**
      * Boot up the server.
      *
-     * @param \Rubix\ML\Estimator $estimator
+     * @param Estimator $estimator
      */
     public function serve(Estimator $estimator) : void;
 }

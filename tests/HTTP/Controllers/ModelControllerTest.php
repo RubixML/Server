@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 class ModelControllerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Controllers\ModelController
+     * @var ModelController
      */
     protected $controller;
 

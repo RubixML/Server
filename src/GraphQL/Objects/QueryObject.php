@@ -16,8 +16,8 @@ class QueryObject extends ObjectType
     protected static ?self $instance = null;
 
     /**
-     * @param \Rubix\Server\Models\Model $model
-     * @param \Rubix\Server\Models\Server $server
+     * @param Model $model
+     * @param Server $server
      * @return self
      */
     public static function singleton(Model $model, Server $server) : self

@@ -20,21 +20,21 @@ class HandleEvent implements Job
     /**
      * The event to be handled.
      *
-     * @var \Rubix\Server\Events\Event
+     * @var Event
      */
-    protected \Rubix\Server\Events\Event $event;
+    protected Event $event;
 
     /**
      * A logger instance.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected \Psr\Log\LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @param callable $handler
-     * @param \Rubix\Server\Events\Event $event
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param Event $event
+     * @param LoggerInterface $logger
      */
     public function __construct(callable $handler, Event $event, LoggerInterface $logger)
     {

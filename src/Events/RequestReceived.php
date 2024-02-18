@@ -16,12 +16,12 @@ class RequestReceived implements Event
     /**
      * The request.
      *
-     * @var \Psr\Http\Message\ServerRequestInterface
+     * @var ServerRequestInterface
      */
-    protected \Psr\Http\Message\ServerRequestInterface $request;
+    protected ServerRequestInterface $request;
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      */
     public function __construct(ServerRequestInterface $request)
     {
@@ -31,7 +31,7 @@ class RequestReceived implements Event
     /**
      * Return the request.
      *
-     * @return \Psr\Http\Message\ServerRequestInterface
+     * @return ServerRequestInterface
      */
     public function request() : ServerRequestInterface
     {

@@ -30,9 +30,9 @@ class AttachServerHeaders
      *
      * @internal
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function __invoke(ServerRequestInterface $request, callable $next) : PromiseInterface
     {

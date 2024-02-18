@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class HTTPServerTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTPServer
+     * @var HTTPServer
      */
     protected $server;
 

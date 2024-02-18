@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class SharedTokenAuthenticatorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\SharedTokenAuthenticator
+     * @var SharedTokenAuthenticator
      */
     protected $middleware;
 

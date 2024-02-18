@@ -49,7 +49,7 @@ class BasicAuthenticator implements Middleware
     /**
      * @param string[] $passwords
      * @param string $realm
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $passwords, string $realm = 'auth')
     {
@@ -73,7 +73,7 @@ class BasicAuthenticator implements Middleware
     /**
      * Run the middleware over the request.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\Promise
      */

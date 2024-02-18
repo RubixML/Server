@@ -36,7 +36,7 @@ class CloseSSEChannels implements Listener
     /**
      * Close the open SSE channels.
      *
-     * @param \Rubix\Server\Events\ShuttingDown $event
+     * @param ShuttingDown $event
      */
     public function __invoke(ShuttingDown $event) : void
     {

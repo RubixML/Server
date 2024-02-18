@@ -25,7 +25,7 @@ class InMemoryCache implements Cache
 
     /**
      * @param int $expiresAfter
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(int $expiresAfter)
     {

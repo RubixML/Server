@@ -21,20 +21,20 @@ class GraphQLController extends JSONController
     /**
      * The GraphQL schema.
      *
-     * @var \Rubix\Server\GraphQL\Schema
+     * @var Schema
      */
-    protected \Rubix\Server\GraphQL\Schema $schema;
+    protected Schema $schema;
 
     /**
      * The promise adapter.
      *
-     * @var \GraphQL\Executor\Promise\PromiseAdapter
+     * @var PromiseAdapter
      */
-    protected \GraphQL\Executor\Promise\PromiseAdapter $adapter;
+    protected PromiseAdapter $adapter;
 
     /**
-     * @param \Rubix\Server\GraphQL\Schema $schema
-     * @param \GraphQL\Executor\Promise\PromiseAdapter $adapter
+     * @param Schema $schema
+     * @param PromiseAdapter $adapter
      */
     public function __construct(Schema $schema, PromiseAdapter $adapter)
     {
@@ -62,8 +62,8 @@ class GraphQLController extends JSONController
     }
 
     /**
-     * @param \GraphQL\Executor\ExecutionResult $result
-     * @return \Rubix\Server\HTTP\Responses\Success
+     * @param ExecutionResult $result
+     * @return Success
      */
     public function respondWithResult(ExecutionResult $result) : Success
     {
@@ -73,7 +73,7 @@ class GraphQLController extends JSONController
     /**
      * Handle a Graph QL query.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function __invoke(ServerRequestInterface $request)

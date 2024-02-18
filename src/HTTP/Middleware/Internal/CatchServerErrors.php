@@ -16,12 +16,12 @@ class CatchServerErrors
     /**
      * The event bus.
      *
-     * @var \Rubix\Server\Services\EventBus
+     * @var EventBus
      */
-    protected \Rubix\Server\Services\EventBus $eventBus;
+    protected EventBus $eventBus;
 
     /**
-     * @param \Rubix\Server\Services\EventBus $eventBus
+     * @param EventBus $eventBus
      */
     public function __construct(EventBus $eventBus)
     {
@@ -29,8 +29,8 @@ class CatchServerErrors
     }
 
     /**
-     * @param \Exception $exception
-     * @return \Rubix\Server\HTTP\Responses\InternalServerError
+     * @param Exception $exception
+     * @return InternalServerError
      */
     public function onError(Exception $exception) : InternalServerError
     {
@@ -42,9 +42,9 @@ class CatchServerErrors
     /**
      * Dispatch events related to the request/response cycle.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface
      */
     public function __invoke(ServerRequestInterface $request, callable $next) : PromiseInterface
     {

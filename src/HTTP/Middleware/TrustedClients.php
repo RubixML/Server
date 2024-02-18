@@ -28,7 +28,7 @@ class TrustedClients implements Middleware
 
     /**
      * @param string[] $ips
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $ips = ['127.0.0.1'])
     {
@@ -48,7 +48,7 @@ class TrustedClients implements Middleware
     /**
      * Run the middleware over the request.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */

@@ -16,12 +16,12 @@ abstract class Failure implements Event
     /**
      * The exception.
      *
-     * @var \Exception
+     * @var Exception
      */
-    protected \Exception $exception;
+    protected Exception $exception;
 
     /**
-     * @param \Exception $exception
+     * @param Exception $exception
      */
     public function __construct(Exception $exception)
     {
@@ -31,7 +31,7 @@ abstract class Failure implements Event
     /**
      * Return the exception.
      *
-     * @return \Exception
+     * @return Exception
      */
     public function exception() : Exception
     {

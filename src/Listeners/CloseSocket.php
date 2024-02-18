@@ -10,12 +10,12 @@ class CloseSocket implements Listener
     /**
      * The open socket connection.
      *
-     * @var \React\Socket\ServerInterface
+     * @var Socket
      */
-    protected \React\Socket\ServerInterface $socket;
+    protected Socket $socket;
 
     /**
-     * @param \React\Socket\ServerInterface $socket
+     * @param Socket $socket
      */
     public function __construct(Socket $socket)
     {
@@ -37,7 +37,7 @@ class CloseSocket implements Listener
     /**
      * Close the open socket connection.
      *
-     * @param \Rubix\Server\Events\ShuttingDown $event
+     * @param ShuttingDown $event
      */
     public function __invoke(ShuttingDown $event) : void
     {

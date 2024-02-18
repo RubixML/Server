@@ -11,12 +11,12 @@ class Scheduler
     /**
      * The event loop.
      *
-     * @var \React\EventLoop\LoopInterface
+     * @var LoopInterface
      */
-    protected \React\EventLoop\LoopInterface $loop;
+    protected LoopInterface $loop;
 
     /**
-     * @param \React\EventLoop\LoopInterface $loop
+     * @param LoopInterface $loop
      */
     public function __construct(LoopInterface $loop)
     {
@@ -28,7 +28,7 @@ class Scheduler
      *
      * @param float $interval
      * @param callable $job
-     * @return \React\EventLoop\TimerInterface
+     * @return TimerInterface
      */
     public function repeat(float $interval, callable $job) : TimerInterface
     {
@@ -38,7 +38,7 @@ class Scheduler
     /**
      * Stop a timer from running.
      *
-     * @param \React\EventLoop\TimerInterface $timer
+     * @param TimerInterface $timer
      */
     public function stop(TimerInterface $timer) : void
     {

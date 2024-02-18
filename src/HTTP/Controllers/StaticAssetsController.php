@@ -36,14 +36,14 @@ class StaticAssetsController extends Controller
     /**
      * The cache.
      *
-     * @var \Rubix\Server\Services\Caches\Cache
+     * @var Cache
      */
-    protected \Rubix\Server\Services\Caches\Cache $cache;
+    protected Cache $cache;
 
     /**
      * @param string $basePath
-     * @param \Rubix\Server\Services\Caches\Cache $cache
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @param Cache $cache
+     * @throws RuntimeException
      */
     public function __construct(string $basePath, Cache $cache)
     {
@@ -115,7 +115,7 @@ class StaticAssetsController extends Controller
     /**
      * Respond with the web UI entry point.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function serveAppShell(ServerRequestInterface $request)
@@ -126,7 +126,7 @@ class StaticAssetsController extends Controller
     /**
      * Serve a compressed version of a requested file if supported by the client.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @param callable $next
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
@@ -156,7 +156,7 @@ class StaticAssetsController extends Controller
     /**
      * Serve a file.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function serveFile(ServerRequestInterface $request)

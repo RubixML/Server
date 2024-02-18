@@ -12,12 +12,12 @@ class ServerController extends JSONController
     /**
      * The server model.
      *
-     * @var \Rubix\Server\Models\Server
+     * @var Server
      */
-    protected \Rubix\Server\Models\Server $server;
+    protected Server $server;
 
     /**
-     * @param \Rubix\Server\Models\Server $server
+     * @param Server $server
      */
     public function __construct(Server $server)
     {
@@ -41,7 +41,7 @@ class ServerController extends JSONController
     /**
      * Handle the request and return a response or a deferred response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface|\React\Promise\PromiseInterface
      */
     public function getServer(ServerRequestInterface $request)

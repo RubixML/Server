@@ -34,7 +34,7 @@ class Routes implements ArrayAccess
      * Collect the routes from an array of controllers.
      *
      * @param \Rubix\Server\HTTP\Controllers\Controller[] $controllers
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return self
      */
     public static function collect(array $controllers) : self
@@ -71,7 +71,7 @@ class Routes implements ArrayAccess
 
     /**
      * @param array<array<\Rubix\Server\HTTP\Controllers\Controller>> $routes
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $routes)
     {
@@ -98,7 +98,7 @@ class Routes implements ArrayAccess
      * Return a route from the schema.
      *
      * @param string $path
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return mixed[]
      */
     public function offsetGet($path) : array
@@ -113,7 +113,7 @@ class Routes implements ArrayAccess
     /**
      * @param string $path
      * @param mixed[] $actions
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @throws RuntimeException
      */
     public function offsetSet($path, $actions) : void
     {
@@ -133,7 +133,7 @@ class Routes implements ArrayAccess
 
     /**
      * @param string $path
-     * @throws \Rubix\Server\Exceptions\RuntimeException
+     * @throws RuntimeException
      */
     public function offsetUnset($path) : void
     {

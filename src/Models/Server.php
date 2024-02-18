@@ -10,34 +10,34 @@ class Server
     /**
      * The request/response statistics.
      *
-     * @var \Rubix\Server\Models\HTTPStats
+     * @var HTTPStats
      */
-    protected \Rubix\Server\Models\HTTPStats $httpStats;
+    protected HTTPStats $httpStats;
 
     /**
      * The memory model.
      *
-     * @var \Rubix\Server\Models\Memory
+     * @var Memory
      */
-    protected \Rubix\Server\Models\Memory $memory;
+    protected Memory $memory;
 
     /**
      * The server info model.
      *
-     * @var \Rubix\Server\Models\ProcessInfo
+     * @var ProcessInfo
      */
-    protected \Rubix\Server\Models\ProcessInfo $info;
+    protected ProcessInfo $info;
 
     /**
      * The server settings.
      *
-     * @var \Rubix\Server\Models\ServerSettings
+     * @var ServerSettings
      */
-    protected \Rubix\Server\Models\ServerSettings $settings;
+    protected ServerSettings $settings;
 
     /**
-     * @param \Rubix\Server\HTTPServer $server
-     * @param \Rubix\Server\Services\EventBus $eventBus
+     * @param HTTPServer $server
+     * @param EventBus $eventBus
      */
     public function __construct(HTTPServer $server, EventBus $eventBus)
     {
@@ -50,7 +50,7 @@ class Server
     /**
      * Return the HTTP stats model.
      *
-     * @return \Rubix\Server\Models\HTTPStats
+     * @return HTTPStats
      */
     public function httpStats() : HTTPStats
     {
@@ -60,7 +60,7 @@ class Server
     /**
      * Return the memory model.
      *
-     * @return \Rubix\Server\Models\Memory
+     * @return Memory
      */
     public function memory() : Memory
     {
@@ -70,7 +70,7 @@ class Server
     /**
      * Return the server info model.
      *
-     * @return \Rubix\Server\Models\ProcessInfo
+     * @return ProcessInfo
      */
     public function info() : ProcessInfo
     {
@@ -80,7 +80,7 @@ class Server
     /**
      * Return the server settings model.
      *
-     * @return \Rubix\Server\Models\ServerSettings
+     * @return ServerSettings
      */
     public function settings() : ServerSettings
     {

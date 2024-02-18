@@ -23,7 +23,7 @@ class SSEChannel
      *
      * @var \SplObjectStorage<object,mixed>
      */
-    protected \SplObjectStorage $streams;
+    protected SplObjectStorage $streams;
 
     /**
      * A counter used to identify individual events.
@@ -43,7 +43,7 @@ class SSEChannel
 
     /**
      * @param int $bufferSize
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(int $bufferSize)
     {
@@ -59,7 +59,7 @@ class SSEChannel
     /**
      * Attach a stream to the events stream.
      *
-     * @param \React\Stream\WritableStreamInterface $stream
+     * @param WritableStreamInterface $stream
      * @param int|null $lastId
      */
     public function attach(WritableStreamInterface $stream, ?int $lastId = null) : void
@@ -80,7 +80,7 @@ class SSEChannel
     /**
      * Detach a stream from the events stream.
      *
-     * @param \React\Stream\WritableStreamInterface $stream
+     * @param WritableStreamInterface $stream
      */
     public function detach(WritableStreamInterface $stream) : void
     {
@@ -114,7 +114,7 @@ class SSEChannel
         $this->buffer[$this->id] = $message;
 
         foreach ($this->streams as $stream) {
-            /** @var \React\Stream\WritableStreamInterface $stream */
+            /** @var WritableStreamInterface $stream */
             $stream->write($message);
         }
 
@@ -133,7 +133,7 @@ class SSEChannel
     public function close() : void
     {
         foreach ($this->streams as $stream) {
-            /** @var \React\Stream\WritableStreamInterface $stream */
+            /** @var WritableStreamInterface $stream */
             $stream->end();
         }
     }

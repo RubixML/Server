@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class AccessLogGeneratorTest extends TestCase
 {
     /**
-     * @var \Rubix\Server\HTTP\Middleware\AccessLogGenerator
+     * @var AccessLogGenerator
      */
     protected $middleware;
 

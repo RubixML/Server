@@ -12,12 +12,12 @@ class DashboardController extends JSONController
     /**
      * The server-sent events emitter.
      *
-     * @var \Rubix\Server\Services\SSEChannel
+     * @var SSEChannel
      */
-    protected \Rubix\Server\Services\SSEChannel $channel;
+    protected SSEChannel $channel;
 
     /**
-     * @param \Rubix\Server\Services\SSEChannel $channel
+     * @param SSEChannel $channel
      */
     public function __construct(SSEChannel $channel)
     {
@@ -41,8 +41,8 @@ class DashboardController extends JSONController
     /**
      * Attach the event steam to an event source request.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Rubix\Server\HTTP\Responses\EventStream
+     * @param ServerRequestInterface $request
+     * @return EventStream
      */
     public function connectEventStream(ServerRequestInterface $request) : EventStream
     {

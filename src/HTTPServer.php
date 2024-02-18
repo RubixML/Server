@@ -111,9 +111,9 @@ class HTTPServer implements Server, Verbose
     /**
      * The cache used to serve static asset requests.
      *
-     * @var \Rubix\Server\Services\Caches\Cache
+     * @var Cache
      */
-    protected \Rubix\Server\Services\Caches\Cache $staticAssetsCache;
+    protected Cache $staticAssetsCache;
 
     /**
      * The maximum number of events to store in the server-sent events (SSE) reconnect buffer.
@@ -139,16 +139,16 @@ class HTTPServer implements Server, Verbose
     /**
      * A PSR-3 logger instance.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    protected \Psr\Log\LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
      * The event bus.
      *
-     * @var \Rubix\Server\Services\EventBus
+     * @var EventBus
      */
-    protected \Rubix\Server\Services\EventBus $eventBus;
+    protected EventBus $eventBus;
 
     /**
      * The event loop.
@@ -163,9 +163,9 @@ class HTTPServer implements Server, Verbose
      * @param string|null $cert
      * @param \Rubix\Server\HTTP\Middleware\Middleware[] $middlewares
      * @param int $maxConcurrentRequests
-     * @param \Rubix\Server\Services\Caches\Cache $staticAssetsCache
+     * @param Cache $staticAssetsCache
      * @param int $sseReconnectBuffer
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         string $host = '127.0.0.1',
@@ -301,7 +301,7 @@ class HTTPServer implements Server, Verbose
     /**
      * Sets a psr-3 logger.
      *
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger) : void
     {
@@ -311,8 +311,8 @@ class HTTPServer implements Server, Verbose
     /**
      * Boot up the server.
      *
-     * @param \Rubix\ML\Estimator $estimator
-     * @throws \Rubix\Server\Exceptions\InvalidArgumentException
+     * @param Estimator $estimator
+     * @throws InvalidArgumentException
      */
     public function serve(Estimator $estimator) : void
     {
