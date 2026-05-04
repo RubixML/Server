@@ -13,7 +13,7 @@
         "rubix", "rubix ml", "rubixml", "server"
     ],
     "authors": [
-        { 
+        {
             "name": "Andrew DalPino",
             "role": "Project Lead",
             "homepage": "https://github.com/andrewdalpino",
@@ -33,7 +33,7 @@
         "react/http": "^1.1",
         "rubix/ml": "^2.0",
         "symfony/polyfill-php80": "^1.17",
-        "webonyx/graphql-php": "^14.4"
+        "webonyx/graphql-php": "^15.32"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
